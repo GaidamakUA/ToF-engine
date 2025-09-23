@@ -1,4 +1,4 @@
-extends "res://scenes/abilities/unit/active.gd"
+extends ActiveUnitAbility
 
 const TWEEN_TIME = 0.1
 

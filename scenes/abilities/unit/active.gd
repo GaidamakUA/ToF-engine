@@ -1,4 +1,5 @@
 extends Ability
+class_name ActiveUnitAbility
 
 @export var named_icon := ""
 @export var marker_colour := "green"

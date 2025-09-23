@@ -15,8 +15,8 @@ var tile_box_position: Vector2i = Vector2i(0, 0)
 var tile_box_mouse = false
 
 var templates = preload("res://scenes/map/templates.gd").new()
-var model = preload("res://scenes/map/model.gd").new()
-var builder = MapBuilder.new(self)
+var model := MapModel.new()
+var builder := MapBuilder.new(self)
 var loader = preload("res://scenes/map/loader.gd").new(self)
 
 @onready var tiles_ground_anchor = $"tiles/ground"

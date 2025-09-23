@@ -128,7 +128,7 @@ func has_allied_unit(team):
 			return self.unit.tile.team == team
 	return false
 
-func has_friendly_unit(side):
+func has_friendly_unit(side) -> bool:
 	if self.unit.is_present() && self.unit.tile.side == side:
 		return true
 	return false

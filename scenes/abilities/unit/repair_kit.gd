@@ -1,4 +1,4 @@
-extends "res://scenes/abilities/unit/active.gd"
+extends ActiveUnitAbility
 
 const REPAIR_UNITS = [
 	"tank",

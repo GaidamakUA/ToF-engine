@@ -13,7 +13,7 @@ const RETALIATION_DELAY = 0.1
 @onready var campaign = $"/root/Campaign"
 @onready var saves_manager = $"/root/SavesManager"
 
-var state = preload("res://scenes/board/logic/state.gd").new()
+var state := State.new()
 var radial_abilities = preload("res://scenes/board/logic/radial_abilities.gd").new()
 var abilities := Abilities.new(self)
 var events = preload("res://scenes/board/logic/events.gd").new()

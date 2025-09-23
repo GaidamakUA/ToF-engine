@@ -1,3 +1,4 @@
+class_name State
 
 const PLAYER_HUMAN = "human"
 const PLAYER_AI = "ai"
@@ -47,7 +48,7 @@ func get_current_team():
 func get_current_heroes():
 	return self.get_current_param("heroes")
 
-func get_player_id_by_side(side):
+func get_player_id_by_side(side) -> int:
 	var index = 0
 
 	while index < self.players.size():
@@ -202,14 +203,14 @@ func has_side_a_hero(side):
 func add_hero_for_player(id, hero):
 	self.players[id]["heroes"][hero.get_instance_id()] = hero
 
-func get_heroes_for_player(id):
+func get_heroes_for_player(id) -> Array:
 	return self.players[id]["heroes"].values()
 
 func add_hero_for_side(side, hero):
 	self.add_hero_for_player(self.get_player_id_by_side(side), hero)
 
-func get_heroes_for_side(side):
-	var side_id = self.get_player_id_by_side(side)
+func get_heroes_for_side(side) -> Array:
+	var side_id := self.get_player_id_by_side(side)
 	if side_id == null:
 		return []
 	return self.get_heroes_for_player(side_id)

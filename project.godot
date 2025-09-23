@@ -43,6 +43,13 @@ Multiplayer="*res://scripts/services/multiplayer.gd"
 Autodiscovery="*res://scripts/services/autodiscovery.gd"
 Relay="*res://scripts/services/relay.gd"
 
+[debug]
+
+gdscript/warnings/standalone_ternary=2
+gdscript/warnings/incompatible_ternary=2
+gdscript/warnings/untyped_declaration=1
+gdscript/warnings/unsafe_property_access=1
+
 [display]
 
 window/size/viewport_width=1280

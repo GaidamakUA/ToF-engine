@@ -86,7 +86,7 @@ func is_neighbour(tile):
 	return false
 
 
-func can_acommodate_unit(moving_unit=null):
+func can_acommodate_unit(moving_unit=null) -> bool:
 	if not self.ground.is_present():
 		return false
 	if self.ground.tile.unit_can_fly and (moving_unit == null or not moving_unit.can_fly):

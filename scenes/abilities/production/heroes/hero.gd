@@ -1,6 +1,6 @@
 extends SpawnUnit
 
-func _is_visible(board=null) -> bool:
+func _is_visible(board: Board) -> bool:
 	if self.source == null:
 		return false
 

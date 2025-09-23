@@ -18,5 +18,5 @@ func execute(board: Board, position: Vector2i) -> void:
 		board.unselect_tile()
 		board.select_tile(position)
 
-func is_tile_applicable(_tile, _source_tile) -> bool:
+func is_tile_applicable(_tile: MapTile, _source_tile: MapTile) -> bool:
 	return true

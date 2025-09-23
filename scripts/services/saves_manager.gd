@@ -7,11 +7,11 @@ const SAVE_EXTENSION := ".tofsave.json"
 
 var filesystem := FileSystem.new()
 
-var autosave = [null, null, null]
+var autosave: Array = [null, null, null]
 var saves: Array[Dictionary] = []
 
 
-func _ready():
+func _ready() -> void:
 	self.load_saves_from_file()
 
 
@@ -64,7 +64,7 @@ func write_autosave(map_name: String, map_label: String, turn_no: int, save_data
 
 
 func save_list_to_file() -> void:
-	var save_data = {
+	var save_data := {
 		"autosave": self.autosave,
 		"saves": self.saves
 	}
@@ -74,7 +74,7 @@ func save_list_to_file() -> void:
 func load_saves_from_file() -> void:
 	var save_data = self.filesystem.read_json_from_file(self.LIST_FILE_PATH)
 	if save_data.has("saves"):
-		self.saves = save_data["saves"]
+		self.saves.assign(save_data["saves"])
 	if save_data.has("autosave"):
 		if save_data["autosave"] is Dictionary:
 			save_data["autosave"] = [save_data["autosave"], null, null]
@@ -85,7 +85,7 @@ func load_saves_from_file() -> void:
 
 
 func get_entries_page(page_number: int, page_size: int) -> Array:
-	var pages_count = self.get_pages_count(page_size)
+	var pages_count := self.get_pages_count(page_size)
 
 	if page_number >= pages_count:
 		return []
@@ -93,9 +93,9 @@ func get_entries_page(page_number: int, page_size: int) -> Array:
 	var index_start := page_number * page_size
 	var index_end := index_start + page_size
 
-	var entries_list := []
+	var entries_list: Array[Dictionary] = []
 
-	for autosave_entry in self.autosave:
+	for autosave_entry: Dictionary in self.autosave:
 		if autosave_entry != null:
 			entries_list.append(autosave_entry)
 
@@ -108,8 +108,8 @@ func get_entries_page(page_number: int, page_size: int) -> Array:
 	if index_end > entries_count:
 		index_end = entries_count
 
-	var index = index_start
-	var output := []
+	var index := index_start
+	var output: Array[Dictionary] = []
 
 	while index < index_end:
 		output.append(entries_list[index])
@@ -120,7 +120,7 @@ func get_entries_page(page_number: int, page_size: int) -> Array:
 
 func get_pages_count(page_size: int) -> int:
 	var total_saves_count := self.saves.size()
-	for autosave_entry in self.autosave:
+	for autosave_entry: Dictionary in self.autosave:
 		if autosave_entry != null:
 			total_saves_count += 1
 
@@ -147,7 +147,7 @@ func get_save_path(save_id: int) -> String:
 	return self.SAVE_PATH + str(save_id) + self.SAVE_EXTENSION
 
 
-func compile_save_data(board) -> Dictionary:
+func compile_save_data(board: Board) -> Dictionary:
 	var map_name: String
 	var map_label: String
 
@@ -184,7 +184,7 @@ func compile_save_data(board) -> Dictionary:
 		"save_data": save_data
 	}
 
-func _compile_tiles_data(board) -> Dictionary:
+func _compile_tiles_data(board: Board) -> Dictionary:
 	var tiles_data := {}
 	var tile
 
@@ -197,14 +197,14 @@ func _compile_tiles_data(board) -> Dictionary:
 	return tiles_data
 
 
-func _move_save_file(source_id, destination_id) -> void:
+func _move_save_file(source_id: int, destination_id: int) -> void:
 	store_save_data(destination_id, get_save_data(source_id))
 
 
 func _migrate_saves() -> void:
 	var saves_copy := self.saves.duplicate()
 	saves_copy.reverse()
-	for save in saves_copy:
+	for save: Dictionary in saves_copy:
 		_move_save_file(save["save_id"], int(save["save_id"] + 2))
 		save["save_id"] = int(save["save_id"] + 2)
 	saves_copy.reverse()

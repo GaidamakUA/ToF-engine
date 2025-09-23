@@ -1,3 +1,4 @@
+class_name MapBuilder
 
 const CLASS_GROUND = "ground"
 const CLASS_FRAME = "frame"
@@ -9,7 +10,7 @@ const CLASS_UNIT = "unit"
 const CLASS_DAMAGE = "damage"
 const CLASS_HERO = "hero"
 
-var map
+var map: Map
 
 var editor = null
 var enable_health = false

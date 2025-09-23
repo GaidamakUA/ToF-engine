@@ -1,4 +1,4 @@
-
+class_name Abilities
 var board
 
 func _init(_board):
@@ -7,7 +7,7 @@ func _init(_board):
 func execute_ability(ability, context_object=null):
 	ability.execute(self.board, context_object.position)
 
-func get_modified_cost(cost, template_name, source):
+func get_modified_cost(cost, template_name, source) -> int:
 	var passive_abilities = self._get_passives_for_source(source)
 	var modified_cost = cost
 
@@ -19,7 +19,7 @@ func get_modified_cost(cost, template_name, source):
 
 	return modified_cost
 
-func get_modified_cooldown(cd_value, source):
+func get_modified_cooldown(cd_value: int, source) -> int:
 	var passive_abilities = self._get_passives_for_source(source)
 	var modified_cd = cd_value
 

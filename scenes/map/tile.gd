@@ -1,26 +1,26 @@
-
+class_name MapTile
 var settings
 
-const EAST = "e"
-const WEST = "w"
-const NORTH = "n"
-const SOUTH = "s"
+const EAST := "e"
+const WEST := "w"
+const NORTH := "n"
+const SOUTH := "s"
 
-var position = Vector2i(0, 0)
+var position := Vector2i(0, 0)
 
-var ground = preload("res://scenes/map/tile_fragment.gd").new()
-var frame = preload("res://scenes/map/tile_fragment.gd").new()
-var decoration = preload("res://scenes/map/tile_fragment.gd").new()
-var terrain = preload("res://scenes/map/tile_fragment.gd").new()
-var building = preload("res://scenes/map/tile_fragment.gd").new()
-var unit = preload("res://scenes/map/tile_fragment.gd").new()
-var damage = preload("res://scenes/map/tile_fragment.gd").new()
+var ground := TileFragment.new()
+var frame := TileFragment.new()
+var decoration := TileFragment.new()
+var terrain := TileFragment.new()
+var building := TileFragment.new()
+var unit := TileFragment.new()
+var damage := TileFragment.new()
 
 var fragments = []
 
 var neighbours = {}
 
-var is_state_modified = false
+var is_state_modified := false
 
 func _init(x, y):
 	self.position.x = x

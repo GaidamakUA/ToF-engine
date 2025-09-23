@@ -1,4 +1,5 @@
 extends Node3D
+class_name Map
 
 const TILE_SIZE = 8
 const GROUND_HEIGHT = 4
@@ -15,7 +16,7 @@ var tile_box_mouse = false
 
 var templates = preload("res://scenes/map/templates.gd").new()
 var model = preload("res://scenes/map/model.gd").new()
-var builder = preload("res://scenes/map/builder.gd").new(self)
+var builder = MapBuilder.new(self)
 var loader = preload("res://scenes/map/loader.gd").new(self)
 
 @onready var tiles_ground_anchor = $"tiles/ground"
@@ -110,7 +111,7 @@ func move_camera_to_position(destination):
 	if destination == null:
 		return
 
-	self.camera.move_camera_to_position(destination * self.TILE_SIZE + Vector2(0.5, 0.5) * self.TILE_SIZE)
+	self.camera.move_camera_to_position(destination * self.TILE_SIZE * 1.0 + Vector2(0.5, 0.5) * self.TILE_SIZE)
 
 func move_camera_to_position_if_far_away(destination, tolerance=5, zoom=null):
 	if zoom != null:

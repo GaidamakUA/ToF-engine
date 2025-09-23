@@ -4,11 +4,11 @@ func file_exists(filepath: String) -> bool:
 	return FileAccess.file_exists(filepath)
 
 func _dir_exists_os(dirpath: String) -> bool:
-	var real_path = OS.get_executable_path().get_base_dir().path_join(dirpath)
+	var real_path: String = OS.get_executable_path().get_base_dir().path_join(dirpath)
 	return self._dir_exists_project(real_path)
 
 func _dir_exists_project(dirpath: String) -> bool:
-	var dir = DirAccess.open(dirpath)
+	var dir: DirAccess = DirAccess.open(dirpath)
 	if dir == null:
 		return false
 	return true
@@ -23,7 +23,7 @@ func read_json_from_file(filepath: String) -> Variant:
 	var file := FileAccess.open(filepath, FileAccess.READ)
 	var file_text := file.get_as_text()
 	file.close()
-	var test_json_conv = JSON.new()
+	var test_json_conv: JSON = JSON.new()
 	test_json_conv.parse(file_text)
 	var content = test_json_conv.get_data()
 

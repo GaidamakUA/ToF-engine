@@ -1,7 +1,5 @@
-
+class_name MapModel
 const SIZE = 40
-
-var tile_template = preload("res://scenes/map/tile.gd")
 
 var tiles = {}
 var scripts = {
@@ -13,7 +11,7 @@ var metadata = {}
 func _init():
 	for x in range(self.SIZE):
 		for y in range(self.SIZE):
-			self.tiles[str(x) + "_" + str(y)] = self.tile_template.new(x, y)
+			self.tiles[str(x) + "_" + str(y)] = MapTile.new(x, y)
 	self.connect_neightbours()
 
 func wipe_metadata():

@@ -1,4 +1,4 @@
-
+class_name TileFragment
 var tile = null
 
 func set_tile(new_tile):

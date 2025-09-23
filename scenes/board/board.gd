@@ -1,8 +1,9 @@
 extends Node3D
+class_name Board
 
 const RETALIATION_DELAY = 0.1
 
-@onready var map = $"map"
+@onready var map: Map = $"map"
 @onready var ui = $"ui"
 
 @onready var audio = $"/root/SimpleAudioLibrary"
@@ -14,7 +15,7 @@ const RETALIATION_DELAY = 0.1
 
 var state = preload("res://scenes/board/logic/state.gd").new()
 var radial_abilities = preload("res://scenes/board/logic/radial_abilities.gd").new()
-var abilities = preload("res://scenes/abilities/abilities.gd").new(self)
+var abilities := Abilities.new(self)
 var events = preload("res://scenes/board/logic/events.gd").new()
 var observers = preload("res://scenes/board/logic/observers/observers.gd").new(self)
 var scripting = preload("res://scenes/board/logic/scripting.gd").new()

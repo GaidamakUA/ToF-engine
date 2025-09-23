@@ -1,12 +1,12 @@
-extends "res://scenes/abilities/ability.gd"
+extends Ability
 
-@export var named_icon = ""
-@export var marker_colour = "green"
+@export var named_icon := ""
+@export var marker_colour := "green"
 
-func _init():
+func _init() -> void:
 	self.TYPE = "active"
 
-func execute(board, position):
+func execute(board: Board, position: Vector2i) -> void:
 	board.use_current_player_ap(self.get_cost())
 	super.execute(board, position)
 	self.source.use_move(1)
@@ -17,5 +17,5 @@ func execute(board, position):
 		board.unselect_tile()
 		board.select_tile(position)
 
-func is_tile_applicable(_tile, _source_tile):
+func is_tile_applicable(_tile, _source_tile) -> bool:
 	return true

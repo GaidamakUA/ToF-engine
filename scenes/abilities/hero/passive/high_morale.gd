@@ -1,6 +1,6 @@
-extends "res://scenes/abilities/hero/passive/passive.gd"
+extends PassiveAbility
 
-const INFANTRY_TEMPLATES = [
+const INFANTRY_TEMPLATES: Array[String] = [
     "blue_infantry",
     "blue_m_inf",
     "red_infantry",
@@ -11,7 +11,7 @@ const INFANTRY_TEMPLATES = [
     "yellow_m_inf",
 ]
 
-func get_passive_modifiers(template_name):
+func get_passive_modifiers(template_name: String) -> Dictionary:
     if template_name in self.INFANTRY_TEMPLATES:
         return {
             "attack" : 1,

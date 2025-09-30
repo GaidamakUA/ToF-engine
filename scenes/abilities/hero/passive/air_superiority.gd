@@ -1,6 +1,6 @@
-extends "res://scenes/abilities/hero/passive/passive.gd"
+extends PassiveAbility
 
-const AIR_TEMPLATES = [
+const AIR_TEMPLATES: Array[String] = [
     "blue_heli",
     "blue_scout",
     "red_heli",
@@ -11,7 +11,7 @@ const AIR_TEMPLATES = [
     "yellow_scout",
 ]
 
-func get_modified_cost(cost, template_name):
+func get_modified_cost(cost: int, template_name: String) -> int:
     if template_name in self.AIR_TEMPLATES:
         return cost - 10
 

@@ -1,4 +1,4 @@
-extends "res://scenes/abilities/hero/passive/passive.gd"
+extends PassiveAbility
 
-func can_intimidate_crew():
+func can_intimidate_crew() -> bool:
     return true

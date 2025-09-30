@@ -1,6 +1,6 @@
-extends "res://scenes/abilities/hero/passive/passive.gd"
+extends PassiveAbility
 
-const FACTORY_TEMPLATES = [
+const FACTORY_TEMPLATES: Array[String] = [
     "blue_tank",
     "blue_rocket",
     "red_tank",
@@ -11,7 +11,7 @@ const FACTORY_TEMPLATES = [
     "yellow_rocket",
 ]
 
-func get_modified_cost(cost, template_name):
+func get_modified_cost(cost: int, template_name: String) -> int:
     if template_name in self.FACTORY_TEMPLATES:
         return cost - 10
 

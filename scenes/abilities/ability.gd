@@ -18,52 +18,52 @@ var cd_turns_left := 0
 var disabled := false
 
 func _ready() -> void:
-	self.signal_to_parent()
+    self.signal_to_parent()
 
 func signal_to_parent() -> void:
-	self.receive_signal(self.get_parent())
+    self.receive_signal(self.get_parent())
 
 func receive_signal(receiver) -> void:
-	receiver.register_ability(self)
-	self.source = receiver
+    receiver.register_ability(self)
+    self.source = receiver
 
 func execute(board: Board, position: Vector2i) -> void:
-	self._execute(board, position)
-	board.events.emit_ability_used(self, position)
-	self.activate_cooldown(board)
+    self._execute(board, position)
+    board.events.emit_ability_used(self, position)
+    self.activate_cooldown(board)
 
 func _execute(_board: Board, _position: Vector2i) -> void:
-	return
+    return
 
 func is_visible(_board=null) -> bool:
-	if self.disabled:
-		return false
+    if self.disabled:
+        return false
 
-	return self._is_visible(_board)
+    return self._is_visible(_board)
 
 func _is_visible(_board: Board) -> bool:
-	return true
+    return true
 
 func is_available(_board=null) -> bool:
-	return true
+    return true
 
 func is_on_cooldown() -> bool:
-	return self.cd_turns_left > 0
+    return self.cd_turns_left > 0
 
 func activate_cooldown(board: Board) -> void:
-	var modified_cooldown := board.abilities.get_modified_cooldown(self.get_cooldown(), self.source)
+    var modified_cooldown := board.abilities.get_modified_cooldown(self.get_cooldown(), self.source)
 
-	self.cd_turns_left = modified_cooldown
+    self.cd_turns_left = modified_cooldown
 
 func reset_cooldown() -> void:
-	self.cd_turns_left = 0
+    self.cd_turns_left = 0
 
 func cd_tick_down() -> void:
-	if self.cd_turns_left > 0:
-		self.cd_turns_left -= 1
+    if self.cd_turns_left > 0:
+        self.cd_turns_left -= 1
 
 func get_cost() -> int:
-	return self.ap_cost
+    return self.ap_cost
 
 func get_cooldown() -> int:
-	return self.cooldown
+    return self.cooldown

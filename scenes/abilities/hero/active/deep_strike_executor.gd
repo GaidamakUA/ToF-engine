@@ -1,35 +1,37 @@
 extends Node3D
+class_name DeepStrikeExecutor
 
-var strike_position
-var source
-var template_name
-var board
+var strike_position: Vector2i
+var source: BaseUnit
+var template_name: String
+var board: Board
 
-func _ready():
-	$"heli".sfx_effect("move")
+@export
+var heli: Heli
 
-func set_up(_board, _position, _source, _template_name):
-	self.board = _board
-	self.strike_position = _position
-	self.source = _source
-	self.template_name = _template_name
+func _ready() -> void:
+    heli.sfx_effect("move")
 
-	self.set_side_material()
+func set_up(_board: Board, _position: Vector2i, _source: BaseUnit, _template_name: String) -> void:
+    self.board = _board
+    self.strike_position = _position
+    self.source = _source
+    self.template_name = _template_name
 
-func set_side_material():
-	var drop_ship = $"heli"
+    self.set_side_material()
 
-	drop_ship.set_side(self.source.side)
-	drop_ship.set_side_material(self.board.map.templates.get_side_material(self.source.side, self.board.map.templates.MATERIAL_METALLIC))
+func set_side_material() -> void:
+    heli.set_side(self.source.side)
+    heli.set_side_material(self.board.map.templates.get_side_material(self.source.side, self.board.map.templates.MATERIAL_METALLIC))
 
-func _deploy_unit():
-	var tile = self.board.map.model.get_tile(self.strike_position)
-	var new_unit = self.board.map.builder.place_unit(self.strike_position, self.template_name, 90, self.source.side)
+func _deploy_unit() -> void:
+    var tile := self.board.map.model.get_tile(self.strike_position)
+    var new_unit: BaseUnit = self.board.map.builder.place_unit(self.strike_position, self.template_name, 90, self.source.side)
 
-	new_unit.remove_moves()
-	new_unit.team = self.source.team
-	self.board.abilities.apply_passive_modifiers(new_unit)
-	new_unit.sfx_effect("spawn")
+    new_unit.remove_moves()
+    new_unit.team = self.source.team
+    self.board.abilities.apply_passive_modifiers(new_unit)
+    new_unit.sfx_effect("spawn")
 
-	self.board.events.emit_unit_spawned(self.source, new_unit)
-	self.board.events.emit_unit_moved(new_unit, tile, tile)
+    self.board.events.emit_unit_spawned(self.source, new_unit)
+    self.board.events.emit_unit_moved(new_unit, tile, tile)

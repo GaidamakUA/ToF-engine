@@ -1,14 +1,16 @@
-extends "res://scenes/abilities/hero/active/active.gd"
+extends ActiveAbility
 
-const HEAL = 5
+const HEAL := 5
 
-func _execute(board, position):
-	var source_tile = board.selected_tile
+func _execute(board: Board, position: Vector2i) -> void:
+    var source_tile: MapTile
 
-	if source_tile == null:
-		source_tile = board.map.model.get_tile(position)
+    if board.selected_tile == null:
+        source_tile = board.map.model.get_tile(position)
+    else:
+        source_tile = board.selected_tile
 
-	for neighbour in source_tile.neighbours.values():
-		if neighbour.has_friendly_unit(self.source.side):
-			neighbour.unit.tile.heal(self.HEAL)
-			board.heal_a_tile(neighbour)
+    for neighbour: MapTile in source_tile.neighbours.values():
+        if neighbour.has_friendly_unit(self.source.side):
+            neighbour.unit.tile.heal(self.HEAL)
+            board.heal_a_tile(neighbour)

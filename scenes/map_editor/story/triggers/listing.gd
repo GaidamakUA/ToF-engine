@@ -12,10 +12,10 @@ signal picker_requested(context)
 @onready var prev_button = $"list_prev"
 @onready var next_button = $"list_next"
 @onready var add_button = $"new_trigger/add_button"
-@onready var audio = $"/root/SimpleAudioLibrary"
+@onready var audio := SimpleAudioLibrary
 
 var list_elements = []
-var current_page = 0
+var current_page := 0
 
 var edit_panels = {}
 

@@ -6,13 +6,13 @@ const GROUND_HEIGHT = 4
 
 @onready var tile_box = $"tiles/tile_box"
 @onready var camera = $"camera"
-@onready var campaign = $"/root/Campaign"
-@onready var mouse_layer = $"/root/MouseLayer"
-@onready var settings = $"/root/Settings"
+@onready var campaign := Campaign
+@onready var mouse_layer := MouseLayer
+@onready var settings := Settings
 
 var tile_box_space_size
-var tile_box_position: Vector2i = Vector2i(0, 0)
-var tile_box_mouse = false
+var tile_box_position := Vector2i(0, 0)
+var tile_box_mouse := false
 
 var templates = preload("res://scenes/map/templates.gd").new()
 var model := MapModel.new()

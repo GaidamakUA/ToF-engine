@@ -1,7 +1,7 @@
 extends Control
 
-@onready var audio = $"/root/SimpleAudioLibrary"
-@onready var settings = $"/root/Settings"
+@onready var audio := SimpleAudioLibrary
+@onready var settings := Settings
 
 @onready var animations = $"animations"
 

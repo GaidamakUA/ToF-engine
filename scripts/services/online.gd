@@ -8,7 +8,7 @@ const THUMBNAIL_V1_URL: String = "/browser/public/thumbs/"
 @onready var player := OnlinePlayer.new(self)
 @onready var maps := OnlineMaps.new(self)
 
-@onready var settings: Node = $"/root/Settings"
+@onready var settings := Settings
 
 var thumb_cache: Dictionary[String, ImageTexture] = {}
 var api_version: int = 2

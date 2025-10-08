@@ -6,7 +6,7 @@ signal value_selected(element_value, context)
 
 @onready var prev_button = $"prev"
 @onready var next_button = $"next"
-@onready var audio = $"/root/SimpleAudioLibrary"
+@onready var audio := SimpleAudioLibrary
 
 var list_elements = []
 var current_page = 0

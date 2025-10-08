@@ -87,7 +87,7 @@ var mouse_click_position = null
 var camera_pan = Vector2(0, 0)
 var _last_used_blur_magnitude = 0
 
-@onready var settings = $"/root/Settings"
+@onready var settings := Settings
 
 func _ready():
 	randomize()

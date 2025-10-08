@@ -4,7 +4,7 @@ class_name BaseTriggerTypeEditor
 var trigger_name
 var trigger_data
 
-@onready var audio = $"/root/SimpleAudioLibrary"
+@onready var audio := SimpleAudioLibrary
 
 signal trigger_data_updated(trigger_name, trigger_data)
 signal trigger_removal_requested(trigger_name)

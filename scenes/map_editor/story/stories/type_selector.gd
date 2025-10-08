@@ -3,7 +3,7 @@ extends Control
 var step_no
 var step_data
 
-@onready var audio = $"/root/SimpleAudioLibrary"
+@onready var audio := SimpleAudioLibrary
 
 signal step_data_updated(step_no, step_data)
 signal step_move_requested(step_no, new_step_no)

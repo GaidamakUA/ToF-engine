@@ -4,14 +4,14 @@ class_name Board
 const RETALIATION_DELAY = 0.1
 
 @onready var map: Map = $"map"
-@onready var ui = $"ui"
+@onready var ui: Ui = $"ui"
 
-@onready var audio = $"/root/SimpleAudioLibrary"
-@onready var switcher = $"/root/SceneSwitcher"
-@onready var match_setup = $"/root/MatchSetup"
-@onready var settings = $"/root/Settings"
-@onready var campaign = $"/root/Campaign"
-@onready var saves_manager = $"/root/SavesManager"
+@onready var audio := SimpleAudioLibrary
+@onready var switcher := SceneSwitcher
+@onready var match_setup := MatchSetup
+@onready var settings := Settings
+@onready var campaign := Campaign
+@onready var saves_manager := SavesManager
 
 var state := State.new()
 var radial_abilities = preload("res://scenes/board/logic/radial_abilities.gd").new()

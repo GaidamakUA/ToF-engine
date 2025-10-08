@@ -2,8 +2,8 @@ class_name MultiplayerSettingsCategoryPanel
 extends SettingsCategoryPanel
 
 
-@onready var audio = $"/root/SimpleAudioLibrary"
-@onready var settings = $"/root/Settings"
+@onready var audio := SimpleAudioLibrary
+@onready var settings := Settings
 
 
 var defaults: Dictionary = {

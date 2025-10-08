@@ -6,7 +6,7 @@ signal move_finished
 const MAX_LEVEL = 3
 const EXP_PER_LEVEL = 2
 
-@onready var audio = $"/root/SimpleAudioLibrary"
+@onready var audio := SimpleAudioLibrary
 
 @onready var animations = $"animations"
 @onready var spotlight = $"mesh_anchor/activity_light"

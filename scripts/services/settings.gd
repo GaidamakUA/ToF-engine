@@ -4,7 +4,7 @@ const SETTINGS_FILE_PATH := "user://settings.json"
 
 signal changed(key, new_value)
 
-@onready var audio := $"/root/SimpleAudioLibrary"
+@onready var audio := SimpleAudioLibrary
 var filesystem := FileSystem.new()
 var os_string := ""
 

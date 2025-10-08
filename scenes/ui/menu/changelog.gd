@@ -1,6 +1,6 @@
 extends Control
 
-@onready var audio = $"/root/SimpleAudioLibrary"
+@onready var audio := SimpleAudioLibrary
 
 @onready var animations = $"animations"
 @onready var back_button = $"widgets/back_button"

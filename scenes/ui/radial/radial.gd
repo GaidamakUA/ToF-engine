@@ -2,7 +2,7 @@ extends Node2D
 
 signal close_requested
 
-@onready var audio = $"/root/SimpleAudioLibrary"
+@onready var audio := SimpleAudioLibrary
 @onready var animations = $"animations"
 @onready var label_node = $"label"
 @onready var label_text = $"label/label"

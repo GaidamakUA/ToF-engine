@@ -32,7 +32,7 @@ extends Node2D
 
 @onready var back_button = $"back_button"
 
-@onready var audio = $"/root/SimpleAudioLibrary"
+@onready var audio := SimpleAudioLibrary
 
 var board = null
 

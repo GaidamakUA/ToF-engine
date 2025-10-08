@@ -33,7 +33,7 @@ var type
 @export var swap_target: NodePath
 var swap_target_node: Node
 
-@onready var audio = $"/root/SimpleAudioLibrary"
+@onready var audio := SimpleAudioLibrary
 
 
 func _ready():

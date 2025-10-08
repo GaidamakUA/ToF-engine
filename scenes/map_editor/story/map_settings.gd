@@ -5,7 +5,7 @@ extends Control
 @onready var initial_cam_pos_y = $"initial_cam_position/y"
 @onready var track_label = $"track/track_button/label"
 @onready var allow_level_up_label = $"allow_level_up/allow_level_up_toggle/label"
-@onready var audio = $"/root/SimpleAudioLibrary"
+@onready var audio := SimpleAudioLibrary
 
 signal picker_requested(context)
 

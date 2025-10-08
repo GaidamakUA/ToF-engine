@@ -1,6 +1,6 @@
 extends Control
 
-@onready var settings = $"/root/Settings"
+@onready var settings := Settings
 
 @onready var radial = $"radial/radial"
 @onready var picker = $"picker/picker"

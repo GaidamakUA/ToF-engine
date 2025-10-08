@@ -15,15 +15,15 @@ extends Node3D
 @export var next_damage_stage_template = ""
 @export var base_stage_template = ""
 
-@export var shadow_override = false
+@export var shadow_override := false
 
-var scripting_tags = {}
-var current_rotation = 0
+var scripting_tags: Dictionary[String, Variant] = {}
+var current_rotation := 0
 
 func get_dict() -> Dictionary[String, Variant]:
     var tile_rotation = self.get_rotation_degrees()
 
-    var tile_dict = {
+    var tile_dict: Dictionary[String, Variant] = {
         "tile" : self.template_name,
         "rotation" : tile_rotation.y
     }

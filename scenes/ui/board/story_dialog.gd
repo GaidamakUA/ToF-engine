@@ -1,6 +1,6 @@
 extends Node2D
 
-@onready var audio = $"/root/SimpleAudioLibrary"
+@onready var audio := SimpleAudioLibrary
 
 @onready var text = $"background/text"
 @onready var continue_button = $"background/continue"

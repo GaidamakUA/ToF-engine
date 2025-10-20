@@ -15,7 +15,7 @@ class_name Ui
 @onready var story_dialog = $"story_dialog/story_dialog"
 @onready var cinematic_bars = $"cinematic_bars/cinematic_bars"
 @onready var unit_stats = $"unit_stats/unit_stats"
-@onready var objectives = $"objectives/objectives"
+@onready var objectives: ObjectivesUi = $"objectives/objectives"
 @onready var ap_depleted = $"ap_depleted/ap_depleted"
 @onready var saves = $"saves/saves"
 @onready var settings_panel = $"settings/settings"

@@ -1,10 +1,10 @@
-extends "res://scenes/board/logic/scripting/outcomes/base_outcome.gd"
+extends BaseOutcome
 
 var slot = null
 var text = null
 var clear = false
 
-func _execute(_metadata):
+func _execute(_metadata) -> void:
     if self.clear:
         if self.slot != null:
             self.board.ui.objectives.clear_objective_slot(self.slot)
@@ -14,7 +14,7 @@ func _execute(_metadata):
         self.board.ui.objectives.set_objective_slot(self.slot, self.text)
         self.board.ui.objectives.flash()
 
-func _ingest_details(details):
+func _ingest_details(details: Dictionary) -> void:
     if details.has('slot'):
         self.slot = details['slot']
     if details.has('text'):

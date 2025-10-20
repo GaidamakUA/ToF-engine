@@ -1,4 +1,4 @@
-extends "res://scenes/board/logic/scripting/outcomes/base_outcome.gd"
+extends BaseOutcome
 
 var steps = []
 

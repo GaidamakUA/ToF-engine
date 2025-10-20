@@ -1,47 +1,48 @@
 extends Control
+class_name ObjectivesUi
 
-@onready var wrapper = $"objective_wrapper"
-@onready var animations = $"animations"
-@onready var background = $"objective_wrapper/background"
+@onready var wrapper: Control = $"objective_wrapper"
+@onready var animations: AnimationPlayer = $"animations"
+@onready var background: NinePatchRect = $"objective_wrapper/background"
 
-@onready var objectives = [
-	$"objective_wrapper/obj1",
-	$"objective_wrapper/obj2",
-	$"objective_wrapper/obj3",
-	$"objective_wrapper/obj4"
+@onready var objectives: Array[Label] = [
+    $"objective_wrapper/obj1",
+    $"objective_wrapper/obj2",
+    $"objective_wrapper/obj3",
+    $"objective_wrapper/obj4"
 ]
-var raw_text = [null, null, null, null]
+var raw_text := [null, null, null, null]
 
 
-func clear():
-	for slot in self.objectives:
-		self._clear_slot(slot)
+func clear() -> void:
+    for slot: Label in self.objectives:
+        self._clear_slot(slot)
 
-func set_objective_slot(slot, text):
-	self.raw_text[slot] = text
-	self.objectives[slot].set_text(text)
-	self.objectives[slot].show()
+func set_objective_slot(slot: int, text: String) -> void:
+    self.raw_text[slot] = text
+    self.objectives[slot].set_text(text)
+    self.objectives[slot].show()
 
-func clear_objective_slot(slot):
-	self._clear_slot(self.objectives[slot])
+func clear_objective_slot(slot: int) -> void:
+    self._clear_slot(self.objectives[slot])
 
-func _clear_slot(slot):
-	slot.set_text("")
-	slot.hide()
+func _clear_slot(slot: Label) -> void:
+    slot.set_text("")
+    slot.hide()
 
-func restore_from_state(state):
-	for i in range(self.objectives.size()):
-		if state[i] != null:
-			self.set_objective_slot(i, state[i])
+func restore_from_state(state: Array[String]) -> void:
+    for i: int in range(self.objectives.size()):
+        if state[i] != null:
+            self.set_objective_slot(i, state[i])
 
-func flash():
-	if not self.animations.is_playing():
-		self.animations.play("flash")
+func flash() -> void:
+    if not self.animations.is_playing():
+        self.animations.play("flash")
 
-func fade_in():
-	if not self.background.is_visible():
-		self.animations.play("show")
+func fade_in() -> void:
+    if not self.background.is_visible():
+        self.animations.play("show")
 
-func fade_out():
-	if self.background.is_visible():
-		self.animations.play("hide")
+func fade_out() -> void:
+    if self.background.is_visible():
+        self.animations.play("hide")

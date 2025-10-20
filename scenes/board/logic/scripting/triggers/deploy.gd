@@ -1,4 +1,4 @@
-extends "res://scenes/board/logic/scripting/triggers/base_trigger.gd"
+extends BaseTrigger
 
 var amount
 var player_id = null
@@ -23,7 +23,7 @@ func _observe(event):
         if self._count_units(units) >= self.amount:
             self.execute_outcome(event)
 
-func _get_outcome_metadata(event):
+func _get_outcome_metadata(event: BaseEvent) -> Dictionary[String, Variant]:
     return {
         'amount' : self.amount,
         'player_id' : self.board.state.get_player_id_by_side(event.unit.side),

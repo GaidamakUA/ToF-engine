@@ -1,4 +1,4 @@
-extends "res://scenes/board/logic/scripting/triggers/base_trigger.gd"
+extends BaseTrigger
 
 var amount = 1
 var list = []
@@ -22,7 +22,7 @@ func _observe(event):
             self.execute_outcome(event)
 
 
-func _get_outcome_metadata(event):
+func _get_outcome_metadata(event: BaseEvent) -> Dictionary[String, Variant]:
     return {
         'building' : event.building,
         'new_side' : event.new_side,

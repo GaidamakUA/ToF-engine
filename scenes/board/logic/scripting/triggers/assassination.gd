@@ -1,4 +1,4 @@
-extends "res://scenes/board/logic/scripting/triggers/base_trigger.gd"
+extends BaseTrigger
 
 var vip_id = null
 var vip = null
@@ -14,7 +14,7 @@ func _observe(event):
     elif self.vip_id == null and event.unit_type == self.unit_type:
         self.execute_outcome(event)
 
-func _get_outcome_metadata(event):
+func _get_outcome_metadata(event: BaseEvent) -> Dictionary[String, Variant]:
     return {
         'player_id' : self.board.state.get_player_id_by_side(event.unit_side),
         'side' : event.unit_side,

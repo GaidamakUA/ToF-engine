@@ -1,4 +1,4 @@
-extends "res://scenes/board/logic/scripting/triggers/base_trigger.gd"
+extends BaseTrigger
 
 var fields = []
 var player_id = null
@@ -32,7 +32,7 @@ func execute_outcome(event):
     super.execute_outcome(event)
     self.board.set_last_unit_move(null)
 
-func _get_outcome_metadata(event):
+func _get_outcome_metadata(event: BaseEvent) -> Dictionary[String, Variant]:
     return {
         'field' : event.finish,
         'player_id' : self.board.state.get_player_id_by_side(event.unit.side),

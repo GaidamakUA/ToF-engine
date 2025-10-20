@@ -49,7 +49,9 @@ func _setup_trigger(trigger_definition):
     new_trigger.outcome = self._build_outcome_story(trigger_definition['story'])
 
     new_trigger.board = self.board
-    new_trigger.ingest_details(trigger_definition['details'])
+    var details: Dictionary[String, Variant] = {}
+    details.assign(trigger_definition['details'])
+    new_trigger.ingest_details(details)
 
     if trigger_definition.has('one_off'):
         new_trigger.one_off = trigger_definition['one_off']
@@ -73,7 +75,9 @@ func _build_outcome_story_step(step_definition):
     var new_step = self.outcome_templates.get_outcome(step_definition['action'])
     new_step.board = self.board
     if step_definition.has('details'):
-        new_step.ingest_details(step_definition['details'])
+        var details: Dictionary[String, Variant] = {}
+        details.assign(step_definition['details'])
+        new_step.ingest_details(details)
     if step_definition.has('delay'):
         new_step.delay = step_definition['delay']
 

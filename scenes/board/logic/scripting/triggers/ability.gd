@@ -1,4 +1,4 @@
-extends "res://scenes/board/logic/scripting/triggers/base_trigger.gd"
+extends BaseTrigger
 
 func _init():
     self.observed_event_type = [Events.Type.ABILITY_USED]
@@ -8,7 +8,7 @@ func _observe(event):
         event.consumed = true
         self.execute_outcome(event)
 
-func _get_outcome_metadata(event):
+func _get_outcome_metadata(event: BaseEvent) -> Dictionary[String, Variant]:
     return {
         'ability' : event.ability,
         'target' : event.target

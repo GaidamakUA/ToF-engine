@@ -1,6 +1,4 @@
-extends "res://scenes/tiles/tile.gd"
+extends MapObject
 
 func hide_mesh():
-	super.hide_mesh()
-	#$"flyable_tile".hide()
-	
+    super.hide_mesh()

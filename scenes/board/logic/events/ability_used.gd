@@ -1,10 +1,11 @@
 extends BaseEvent
+class_name AbilityUsedEvent
 
 var consumed := false
 
-func _init(new_type):
+func _init(new_type: Events.Type):
     super(new_type)
     pass
 
-var ability
-var target
+var ability: Ability
+var target: Vector2i

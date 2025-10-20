@@ -1,4 +1,4 @@
-extends "res://scenes/tiles/tile.gd"
+extends MapObject
 class_name BaseUnit
 
 signal move_finished

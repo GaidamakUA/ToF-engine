@@ -1,5 +1,6 @@
 extends BaseEvent
+class_name BuildingCapturedEvent
 
-var building
-var old_side
-var new_side
+var building: BaseBuilding
+var old_side: String
+var new_side: String

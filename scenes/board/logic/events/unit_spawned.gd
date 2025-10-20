@@ -1,4 +1,5 @@
 extends BaseEvent
+class_name UnitSpawnedEvent
 
-var source
-var unit
+var source: MapObject
+var unit: BaseUnit

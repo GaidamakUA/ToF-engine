@@ -1,4 +1,4 @@
-
+class_name OutcomeFactory
 var templates = {
     'story' : preload("res://scenes/board/logic/scripting/outcomes/story.gd"),
 
@@ -34,4 +34,3 @@ var templates = {
 
 func get_outcome(name):
     return self.templates[name].new()
-    

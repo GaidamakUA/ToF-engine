@@ -1,3 +1,4 @@
+class_name TriggerFactory
 
 var templates = {
     'building_lost' : preload("res://scenes/board/logic/scripting/triggers/building_lost.gd"),
@@ -14,4 +15,3 @@ var templates = {
 
 func get_trigger(name):
     return self.templates[name].new()
-    

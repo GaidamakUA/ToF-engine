@@ -5,8 +5,8 @@ var scripts
 var triggers = {}
 var trigger_groups = {}
 
-var trigger_templates = preload("res://scenes/board/logic/scripting/triggers/templates.gd").new()
-var outcome_templates = preload("res://scenes/board/logic/scripting/outcomes/templates.gd").new()
+var trigger_templates = TriggerFactory.new()
+var outcome_templates = OutcomeFactory.new()
 
 func ingest_scripts(board_object, incoming_scripts):
     self.board = board_object

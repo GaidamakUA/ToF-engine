@@ -8,7 +8,7 @@ func _observe(event):
         self.execute_outcome(event)
     elif self.building_type != null and event.building.template_name == self.building_type:
         self.execute_outcome(event)
-        
+
 func _get_outcome_metadata(event):
     return {
         'old_side' : event.old_side,

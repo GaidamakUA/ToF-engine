@@ -3,7 +3,7 @@ extends BaseTrigger
 var unit = null
 
 func _init():
-    self.observed_event_type = [Events.Type.UNIT_ATTACKED]
+    self.observed_event_type = Events.Type.UNIT_ATTACKED
 
 func _observe(event):
     if event.unit == self.unit:

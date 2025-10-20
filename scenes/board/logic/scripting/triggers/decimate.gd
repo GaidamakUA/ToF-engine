@@ -4,7 +4,7 @@ var player_id = null
 var player_side = null
 
 func _init():
-    self.observed_event_type = [Events.Type.UNIT_DESTROYED]
+    self.observed_event_type = Events.Type.UNIT_DESTROYED
 
 func _observe(event):
     var units

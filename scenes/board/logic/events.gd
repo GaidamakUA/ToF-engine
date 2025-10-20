@@ -12,21 +12,18 @@ enum Type {
 
 var observers: Dictionary[Type, Array] = {}
 
-func register_observer(event_type: Type, observer_object, observer_method) -> void:
+func register_observer(event_type: Type, observer_object: Observer) -> void:
     if not self.observers.has(event_type):
         self.observers[event_type] = []
 
-    self.observers[event_type].append({
-        'observer_object' : observer_object,
-        'observer_method' : observer_method
-    })
+    self.observers[event_type].append(observer_object)
 
 func emit_event(event_object: BaseEvent) -> void:
     if self.observers.has(event_object.type):
-        for observer in self.observers[event_object.type]:
-            if observer['observer_object'].suspended:
+        for observer: Observer in self.observers[event_object.type]:
+            if observer.suspended:
                 continue
-            observer['observer_object'].call(observer['observer_method'], event_object)
+            observer.observe(event_object)
 
 
 func emit_building_captured(building: BaseBuilding, old_side: String, new_side: String) -> void:
@@ -57,7 +54,7 @@ func emit_unit_spawned(source: MapObject, unit: BaseUnit) -> void:
     self.emit_event(event)
 
 func emit_ability_used(ability: Ability, target: Vector2i) -> void:
-    var event := AbilityUsedEvent.new(Events.Type.ABILITY_USED)
+    var event := AbilityUsedEvent.new(Type.ABILITY_USED)
     event.ability = ability
     event.target = target
     self.emit_event(event)

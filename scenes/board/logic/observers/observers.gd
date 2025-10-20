@@ -5,6 +5,6 @@ func _init(board: Board) -> void:
 
 func _register_basic_observers(board: Board) -> void:
     var hero_spawn_observer := HeroSpawnObserver.new(board)
-    board.events.register_observer(hero_spawn_observer.observed_event_type, hero_spawn_observer, 'observe')
+    board.events.register_observer(hero_spawn_observer.observed_event_type, hero_spawn_observer)
     var experience_observer := ExperienceObserver.new(board)
-    board.events.register_observer(experience_observer.observed_event_type, experience_observer, 'observe')
+    board.events.register_observer(experience_observer.observed_event_type, experience_observer)

@@ -4,7 +4,7 @@ var turn_no = null
 var player_id = null
 
 func _init():
-    self.observed_event_type = [Events.Type.TURN_STARTED]
+    self.observed_event_type = Events.Type.TURN_STARTED
 
 func _observe(event):
     if self.turn_no != null and self.turn_no == event.turn_no:

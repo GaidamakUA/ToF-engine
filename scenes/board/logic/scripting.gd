@@ -5,8 +5,8 @@ var scripts
 var triggers = {}
 var trigger_groups = {}
 
-var trigger_templates = TriggerFactory.new()
-var outcome_templates = OutcomeFactory.new()
+var trigger_templates := TriggerFactory.new()
+var outcome_templates := OutcomeFactory.new()
 
 func ingest_scripts(board_object, incoming_scripts):
     self.board = board_object
@@ -37,7 +37,7 @@ func _build_hq_lost_event(hq_type):
 
     outcome.board = self.board
 
-    self.board.events.register_observer(Events.Type.BUILDING_CAPTURED, trigger, 'observe')
+    self.board.events.register_observer(Events.Type.BUILDING_CAPTURED, trigger)
 
 func _is_trigger_valid(trigger_definition):
     if trigger_definition['type'] == null or trigger_definition['story'] == null:
@@ -45,7 +45,7 @@ func _is_trigger_valid(trigger_definition):
     return true
 
 func _setup_trigger(trigger_definition):
-    var new_trigger = self.trigger_templates.get_trigger(trigger_definition['type'])
+    var new_trigger := self.trigger_templates.get_trigger(trigger_definition['type'])
     new_trigger.outcome = self._build_outcome_story(trigger_definition['story'])
 
     new_trigger.board = self.board
@@ -56,8 +56,7 @@ func _setup_trigger(trigger_definition):
     if trigger_definition.has('one_off'):
         new_trigger.one_off = trigger_definition['one_off']
 
-    for event_type in new_trigger.observed_event_type:
-        self.board.events.register_observer(event_type, new_trigger, 'observe')
+    self.board.events.register_observer(new_trigger.observed_event_type, new_trigger)
 
     return new_trigger
 

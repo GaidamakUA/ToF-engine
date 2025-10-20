@@ -1,10 +1,10 @@
-extends "res://scenes/board/logic/observers/observer.gd"
+extends Observer
 
-func _init(_board):
+func _init(_board: Board) -> void:
     super(_board)
-    self.observed_event_type = [Events.Type.UNIT_SPAWNED]
+    self.observed_event_type = Events.Type.UNIT_SPAWNED
 
-func _observe(event):
+func _observe(event: BaseEvent) -> void:
     if event.unit.unit_class != "hero":
         return
 

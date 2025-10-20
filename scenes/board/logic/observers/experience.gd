@@ -1,9 +1,9 @@
-extends "res://scenes/board/logic/observers/observer.gd"
+extends Observer
 
-func _init(_board):
+func _init(_board: Board) -> void:
     super(_board)
-    self.observed_event_type = [Events.Type.UNIT_DESTROYED]
+    self.observed_event_type = Events.Type.UNIT_DESTROYED
 
-func _observe(event):
+func _observe(event: BaseEvent) -> void:
     if event.attacker != null:
         event.attacker.score_kill()

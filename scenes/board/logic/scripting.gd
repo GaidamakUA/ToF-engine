@@ -37,7 +37,7 @@ func _build_hq_lost_event(hq_type):
 
     outcome.board = self.board
 
-    self.board.events.register_observer(Events.Type.BUILDING_CAPTURED, trigger)
+    self.board.events.register_observer(trigger)
 
 func _is_trigger_valid(trigger_definition):
     if trigger_definition['type'] == null or trigger_definition['story'] == null:
@@ -56,7 +56,7 @@ func _setup_trigger(trigger_definition):
     if trigger_definition.has('one_off'):
         new_trigger.one_off = trigger_definition['one_off']
 
-    self.board.events.register_observer(new_trigger.observed_event_type, new_trigger)
+    self.board.events.register_observer(new_trigger)
 
     return new_trigger
 

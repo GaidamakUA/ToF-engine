@@ -3,6 +3,9 @@ extends BaseTrigger
 var building = null
 var building_type = null
 
+func _init() -> void:
+    self.observed_event_type = Events.Type.BUILDING_CAPTURED
+
 func _observe(event):
     if self.building != null and event.building == self.building:
         self.execute_outcome(event)

@@ -10,20 +10,18 @@ enum Type {
     ABILITY_USED
 }
 
-var observers: Dictionary[Type, Array] = {}
+var observers: Array[Observer] = []
 
-func register_observer(event_type: Type, observer_object: Observer) -> void:
-    if not self.observers.has(event_type):
-        self.observers[event_type] = []
-
-    self.observers[event_type].append(observer_object)
+func register_observer(observer_object: Observer) -> void:
+    self.observers.append(observer_object)
 
 func emit_event(event_object: BaseEvent) -> void:
-    if self.observers.has(event_object.type):
-        for observer: Observer in self.observers[event_object.type]:
-            if observer.suspended:
-                continue
-            observer.observe(event_object)
+    for observer: Observer in self.observers:
+        if observer.suspended:
+            continue
+        if observer.observed_event_type != event_object.type:
+            continue
+        observer.observe(event_object)
 
 
 func emit_building_captured(building: BaseBuilding, old_side: String, new_side: String) -> void:

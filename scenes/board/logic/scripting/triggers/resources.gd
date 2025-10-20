@@ -5,7 +5,7 @@ var player_id = null
 var player_side = null
 
 func _init():
-    self.observed_event_type = Events.Type.TURN_STARTED
+    self.observed_event_type = TurnStartedEvent
 
 func _observe(event):
     if self.player_side != null:

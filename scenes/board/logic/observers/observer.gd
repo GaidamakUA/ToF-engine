@@ -2,7 +2,7 @@ class_name Observer
 
 var board: Board
 var suspended := false
-var observed_event_type: Events.Type
+var observed_event_type: Resource
 
 func _init(_board: Board) -> void:
     self.board = _board

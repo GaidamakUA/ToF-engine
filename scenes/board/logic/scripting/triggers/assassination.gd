@@ -5,7 +5,7 @@ var vip = null
 var unit_type = null
 
 func _init():
-    self.observed_event_type = Events.Type.UNIT_DESTROYED
+    self.observed_event_type = UnitDestroyedEvent
 
 func _observe(event):
     if event.unit_id == self.vip_id:

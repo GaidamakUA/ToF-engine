@@ -4,7 +4,7 @@ var building = null
 var building_type = null
 
 func _init() -> void:
-    self.observed_event_type = Events.Type.BUILDING_CAPTURED
+    self.observed_event_type = BuildingCapturedEvent
 
 func _observe(event):
     if self.building != null and event.building == self.building:

@@ -6,8 +6,7 @@ var player_id = null
 var player_side = null
 
 func _init():
-    self.observed_event_type = Events.Type.BUILDING_CAPTURED
-
+    self.observed_event_type = BuildingCapturedEvent
 
 func _observe(event):
     if self._is_watched_building(event.building):

@@ -1,7 +1,7 @@
 extends BaseTrigger
 
 func _init():
-    self.observed_event_type = Events.Type.ABILITY_USED
+    self.observed_event_type = AbilityUsedEvent
 
 func _observe(event):
     if not event.consumed:

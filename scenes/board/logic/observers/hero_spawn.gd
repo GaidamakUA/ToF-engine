@@ -3,7 +3,7 @@ class_name HeroSpawnObserver
 
 func _init(_board: Board) -> void:
     super(_board)
-    self.observed_event_type = Events.Type.UNIT_SPAWNED
+    self.observed_event_type = UnitSpawnedEvent
 
 func _observe(event: BaseEvent) -> void:
     if event.unit.unit_class != "hero":

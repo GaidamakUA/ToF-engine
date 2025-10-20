@@ -8,7 +8,7 @@ var excluded = []
 var exclude_tags = []
 
 func _init():
-    self.observed_event_type = Events.Type.UNIT_MOVED
+    self.observed_event_type = UnitMovedEvent
 
 func _observe(event):
     if self._is_watched_tile(event.finish):

@@ -1,4 +1,5 @@
 extends Observer
+class_name ExperienceObserver
 
 func _init(_board: Board) -> void:
     super(_board)

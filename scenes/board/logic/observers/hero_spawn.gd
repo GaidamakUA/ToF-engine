@@ -1,4 +1,5 @@
 extends Observer
+class_name HeroSpawnObserver
 
 func _init(_board: Board) -> void:
     super(_board)

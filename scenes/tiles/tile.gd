@@ -2,7 +2,7 @@ extends Node3D
 
 class_name MapObject
 
-@export var template_name = ""
+@export var template_name := ""
 @export var unit_can_stand = false
 @export var unit_can_fly = false
 @export var is_invisible = false

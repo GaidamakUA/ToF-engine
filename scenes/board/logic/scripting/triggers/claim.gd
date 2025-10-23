@@ -1,16 +1,17 @@
 extends BaseTrigger
 
-var amount = 1
-var list = []
+var amount := 1
+var list: Array[Array] = []
 var player_id = null
 var player_side = null
 
-func _init():
+func _init() -> void:
     self.observed_event_type = BuildingCapturedEvent
 
-func _observe(event):
+func _observe(_event: BaseEvent) -> void:
+    var event := _event as BuildingCapturedEvent
     if self._is_watched_building(event.building):
-        var side = event.new_side
+        var side := event.new_side
 
         if self.player_id != null:
             side = self.board.state.get_player_side_by_id(self.player_id)
@@ -21,7 +22,8 @@ func _observe(event):
             self.execute_outcome(event)
 
 
-func _get_outcome_metadata(event: BaseEvent) -> Dictionary[String, Variant]:
+func _get_outcome_metadata(_event: BaseEvent) -> Dictionary[String, Variant]:
+    var event := _event as BuildingCapturedEvent
     return {
         'building' : event.building,
         'new_side' : event.new_side,
@@ -29,7 +31,7 @@ func _get_outcome_metadata(event: BaseEvent) -> Dictionary[String, Variant]:
     }
 
 
-func ingest_details(details):
+func ingest_details(details: Dictionary[String, Variant]) -> void:
     self.list = details['list']
     if details.has('player'):
         self.player_id = details['player']
@@ -39,16 +41,16 @@ func ingest_details(details):
         self.amount = details['amount']
 
 
-func _is_watched_building(building):
+func _is_watched_building(building: BaseBuilding) -> bool:
     for position in self.list:
         if building == self.board.map.model.get_tile2(position[0], position[1]).building.tile:
             return true
     return false
 
 
-func _count_buildings_for_side(side):
-    var count = 0
-    var building
+func _count_buildings_for_side(side) -> int:
+    var count := 0
+    var building: BaseBuilding
 
     if not side is Array:
         side = [side]

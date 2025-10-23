@@ -13,5 +13,5 @@ var templates = {
     'ability' : preload("res://scenes/board/logic/scripting/triggers/ability.gd"),
 }
 
-func get_trigger(name) -> BaseTrigger:
+func get_trigger(name: String) -> BaseTrigger:
     return self.templates[name].new()

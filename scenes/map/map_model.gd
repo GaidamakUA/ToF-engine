@@ -64,8 +64,8 @@ func connect_neightbours() -> void:
                 tile.add_neighbour(tile.SOUTH, self.get_tile2(x, y+1))
 
 
-func get_player_units(side: String) -> Array:
-    var units: Array = []
+func get_player_units(side: String) -> Array[BaseUnit]:
+    var units: Array[BaseUnit] = []
     for key: String in self.tiles.keys():
         if self.tiles[key].has_friendly_unit(side):
             units.append(self.tiles[key].unit.tile)

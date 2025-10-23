@@ -58,7 +58,7 @@ func get_player_id_by_side(side) -> int:
 
     return -1
 
-func get_player_side_by_id(id):
+func get_player_side_by_id(id: int) -> String:
     return self.players[id]['side']
 
 func get_player_team_by_id(id):

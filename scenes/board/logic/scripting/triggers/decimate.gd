@@ -3,12 +3,12 @@ extends BaseTrigger
 var player_id = null
 var player_side = null
 
-func _init():
+func _init() -> void:
     self.observed_event_type = UnitDestroyedEvent
 
-func _observe(event):
-    var units
-    var side
+func _observe(_event: BaseEvent) -> void:
+    var event := _event as UnitDestroyedEvent
+    var side: String
 
     if self.player_id != null:
         side = self.board.state.get_player_side_by_id(self.player_id)
@@ -16,19 +16,20 @@ func _observe(event):
         side = self.player_side
 
     if event.unit_side == side:
-        units = self.board.map.model.get_player_units(side)
+        var units := self.board.map.model.get_player_units(side)
 
         if units.size() == 0:
             self.execute_outcome(event)
 
-func _get_outcome_metadata(event: BaseEvent) -> Dictionary[String, Variant]:
+func _get_outcome_metadata(_event: BaseEvent) -> Dictionary[String, Variant]:
+    var event := _event as UnitDestroyedEvent
     return {
         'player_id' : self.board.state.get_player_id_by_side(event.unit_side),
         'side' : event.unit_side,
         'attacker' : event.attacker
     }
 
-func ingest_details(details):
+func ingest_details(details: Dictionary[String, Variant]) -> void:
     if details.has('player'):
         self.player_id = details['player']
     if details.has('player_side'):

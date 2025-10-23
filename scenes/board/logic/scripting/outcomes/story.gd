@@ -1,8 +1,8 @@
 extends BaseOutcome
 
-var steps = []
+var steps: Array[BaseOutcome] = []
 
-func _execute(metadata):
+func _execute(metadata: Dictionary[String, Variant]) -> void:
     self.board.map.camera.script_operated = true
     for step in steps:
         while self.board.ui.is_panel_open():
@@ -14,5 +14,5 @@ func _execute(metadata):
 
     self.board.map.camera.script_operated = false
 
-func add_step(step):
+func add_step(step: BaseOutcome) -> void:
     self.steps.append(step)

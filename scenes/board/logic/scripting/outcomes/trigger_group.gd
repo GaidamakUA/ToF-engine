@@ -1,17 +1,17 @@
 extends BaseOutcome
 
-var name
-var group
-var action
+var name: String
+var group: String
+var action: String
 
-func _execute(_metadata):
+func _execute(_metadata: Dictionary[String, Variant]) -> void:
     if self.action == "add":
         self.board.scripting.add_to_group(self.group, self.name)
     elif self.action == "remove":
         self.board.scripting.remove_from_group(self.group, self.name)
-        
 
-func _ingest_details(details):
+
+func _ingest_details(details: Dictionary[String, Variant]) -> void:
     self.name = details['name']
     self.group = details['group']
     self.action = details['action']

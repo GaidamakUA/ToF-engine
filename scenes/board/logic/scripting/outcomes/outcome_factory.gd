@@ -1,5 +1,5 @@
 class_name OutcomeFactory
-var templates = {
+var templates: Dictionary[String, GDScript] = {
     'story' : preload("res://scenes/board/logic/scripting/outcomes/story.gd"),
 
     'activate_hero' : preload("res://scenes/board/logic/scripting/outcomes/activate_hero.gd"),
@@ -32,5 +32,5 @@ var templates = {
     'use_ability' : preload("res://scenes/board/logic/scripting/outcomes/use_ability.gd"),
 }
 
-func get_outcome(name):
+func get_outcome(name: String) -> BaseOutcome:
     return self.templates[name].new()

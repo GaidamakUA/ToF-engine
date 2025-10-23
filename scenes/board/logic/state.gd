@@ -48,8 +48,8 @@ func get_current_team():
 func get_current_heroes():
     return self.get_current_param("heroes")
 
-func get_player_id_by_side(side) -> int:
-    var index = 0
+func get_player_id_by_side(side: String) -> int:
+    var index := 0
 
     while index < self.players.size():
         if self.players[index]['side'] == side:
@@ -61,7 +61,7 @@ func get_player_id_by_side(side) -> int:
 func get_player_side_by_id(id: int) -> String:
     return self.players[id]['side']
 
-func get_player_team_by_id(id):
+func get_player_team_by_id(id: int) -> int:
     if id == null or id < 0:
         return id
     if self.players[id]['team'] != null:
@@ -72,7 +72,7 @@ func get_player_team_by_id(id):
 func set_player_team(side, team):
     self.players[self.get_player_id_by_side(side)]["team"] = team
 
-func get_player_team(side):
+func get_player_team(side: String) -> int:
     return self.get_player_team_by_id(self.get_player_id_by_side(side))
 
 func get_current_param(param_name):
@@ -203,13 +203,15 @@ func has_side_a_hero(side):
 func add_hero_for_player(id, hero):
     self.players[id]["heroes"][hero.get_instance_id()] = hero
 
-func get_heroes_for_player(id: int) -> Array:
-    return self.players[id]["heroes"].values()
+func get_heroes_for_player(id: int) -> Array[HeroUnit]:
+    var heroes: Array[HeroUnit] = []
+    heroes.assign(self.players[id]["heroes"].values())
+    return heroes
 
 func add_hero_for_side(side, hero):
     self.add_hero_for_player(self.get_player_id_by_side(side), hero)
 
-func get_heroes_for_side(side: String) -> Array:
+func get_heroes_for_side(side: String) -> Array[HeroUnit]:
     var side_id := self.get_player_id_by_side(side)
     if side_id == null:
         return []

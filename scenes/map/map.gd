@@ -14,7 +14,7 @@ var tile_box_space_size
 var tile_box_position := Vector2i(0, 0)
 var tile_box_mouse := false
 
-var templates = preload("res://scenes/map/templates.gd").new()
+var templates := MapTemplates.new()
 var model := MapModel.new()
 var builder := MapBuilder.new(self)
 var loader = preload("res://scenes/map/loader.gd").new(self)
@@ -76,7 +76,7 @@ func snap_tile_box():
 
     self.tile_box.set_position(placement)
 
-func map_to_local(queried_position):
+func map_to_local(queried_position: Vector2i) -> Vector3:
     return Vector3(queried_position.x * self.TILE_SIZE, 0, queried_position.y * self.TILE_SIZE)
 
 func local_to_map(queried_position):

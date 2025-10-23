@@ -1,10 +1,10 @@
 extends BaseOutcome
 
-var who
-var side
+var who: Vector2i
+var side: String
 
-func _execute(_metadata):
-    var tile = self.board.map.model.get_tile(self.who)
+func _execute(_metadata: Dictionary[String, Variant]) -> void:
+    var tile := self.board.map.model.get_tile(self.who)
 
     if tile.unit.is_present():
         if tile.unit.tile.is_hero():
@@ -12,8 +12,8 @@ func _execute(_metadata):
             self.board.state.add_hero_for_side(self.side, tile.unit.tile)
 
         self.board.map.builder.set_unit_side(self.who, self.side)
-        tile.unit.tile.sfx_effect("spawn")  
+        tile.unit.tile.sfx_effect("spawn")
 
-func _ingest_details(details):
-    self.who = Vector2(details['who'][0], details['who'][1])
+func _ingest_details(details: Dictionary[String, Variant]) -> void:
+    self.who = Vector2i(details['who'][0], details['who'][1])
     self.side = details['side']

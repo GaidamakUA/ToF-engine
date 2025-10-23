@@ -1,9 +1,9 @@
 extends BaseOutcome
 
-var side
+var side: String
 
-func _execute(_metadata):
+func _execute(_metadata: Dictionary[String, Variant]) -> void:
     self.board.state.revive_player(self.side)
 
-func _ingest_details(details):
+func _ingest_details(details: Dictionary[String, Variant]) -> void:
     self.side = details['side']

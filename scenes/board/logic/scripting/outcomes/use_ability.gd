@@ -1,11 +1,11 @@
 extends BaseOutcome
 
-var who
-var which
-var where
-var cooldown = false
+var who: Vector2i
+var which: String
+var where: Vector2i
+var cooldown := false
 
-func _execute(_metadata):
+func _execute(_metadata: Dictionary[String, Variant]) -> void:
     var unit_tile = self.board.map.model.get_tile(self.who)
     var ability = unit_tile.unit.tile.get_node(self.which)
 
@@ -17,9 +17,9 @@ func _execute(_metadata):
     if self.cooldown:
         ability.activate_cooldown(self.board)
 
-func _ingest_details(details):
-    self.who = Vector2(details['who'][0], details['who'][1])
+func _ingest_details(details: Dictionary[String, Variant]) -> void:
+    self.who = Vector2i(details['who'][0], details['who'][1])
     self.which = details['which']
-    self.where = Vector2(details['where'][0], details['where'][1])
+    self.where = Vector2i(details['where'][0], details['where'][1])
     if details.has('cooldown'):
         self.cooldown = details['cooldown']

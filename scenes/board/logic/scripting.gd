@@ -1,9 +1,9 @@
-
-var board
+class_name Scripting
+var board: Board
 var scripts
 
-var triggers = {}
-var trigger_groups = {}
+var triggers: Dictionary[String, Variant] = {}
+var trigger_groups: Dictionary[String, Variant] = {}
 
 var trigger_templates := TriggerFactory.new()
 var outcome_templates := OutcomeFactory.new()
@@ -71,7 +71,7 @@ func _build_outcome_story(story_name):
     return new_story
 
 func _build_outcome_story_step(step_definition):
-    var new_step = self.outcome_templates.get_outcome(step_definition['action'])
+    var new_step := self.outcome_templates.get_outcome(step_definition['action'])
     new_step.board = self.board
     if step_definition.has('details'):
         var details: Dictionary[String, Variant] = {}
@@ -86,7 +86,7 @@ func suspend_trigger(name, state):
     if self.triggers.has(name):
         self.triggers[name].suspended = state
 
-func add_to_group(group_name, trigger_name):
+func add_to_group(group_name: String, trigger_name: String):
     if not self.trigger_groups.has("group_name"):
         self.trigger_groups[group_name] = {}
 

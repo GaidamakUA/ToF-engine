@@ -155,7 +155,7 @@ func place_unit(position, name, rotation, side=null, ai_paused=false) -> BaseUni
 
     return self.force_place_unit(position, name, rotation, side, ai_paused)
 
-func force_place_unit(position, name, rotation, side=null, ai_paused=false):
+func force_place_unit(position, name, rotation, side=null, ai_paused=false) -> BaseUnit:
     var tile = self.map.model.get_tile(position)
 
     if tile.unit.is_present():

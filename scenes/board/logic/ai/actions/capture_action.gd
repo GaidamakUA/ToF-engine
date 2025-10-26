@@ -1,4 +1,5 @@
-extends "res://scenes/board/logic/ai/actions/abstract_action.gd"
+extends AbstractAction
+class_name CaptureAction
 
 var unit
 var interaction

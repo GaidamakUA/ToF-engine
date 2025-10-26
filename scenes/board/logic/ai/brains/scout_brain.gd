@@ -1,6 +1,6 @@
 extends "res://scenes/board/logic/ai/brains/abstract_unit_brain.gd"
 
-func _gather_ability_actions(entity_tile, _ap, _board):
+func _gather_ability_actions(entity_tile, _ap, _board) -> Array[AbstractAction]:
     var unit = entity_tile.unit.tile
 
     if not unit.has_moves():
@@ -15,7 +15,7 @@ func _gather_ability_actions(entity_tile, _ap, _board):
     if self.pathfinder.enemy_units.size() < 1:
         return []
 
-    var actions = []
+    var actions: Array[AbstractAction] = []
     var action
 
     for ability in unit.active_abilities:

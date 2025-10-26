@@ -32,7 +32,8 @@ func _get_outcome_metadata(_event: BaseEvent) -> Dictionary[String, Variant]:
 
 
 func ingest_details(details: Dictionary[String, Variant]) -> void:
-    self.list = details['list']
+    self.list = []
+    list.assign(['list'])
     if details.has('player'):
         self.player_id = details['player']
     if details.has('player_side'):

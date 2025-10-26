@@ -1,4 +1,5 @@
-extends "res://scenes/board/logic/ai/actions/abstract_action.gd"
+extends AbstractAction
+class_name AttackAction
 
 var unit
 var interaction
@@ -10,7 +11,7 @@ func _init(unit_tile, interaction_tile, target_tile, path_length_val):
     self.target = target_tile
     self.path_length = path_length_val
 
-func perform(board):
+func perform(board: Board) -> void:
     board.select_tile(self.unit.position)
     if self.interaction != null:
         board.select_tile(self.interaction.position)
@@ -21,8 +22,8 @@ func perform(board):
     board.unselect_tile()
     await board.get_tree().create_timer(0.5).timeout
 
-func _to_string():
-    var message = str(self.unit.position) + " attacks " + str(self.target.position)
+func _to_string() -> String:
+    var message := str(self.unit.position) + " attacks " + str(self.target.position)
     if self.interaction != null:
         message += " from " + str(self.interaction.position)
     return message

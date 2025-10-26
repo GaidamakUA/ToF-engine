@@ -19,7 +19,7 @@ var abilities := Abilities.new(self)
 var events := Events.new()
 var observers := Observers.new(self)
 var scripting := Scripting.new()
-var ai = preload("res://scenes/board/logic/ai/ai.gd").new(self)
+var ai := Ai.new(self)
 var collateral = preload("res://scenes/board/logic/collateral.gd").new(self)
 
 

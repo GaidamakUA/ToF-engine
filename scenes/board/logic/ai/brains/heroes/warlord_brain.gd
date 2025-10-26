@@ -1,6 +1,6 @@
 extends "res://scenes/board/logic/ai/brains/hero_brain.gd"
 
-func _gather_ability_actions(entity_tile, ap, _board):
+func _gather_ability_actions(entity_tile, ap, _board) -> Array[AbstractAction]:
     var unit = entity_tile.unit.tile
     var ability = unit.active_abilities[0]
 
@@ -9,7 +9,7 @@ func _gather_ability_actions(entity_tile, ap, _board):
     if ability.ap_cost > ap or ability.is_on_cooldown():
         return []
 
-    var actions = []
+    var actions: Array[AbstractAction] = []
     var target_tile
     var action
     var path

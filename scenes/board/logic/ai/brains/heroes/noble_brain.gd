@@ -1,6 +1,6 @@
 extends "res://scenes/board/logic/ai/brains/hero_brain.gd"
 
-func _gather_ability_actions(entity_tile, ap, _board):
+func _gather_ability_actions(entity_tile, ap, _board) -> Array[AbstractAction]:
     var unit = entity_tile.unit.tile
     var ability = unit.active_abilities[0]
 
@@ -10,7 +10,7 @@ func _gather_ability_actions(entity_tile, ap, _board):
         return []
 
     var path
-    var actions = []
+    var actions: Array[AbstractAction] = []
     var action
     var action_value
     var tiles_visited = []
@@ -40,7 +40,7 @@ func _gather_ability_actions(entity_tile, ap, _board):
                     action = self._move_action(entity_tile, path, unit_range - 1)
                     action.value = action_value
                     actions.append(action)
-        
+
     action_value = _calculate_support_value(unit, entity_tile)
     if action_value >= 50:
         action = self._ability_action(ability, entity_tile)

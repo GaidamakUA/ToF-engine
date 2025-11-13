@@ -1,10 +1,10 @@
 extends AbstractAction
 class_name UseAbilityAction
 
-var ability
+var ability: Ability
 var delay = 0
 
-func _init(ability_object, target_object):
+func _init(ability_object: Ability, target_object: MapTile):
     self.ability = ability_object
     self.target = target_object
 

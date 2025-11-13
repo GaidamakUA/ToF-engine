@@ -43,7 +43,7 @@ func _ai_tick() -> void:
     if self._ai_abort:
         return
 
-    var selected_action = await self.collector.select_best_action()
+    var selected_action: Variant = await self.collector.select_best_action()
 
     await self.board.get_tree().create_timer(0.1).timeout
 

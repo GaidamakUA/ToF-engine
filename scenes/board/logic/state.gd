@@ -36,7 +36,7 @@ func switch_to_next_player():
 func get_current_player():
     return self.players[self.current_player]
 
-func get_current_ap():
+func get_current_ap() -> int:
     return int(self.get_current_param("ap"))
 
 func get_current_side():

@@ -5,12 +5,12 @@ var brains := Brains.new()
 var board: Board
 
 
-func _init(board: Board):
+func _init(board: Board) -> void:
     self.board = board
 
 
-func select_best_action():
-    var actions = await self._gather_all_actions()
+func select_best_action() -> Variant:
+    var actions := await self._gather_all_actions()
 
     if actions.size() > 0:
         actions = self._sort_actions(actions)
@@ -20,22 +20,15 @@ func select_best_action():
 
 
 func _gather_all_actions() -> Array[AbstractAction]:
-    var side = self.board.state.get_current_side()
-    var team = self.board.state.get_player_team(side)
-    var ap = self.board.state.get_current_ap() - self.board.ai._reserved_ap
-
-    #if OS.is_debug_build():
-    #	print("Available AP: " + str(ap))
+    var side: String = self.board.state.get_current_side()
+    var team: int = self.board.state.get_player_team(side)
+    var ap: int = self.board.state.get_current_ap() - self.board.ai._reserved_ap
 
     if ap <= 0:
         return []
 
     var buildings := self.board.map.model.get_player_buildings_tiles(side)
     var units := self.board.map.model.get_player_units_tiles(side)
-
-    #if OS.is_debug_build():
-    #	print("Units: " + str(units.size()))
-    #	print("Buildings: " + str(buildings.size()))
 
     var enemy_buildings := self.board.map.model.get_enemy_buildings_tiles(side, team)
     var enemy_units := self.board.map.model.get_enemy_units_tiles(side, team)
@@ -60,7 +53,8 @@ func _gather_building_actions(buildings: Array[MapTile],
         brain = self.brains.get_brain_for_template(building_tile.building.tile.template_name)
         if brain == null:
             continue
-        buildings_actions += brain.get_actions(building_tile, enemy_buildings, enemy_units, own_buildings, own_units, ap, self.board)
+        var brain_context := BrainContext.new(building_tile, enemy_buildings, enemy_units, own_buildings, own_units, ap, self.board)
+        buildings_actions += brain.get_actions(brain_context)
         await self.board.get_tree().create_timer(0.01).timeout
 
     return buildings_actions
@@ -82,17 +76,18 @@ func _gather_unit_actions(units: Array[MapTile],
         brain = self.brains.get_brain_for_unit(unit_tile.unit.tile)
         if brain == null:
             continue
-        units_actions += brain.get_actions(unit_tile, enemy_buildings, enemy_units, own_buildings, own_units, ap, self.board)
+        var brain_context := BrainContext.new(unit_tile, enemy_buildings, enemy_units, own_buildings, own_units, ap, self.board)
+        units_actions += brain.get_actions(brain_context)
         await self.board.get_tree().create_timer(0.01).timeout
 
     return units_actions
 
 
-func _sort_actions(actions: Array):
+func _sort_actions(actions: Array[AbstractAction]) -> Array[AbstractAction]:
     actions.sort_custom(_customComparison)
 
     return actions
 
 
-func _customComparison(a, b):
+func _customComparison(a: AbstractAction, b: AbstractAction) -> bool:
     return a.value > b.value

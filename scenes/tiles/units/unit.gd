@@ -30,7 +30,7 @@ var team = null
 @export var max_hp = 10
 var hp = 0
 @export var max_move = 4
-var move = 0
+var move := 0
 @export var attack = 7
 @export var armor = 2
 @export var can_capture = false
@@ -159,11 +159,11 @@ func _apply_experience_modifiers(stats):
 
     return stats
 
-func get_move():
+func get_move() -> int:
     var stats = self.get_stats_with_modifiers()
     return stats["move"]
 
-func has_moves():
+func has_moves() -> bool:
     return self.move > 0
 
 func use_move(value):

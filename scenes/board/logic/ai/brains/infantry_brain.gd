@@ -1,4 +1,4 @@
-extends "res://scenes/board/logic/ai/brains/abstract_unit_brain.gd"
+extends AbstractUnitBrain
 
 func _gather_ability_actions(entity_tile, ap, board) -> Array[AbstractAction]:
     var unit = entity_tile.unit.tile

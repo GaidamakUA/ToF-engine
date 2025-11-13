@@ -1,111 +1,114 @@
+class_name Pathfinder
 
-var visited_tiles = {}
-var explored_tiles = {}
-var tile_path = {}
+const NULL_VALUE := 'null_value'
 
-var enemy_units = {}
-var enemy_buildings = {}
-var own_units = {}
-var own_buildings = {}
-var allied_units = {}
-var allied_buildings = {}
+var visited_tiles: Dictionary[String, MapTile] = {}
+var explored_tiles: Dictionary[String, int] = {}
+var tile_path: Dictionary[String, String] = {}
 
-func reset():
-	self.visited_tiles = {}
-	self.explored_tiles = {}
-	self.tile_path = {}
-	self.enemy_units = {}
-	self.enemy_buildings = {}
-	self.own_units = {}
-	self.own_buildings = {}
-	self.allied_units = {}
-	self.allied_buildings = {}
+var enemy_units: Dictionary[String, MapTile] = {}
+var enemy_buildings: Dictionary[String, MapTile] = {}
+var own_units: Dictionary[String, MapTile] = {}
+var own_buildings: Dictionary[String, MapTile] = {}
+var allied_units: Dictionary[String, MapTile] = {}
+var allied_buildings: Dictionary[String, MapTile] = {}
 
-func explore(source_tile, distance):
-	self.reset()
-	self.add_path_root(source_tile)
-	self.expand_from_tile(source_tile, distance, 0, source_tile.unit.tile)
+func reset() -> void:
+    self.visited_tiles = {}
+    self.explored_tiles = {}
+    self.tile_path = {}
+    self.enemy_units = {}
+    self.enemy_buildings = {}
+    self.own_units = {}
+    self.own_buildings = {}
+    self.allied_units = {}
+    self.allied_buildings = {}
 
-func mark_tile_cost(tile, cost):
-	self.visited_tiles[self._get_key(tile)] = tile
-	self.explored_tiles[self._get_key(tile)] = cost
+func explore(source_tile: MapTile, distance: int) -> void:
+    self.reset()
+    self._add_path_root(source_tile)
+    self.expand_from_tile(source_tile, distance, 0, source_tile.unit.tile)
 
-func get_tile_cost(tile):
-	var key = self._get_key(tile)
-	if self.explored_tiles.has(key):
-		return self.explored_tiles[key]
+func mark_tile_cost(tile: MapTile, cost: int) -> void:
+    self.visited_tiles[self._get_key(tile)] = tile
+    self.explored_tiles[self._get_key(tile)] = cost
 
-	return null
+func _get_tile_cost(tile: MapTile) -> int:
+    var key: = self._get_key(tile)
+    if self.explored_tiles.has(key):
+        return self.explored_tiles[key]
 
-func expand_from_tile(tile, depth, reach_cost, unit):
-	self.mark_tile_cost(tile, reach_cost)
+    return 9223372036854775807 # MAX_INT
 
-	var neighbour
-	var neighbour_cost
+func expand_from_tile(tile: MapTile, depth: int, reach_cost: int, unit: BaseUnit) -> void:
+    self.mark_tile_cost(tile, reach_cost)
 
-	if not tile.can_acommodate_unit(unit):
-		self._scout_tile(tile, unit.side, unit.team)
+    var neighbour: MapTile
+    var neighbour_cost: int
 
-	if not tile.can_pass_through(unit):
-		return
+    if not tile.can_acommodate_unit(unit):
+        self._scout_tile(tile, unit.side, unit.team)
 
-	if depth < 1:
-		return
+    if not tile.can_pass_through(unit):
+        return
 
-	for key in tile.neighbours.keys():
-		neighbour = tile.get_neighbour(key)
+    if depth < 1:
+        return
 
-		neighbour_cost = self.get_tile_cost(neighbour)
+    for key: String in tile.neighbours.keys():
+        neighbour = tile.get_neighbour(key)
 
-		if neighbour_cost == null || neighbour_cost > reach_cost + 1:
-			self.expand_from_tile(neighbour, depth - 1, reach_cost + 1, unit)
-			self.connect_path(tile, neighbour)
+        neighbour_cost = self._get_tile_cost(neighbour)
 
-func connect_path(source_tile, destination_tile):
-	var source_key = self._get_key(source_tile)
-	var destination_key = self._get_key(destination_tile)
+        if neighbour_cost > reach_cost + 1:
+            self.expand_from_tile(neighbour, depth - 1, reach_cost + 1, unit)
+            self.connect_path(tile, neighbour)
 
-	self.tile_path[destination_key] = source_key
+func connect_path(source_tile: MapTile, destination_tile: MapTile) -> void:
+    var source_key := self._get_key(source_tile)
+    var destination_key := self._get_key(destination_tile)
 
-func add_path_root(root_tile):
-	self.tile_path[self._get_key(root_tile)] = null
+    self.tile_path[destination_key] = source_key
 
-func _get_key(tile):
-	return str(tile.position.x) + "_" + str(tile.position.y)
+func _add_path_root(root_tile: MapTile) -> void:
+    self.tile_path[self._get_key(root_tile)] = NULL_VALUE
 
-func is_tile_reachable(destination_tile):
-	var key = self._get_key(destination_tile)
-	return self.tile_path.has(key)
+func _get_key(tile: MapTile) -> String:
+    return str(tile.position.x) + "_" + str(tile.position.y)
 
-func get_path_to_tile(destination_tile):
-	var path = []
-	var key = self._get_key(destination_tile)
+func is_tile_reachable(destination_tile: MapTile) -> bool:
+    var key := self._get_key(destination_tile)
+    return self.tile_path.has(key)
 
-	while key != null:
-		path.append(key)
-		if not self.tile_path.has(key):
-			return []
-		key = self.tile_path[key]
+func get_path_to_tile(destination_tile: MapTile) -> Array[String]:
+    var path: Array[String] = []
+    var key := self._get_key(destination_tile)
 
-	return path
+    while key != NULL_VALUE:
+        path.append(key)
+        if not self.tile_path.has(key):
+            return []
+        key = self.tile_path[key]
 
-func _scout_tile(tile, side, team):
-	var key = self._get_key(tile)
-	if tile.has_enemy_unit(side, team):
-		if not self.enemy_units.has(key):
-			self.enemy_units[key] = tile
-	elif tile.has_friendly_unit(side):
-		if not self.own_units.has(key):
-			self.own_units[key] = tile
-	elif tile.has_enemy_building(side, team):
-		if not self.enemy_buildings.has(key):
-			self.enemy_buildings[key] = tile
-	elif tile.has_friendly_building(side):
-		if not self.own_buildings.has(key):
-			self.own_buildings[key] = tile
-	elif tile.has_allied_unit(team):
-		if not self.allied_units.has(key):
-			self.allied_units[key] = tile
-	elif tile.has_allied_building(team):
-		if not self.allied_buildings.has(key):
-			self.allied_buildings[key] = tile
+    return path
+
+func _scout_tile(tile: MapTile, side: String, team: int) -> void:
+    var key := self._get_key(tile)
+    if tile.has_enemy_unit(side, team):
+        if not self.enemy_units.has(key):
+            self.enemy_units[key] = tile
+    elif tile.has_friendly_unit(side):
+        if not self.own_units.has(key):
+            self.own_units[key] = tile
+    elif tile.has_enemy_building(side, team):
+        if not self.enemy_buildings.has(key):
+            self.enemy_buildings[key] = tile
+    elif tile.has_friendly_building(side):
+        if not self.own_buildings.has(key):
+            self.own_buildings[key] = tile
+    elif tile.has_allied_unit(team):
+        if not self.allied_units.has(key):
+            self.allied_units[key] = tile
+    elif tile.has_allied_building(team):
+        if not self.allied_buildings.has(key):
+            self.allied_buildings[key] = tile

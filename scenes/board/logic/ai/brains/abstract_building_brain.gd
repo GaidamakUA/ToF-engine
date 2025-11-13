@@ -8,38 +8,38 @@ const UNITS_SOFT_LIMIT := 10
 var action_template = preload("res://scenes/board/logic/ai/actions/use_ability_action.gd")
 var reserve_template = preload("res://scenes/board/logic/ai/actions/reserve_ap_action.gd")
 
-func get_actions(entity_tile, enemy_buildings, enemy_units, own_buildings, own_units, ap, board) -> Array[AbstractAction]:
-    var spawn_points = self._get_spawn_points(entity_tile)
+func get_actions(context: BrainContext) -> Array[AbstractAction]:
+    var spawn_points = self._get_spawn_points(context.entity_tile)
 
     if spawn_points.size() < 1:
         return []
 
-    var units_stats = self._gather_unit_stats(own_units)
-    var final_units_hard_limit = self.UNITS_HARD_LIMIT + int(own_buildings.size() * self.HARD_LIMIT_MULTIPLIER)
+    var units_stats = self._gather_unit_stats(context.own_units)
+    var final_units_hard_limit = self.UNITS_HARD_LIMIT + int(context.own_buildings.size() * self.HARD_LIMIT_MULTIPLIER)
     if units_stats["total"] >= final_units_hard_limit:
         return []
 
-    var building = entity_tile.building.tile
+    var building = context.entity_tile.building.tile
     var actions: Array[AbstractAction] = []
     var action
     var ability_cost
 
-    var bonus = self._calculate_proximity_value_bonus(entity_tile, enemy_units, enemy_buildings)
+    var bonus = self._calculate_proximity_value_bonus(context.entity_tile, context.enemy_units, context.enemy_buildings)
 
     for ability in building.abilities:
-        if not ability.is_visible(board):
+        if not ability.is_visible(context.board):
             continue
 
         action = null
-        ability_cost = board.abilities.get_modified_cost(ability.get_cost(), ability.template_name, building)
-        if ability_cost <= ap:
+        ability_cost = context.board.abilities.get_modified_cost(ability.get_cost(), ability.template_name, building)
+        if ability_cost <= context.ap:
             action = self._create_ability_action(ability, self._select_random_spawn_point(spawn_points))
-            ability.active_source_tile = entity_tile
-        elif ability_cost * 0.75 <= ap:
+            ability.active_source_tile = context.entity_tile
+        elif ability_cost * 0.75 <= context.ap:
             action = self._create_reserve_ap_action(int(ability_cost/2))
 
         if action != null:
-            action.value = self._calculate_value(ability, bonus, units_stats, ap)
+            action.value = self._calculate_value(ability, bonus, units_stats, context.ap)
             actions.append(action)
 
     return actions

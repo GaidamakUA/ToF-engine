@@ -20,7 +20,7 @@ var events := Events.new()
 var observers := Observers.new(self)
 var scripting := Scripting.new()
 var ai := Ai.new(self)
-var collateral = preload("res://scenes/board/logic/collateral.gd").new(self)
+var collateral: Collateral = Collateral.new(self)
 
 
 var selected_tile = null

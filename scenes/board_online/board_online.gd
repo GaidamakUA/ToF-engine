@@ -349,9 +349,9 @@ func _generate_collateral_damage(tile):
 #@rpc("any_peer", "call_remote", "reliable")
 func _notify_collateral_damage(damage):
     if damage["damage"] != null:
-        self.collateral.apply_tile_damage(Vector2(int(damage["damage"][0][0]), int(damage["damage"][0][1])), damage["damage"][1], damage["damage"][2])
+        self.collateral.apply_tile_damage(Vector2i(int(damage["damage"][0][0]), int(damage["damage"][0][1])), damage["damage"][1], damage["damage"][2])
     for neighbour in damage["collateral"]:
-        self.collateral.damage_terrain(self.map.model.get_tile(Vector2(int(neighbour[0]), int(neighbour[1]))))
+        self.collateral.damage_terrain(self.map.model.get_tile(Vector2i(int(neighbour[0]), int(neighbour[1]))))
 
 
 func end_turn():

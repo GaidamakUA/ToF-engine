@@ -28,7 +28,7 @@ func ingest_details(details: Dictionary[String, Variant]) -> void:
     if details.has('player'):
         self.player_id = details['player']
     if details.has('player_side'):
-        self.player_id = self.board.state.get_player_id_by_side(details['player_side'])
+        self.player_id = self.board.state.get_player_id_by_side(String(details['player_side']))
 
 func get_save_data() -> Dictionary[String, Variant]:
     var save_data: Dictionary[String, Variant] = super.get_save_data()

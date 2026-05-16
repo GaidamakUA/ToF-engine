@@ -15,7 +15,7 @@ func _observe(_event: BaseEvent) -> void:
         var side: Variant = event.new_side
 
         if self.player_id != null:
-            side = self.board.state.get_player_side_by_id(self.player_id)
+            side = self.board.state.get_player_side_by_id(int(self.player_id))
         if self.player_side != null:
             side = self.player_side
 

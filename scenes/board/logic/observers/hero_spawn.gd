@@ -6,7 +6,8 @@ func _init(_board: Board) -> void:
     self.observed_event_type = UnitSpawnedEvent
 
 func _observe(event: BaseEvent) -> void:
-    if event.unit.unit_class != "hero":
+    var typed_event: UnitSpawnedEvent = event as UnitSpawnedEvent
+    if not typed_event.unit is HeroUnit:
         return
-
-    self.board.state.auto_set_hero(event.unit)
+    var hero: HeroUnit = typed_event.unit as HeroUnit
+    self.board.state.auto_set_hero(hero)

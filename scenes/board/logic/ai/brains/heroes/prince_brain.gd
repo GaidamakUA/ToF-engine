@@ -42,8 +42,8 @@ func _gather_ability_actions(entity_tile, ap, _board) -> Array[AbstractAction]:
         path = self.pathfinder.get_path_to_tile(target_tile)
 
         if path.size() - 1 > unit_range:
-            action = self._approach_action(entity_tile, path, unit_range - 1)
-            if action != null:
+            if self._can_approach(entity_tile, path, unit_range - 1):
+                action = self._approach_action(entity_tile, path, unit_range - 1)
                 action.value = target_tile.unit.tile.get_value() - 20
                 actions.append(action)
         else:
@@ -53,13 +53,13 @@ func _gather_ability_actions(entity_tile, ap, _board) -> Array[AbstractAction]:
                 path = self.pathfinder.get_path_to_tile(interaction_tile)
 
                 if path.size() - 1 > unit_range - 1:
-                    action = self._approach_action(entity_tile, path, unit_range - 1)
-                    if action != null:
+                    if self._can_approach(entity_tile, path, unit_range - 1):
+                        action = self._approach_action(entity_tile, path, unit_range - 1)
                         action.value = target_tile.unit.tile.get_value() - 10
                         actions.append(action)
                 else:
-                    action = self._approach_action(entity_tile, path, path.size() - 1)
-                    if action != null:
+                    if self._can_approach(entity_tile, path, path.size() - 1):
+                        action = self._approach_action(entity_tile, path, path.size() - 1)
                         action.value = target_tile.unit.tile.get_value() - path.size()
                         actions.append(action)
 

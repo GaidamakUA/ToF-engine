@@ -62,8 +62,8 @@ func _gather_attack_actions(entity_tile: MapTile, ap: int) -> Array[AbstractActi
         path = self.pathfinder.get_path_to_tile(target_tile)
 
         if path.size() - 1 > unit_range:
-            action = self._approach_action(entity_tile, path, unit_range - 1)
-            if action != null:
+            if self._can_approach(entity_tile, path, unit_range - 1):
+                action = self._approach_action(entity_tile, path, unit_range - 1)
                 action.value = target_tile.unit.tile.get_value() - 20
                 actions.append(action)
         else:
@@ -73,8 +73,8 @@ func _gather_attack_actions(entity_tile: MapTile, ap: int) -> Array[AbstractActi
                 path = self.pathfinder.get_path_to_tile(interaction_tile)
 
                 if path.size() - 1 > unit_range - 1:
-                    action = self._approach_action(entity_tile, path, unit_range - 1)
-                    if action != null:
+                    if self._can_approach(entity_tile, path, unit_range - 1):
+                        action = self._approach_action(entity_tile, path, unit_range - 1)
                         action.value = target_tile.unit.tile.get_value() - 20
                         actions.append(action)
                 else:
@@ -113,8 +113,8 @@ func _gather_capture_actions(entity_tile: MapTile, ap: int) -> Array[AbstractAct
         path = self.pathfinder.get_path_to_tile(target_tile)
 
         if path.size() - 1 > unit_range:
-            action = self._approach_action(entity_tile, path, unit_range - 1)
-            if action != null:
+            if self._can_approach(entity_tile, path, unit_range - 1):
+                action = self._approach_action(entity_tile, path, unit_range - 1)
                 action.value = 10
                 actions.append(action)
         else:
@@ -124,8 +124,8 @@ func _gather_capture_actions(entity_tile: MapTile, ap: int) -> Array[AbstractAct
                 path = self.pathfinder.get_path_to_tile(interaction_tile)
 
                 if path.size() - 1 > unit_range - 1:
-                    action = self._approach_action(entity_tile, path, unit_range - 1)
-                    if action != null:
+                    if self._can_approach(entity_tile, path, unit_range - 1):
+                        action = self._approach_action(entity_tile, path, unit_range - 1)
                         action.value = 10
                         actions.append(action)
                 else:
@@ -169,29 +169,36 @@ func _capture_action(entity_tile: MapTile, interaction_tile: MapTile, target_til
 func _ability_action(ability: Ability, target: MapTile) -> UseAbilityAction:
     return UseAbilityAction.new(ability, target)
 
-func _approach_action(entity_tile: MapTile, path: Array[String], unit_range: int) -> Variant: #Nullable MapAction
+func _can_approach(entity_tile: MapTile, path: Array[String], unit_range: int) -> bool:
     if unit_range < 1:
-        return null
+        return false
 
     var target_tile: MapTile = self.pathfinder.visited_tiles[path[path.size() - unit_range - 1]]
-
     if self._is_beyond_tether(entity_tile.unit.tile, target_tile):
-        return null
+        return false
+    if target_tile.can_acommodate_unit(entity_tile.unit.tile):
+        return true
+    var interation_tiles := self._get_interaction_tiles(target_tile, entity_tile)
+    var index: int = interation_tiles.find_custom(func (nearby_tile: MapTile) -> bool:
+        var nearby_path := self.pathfinder.get_path_to_tile(nearby_tile)
+        return nearby_path.size() - 1 <= unit_range and nearby_tile.can_acommodate_unit(entity_tile.unit.tile)
+        )
+    return index != -1
+
+func _approach_action(entity_tile: MapTile, path: Array[String], unit_range: int) -> MoveAction:
+    var target_tile: MapTile = self.pathfinder.visited_tiles[path[path.size() - unit_range - 1]]
 
     if target_tile.can_acommodate_unit(entity_tile.unit.tile):
         return MoveAction.new(entity_tile, target_tile, unit_range)
     else:
-        var nearby_path: Array[String]
         var nearby_tiles := self._get_interaction_tiles(target_tile, entity_tile)
-
-        for nearby_tile in nearby_tiles:
-            nearby_path = self.pathfinder.get_path_to_tile(nearby_tile)
-            if nearby_path.size() - 1 > unit_range:
-                continue
-            if nearby_tile.can_acommodate_unit(entity_tile.unit.tile):
-                return MoveAction.new(entity_tile, nearby_tile, nearby_path.size())
-
-    return null
+        var index := nearby_tiles.find_custom(func (nt: MapTile) -> bool:
+            var np := self.pathfinder.get_path_to_tile(nt)
+            return np.size() - 1 <= unit_range and nt.can_acommodate_unit(entity_tile.unit.tile)
+            )
+        var nearby_tile := nearby_tiles[index]
+        var nearby_path := self.pathfinder.get_path_to_tile(nearby_tile)
+        return MoveAction.new(entity_tile, nearby_tile, nearby_path.size())
 
 func _move_action(entity_tile: MapTile, path: Array[String], unit_range: int) -> Variant: # Nullable MoveAction
     if unit_range < 1:
@@ -211,15 +218,8 @@ func _move_action(entity_tile: MapTile, path: Array[String], unit_range: int) ->
     return null
 
 func _get_interaction_tiles(tile: MapTile, source_tile: MapTile) -> Array[MapTile]:
-    var tiles: Array[MapTile] = []
-    for neighbour in tile.neighbours:
-        if not tile.neighbours[neighbour].can_acommodate_unit(source_tile.unit.tile):
-            continue
-        if not self.pathfinder.is_tile_reachable(tile.neighbours[neighbour]):
-            continue
-
-        tiles.append(tile.neighbours[neighbour])
-
+    var tiles: Array[MapTile] = tile.neighbours.values().filter(func (n:MapTile) -> bool:
+        return n.can_acommodate_unit(source_tile.unit.tile) and self.pathfinder.is_tile_reachable(n))
     return tiles
 
 func _is_beyond_tether(unit: BaseUnit, target_tile: MapTile) -> bool:

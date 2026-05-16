@@ -37,8 +37,8 @@ func _gather_ability_actions(entity_tile, ap, board) -> Array[AbstractAction]:
             var steps_needed = path.size() - 1 - (ability.ability_range - 1)
             if steps_needed > unit_range - 1:
                 steps_needed = unit_range - 1
-            action = self._approach_action(entity_tile, path, steps_needed)
-            if action != null:
+            if self._can_approach(entity_tile, path, steps_needed):
+                action = self._approach_action(entity_tile, path, steps_needed)
                 action.value = _calculate_blast_value(unit, enemy_unit_tile)
                 if action.value >= 40:
                     actions.append(action)

@@ -30,7 +30,7 @@ var last_hover_tile = null
 @onready var movement_markers = $"marker_anchor/movement_markers"
 @onready var interaction_markers = $"marker_anchor/interaction_markers"
 @onready var path_markers = $"marker_anchor/path_markers"
-@onready var ability_markers = $"marker_anchor/ability_markers"
+@onready var ability_markers: AbilityMarkers = $"marker_anchor/ability_markers"
 @onready var explosion_anchor = $"marker_anchor"
 @onready var explosion = $"marker_anchor/explosion"
 

@@ -1,32 +1,30 @@
 extends AbstractBrain
+class_name AbstractBuildingBrain
 
 const ENEMY_PROXIMITY := 4
 const UNITS_HARD_LIMIT := 5
 const HARD_LIMIT_MULTIPLIER := 1.3
 const UNITS_SOFT_LIMIT := 10
 
-var action_template = preload("res://scenes/board/logic/ai/actions/use_ability_action.gd")
-var reserve_template = preload("res://scenes/board/logic/ai/actions/reserve_ap_action.gd")
-
 func get_actions(context: BrainContext) -> Array[AbstractAction]:
-    var spawn_points = self._get_spawn_points(context.entity_tile)
+    var spawn_points: Array[MapTile] = self._get_spawn_points(context.entity_tile)
 
     if spawn_points.size() < 1:
         return []
 
-    var units_stats = self._gather_unit_stats(context.own_units)
-    var final_units_hard_limit = self.UNITS_HARD_LIMIT + int(context.own_buildings.size() * self.HARD_LIMIT_MULTIPLIER)
+    var units_stats: Dictionary[String, int] = self._gather_unit_stats(context.own_units)
+    var final_units_hard_limit: int = self.UNITS_HARD_LIMIT + int(context.own_buildings.size() * self.HARD_LIMIT_MULTIPLIER)
     if units_stats["total"] >= final_units_hard_limit:
         return []
 
-    var building = context.entity_tile.building.tile
+    var building: BaseBuilding = context.entity_tile.building.tile
     var actions: Array[AbstractAction] = []
-    var action
-    var ability_cost
+    var action: AbstractAction
+    var ability_cost: int
 
-    var bonus = self._calculate_proximity_value_bonus(context.entity_tile, context.enemy_units, context.enemy_buildings)
+    var bonus: int = self._calculate_proximity_value_bonus(context.entity_tile, context.enemy_units, context.enemy_buildings)
 
-    for ability in building.abilities:
+    for ability: SpawnUnit in building.abilities:
         if not ability.is_visible(context.board):
             continue
 
@@ -36,7 +34,7 @@ func get_actions(context: BrainContext) -> Array[AbstractAction]:
             action = self._create_ability_action(ability, self._select_random_spawn_point(spawn_points))
             ability.active_source_tile = context.entity_tile
         elif ability_cost * 0.75 <= context.ap:
-            action = self._create_reserve_ap_action(int(ability_cost/2))
+            action = self._create_reserve_ap_action(ability_cost/2)
 
         if action != null:
             action.value = self._calculate_value(ability, bonus, units_stats, context.ap)
@@ -44,30 +42,30 @@ func get_actions(context: BrainContext) -> Array[AbstractAction]:
 
     return actions
 
-func _get_spawn_points(entity_tile):
-    var spawn_points = []
+func _get_spawn_points(entity_tile: MapTile) -> Array[MapTile]:
+    var spawn_points: Array[MapTile] = []
 
-    for neighbour in entity_tile.neighbours:
+    for neighbour: String in entity_tile.neighbours:
         if entity_tile.neighbours[neighbour].can_acommodate_unit():
             spawn_points.append(entity_tile.neighbours[neighbour])
 
     return spawn_points
 
-func _create_ability_action(ability, target):
-    return self.action_template.new(ability, target)
+func _create_ability_action(ability: Ability, target: MapTile) -> UseAbilityAction:
+    return UseAbilityAction.new(ability, target)
 
-func _create_reserve_ap_action(ap_amount):
-    return self.reserve_template.new(ap_amount)
+func _create_reserve_ap_action(ap_amount: int) -> ReserveApAction:
+    return ReserveApAction.new(ap_amount)
 
-func _select_random_spawn_point(spawn_points):
+func _select_random_spawn_point(spawn_points: Array[MapTile]) -> MapTile:
     spawn_points.shuffle()
     return spawn_points[0]
 
-func _calculate_proximity_value_bonus(entity_tile, enemy_units, enemy_buildings):
-    var bonus = 0
-    var distance
+func _calculate_proximity_value_bonus(entity_tile: MapTile, enemy_units: Array[MapTile], enemy_buildings: Array[MapTile]) -> int:
+    var bonus: int = 0
+    var distance: float
 
-    for enemy_unit_tile in enemy_units:
+    for enemy_unit_tile: MapTile in enemy_units:
         distance = entity_tile.position.distance_squared_to(enemy_unit_tile.position)
         if distance <= 16:
             bonus += 5
@@ -76,7 +74,7 @@ func _calculate_proximity_value_bonus(entity_tile, enemy_units, enemy_buildings)
         if distance <= 100:
             bonus += 1
 
-    for enemy_building_tile in enemy_buildings:
+    for enemy_building_tile: MapTile in enemy_buildings:
         distance = entity_tile.position.distance_squared_to(enemy_building_tile.position)
         if distance <= 64:
             bonus += 1
@@ -85,11 +83,11 @@ func _calculate_proximity_value_bonus(entity_tile, enemy_units, enemy_buildings)
 
     return bonus
 
-func _calculate_value(ability, bonus, units_stats, ap):
-    var value = ability.get_cost()
-    var template_name = self._map_template_name(ability.template_name)
+func _calculate_value(ability: SpawnUnit, bonus: int, units_stats: Dictionary[String, int], ap: int) -> int:
+    var value: int = ability.get_cost()
+    var template_name: String = self._map_template_name(ability.template_name)
 
-    var unit_presence = 0.0
+    var unit_presence: float = 0.0
 
     if units_stats.has(template_name):
         unit_presence = float(units_stats[template_name]) / float(units_stats["total"])
@@ -108,13 +106,13 @@ func _calculate_value(ability, bonus, units_stats, ap):
 
     return value
 
-func _gather_unit_stats(units):
-    var stats = {
+func _gather_unit_stats(units: Array[MapTile]) -> Dictionary[String, int]:
+    var stats: Dictionary[String, int] = {
         'total' : units.size()
     }
-    var unit_class
+    var unit_class: String
 
-    for unit_tile in units:
+    for unit_tile: MapTile in units:
         if unit_tile.unit.tile.ai_paused:
             stats['total'] -= 1
             continue
@@ -127,8 +125,8 @@ func _gather_unit_stats(units):
 
     return stats
 
-func _map_template_name(template_name):
-    var map = {
+func _map_template_name(template_name: String) -> String:
+    var map: Dictionary[String, String] = {
         "blue_infantry" : "infantry",
         "blue_tank" : "tank",
         "blue_heli" : "heli",

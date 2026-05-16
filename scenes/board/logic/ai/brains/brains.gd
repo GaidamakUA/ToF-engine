@@ -1,32 +1,32 @@
 class_name Brains
 
-var brains = {
-    "hq" : preload("res://scenes/board/logic/ai/brains/hq_brain.gd").new(),
-    "barracks" : preload("res://scenes/board/logic/ai/brains/barracks_brain.gd").new(),
-    "factory" : preload("res://scenes/board/logic/ai/brains/factory_brain.gd").new(),
-    "airfield" : preload("res://scenes/board/logic/ai/brains/airfield_brain.gd").new(),
+var brains: Dictionary[String, AbstractBrain] = {
+    "hq" : HqBrain.new(),
+    "barracks" : BarracksBrain.new(),
+    "factory" : FactoryBrain.new(),
+    "airfield" : AirfieldBrain.new(),
 
-    "infantry" : preload("res://scenes/board/logic/ai/brains/infantry_brain.gd").new(),
-    "tank" : preload("res://scenes/board/logic/ai/brains/tank_brain.gd").new(),
-    "heli" : preload("res://scenes/board/logic/ai/brains/heli_brain.gd").new(),
-    "mobile_infantry" : preload("res://scenes/board/logic/ai/brains/mobile_infantry_brain.gd").new(),
-    "rocket_artillery" : preload("res://scenes/board/logic/ai/brains/rocket_artillery_brain.gd").new(),
-    "scout" : preload("res://scenes/board/logic/ai/brains/scout_brain.gd").new(),
+    "infantry" : InfantryBrain.new(),
+    "tank" : TankBrain.new(),
+    "heli" : HeliBrain.new(),
+    "mobile_infantry" : MobileInfantryBrain.new(),
+    "rocket_artillery" : RocketArtilleryBrain.new(),
+    "scout" : ScoutBrain.new(),
 
-    "hero_admiral" : preload("res://scenes/board/logic/ai/brains/heroes/admiral_brain.gd").new(),
-    "hero_captain" : preload("res://scenes/board/logic/ai/brains/heroes/captain_brain.gd").new(),
-    "hero_commando" : preload("res://scenes/board/logic/ai/brains/heroes/commando_brain.gd").new(),
-    "hero_general" : preload("res://scenes/board/logic/ai/brains/heroes/general_brain.gd").new(),
-    "hero_gentleman" : preload("res://scenes/board/logic/ai/brains/heroes/gentleman_brain.gd").new(),
-    "hero_noble" : preload("res://scenes/board/logic/ai/brains/heroes/noble_brain.gd").new(),
-    "hero_prince" : preload("res://scenes/board/logic/ai/brains/heroes/prince_brain.gd").new(),
-    "hero_warlord" : preload("res://scenes/board/logic/ai/brains/heroes/warlord_brain.gd").new(),
+    "hero_admiral" : AdmiralBrain.new(),
+    "hero_captain" : CaptainBrain.new(),
+    "hero_commando" : CommandoBrain.new(),
+    "hero_general" : GeneralBrain.new(),
+    "hero_gentleman" : GentlemanBrain.new(),
+    "hero_noble" : NobleBrain.new(),
+    "hero_prince" : PrinceBrain.new(),
+    "hero_warlord" : WarlordBrain.new(),
 
-    "npc" : preload("res://scenes/board/logic/ai/brains/npc_brain.gd").new(),
-    "hero" : preload("res://scenes/board/logic/ai/brains/hero_brain.gd").new()
+    "npc" : NpcBrain.new(),
+    "hero" : HeroBrain.new()
 }
 
-var assigned_brains = {
+var assigned_brains: Dictionary[String, AbstractBrain] = {
     "modern_airfield" : self.brains['airfield'],
     "modern_barracks" : self.brains['barracks'],
     "modern_factory" : self.brains['factory'],
@@ -45,13 +45,13 @@ var assigned_brains = {
     "feudal_hq" : self.brains['hq'],
 }
 
-func get_brain_for_template(template_name: String):
+func get_brain_for_template(template_name: String) -> AbstractBrain:
     if self.assigned_brains.has(template_name):
         return self.assigned_brains[template_name]
 
     return null
 
-func get_brain_for_unit(unit):
+func get_brain_for_unit(unit: BaseUnit) -> AbstractBrain:
     if unit.unit_class == "hero":
         if self.brains.has(unit.template_name):
             return self.brains[unit.template_name]

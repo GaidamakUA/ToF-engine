@@ -1,33 +1,34 @@
-extends "res://scenes/board/logic/ai/brains/hero_brain.gd"
+extends HeroBrain
+class_name NobleBrain
 
-func _gather_ability_actions(entity_tile, ap, _board) -> Array[AbstractAction]:
-    var unit = entity_tile.unit.tile
-    var ability = unit.active_abilities[0]
+func _gather_ability_actions(entity_tile: MapTile, ap: int, _board: Board) -> Array[AbstractAction]:
+    var unit: BaseUnit = entity_tile.unit.tile
+    var ability: ActiveAbility = unit.active_abilities[0]
 
     if not unit.has_moves():
         return []
     if ability.ap_cost > ap or ability.is_on_cooldown():
         return []
 
-    var path
+    var path: Array[String]
     var actions: Array[AbstractAction] = []
-    var action
-    var action_value
-    var tiles_visited = []
-    var target_tile
-    var unit_range = unit.get_move()
+    var action: Variant
+    var action_value: int
+    var tiles_visited: Array[MapTile] = []
+    var target_tile: MapTile
+    var unit_range: int = unit.get_move()
 
     if unit_range > ap:
         unit_range = ap
 
 
-    for friendly_unit_tile in self.pathfinder.own_units:
+    for friendly_unit_tile: String in self.pathfinder.own_units:
         target_tile = self.pathfinder.own_units[friendly_unit_tile]
 
         if target_tile.unit.tile == self:
             continue
 
-        for neighbour in target_tile.neighbours.values():
+        for neighbour: MapTile in target_tile.neighbours.values():
             if tiles_visited.has(neighbour):
                 continue
             tiles_visited.append(neighbour)
@@ -43,18 +44,18 @@ func _gather_ability_actions(entity_tile, ap, _board) -> Array[AbstractAction]:
 
     action_value = _calculate_support_value(unit, entity_tile)
     if action_value >= 50:
-        action = self._ability_action(ability, entity_tile)
+        var ability_action: UseAbilityAction = self._ability_action(ability, entity_tile)
         ability.active_source_tile = entity_tile
-        action.delay = 0.5
-        action.value = action_value
-        actions.append(action)
+        ability_action.delay = 0.5
+        ability_action.value = action_value
+        actions.append(ability_action)
 
     return actions
 
-func _calculate_support_value(source, target_tile):
-    var final_value = 0
+func _calculate_support_value(source: BaseUnit, target_tile: MapTile) -> int:
+    var final_value: int = 0
 
-    for tile in target_tile.neighbours.values():
+    for tile: MapTile in target_tile.neighbours.values():
         if tile.has_friendly_unit(source.side) and tile.neighbours_enemy_unit(source.side, source.team):
             if tile.unit.tile != self:
                 final_value += tile.unit.tile.get_value()

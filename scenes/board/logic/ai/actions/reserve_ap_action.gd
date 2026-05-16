@@ -1,4 +1,5 @@
-extends "res://scenes/board/logic/ai/actions/abstract_action.gd"
+extends AbstractAction
+class_name ReserveApAction
 
 var amount = 0
 

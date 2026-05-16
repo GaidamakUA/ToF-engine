@@ -1,1 +1,2 @@
-extends "res://scenes/board/logic/ai/brains/hero_brain.gd"
+extends HeroBrain
+class_name CommandoBrain

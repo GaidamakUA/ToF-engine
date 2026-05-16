@@ -1,4 +1,5 @@
 extends AbstractUnitBrain
+class_name TankBrain
 
 func _gather_ability_actions(entity_tile: MapTile, ap: int, board: Board) -> Array[AbstractAction]:
     var unit: BaseUnit = entity_tile.unit.tile

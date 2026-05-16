@@ -1,1 +1,2 @@
 extends AbstractUnitBrain
+class_name HeliBrain

@@ -1,25 +1,24 @@
 extends AbstractUnitBrain
+class_name RocketArtilleryBrain
 
-func _gather_ability_actions(entity_tile, ap, board) -> Array[AbstractAction]:
-    var unit = entity_tile.unit.tile
+func _gather_ability_actions(entity_tile: MapTile, ap: int, board: Board) -> Array[AbstractAction]:
+    var unit: BaseUnit = entity_tile.unit.tile
 
     if not unit.has_moves():
         return []
 
-    var approach_target_tile
-    var path
+    var approach_target_tile: MapTile
+    var path: Array[String]
     var actions: Array[AbstractAction] = []
-    var action
-    var tiles_in_range = []
-    var targets_in_range = []
-    var unit_range = unit.get_move()
+    var action: AbstractAction
+    var unit_range: int = unit.get_move()
 
     if unit_range > ap:
         unit_range = ap
 
-    var closest_enemy = 999
+    var closest_enemy: int = 999
 
-    for enemy_unit_tile in self.pathfinder.enemy_units:
+    for enemy_unit_tile: String in self.pathfinder.enemy_units:
         approach_target_tile = self.pathfinder.enemy_units[enemy_unit_tile]
 
         path = self.pathfinder.get_path_to_tile(approach_target_tile)
@@ -28,7 +27,7 @@ func _gather_ability_actions(entity_tile, ap, board) -> Array[AbstractAction]:
             closest_enemy = path.size()
 
     if closest_enemy > 4:
-        for enemy_unit_tile in self.pathfinder.enemy_units:
+        for enemy_unit_tile: String in self.pathfinder.enemy_units:
             approach_target_tile = self.pathfinder.enemy_units[enemy_unit_tile]
             path = self.pathfinder.get_path_to_tile(approach_target_tile)
             if path.size() - 1 > unit_range + 2:
@@ -37,21 +36,19 @@ func _gather_ability_actions(entity_tile, ap, board) -> Array[AbstractAction]:
                     action.value = approach_target_tile.unit.tile.unit_value - 20
                     actions.append(action)
 
-    for ability in unit.active_abilities:
+    for ability: ActiveAbility in unit.active_abilities:
         if ability.is_visible() and ability.get_cost() <= ap and not ability.is_on_cooldown():
-            targets_in_range = []
+            var targets_in_range: Array[MapTile] = []
 
-            tiles_in_range = board.ability_markers.get_all_tiles_in_ability_range(ability, entity_tile)
-
-            for tile in tiles_in_range:
+            for tile: MapTile in board.ability_markers.get_all_tiles_in_ability_range(ability, entity_tile):
                 if ability.is_tile_applicable(tile, entity_tile):
                     targets_in_range.append(tile)
 
-            for target_tile in targets_in_range:
-                action = self._ability_action(ability, target_tile)
+            for target_tile: MapTile in targets_in_range:
+                var ability_action: UseAbilityAction = self._ability_action(ability, target_tile)
                 ability.active_source_tile = entity_tile
-                action.delay = 0.5
-                action.value = target_tile.unit.tile.unit_value
-                actions.append(action)
+                ability_action.delay = 0.5
+                ability_action.value = target_tile.unit.tile.unit_value
+                actions.append(ability_action)
 
     return actions

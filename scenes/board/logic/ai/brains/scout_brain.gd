@@ -1,7 +1,8 @@
 extends AbstractUnitBrain
+class_name ScoutBrain
 
-func _gather_ability_actions(entity_tile, _ap, _board) -> Array[AbstractAction]:
-    var unit = entity_tile.unit.tile
+func _gather_ability_actions(entity_tile: MapTile, _ap: int, _board: Board) -> Array[AbstractAction]:
+    var unit: BaseUnit = entity_tile.unit.tile
 
     if not unit.has_moves():
         return []
@@ -16,11 +17,10 @@ func _gather_ability_actions(entity_tile, _ap, _board) -> Array[AbstractAction]:
         return []
 
     var actions: Array[AbstractAction] = []
-    var action
 
-    for ability in unit.active_abilities:
+    for ability: ActiveAbility in unit.active_abilities:
         if ability.is_visible() and not ability.is_on_cooldown():
-            action = self._ability_action(ability, entity_tile)
+            var action: UseAbilityAction = self._ability_action(ability, entity_tile)
             ability.active_source_tile = entity_tile
             action.delay = 0.5
             action.value = 50

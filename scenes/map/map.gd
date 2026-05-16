@@ -17,7 +17,7 @@ var tile_box_mouse := false
 var templates := MapTemplates.new()
 var model := MapModel.new()
 var builder := MapBuilder.new(self)
-var loader = preload("res://scenes/map/loader.gd").new(self)
+var loader: MapLoader = MapLoader.new(self)
 
 @onready var tiles_ground_anchor = $"tiles/ground"
 @onready var tiles_frames_anchor = $"tiles/frames"
@@ -128,8 +128,8 @@ func move_camera_to_position_if_far_away(destination, tolerance=5, zoom=null):
 
     return true
 
-func snap_camera_to_position(destination):
-    self.camera.set_camera_position(destination * self.TILE_SIZE + Vector2(0.5, 0.5) * self.TILE_SIZE)
+func snap_camera_to_position(destination: Vector2i):
+    self.camera.set_camera_position(Vector2(destination) * self.TILE_SIZE + Vector2(0.5, 0.5) * self.TILE_SIZE)
 
 func anchor_unit(unit, unit_position):
     var world_position = self.map_to_local(unit_position)

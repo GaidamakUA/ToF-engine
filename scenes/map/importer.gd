@@ -1,42 +1,44 @@
-const TERRAIN_PLAIN = 0
-const TERRAIN_FOREST = 1
-const TERRAIN_MOUNTAINS = 2
-const TERRAIN_RIVER = 3
-const TERRAIN_CITY = 4
-const TERRAIN_CITY_DESTROYED = 33
-const TERRAIN_ROAD = 5
-const TERRAIN_DIRT_ROAD = 6
-const TERRAIN_DIRT = 7
-const TERRAIN_BRIDGE = 8
-const TERRAIN_FENCE = 9
-const TERRAIN_STATUE = 10
-const TERRAIN_HQ_BLUE = 11
-const TERRAIN_HQ_RED = 12
-const TERRAIN_BARRACKS_FREE = 13
-const TERRAIN_FACTORY_FREE = 14
-const TERRAIN_AIRPORT_FREE = 15
-const TERRAIN_TOWER_FREE = 16
-const TERRAIN_SPAWN = 17
-const ICON_EREASE = 18
-const TERRAIN_BARRACKS_RED = 19
-const TERRAIN_FACTORY_RED = 20
-const TERRAIN_AIRPORT_RED = 21
-const TERRAIN_TOWER_RED = 22
-const TERRAIN_BARRACKS_BLUE = 23
-const TERRAIN_FACTORY_BLUE = 24
-const TERRAIN_AIRPORT_BLUE = 25
-const TERRAIN_TOWER_BLUE = 26
-const UNIT_INFANTRY_BLUE = 27
-const UNIT_TANK_BLUE = 28
-const UNIT_HELICOPTER_BLUE = 29
-const UNIT_INFANTRY_RED = 30
-const UNIT_TANK_RED = 31
-const UNIT_HELICOPTER_RED = 32
-const TERRAIN_CONCRETE = 34
-const UNIT_CIVILIAN = 35
+class_name MapImporter
+
+const TERRAIN_PLAIN: int = 0
+const TERRAIN_FOREST: int = 1
+const TERRAIN_MOUNTAINS: int = 2
+const TERRAIN_RIVER: int = 3
+const TERRAIN_CITY: int = 4
+const TERRAIN_CITY_DESTROYED: int = 33
+const TERRAIN_ROAD: int = 5
+const TERRAIN_DIRT_ROAD: int = 6
+const TERRAIN_DIRT: int = 7
+const TERRAIN_BRIDGE: int = 8
+const TERRAIN_FENCE: int = 9
+const TERRAIN_STATUE: int = 10
+const TERRAIN_HQ_BLUE: int = 11
+const TERRAIN_HQ_RED: int = 12
+const TERRAIN_BARRACKS_FREE: int = 13
+const TERRAIN_FACTORY_FREE: int = 14
+const TERRAIN_AIRPORT_FREE: int = 15
+const TERRAIN_TOWER_FREE: int = 16
+const TERRAIN_SPAWN: int = 17
+const ICON_EREASE: int = 18
+const TERRAIN_BARRACKS_RED: int = 19
+const TERRAIN_FACTORY_RED: int = 20
+const TERRAIN_AIRPORT_RED: int = 21
+const TERRAIN_TOWER_RED: int = 22
+const TERRAIN_BARRACKS_BLUE: int = 23
+const TERRAIN_FACTORY_BLUE: int = 24
+const TERRAIN_AIRPORT_BLUE: int = 25
+const TERRAIN_TOWER_BLUE: int = 26
+const UNIT_INFANTRY_BLUE: int = 27
+const UNIT_TANK_BLUE: int = 28
+const UNIT_HELICOPTER_BLUE: int = 29
+const UNIT_INFANTRY_RED: int = 30
+const UNIT_TANK_RED: int = 31
+const UNIT_HELICOPTER_RED: int = 32
+const TERRAIN_CONCRETE: int = 34
+const UNIT_CIVILIAN: int = 35
 
 
-var mappings = {
+var mappings: Dictionary[String, Dictionary] = {
 	"summer": {
 		self.TERRAIN_PLAIN : {"ground": "ground_grass"},
 		self.TERRAIN_FOREST : {"ground": "ground_grass", "terrain": "nature_trees1"},
@@ -153,7 +155,7 @@ var mappings = {
 	},
 }
 
-var units = [
+var units: Array[String] = [
 	"blue_infantry",
 	"blue_tank",
 	"blue_heli",
@@ -162,35 +164,44 @@ var units = [
 	"red_heli",
 ]
 
-func build_from_v1_data(map, data):
+func build_from_v1_data(map: Map, data: Dictionary) -> void:
 	self._fill_metadata(map, data)
 
-	if not data["data"].has("theme"):
-		data["data"]["theme"] = "summer"
+	var map_data: Dictionary = {}
+	map_data.assign(data["data"])
 
-	self._build_tiles(map, data["data"]["tiles"], data["data"]["theme"])
+	if not map_data.has("theme"):
+		map_data["theme"] = "summer"
+
+	var tiles: Array = []
+	tiles.assign(map_data["tiles"])
+
+	self._build_tiles(map, tiles, String(map_data["theme"]))
 	self._fix_map_elements(map)
 
-func _fill_metadata(map, data):
+func _fill_metadata(map: Map, data: Dictionary) -> void:
+	var map_data: Dictionary = {}
+	map_data.assign(data["data"])
+
 	map.model.ingest_scripts({
 		"stories" : {},
 		"triggers" : {}
 	})
-	map.model.metadata["name"] = data["data"]["name"]
+	map.model.metadata["name"] = map_data["name"]
 	map.model.metadata["iteration"] = 0
 	map.model.metadata["base_code"] = data["code"]
 
-func _build_tiles(map, tiles, theme):
-	var tilemap = self.mappings[theme]
+func _build_tiles(map: Map, tiles: Array, theme: String) -> void:
+	var tilemap: Dictionary = self.mappings[theme]
 	self._pre_fill_tilemap(map, tilemap, tiles)
 
-func _pre_fill_tilemap(map, tilemap, tiles):
-	var tile_key
-	var tile_template
-	var mapping
-	var unit
+func _pre_fill_tilemap(map: Map, tilemap: Dictionary, tiles: Array) -> void:
+	var tile_key: String
+	var tile_template: Dictionary
+	var mapping: Dictionary
+	var unit: int
 
-	for tile_data in tiles:
+	for tile_data: Dictionary in tiles:
 		tile_key = str(tile_data["x"]) + "_" + str(tile_data["y"])
 		mapping = tilemap[int(tile_data["terrain"])]
 		unit = int(tile_data["unit"])
@@ -249,18 +260,18 @@ func _pre_fill_tilemap(map, tilemap, tiles):
 
 		map.builder.place_tile(tile_key, tile_template)
 
-func _fix_map_elements(map):
-	for tile in map.model.tiles.values():
+func _fix_map_elements(map: Map) -> void:
+	for tile: MapTile in map.model.tiles.values():
 		self._fix_land_bridges(map, tile)
 		self._fix_city_buildings(map, tile)
 		self._fix_roads_and_rivers(map, tile)
 		self._fix_road_bridges(map, tile)
 
-func _fix_land_bridges(map, tile):
+func _fix_land_bridges(map: Map, tile: MapTile) -> void:
 	if not tile.ground.is_present():
 		return
 
-	var watched_types = [
+	var watched_types: Array[String] = [
 		"ground_grass",
 		"ground_mud",
 		"ground_snow",
@@ -269,10 +280,10 @@ func _fix_land_bridges(map, tile):
 	]
 
 	if watched_types.has(tile.ground.tile.template_name):
-		var e = tile.get_neighbour("e")
-		var w = tile.get_neighbour("w")
-		var n = tile.get_neighbour("n")
-		var s = tile.get_neighbour("s")
+		var e: MapTile = tile.get_neighbour("e")
+		var w: MapTile = tile.get_neighbour("w")
+		var n: MapTile = tile.get_neighbour("n")
+		var s: MapTile = tile.get_neighbour("s")
 
 		if n != null and n.ground.is_present() and s != null and s.ground.is_present() and e != null and not e.ground.is_present() and w != null and not w.ground.is_present():
 			map.builder.place_ground(tile.position, "bridge_stone", 0)
@@ -282,20 +293,20 @@ func _fix_land_bridges(map, tile):
 			map.builder.place_ground(tile.position, "bridge_stone", 90)
 			map.builder.place_terrain(tile.position, "bridge_stone_barrier", 90)
 
-func _fix_road_bridges(map, tile):
+func _fix_road_bridges(map: Map, tile: MapTile) -> void:
 	if not tile.ground.is_present():
 		return
 
-	var watched_types = [
+	var watched_types: Array[String] = [
 		"ground_road1",
 		"ground_snow_road1",
 	]
 
 	if watched_types.has(tile.ground.tile.template_name):
-		var e = tile.get_neighbour("e")
-		var w = tile.get_neighbour("w")
-		var n = tile.get_neighbour("n")
-		var s = tile.get_neighbour("s")
+		var e: MapTile = tile.get_neighbour("e")
+		var w: MapTile = tile.get_neighbour("w")
+		var n: MapTile = tile.get_neighbour("n")
+		var s: MapTile = tile.get_neighbour("s")
 
 		if n != null and n.ground.is_present() and s != null and s.ground.is_present() and e != null and not e.ground.is_present() and w != null and not w.ground.is_present():
 			map.builder.place_ground(tile.position, "bridge_legs", 0)
@@ -306,14 +317,14 @@ func _fix_road_bridges(map, tile):
 			map.builder.place_terrain(tile.position, "bridge_suspension", 90)
 
 
-func _fix_city_buildings(map, tile):
+func _fix_city_buildings(map: Map, tile: MapTile) -> void:
 	if not tile.terrain.is_present():
 		return
 
 	if tile.terrain.tile.template_name != "city_building_big1" and tile.terrain.tile.template_name != "destroyed_building_big1":
 		return
 
-	var small_neighbours = self._count_neighbours(map, tile, [
+	var small_neighbours: int = self._count_neighbours(map, tile, [
 		"ground_road1",
 		"ground_dirt_road1",
 		"ground_snow_road1",
@@ -321,7 +332,7 @@ func _fix_city_buildings(map, tile):
 		"ground_river1",
 		"ground_snow_river1",
 	])
-	var city_neighbours = self._count_neighbours(map, tile, [
+	var city_neighbours: int = self._count_neighbours(map, tile, [
 		"city_building_big1",
 		"destroyed_building_big1",
 		"city_building_small4",
@@ -336,24 +347,24 @@ func _fix_city_buildings(map, tile):
 
 
 
-func _fix_roads_and_rivers(map, tile):
+func _fix_roads_and_rivers(map: Map, tile: MapTile) -> void:
 	if not tile.ground.is_present():
 		return
 
-	var roads = [
+	var roads: Array[String] = [
 		"ground_road1",
 		"ground_snow_road1",
 	]
-	var dirt_roads = [
+	var dirt_roads: Array[String] = [
 		"ground_dirt_road1",
 		"ground_snow_dirt_road1",
 	]
-	var rivers = [
+	var rivers: Array[String] = [
 		"ground_river1",
 		"ground_snow_river1",
 	]
 
-	var affected_tile_types = roads + dirt_roads + rivers
+	var affected_tile_types: Array[String] = roads + dirt_roads + rivers
 
 	if not affected_tile_types.has(tile.ground.tile.template_name):
 		return
@@ -501,8 +512,8 @@ func _fix_roads_and_rivers(map, tile):
 			])
 
 
-func _fix_path_element(map, tile, templates, neighbours):
-	var nbin = 0
+func _fix_path_element(map: Map, tile: MapTile, templates: Array, neighbours: Array[String]) -> void:
+	var nbin: int = 0
 	nbin = self._count_neighbours_in_binary(tile, neighbours)
 	if nbin in [1, 4, 5]:
 		map.builder.place_ground(tile.position, templates[0], 0)
@@ -542,16 +553,16 @@ func _fix_path_element(map, tile, templates, neighbours):
 		map.builder.place_ground(tile.position, templates[3], 0)
 		return
 
-func _count_neighbours_in_binary(tile, templates):
-	var count = 0
+func _count_neighbours_in_binary(tile: MapTile, templates: Array[String]) -> int:
+	var count: int = 0
 	count += self._lookup_neighbour(tile, templates, "n", 1)
 	count += self._lookup_neighbour(tile, templates, "e", 2)
 	count += self._lookup_neighbour(tile, templates, "s", 4)
 	count += self._lookup_neighbour(tile, templates, "w", 8)
 	return count
 
-func _lookup_neighbour(tile, templates, direction, value):
-	var neighbour = tile.get_neighbour(direction)
+func _lookup_neighbour(tile: MapTile, templates: Array[String], direction: String, value: int) -> int:
+	var neighbour: MapTile = tile.get_neighbour(direction)
 	if neighbour == null:
 		return 0
 	if neighbour.ground.is_present() and templates.has(neighbour.ground.tile.template_name):
@@ -560,15 +571,15 @@ func _lookup_neighbour(tile, templates, direction, value):
 		return value
 	return 0
 
-func _count_neighbours(map, tile, templates):
-	var count = 0
-	var neighbour
+func _count_neighbours(map: Map, tile: MapTile, templates: Array[String]) -> int:
+	var count: int = 0
+	var neighbour: MapTile
 
-	for x in range(3):
-		for y in range(3):
+	for x: int in range(3):
+		for y: int in range(3):
 			if x == 1 and y == 1:
 				continue
-			neighbour = map.model.get_tile(Vector2(tile.position.x - 1 + x, tile.position.y - 1 + y))
+			neighbour = map.model.get_tile(Vector2i(tile.position.x - 1 + x, tile.position.y - 1 + y))
 			if neighbour != null:
 				if neighbour.ground.is_present():
 					if templates.has(neighbour.ground.tile.template_name):

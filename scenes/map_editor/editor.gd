@@ -543,7 +543,7 @@ func _on_picker_requested(context):
     self.picker_context = context
 
     if context.has("position") and context["position"] is Array:
-        self.map.snap_camera_to_position(Vector2(context["position"][0], context["position"][1]))
+        self.map.snap_camera_to_position(Vector2i(context["position"][0], context["position"][1]))
 
     self.ui.hide_story()
     self.map.camera.paused = false

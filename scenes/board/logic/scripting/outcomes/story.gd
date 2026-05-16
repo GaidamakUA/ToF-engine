@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name StoryOutcome
 
 var steps: Array[BaseOutcome] = []
 

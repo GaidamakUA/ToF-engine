@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name HeroAbilityOutcome
 
 var side: String
 var suspended: bool

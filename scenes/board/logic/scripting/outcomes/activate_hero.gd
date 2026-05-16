@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name ActivateHeroOutcome
 
 var who: Vector2i
 

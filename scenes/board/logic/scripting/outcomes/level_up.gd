@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name LevelUpOutcome
 
 var who: Vector2i
 

@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name TargetVipOutcome
 
 var trigger_id: String
 var vip: Vector2i

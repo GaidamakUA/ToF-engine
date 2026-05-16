@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name SpawnOutcome
 
 var where: Vector2i
 var template_name: String

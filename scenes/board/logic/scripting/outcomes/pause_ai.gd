@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name PauseAiOutcome
 
 var who: Vector2i
 var pause: bool

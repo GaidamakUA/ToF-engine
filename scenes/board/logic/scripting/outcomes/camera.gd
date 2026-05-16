@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name CameraOutcome
 
 var where: Vector2i
 var zoom: Variant = null

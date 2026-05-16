@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name TerrainRemoveOutcome
 
 var where: Vector2i
 var explosion: bool = false

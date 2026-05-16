@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name DespawnOutcome
 
 var who: Variant = null
 var fields: Array[Dictionary] = []

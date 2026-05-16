@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name ClaimOutcome
 
 var what: Vector2i
 var side: String

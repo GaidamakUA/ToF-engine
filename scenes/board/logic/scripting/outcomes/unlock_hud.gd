@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name UnlockHudOutcome
 
 
 func _init() -> void:

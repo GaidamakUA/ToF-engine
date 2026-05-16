@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name RevivePlayerOutcome
 
 var side: String
 

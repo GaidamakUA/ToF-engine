@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name ApOutcome
 
 var amount: int
 var side: String

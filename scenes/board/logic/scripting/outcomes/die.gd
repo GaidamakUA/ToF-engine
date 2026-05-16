@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name DieOutcome
 
 var who: Vector2i
 

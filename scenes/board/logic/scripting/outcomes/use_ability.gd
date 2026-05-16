@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name UseAbilityOutcome
 
 var who: Vector2i
 var which: String

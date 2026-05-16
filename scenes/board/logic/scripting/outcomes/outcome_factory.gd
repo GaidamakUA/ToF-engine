@@ -1,36 +1,64 @@
 class_name OutcomeFactory
-var templates: Dictionary[String, GDScript] = {
-    'story' : preload("res://scenes/board/logic/scripting/outcomes/story.gd"),
-
-    'activate_hero' : preload("res://scenes/board/logic/scripting/outcomes/activate_hero.gd"),
-    'ap' : preload("res://scenes/board/logic/scripting/outcomes/ap.gd"),
-    'attack' : preload("res://scenes/board/logic/scripting/outcomes/attack.gd"),
-    'ban_unit' : preload("res://scenes/board/logic/scripting/outcomes/ban_unit.gd"),
-    'camera' : preload("res://scenes/board/logic/scripting/outcomes/camera.gd"),
-    'claim' : preload("res://scenes/board/logic/scripting/outcomes/claim.gd"),
-    'despawn' : preload("res://scenes/board/logic/scripting/outcomes/despawn.gd"),
-    'die' : preload("res://scenes/board/logic/scripting/outcomes/die.gd"),
-    'eliminate_player' : preload("res://scenes/board/logic/scripting/outcomes/eliminate_player.gd"),
-    'end_game' : preload("res://scenes/board/logic/scripting/outcomes/end_game.gd"),
-    'hero_ability' : preload("res://scenes/board/logic/scripting/outcomes/hero_ability.gd"),
-    'level_up' : preload("res://scenes/board/logic/scripting/outcomes/level_up.gd"),
-    'lock' : preload("res://scenes/board/logic/scripting/outcomes/lock_hud.gd"),
-    'message' : preload("res://scenes/board/logic/scripting/outcomes/message.gd"),
-    'move' : preload("res://scenes/board/logic/scripting/outcomes/move.gd"),
-    'objective' : preload("res://scenes/board/logic/scripting/outcomes/objective.gd"),
-    'pause_ai' : preload("res://scenes/board/logic/scripting/outcomes/pause_ai.gd"),
-    'revive_player' : preload("res://scenes/board/logic/scripting/outcomes/revive_player.gd"),
-    'side' : preload("res://scenes/board/logic/scripting/outcomes/side.gd"),
-    'spawn' : preload("res://scenes/board/logic/scripting/outcomes/spawn.gd"),
-    'target_vip' : preload("res://scenes/board/logic/scripting/outcomes/target_vip.gd"),
-    'terrain_add' : preload("res://scenes/board/logic/scripting/outcomes/terrain_add.gd"),
-    'terrain_remove' : preload("res://scenes/board/logic/scripting/outcomes/terrain_remove.gd"),
-    'tether' : preload("res://scenes/board/logic/scripting/outcomes/tether.gd"),
-    'trigger' : preload("res://scenes/board/logic/scripting/outcomes/trigger.gd"),
-    'trigger_group' : preload("res://scenes/board/logic/scripting/outcomes/trigger_group.gd"),
-    'unlock' : preload("res://scenes/board/logic/scripting/outcomes/unlock_hud.gd"),
-    'use_ability' : preload("res://scenes/board/logic/scripting/outcomes/use_ability.gd"),
-}
 
 func get_outcome(name: String) -> BaseOutcome:
-    return self.templates[name].new()
+    match name:
+        'story':
+            return StoryOutcome.new()
+        'activate_hero':
+            return ActivateHeroOutcome.new()
+        'ap':
+            return ApOutcome.new()
+        'attack':
+            return AttackOutcome.new()
+        'ban_unit':
+            return BanUnitOutcome.new()
+        'camera':
+            return CameraOutcome.new()
+        'claim':
+            return ClaimOutcome.new()
+        'despawn':
+            return DespawnOutcome.new()
+        'die':
+            return DieOutcome.new()
+        'eliminate_player':
+            return EliminatePlayerOutcome.new()
+        'end_game':
+            return EndGameOutcome.new()
+        'hero_ability':
+            return HeroAbilityOutcome.new()
+        'level_up':
+            return LevelUpOutcome.new()
+        'lock':
+            return LockHudOutcome.new()
+        'message':
+            return MessageOutcome.new()
+        'move':
+            return MoveOutcome.new()
+        'objective':
+            return ObjectiveOutcome.new()
+        'pause_ai':
+            return PauseAiOutcome.new()
+        'revive_player':
+            return RevivePlayerOutcome.new()
+        'side':
+            return SideOutcome.new()
+        'spawn':
+            return SpawnOutcome.new()
+        'target_vip':
+            return TargetVipOutcome.new()
+        'terrain_add':
+            return TerrainAddOutcome.new()
+        'terrain_remove':
+            return TerrainRemoveOutcome.new()
+        'tether':
+            return TetherOutcome.new()
+        'trigger':
+            return TriggerOutcome.new()
+        'trigger_group':
+            return TriggerGroupOutcome.new()
+        'unlock':
+            return UnlockHudOutcome.new()
+        'use_ability':
+            return UseAbilityOutcome.new()
+
+    return null

@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name LockHudOutcome
 
 func _init() -> void:
     self.delay = 0.3

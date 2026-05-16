@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name TriggerGroupOutcome
 
 var name: String
 var group: String

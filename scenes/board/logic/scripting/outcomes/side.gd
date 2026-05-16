@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name SideOutcome
 
 var who: Vector2i
 var side: String

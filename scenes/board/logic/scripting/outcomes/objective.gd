@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name ObjectiveOutcome
 
 var slot: Variant = null
 var text: Variant = null

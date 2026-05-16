@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name MessageOutcome
 
 var text: String
 var portrait: Variant = null

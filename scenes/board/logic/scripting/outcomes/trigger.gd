@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name TriggerOutcome
 
 var name: Variant = null
 var group: Variant = null

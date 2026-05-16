@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name EliminatePlayerOutcome
 
 var winner: Variant = null
 var side: Variant = null

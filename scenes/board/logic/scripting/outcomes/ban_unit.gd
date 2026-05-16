@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name BanUnitOutcome
 
 var ability_id: int
 var where: Vector2i

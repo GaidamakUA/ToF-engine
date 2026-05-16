@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name TetherOutcome
 
 var who: Vector2i
 var length: int

@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name MoveOutcome
 
 var who: Vector2i
 var where: Vector2i

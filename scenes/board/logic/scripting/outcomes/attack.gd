@@ -1,4 +1,5 @@
 extends BaseOutcome
+class_name AttackOutcome
 
 var who: Vector2i
 var whom: Vector2i

@@ -1,8 +1,8 @@
 class_name MapModel
-const SIZE = 40
+const SIZE: int = 40
 
 var tiles: Dictionary[String, MapTile] = {}
-var scripts: Dictionary = {
+var scripts: Dictionary[String, Dictionary] = {
     "stories" : {},
     "triggers" : {}
 }
@@ -22,7 +22,7 @@ func wipe_scripts() -> void:
     self.scripts["triggers"].clear()
 
 func get_tile(position: Vector2i) -> MapTile:
-    var key := str(position.x) + "_" + str(position.y)
+    var key: String = str(position.x) + "_" + str(position.y)
     if self.tiles.has(key):
         return self.tiles[key]
     return null
@@ -31,8 +31,8 @@ func get_tile2(x: int, y: int) -> MapTile:
     # Dirty solution
     return self.tiles[str(x) + "_" + str(y)]
 
-func get_dict() -> Dictionary:
-    var tiles_dict := {}
+func get_dict() -> Dictionary[String, Variant]:
+    var tiles_dict: Dictionary[String, Dictionary] = {}
     for key: String in self.tiles.keys():
         if self.tiles[key].has_content():
             tiles_dict[key] = self.tiles[key].get_dict()
@@ -81,8 +81,8 @@ func get_all_units_tiles() -> Array[MapTile]:
     return units_tiles
 
 
-func get_player_buildings(side: String) -> Array:
-    var buildings := []
+func get_player_buildings(side: String) -> Array[BaseBuilding]:
+    var buildings: Array[BaseBuilding] = []
     for key: String in self.tiles.keys():
         if self.tiles[key].has_friendly_building(side):
             buildings.append(self.tiles[key].building.tile)
@@ -105,7 +105,7 @@ func get_player_buildings_tiles(side: String) -> Array[MapTile]:
 
     return buildings
 
-func get_enemy_units_tiles(side: String, team=null) -> Array[MapTile]:
+func get_enemy_units_tiles(side: String, team: Variant = null) -> Array[MapTile]:
     var units: Array[MapTile] = []
     for key: String in self.tiles.keys():
         if self.tiles[key].has_enemy_unit(side, team):
@@ -113,7 +113,7 @@ func get_enemy_units_tiles(side: String, team=null) -> Array[MapTile]:
 
     return units
 
-func get_enemy_buildings_tiles(side: String, team=null) -> Array[MapTile]:
+func get_enemy_buildings_tiles(side: String, team: Variant = null) -> Array[MapTile]:
     var buildings: Array[MapTile] = []
     for key: String in self.tiles.keys():
         if self.tiles[key].has_enemy_building(side, team):
@@ -121,13 +121,13 @@ func get_enemy_buildings_tiles(side: String, team=null) -> Array[MapTile]:
 
     return buildings
 
-func ingest_scripts(incoming_scripts) -> void:
+func ingest_scripts(incoming_scripts: Variant) -> void:
     if incoming_scripts == null or incoming_scripts.is_empty():
         return
 
-    self.scripts = incoming_scripts
+    self.scripts.assign(incoming_scripts)
 
-func get_player_bunker_position(side: String):
+func get_player_bunker_position(side: String) -> Variant:
     for key: String in self.tiles.keys():
         if self.tiles[key].has_friendly_hq(side):
             return self.tiles[key].position
@@ -143,15 +143,15 @@ func get_player_bunkers(side: String) -> Array[MapTile]:
 
     return bunkers
 
-func get_player_hero_position(side: String):
+func get_player_hero_position(side: String) -> Variant:
     for key: String in self.tiles.keys():
         if self.tiles[key].has_friendly_hero(side):
             return self.tiles[key].position
 
     return null
 
-func get_player_heroes(side: String) -> Array:
-    var heroes := []
+func get_player_heroes(side: String) -> Array[HeroUnit]:
+    var heroes: Array[HeroUnit] = []
 
     for key: String in self.tiles.keys():
         if self.tiles[key].has_friendly_hero(side):
@@ -159,7 +159,7 @@ func get_player_heroes(side: String) -> Array:
 
     return heroes
 
-func get_unit_position(unit):
+func get_unit_position(unit: BaseUnit) -> Variant:
     if unit == null:
         return null
 

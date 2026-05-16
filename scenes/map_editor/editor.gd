@@ -11,7 +11,7 @@ const AUTOSAVE_FILE = "__autosave__"
 @onready var switcher := SceneSwitcher
 
 var rotations = preload("res://scenes/map_editor/rotations.gd").new()
-var radial_abilities = preload("res://scenes/board/logic/radial_abilities.gd").new()
+var radial_abilities: RadialAbilities = RadialAbilities.new()
 
 var tile_rotation = 0
 var selected_tile = "ground_grass"

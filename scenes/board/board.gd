@@ -14,7 +14,7 @@ const RETALIATION_DELAY = 0.1
 @onready var saves_manager := SavesManager
 
 var state := State.new()
-var radial_abilities = preload("res://scenes/board/logic/radial_abilities.gd").new()
+var radial_abilities: RadialAbilities = RadialAbilities.new()
 var abilities := Abilities.new(self)
 var events := Events.new()
 var observers := Observers.new(self)

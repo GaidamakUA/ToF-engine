@@ -1,14 +1,15 @@
 extends BaseTrigger
+class_name AssassinationTrigger
 
-var vip_id = null
-var vip = null
-var unit_type = null
+var vip_id: Variant = null
+var vip: Variant = null
+var unit_type: Variant = null
 
 func _init() -> void:
     self.observed_event_type = UnitDestroyedEvent
 
 func _observe(_event: BaseEvent) -> void:
-    var event := _event as UnitDestroyedEvent
+    var event: UnitDestroyedEvent = _event as UnitDestroyedEvent
     if event.unit_id == self.vip_id:
         self.vip = null
         self.execute_outcome(event)
@@ -16,7 +17,7 @@ func _observe(_event: BaseEvent) -> void:
         self.execute_outcome(event)
 
 func _get_outcome_metadata(_event: BaseEvent) -> Dictionary[String, Variant]:
-    var event := _event as UnitDestroyedEvent
+    var event: UnitDestroyedEvent = _event as UnitDestroyedEvent
     return {
         'player_id' : self.board.state.get_player_id_by_side(event.unit_side),
         'side' : event.unit_side,
@@ -34,7 +35,7 @@ func ingest_details(details: Dictionary[String, Variant]) -> void:
         self.unit_type = details["type"]
 
 func get_save_data() -> Dictionary[String, Variant]:
-    var save_data := super.get_save_data()
+    var save_data: Dictionary[String, Variant] = super.get_save_data()
     save_data["vip"] = self.board.map.model.get_unit_position(self.vip)
     return save_data
 

@@ -1,13 +1,14 @@
 extends BaseTrigger
+class_name TurnTrigger
 
-var turn_no = null
-var player_id = null
+var turn_no: Variant = null
+var player_id: Variant = null
 
 func _init() -> void:
     self.observed_event_type = TurnStartedEvent
 
 func _observe(_event: BaseEvent) -> void:
-    var event := _event as TurnStartedEvent
+    var event: TurnStartedEvent = _event as TurnStartedEvent
     if self.turn_no != null and self.turn_no == event.turn_no:
         if self.player_id == null or self.player_id == event.player_id:
             self.execute_outcome(event)
@@ -15,7 +16,7 @@ func _observe(_event: BaseEvent) -> void:
         self.execute_outcome(event)
 
 func _get_outcome_metadata(_event: BaseEvent) -> Dictionary[String, Variant]:
-    var event := _event as TurnStartedEvent
+    var event: TurnStartedEvent = _event as TurnStartedEvent
     return {
         'turn_no' : event.turn_no,
         'player_id' : event.player_id
@@ -30,7 +31,7 @@ func ingest_details(details: Dictionary[String, Variant]) -> void:
         self.player_id = self.board.state.get_player_id_by_side(details['player_side'])
 
 func get_save_data() -> Dictionary[String, Variant]:
-    var save_data := super.get_save_data()
+    var save_data: Dictionary[String, Variant] = super.get_save_data()
     save_data["turn_no"] = self.turn_no
     return save_data
 

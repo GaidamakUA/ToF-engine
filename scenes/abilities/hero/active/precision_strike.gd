@@ -1,4 +1,4 @@
-extends ActiveAbility
+extends ActiveHeroAbility
 
 var precision_strike_executor_template: PackedScene = preload("res://scenes/abilities/hero/active/precision_strike_executor.tscn")
 

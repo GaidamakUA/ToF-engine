@@ -1,4 +1,4 @@
-extends ActiveAbility
+extends ActiveHeroAbility
 
 func _execute(board: Board, position: Vector2i) -> void:
     var tile := board.map.model.get_tile(position)

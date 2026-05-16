@@ -1,4 +1,4 @@
-extends ActiveAbility
+extends ActiveHeroAbility
 
 @export var unit_template := "blue_infantry"
 

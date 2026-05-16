@@ -1,4 +1,4 @@
-extends ActiveAbility
+extends ActiveHeroAbility
 
 const HEAL := 5
 

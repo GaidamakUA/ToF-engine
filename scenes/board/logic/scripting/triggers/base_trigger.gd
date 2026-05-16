@@ -2,7 +2,7 @@ extends Observer
 class_name BaseTrigger
 
 var outcome: BaseOutcome
-var one_off := false
+var one_off: bool = false
 
 func execute_outcome(event: BaseEvent) -> void:
     self._execute_outcome(event)
@@ -24,4 +24,4 @@ func get_save_data() -> Dictionary[String, Variant]:
     }
 
 func restore_from_state(state: Dictionary[String, Variant]) -> void:
-    self.suspended = state["suspended"]
+    self.suspended = bool(state["suspended"])

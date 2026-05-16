@@ -18,7 +18,7 @@ func _gather_ability_actions(entity_tile: MapTile, _ap: int, _board: Board) -> A
 
     var actions: Array[AbstractAction] = []
 
-    for ability: ActiveAbility in unit.active_abilities:
+    for ability: ActiveUnitAbility in unit.active_abilities:
         if ability.is_visible() and not ability.is_on_cooldown():
             var action: UseAbilityAction = self._ability_action(ability, entity_tile)
             ability.active_source_tile = entity_tile

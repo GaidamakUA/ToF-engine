@@ -1,5 +1,5 @@
 extends HeroAbility
-class_name ActiveAbility
+class_name ActiveHeroAbility
 
 @export var named_icon := ""
 @export var marker_colour := "green"

@@ -1,16 +1,17 @@
 extends BaseTrigger
+class_name MoveTrigger
 
-var fields: Array = []
-var player_id = null
-var player_side = null
-var unit_tag = null
+var fields: Array[Dictionary] = []
+var player_id: Variant = null
+var player_side: Variant = null
+var unit_tag: Variant = null
 var exclude_tags: Array[String] = []
 
 func _init() -> void:
     self.observed_event_type = UnitMovedEvent
 
 func _observe(_event: BaseEvent) -> void:
-    var event := _event as UnitMovedEvent
+    var event: UnitMovedEvent = _event as UnitMovedEvent
     if self._is_watched_tile(event.finish):
         if self.is_excluded_vip(event.unit):
             return
@@ -33,7 +34,7 @@ func execute_outcome(event: BaseEvent) -> void:
     self.board.set_last_unit_move(null)
 
 func _get_outcome_metadata(_event: BaseEvent) -> Dictionary[String, Variant]:
-    var event := _event as UnitMovedEvent
+    var event: UnitMovedEvent = _event as UnitMovedEvent
     return {
         'field' : event.finish,
         'player_id' : self.board.state.get_player_id_by_side(event.unit.side),
@@ -46,7 +47,7 @@ func set_vip(x: int, y: int) -> void:
     self.board.map.model.get_tile2(x, y).unit.tile.add_script_tag(self.unit_tag)
 
 func exclude_vip(x: int, y: int) -> void:
-    var new_tag := "exclude_move_" + str(x) + "_" + str(y)
+    var new_tag: String = "exclude_move_" + str(x) + "_" + str(y)
     self.exclude_tags.append(new_tag)
     self.board.map.model.get_tile2(x, y).unit.tile.add_script_tag(new_tag)
 
@@ -54,14 +55,14 @@ func is_excluded_vip(unit: BaseUnit) -> bool:
     if self.exclude_tags.size() < 1:
         return false
 
-    for excluded_tag in self.exclude_tags:
+    for excluded_tag: String in self.exclude_tags:
         if unit.has_script_tag(excluded_tag):
             return true
 
     return false
 
 func ingest_details(details: Dictionary[String, Variant]) -> void:
-    self.fields = details['fields']
+    self.fields.assign(details['fields'])
     if details.has('player'):
         self.player_id = details['player']
     if details.has('player_side'):
@@ -75,7 +76,7 @@ func ingest_details(details: Dictionary[String, Variant]) -> void:
             self.exclude_vip(unit[0], unit[1])
 
 func _is_watched_tile(tile: MapTile) -> bool:
-    for rectangle in self.fields:
+    for rectangle: Dictionary in self.fields:
         if tile.position.x >= rectangle["x1"] and tile.position.x <= rectangle["x2"] and tile.position.y >= rectangle["y1"] and tile.position.y <= rectangle["y2"]:
             return true
     return false

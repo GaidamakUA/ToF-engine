@@ -1,4 +1,4 @@
-extends ActiveAbility
+extends ActiveHeroAbility
 
 var tiles_in_range: Dictionary[String, MapTile] = {}
 var units_in_range: Array[MapTile] = []

@@ -3,7 +3,7 @@ class_name GeneralBrain
 
 func _gather_ability_actions(entity_tile: MapTile, ap: int, board: Board) -> Array[AbstractAction]:
     var unit: BaseUnit = entity_tile.unit.tile
-    var ability: ActiveAbility = unit.active_abilities[0]
+    var ability: ActiveHeroAbility = unit.active_abilities[0]
 
     if not unit.has_moves():
         return []

@@ -1,17 +1,18 @@
 extends BaseTrigger
+class_name ClaimTrigger
 
-var amount := 1
+var amount: int = 1
 var list: Array[Array] = []
-var player_id = null
-var player_side = null
+var player_id: Variant = null
+var player_side: Variant = null
 
 func _init() -> void:
     self.observed_event_type = BuildingCapturedEvent
 
 func _observe(_event: BaseEvent) -> void:
-    var event := _event as BuildingCapturedEvent
+    var event: BuildingCapturedEvent = _event as BuildingCapturedEvent
     if self._is_watched_building(event.building):
-        var side := event.new_side
+        var side: Variant = event.new_side
 
         if self.player_id != null:
             side = self.board.state.get_player_side_by_id(self.player_id)
@@ -23,7 +24,7 @@ func _observe(_event: BaseEvent) -> void:
 
 
 func _get_outcome_metadata(_event: BaseEvent) -> Dictionary[String, Variant]:
-    var event := _event as BuildingCapturedEvent
+    var event: BuildingCapturedEvent = _event as BuildingCapturedEvent
     return {
         'building' : event.building,
         'new_side' : event.new_side,
@@ -39,27 +40,27 @@ func ingest_details(details: Dictionary[String, Variant]) -> void:
     if details.has('player_side'):
         self.player_side = details['player_side']
     if details.has('amount'):
-        self.amount = details['amount']
+        self.amount = int(details['amount'])
 
 
 func _is_watched_building(building: BaseBuilding) -> bool:
-    for position in self.list:
+    for position: Array in self.list:
         if building == self.board.map.model.get_tile2(position[0], position[1]).building.tile:
             return true
     return false
 
 
-func _count_buildings_for_side(side) -> int:
-    var count := 0
+func _count_buildings_for_side(side: Variant) -> int:
+    var count: int = 0
     var building: BaseBuilding
 
     if not side is Array:
         side = [side]
 
-    for position in self.list:
+    for position: Array in self.list:
         building = self.board.map.model.get_tile2(position[0], position[1]).building.tile
         if building != null:
-            for s in side:
+            for s: Variant in side:
                 if building.side == s:
                     count += 1
 

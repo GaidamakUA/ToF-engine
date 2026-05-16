@@ -36,7 +36,7 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, board: Board) -> Arr
                     action.value = approach_target_tile.unit.tile.unit_value - 20
                     actions.append(action)
 
-    for ability: ActiveAbility in unit.active_abilities:
+    for ability: ActiveUnitAbility in unit.active_abilities:
         if ability.is_visible() and ability.get_cost() <= ap and not ability.is_on_cooldown():
             var targets_in_range: Array[MapTile] = []
 

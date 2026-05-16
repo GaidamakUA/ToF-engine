@@ -12,6 +12,6 @@ func _execute(_metadata: Dictionary[String, Variant]) -> void:
 
 
 func _ingest_details(details: Dictionary[String, Variant]) -> void:
-    self.name = details['name']
-    self.group = details['group']
-    self.action = details['action']
+    self.name = String(details['name'])
+    self.group = String(details['group'])
+    self.action = String(details['action'])

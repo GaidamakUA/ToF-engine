@@ -3,7 +3,7 @@ extends BaseOutcome
 var who: Vector2i
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
-    var tile := self.board.map.model.get_tile(self.who)
+    var tile: MapTile = self.board.map.model.get_tile(self.who)
     if tile.unit.is_present():
         tile.unit.tile.level_up()
 

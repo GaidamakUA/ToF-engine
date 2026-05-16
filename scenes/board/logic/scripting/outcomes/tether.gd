@@ -4,7 +4,7 @@ var who: Vector2i
 var length: int
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
-    var tile = self.board.map.model.get_tile2(self.who[0], self.who[1])
+    var tile: MapTile = self.board.map.model.get_tile2(self.who[0], self.who[1])
 
     if not tile.unit.is_present():
         return
@@ -15,4 +15,4 @@ func _execute(_metadata: Dictionary[String, Variant]) -> void:
 
 func _ingest_details(details: Dictionary[String, Variant]) -> void:
     self.who = Vector2i(details['who'][0], details['who'][1])
-    self.length = details['length']
+    self.length = int(details['length'])

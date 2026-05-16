@@ -1,9 +1,9 @@
 extends BaseOutcome
 
-var name = null
-var group = null
+var name: Variant = null
+var group: Variant = null
 var suspended: bool
-var turns = null
+var turns: Variant = null
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
     if self.group != null:
@@ -15,7 +15,7 @@ func _execute(_metadata: Dictionary[String, Variant]) -> void:
             self.board.scripting.triggers[self.name].turn_no = self.board.state.turn + self.turns
 
 func _ingest_details(details: Dictionary[String, Variant]) -> void:
-    self.suspended = details['suspended']
+    self.suspended = bool(details['suspended'])
     if details.has("name"):
         self.name = details["name"]
     if details.has("group"):

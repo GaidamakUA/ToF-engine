@@ -3,11 +3,11 @@ extends BaseOutcome
 var who: Vector2i
 var which: String
 var where: Vector2i
-var cooldown := false
+var cooldown: bool = false
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
-    var unit_tile = self.board.map.model.get_tile(self.who)
-    var ability = unit_tile.unit.tile.get_node(self.which)
+    var unit_tile: MapTile = self.board.map.model.get_tile(self.who)
+    var ability: Ability = unit_tile.unit.tile.get_node(self.which)
 
     self.board.selected_tile = unit_tile
     ability.active_source_tile = unit_tile
@@ -22,4 +22,4 @@ func _ingest_details(details: Dictionary[String, Variant]) -> void:
     self.which = details['which']
     self.where = Vector2i(details['where'][0], details['where'][1])
     if details.has('cooldown'):
-        self.cooldown = details['cooldown']
+        self.cooldown = bool(details['cooldown'])

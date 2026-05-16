@@ -1,15 +1,15 @@
 extends BaseOutcome
 
-var winner = null
-var side = null
-var force_kill := false
+var winner: Variant = null
+var side: Variant = null
+var force_kill: bool = false
 
 func _execute(metadata: Dictionary[String, Variant]) -> void:
     if side != null:
         self.board.state.eliminate_player(self.side)
         return
 
-    var bunkers := self.board.map.model.get_player_bunkers(metadata['old_side'])
+    var bunkers: Array[MapTile] = self.board.map.model.get_player_bunkers(metadata['old_side'])
 
     if bunkers.size() > 0 and not self.force_kill:
         return
@@ -28,4 +28,4 @@ func _ingest_details(details: Dictionary[String, Variant]) -> void:
     if details.has('side'):
         self.side = details['side']
     if details.has('force'):
-        self.force_kill = details['force']
+        self.force_kill = bool(details['force'])

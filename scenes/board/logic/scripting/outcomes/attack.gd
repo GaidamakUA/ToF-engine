@@ -2,11 +2,11 @@ extends BaseOutcome
 
 var who: Vector2i
 var whom: Vector2i
-var damage := 0
+var damage: int = 0
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
-    var attacker_tile := self.board.map.model.get_tile(self.who)
-    var defender_tile := self.board.map.model.get_tile(self.whom)
+    var attacker_tile: MapTile = self.board.map.model.get_tile(self.who)
+    var defender_tile: MapTile = self.board.map.model.get_tile(self.whom)
     var attacker: BaseUnit = attacker_tile.unit.tile
     var defender: BaseUnit = defender_tile.unit.tile
 
@@ -24,4 +24,4 @@ func _ingest_details(details: Dictionary[String, Variant]) -> void:
     self.who = Vector2i(details['who'][0], details['who'][1])
     self.whom = Vector2i(details['whom'][0], details['whom'][1])
     if details.has('damage'):
-        self.damage = details['damage']
+        self.damage = int(details['damage'])

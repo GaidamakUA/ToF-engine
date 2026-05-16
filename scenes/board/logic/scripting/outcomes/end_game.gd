@@ -1,6 +1,6 @@
 extends BaseOutcome
 
-var winner = null
+var winner: Variant = null
 
 func _execute(metadata: Dictionary[String, Variant]) -> void:
     if self.winner == null:

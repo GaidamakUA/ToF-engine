@@ -4,7 +4,7 @@ var who: Vector2i
 var side: String
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
-    var tile := self.board.map.model.get_tile(self.who)
+    var tile: MapTile = self.board.map.model.get_tile(self.who)
 
     if tile.unit.is_present():
         if tile.unit.tile.is_hero():
@@ -16,4 +16,4 @@ func _execute(_metadata: Dictionary[String, Variant]) -> void:
 
 func _ingest_details(details: Dictionary[String, Variant]) -> void:
     self.who = Vector2i(details['who'][0], details['who'][1])
-    self.side = details['side']
+    self.side = String(details['side'])

@@ -1,11 +1,11 @@
 extends BaseOutcome
 
 var where: Vector2i
-var explosion := false
+var explosion: bool = false
 var type: String
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
-    var tile := self.board.map.model.get_tile(self.where)
+    var tile: MapTile = self.board.map.model.get_tile(self.where)
 
     if self.type == "decoration":
         tile.decoration.clear()
@@ -27,6 +27,6 @@ func _execute(_metadata: Dictionary[String, Variant]) -> void:
 
 func _ingest_details(details: Dictionary[String, Variant]) -> void:
     self.where = Vector2i(details['where'][0], details['where'][1])
-    self.type = details['type']
+    self.type = String(details['type'])
     if details.has('explosion'):
-        self.explosion = details['explosion']
+        self.explosion = bool(details['explosion'])

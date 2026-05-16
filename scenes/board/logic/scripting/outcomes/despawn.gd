@@ -1,7 +1,7 @@
 extends BaseOutcome
 
-var who = null
-var fields = null
+var who: Variant = null
+var fields: Array[Dictionary] = []
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
     var tile: MapTile
@@ -12,7 +12,7 @@ func _execute(_metadata: Dictionary[String, Variant]) -> void:
                 self.board.state.clear_hero_for_side(tile.unit.tile.side, tile.unit.tile)
             tile.unit.clear()
             self.board.smoke_a_tile(tile)
-    elif self.fields != null:
+    elif not self.fields.is_empty():
         var x_index: int
         var y_index: int
         for rectangle: Dictionary in self.fields:
@@ -34,4 +34,4 @@ func _ingest_details(details: Dictionary[String, Variant]) -> void:
     if details.has("who"):
         self.who = Vector2i(details['who'][0], details['who'][1])
     if details.has("fields"):
-        self.fields = details['fields']
+        self.fields.assign(details['fields'])

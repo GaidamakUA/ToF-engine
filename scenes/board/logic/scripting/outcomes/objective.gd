@@ -1,8 +1,8 @@
 extends BaseOutcome
 
-var slot = null
-var text = null
-var clear := false
+var slot: Variant = null
+var text: Variant = null
+var clear: bool = false
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
     if self.clear:
@@ -20,4 +20,4 @@ func _ingest_details(details: Dictionary[String, Variant]) -> void:
     if details.has('text'):
         self.text = details['text']
     if details.has('clear'):
-        self.clear = details['clear']
+        self.clear = bool(details['clear'])

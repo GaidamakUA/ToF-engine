@@ -1,12 +1,12 @@
 extends BaseOutcome
 
 var text: String
-var portrait = null
+var portrait: Variant = null
 var name: String
-var side := "left"
-var colour = null
-var font_size := 16
-var sound = null
+var side: String = "left"
+var colour: Variant = null
+var font_size: int = 16
+var sound: Variant = null
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
     var actor: Dictionary[String, Variant] = {
@@ -19,7 +19,7 @@ func _execute(_metadata: Dictionary[String, Variant]) -> void:
     actor['portrait_tile'].tile_view_height_cam_modifier = -0.2
 
     if self.colour != null:
-        var material_type := self.board.map.templates.MATERIAL_NORMAL
+        var material_type: String = self.board.map.templates.MATERIAL_NORMAL
         if actor['portrait_tile'].uses_metallic_material:
             material_type = self.board.map.templates.MATERIAL_METALLIC
 
@@ -31,15 +31,15 @@ func _execute(_metadata: Dictionary[String, Variant]) -> void:
         self.board.audio.play(self.sound)
 
 func _ingest_details(details: Dictionary[String, Variant]) -> void:
-    self.name = details['name']
+    self.name = String(details['name'])
     if details.has("portrait"):
         self.portrait = details['portrait']
     if details.has("side"):
-        self.side = details['side']
+        self.side = String(details['side'])
     if details.has("colour"):
         self.colour = details['colour']
     if details.has("font_size"):
-        self.font_size = details['font_size']
+        self.font_size = int(details['font_size'])
     if details.has("sound"):
         self.sound = details['sound']
-    self.text = details['text']
+    self.text = String(details['text'])

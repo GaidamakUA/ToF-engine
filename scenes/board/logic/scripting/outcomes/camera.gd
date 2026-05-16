@@ -1,7 +1,7 @@
 extends BaseOutcome
 
 var where: Vector2i
-var zoom = null
+var zoom: Variant = null
 
 func _init() -> void:
     self.delay = 1

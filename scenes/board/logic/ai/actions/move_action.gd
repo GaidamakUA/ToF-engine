@@ -1,18 +1,18 @@
 extends AbstractAction
 class_name MoveAction
 
-var unit
-var path_length
+var unit: MapTile
+var path_length: int
 
 
-func _init(unit_tile, target_tile, path_length_val):
+func _init(unit_tile: MapTile, target_tile: MapTile, path_length_val: int) -> void:
     self.unit = unit_tile
     self.target = target_tile
     self.path_length = path_length_val
 
 
-func perform(board):
-    var unit_object = self.unit.unit.tile
+func perform(board: Board) -> void:
+    var unit_object: BaseUnit = self.unit.unit.tile
 
     board.select_tile(self.unit.position)
     board.select_tile(self.target.position)
@@ -22,5 +22,5 @@ func perform(board):
         await unit_object.move_finished
 
 
-func _to_string():
+func _to_string() -> String:
     return str(self.unit.position) + " moves to " + str(self.target.position)

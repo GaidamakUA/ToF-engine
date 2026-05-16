@@ -3,7 +3,7 @@ extends ActiveHeroAbility
 
 func _execute(board: Board, position: Vector2i) -> void:
     var source_tile: MapTile
-    var unit
+    var unit: BaseUnit
 
     if board.selected_tile == null:
         source_tile = board.map.model.get_tile(position)

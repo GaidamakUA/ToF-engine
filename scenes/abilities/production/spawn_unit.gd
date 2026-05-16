@@ -1,14 +1,14 @@
 extends Ability
 class_name SpawnUnit
 
-@export var template_name := ""
+@export var template_name: String = ""
 
 func _init() -> void:
 	self.TYPE = "production"
 
 func _execute(board: Board, position: Vector2i) -> void:
 	var new_unit: BaseUnit = board.map.builder.place_unit(position, self.template_name, 0, board.state.get_current_side())
-	var cost := self.ap_cost
+	var cost: int = self.ap_cost
 	cost = board.abilities.get_modified_cost(cost, self.template_name, self.source)
 	board.use_current_player_ap(cost)
 

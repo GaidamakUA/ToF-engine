@@ -1,8 +1,8 @@
 extends HeroAbility
 class_name ActiveHeroAbility
 
-@export var named_icon := ""
-@export var marker_colour := "green"
+@export var named_icon: String = ""
+@export var marker_colour: String = "green"
 
 func _init() -> void:
     self.TYPE = "hero_active"

@@ -1,6 +1,6 @@
 extends ActiveHeroAbility
 
-@export var unit_template := "blue_infantry"
+@export var unit_template: String = "blue_infantry"
 
 var deep_strike_executor_template: PackedScene = preload("res://scenes/abilities/hero/active/deep_strike_executor.tscn")
 

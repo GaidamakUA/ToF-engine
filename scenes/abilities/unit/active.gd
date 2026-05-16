@@ -1,8 +1,8 @@
 extends Ability
 class_name ActiveUnitAbility
 
-@export var named_icon := ""
-@export var marker_colour := "green"
+@export var named_icon: String = ""
+@export var marker_colour: String = "green"
 
 func _init() -> void:
     self.TYPE = "active"

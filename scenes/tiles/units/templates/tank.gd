@@ -1,6 +1,6 @@
-extends "res://scenes/tiles/units/unit.gd"
+extends BaseUnit
 
-func can_attack(unit):
+func can_attack(unit: BaseUnit) -> bool:
 	if unit != null:
 		if self.modifiers.has("attack_air"):
 			return true

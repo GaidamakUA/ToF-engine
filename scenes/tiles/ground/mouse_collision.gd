@@ -1,4 +1,5 @@
 extends Area3D
+class_name GroundMouseCollision
 
 var tile_position := Vector2i(0, 0)
 var map: Map = null

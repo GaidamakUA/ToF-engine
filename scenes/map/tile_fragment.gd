@@ -1,5 +1,5 @@
 class_name TileFragment
-var tile = null
+var tile: MapObject = null
 
 func set_tile(new_tile: MapObject) -> void:
     if self.tile != null:

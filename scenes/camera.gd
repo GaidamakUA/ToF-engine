@@ -1,96 +1,96 @@
 extends Node3D
 class_name GameCamera
 
-const DEADZONE = 0.2
-const MOVEMENT_AXIS_X = JOY_AXIS_LEFT_X
-const MOVEMENT_AXIS_Y = JOY_AXIS_LEFT_Y
-const CAMERA_AXIS_X = JOY_AXIS_RIGHT_X
-const CAMERA_AXIS_Y = JOY_AXIS_RIGHT_Y
-const CAMERA_AXIS_ZOOM_IN = JOY_AXIS_TRIGGER_RIGHT
-const CAMERA_AXIS_ZOOM_OUT = JOY_AXIS_TRIGGER_LEFT
-const SHAKE_MAX_MAGNITUDE = 0.5
-const MOUSE_MOVE_THRESHOLD = 16
+const DEADZONE: float = 0.2
+const MOVEMENT_AXIS_X: int = JOY_AXIS_LEFT_X
+const MOVEMENT_AXIS_Y: int = JOY_AXIS_LEFT_Y
+const CAMERA_AXIS_X: int = JOY_AXIS_RIGHT_X
+const CAMERA_AXIS_Y: int = JOY_AXIS_RIGHT_Y
+const CAMERA_AXIS_ZOOM_IN: int = JOY_AXIS_TRIGGER_RIGHT
+const CAMERA_AXIS_ZOOM_OUT: int = JOY_AXIS_TRIGGER_LEFT
+const SHAKE_MAX_MAGNITUDE: float = 0.5
+const MOUSE_MOVE_THRESHOLD: int = 16
 
 
-const MODE_FREE = "FREE"
-const MODE_TOF = "TOF"
-const MODE_AW = "AW"
+const MODE_FREE: String = "FREE"
+const MODE_TOF: String = "TOF"
+const MODE_AW: String = "AW"
 
-@onready var animations = $"animations"
+@onready var animations: AnimationPlayer = $"animations"
 
-@export var device_id = 0
-@export var rotate_speed = 100
-@export var zoom_speed = 20
-@export var move_speed = 50
-@export var mouse_zoom_step = 2.0
-@export var camera_auto_pan_follow_speed = 9.0
-@export var camera_auto_pan_speed_modifier = 1.5
-@export var camera_min_deg = -70
-@export var camera_max_deg = -15
-@export var camera_distance_min = 5
-@export var camera_distance_max = 35
+@export var device_id: int = 0
+@export var rotate_speed: float = 100
+@export var zoom_speed: float = 20
+@export var move_speed: float = 50
+@export var mouse_zoom_step: float = 2.0
+@export var camera_auto_pan_follow_speed: float = 9.0
+@export var camera_auto_pan_speed_modifier: float = 1.5
+@export var camera_min_deg: float = -70
+@export var camera_max_deg: float = -15
+@export var camera_distance_min: float = 5
+@export var camera_distance_max: float = 35
 
-@export var tof_camera_distance_min = 25
-@export var tof_camera_distance_max = 50
+@export var tof_camera_distance_min: float = 25
+@export var tof_camera_distance_max: float = 50
 
-@export var aw_camera_distance_min = 25
-@export var aw_camera_distance_max = 50
+@export var aw_camera_distance_min: float = 25
+@export var aw_camera_distance_max: float = 50
 
-@export var camera_space_size = 100
+@export var camera_space_size: int = 100
 
-@export var pan_speed = 20
+@export var pan_speed: float = 20
 
-var camera_mode = "TOF"
+var camera_mode: String = "TOF"
 
-var camera_pivot
-var camera_arm
-var camera_lens
-var camera_tof
-var camera_aw
+var camera_pivot: Node3D
+var camera_arm: Node3D
+var camera_lens: Camera3D
+var camera_tof: Camera3D
+var camera_aw: Camera3D
 
-var camera_angle_y = 0
-var _camera_angle_y = 0
+var camera_angle_y: float = 0
+var _camera_angle_y: float = 0
 
-var camera_angle_x = 0
-var _camera_angle_x = 0
+var camera_angle_x: float = 0
+var _camera_angle_x: float = 0
 
-var camera_distance = 0
-var _camera_distance = 0
+var camera_distance: float = 0
+var _camera_distance: float = 0
 
-var tof_camera_distance = 0
-var _tof_camera_distance = 0
+var tof_camera_distance: float = 0
+var _tof_camera_distance: float = 0
 
-var aw_camera_distance = 0
-var _aw_camera_distance = 0
+var aw_camera_distance: float = 0
+var _aw_camera_distance: float = 0
 
-var paused = false
-var ai_operated = false
-var script_operated = false
+var paused: bool = false
+var ai_operated: bool = false
+var script_operated: bool = false
 
-var reset_stick = false
+var reset_stick: bool = false
 
-var camera_start = null
-var camera_destination = null
-var camera_transit_time = 0.0
-var camera_in_transit = false
-var camera_zoom_start = null
-var camera_tof_zoom_start = null
-var camera_aw_zoom_start = null
-var camera_zoom_fraction = null
+var camera_start: Variant = null
+var camera_destination: Variant = null
+var camera_transit_time: float = 0.0
+var camera_in_transit: bool = false
+var camera_zoom_start: Variant = null
+var camera_tof_zoom_start: Variant = null
+var camera_aw_zoom_start: Variant = null
+var camera_zoom_fraction: Variant = null
 
-var shakes_left = 0
-var last_shake_time = 0
+var shakes_left: int = 0
+var last_shake_time: float = 0
 
-var snap_tile_box_to_camera = true
-var mouse_drag = false
-var mouse_click_position = null
+var snap_tile_box_to_camera: bool = true
+var mouse_drag: bool = false
+var mouse_click_position: Variant = null
 
-var camera_pan = Vector2(0, 0)
-var _last_used_blur_magnitude = 0
+var camera_pan := Vector2(0, 0)
+var _last_used_blur_magnitude: float = 0
 
 @onready var settings := Settings
 
-func _ready():
+func _ready() -> void:
 	randomize()
 	settings.changed.connect(_settings_changed)
 	self.camera_pivot = $"pivot"
@@ -99,7 +99,7 @@ func _ready():
 	self.camera_tof = $"tof_pivot/tof_arm/tof_style_camera"
 	self.camera_aw = $"aw_pivot/aw_arm/aw_style_camera"
 
-	var pivot_rotation = self.camera_pivot.get_rotation_degrees()
+	var pivot_rotation: Vector3 = self.camera_pivot.get_rotation_degrees()
 	camera_angle_y = pivot_rotation.y
 	_camera_angle_y = pivot_rotation.y
 
@@ -123,7 +123,7 @@ func _ready():
 	self._set_near_blur(0)
 	self._settings_changed("tilt_shift_enabled", Settings.get_option("tilt_shift_enabled"))
 
-func _input(event):
+func _input(event: InputEvent) -> void:
 	if not get_window().has_focus():
 		return
 
@@ -157,10 +157,10 @@ func _input(event):
 	elif event is InputEventPanGesture:
 		self._mouse_shift_camera(event.delta * pan_speed)
 	elif event is InputEventMagnifyGesture:
-		var zoom_steps = int((event.factor - 1) * 100)
+		var zoom_steps: int = int((event.factor - 1) * 100)
 		self._mouse_zoom(self.mouse_zoom_step * zoom_steps)
 
-func _process(delta):
+func _process(delta: float) -> void:
 	if self.paused:
 		return
 
@@ -196,7 +196,7 @@ func _process(delta):
 		self.camera_aw.set_size(0.8 * _aw_camera_distance)
 
 
-func _physics_process(delta):
+func _physics_process(delta: float) -> void:
 	if self.paused:
 		return
 
@@ -211,16 +211,16 @@ func _physics_process(delta):
 
 	self.process_movement_input(delta)
 
-func process_free_camera_input(delta):
+func process_free_camera_input(delta: float) -> void:
 	if self.camera_mode != self.MODE_FREE:
 		return
 
-	var axis_value = Vector2()
+	var axis_value := Vector2()
 
 	axis_value.x = Input.get_joy_axis(self.device_id, CAMERA_AXIS_X)
 	axis_value.y = Input.get_joy_axis(self.device_id, CAMERA_AXIS_Y)
 
-	var zoom_value = Vector2()
+	var zoom_value := Vector2()
 	zoom_value.x = Input.get_joy_axis(self.device_id, CAMERA_AXIS_ZOOM_IN)
 	zoom_value.y = Input.get_joy_axis(self.device_id, CAMERA_AXIS_ZOOM_OUT)
 
@@ -245,11 +245,11 @@ func process_free_camera_input(delta):
 		camera_distance += self.zoom_speed * zoom_value.y * delta
 		camera_distance = clamp(camera_distance, self.camera_distance_min, self.camera_distance_max)
 
-func process_tof_camera_input(delta):
+func process_tof_camera_input(delta: float) -> void:
 	if self.camera_mode != self.MODE_TOF:
 		return
 
-	var zoom_value = Vector2()
+	var zoom_value := Vector2()
 	zoom_value.x = Input.get_joy_axis(self.device_id, CAMERA_AXIS_ZOOM_IN)
 	zoom_value.y = Input.get_joy_axis(self.device_id, CAMERA_AXIS_ZOOM_OUT)
 
@@ -262,11 +262,11 @@ func process_tof_camera_input(delta):
 		tof_camera_distance += self.zoom_speed * zoom_value.y * delta
 		tof_camera_distance = clamp(tof_camera_distance, self.tof_camera_distance_min, self.tof_camera_distance_max)
 
-func process_aw_camera_input(delta):
+func process_aw_camera_input(delta: float) -> void:
 	if self.camera_mode != self.MODE_AW:
 		return
 
-	var zoom_value = Vector2()
+	var zoom_value := Vector2()
 	zoom_value.x = Input.get_joy_axis(self.device_id, CAMERA_AXIS_ZOOM_IN)
 	zoom_value.y = Input.get_joy_axis(self.device_id, CAMERA_AXIS_ZOOM_OUT)
 
@@ -279,8 +279,8 @@ func process_aw_camera_input(delta):
 		aw_camera_distance += self.zoom_speed * zoom_value.y * delta
 		aw_camera_distance = clamp(aw_camera_distance, self.aw_camera_distance_min, self.aw_camera_distance_max)
 
-func process_movement_input(delta):
-	var axis_value = Vector2()
+func process_movement_input(delta: float) -> void:
+	var axis_value := Vector2()
 
 	axis_value.x = -Input.get_joy_axis(self.device_id, MOVEMENT_AXIS_X)
 	axis_value.y = -Input.get_joy_axis(self.device_id, MOVEMENT_AXIS_Y)
@@ -298,7 +298,7 @@ func process_movement_input(delta):
 		axis_value = axis_value.rotated(deg_to_rad(0))
 
 	if axis_value.length() > self.DEADZONE && not self.reset_stick:
-		var cam_position = self.get_position()
+		var cam_position: Vector3 = self.get_position()
 		cam_position.x -= axis_value.x * self.move_speed * delta
 		cam_position.z -= axis_value.y * self.move_speed * delta
 
@@ -311,7 +311,7 @@ func process_movement_input(delta):
 		self.reset_stick = false
 
 
-func switch_camera():
+func switch_camera() -> void:
 	if self.camera_mode == self.MODE_TOF:
 		self.camera_mode = self.MODE_AW
 		self.camera_aw.make_current()
@@ -328,7 +328,7 @@ func switch_camera():
 		self._set_near_blur(self.tof_camera_distance)
 		return
 
-func switch_to_camera_style(style):
+func switch_to_camera_style(style: Variant) -> void:
 	if style == self.MODE_TOF:
 		self.camera_mode = self.MODE_TOF
 		self.camera_tof.make_current()
@@ -339,36 +339,36 @@ func switch_to_camera_style(style):
 		self.camera_mode = self.MODE_FREE
 		self.camera_lens.make_current()
 
-func force_stick_reset():
+func force_stick_reset() -> void:
 	self.reset_stick = true
 
-func move_camera_to_position(destination):
-	var camera_position = self.get_position()
+func move_camera_to_position(destination: Vector2) -> void:
+	var camera_position: Vector3 = self.get_position()
 
 	self.camera_start = Vector2(camera_position.x, camera_position.z)
 	self.camera_destination = destination
 	self.camera_transit_time = 0.0
 	self.camera_in_transit = true
 
-func set_camera_position(cam_position):
-	var current_position = self.get_position()
+func set_camera_position(cam_position: Vector2) -> void:
+	var current_position: Vector3 = self.get_position()
 	current_position.x = cam_position.x
 	current_position.z = cam_position.y
 
 	self.set_position(current_position)
 
-func pan_camera(delta):
+func pan_camera(delta: float) -> void:
 	self.camera_transit_time += delta * self.camera_auto_pan_speed_modifier
 
-	var transit_time = self.camera_transit_time
+	var transit_time: float = self.camera_transit_time
 	if transit_time > 1.0:
 		transit_time = 1.0
 
-	var interpolated_position = self.camera_start.lerp(self.camera_destination, transit_time)
+	var interpolated_position: Vector2 = self.camera_start.lerp(self.camera_destination, transit_time)
 
-	var camera_position = self.get_position()
-	var camera_position_2d = Vector2(camera_position.x, camera_position.z)
-	var smooth_position = camera_position_2d.lerp(interpolated_position, delta * self.camera_auto_pan_follow_speed)
+	var camera_position: Vector3 = self.get_position()
+	var camera_position_2d := Vector2(camera_position.x, camera_position.z)
+	var smooth_position: Vector2 = camera_position_2d.lerp(interpolated_position, delta * self.camera_auto_pan_follow_speed)
 
 	camera_position.x = smooth_position.x
 	camera_position.z = smooth_position.y
@@ -390,7 +390,7 @@ func pan_camera(delta):
 		self.camera_aw_zoom_start = null
 		self.camera_zoom_fraction = null
 
-func set_camera_zoom(fraction):
+func set_camera_zoom(fraction: Variant) -> void:
 	self.camera_zoom_start = _camera_distance
 	self.camera_tof_zoom_start = _tof_camera_distance
 	self.camera_aw_zoom_start = _aw_camera_distance
@@ -398,12 +398,12 @@ func set_camera_zoom(fraction):
 
 	return
 
-func shake():
+func shake() -> void:
 	self.shakes_left = 3
 	self.last_shake_time = 900.0
 
-func _perform_shake(delta):
-	var shake_offset = Vector2(0, 0)
+func _perform_shake(delta: float) -> void:
+	var shake_offset := Vector2(0, 0)
 	self.last_shake_time += delta
 
 	if self.last_shake_time > 0.04:
@@ -418,14 +418,14 @@ func _perform_shake(delta):
 		self._set_camera_translation(self.camera_aw, shake_offset)
 
 
-func _set_camera_translation(camera, offset):
-	var camera_position = camera.get_position()
+func _set_camera_translation(camera: Camera3D, offset: Vector2) -> void:
+	var camera_position: Vector3 = camera.get_position()
 	camera_position.x = offset.x
 	camera_position.y = offset.y
 	camera.set_position(camera_position)
 
-func _shift_camera_translation(offset):
-	var current_position = self.get_position()
+func _shift_camera_translation(offset: Vector2) -> void:
+	var current_position: Vector3 = self.get_position()
 	current_position.x += offset.x
 	current_position.z += offset.y
 
@@ -434,15 +434,15 @@ func _shift_camera_translation(offset):
 
 	self.set_position(current_position)
 
-func _mouse_zoom_in():
+func _mouse_zoom_in() -> void:
 	self._mouse_zoom(-self.mouse_zoom_step)
 
 
-func _mouse_zoom_out():
+func _mouse_zoom_out() -> void:
 	self._mouse_zoom(self.mouse_zoom_step)
 
 
-func _mouse_zoom(step):
+func _mouse_zoom(step: float) -> void:
 	camera_distance += step
 	camera_distance = clamp(camera_distance, self.camera_distance_min, self.camera_distance_max)
 
@@ -453,8 +453,8 @@ func _mouse_zoom(step):
 	aw_camera_distance = clamp(aw_camera_distance, self.aw_camera_distance_min, self.aw_camera_distance_max)
 
 
-func _mouse_shift_camera(relative_offset):
-	var camera_fraction
+func _mouse_shift_camera(relative_offset: Vector2) -> void:
+	var camera_fraction: float = 1.0
 	if self.camera_mode == self.MODE_TOF:
 		camera_fraction = float(self.tof_camera_distance) / float(self.tof_camera_distance_max)
 		relative_offset = relative_offset * camera_fraction * Vector2(0.11, 0.22)
@@ -469,22 +469,30 @@ func _mouse_shift_camera(relative_offset):
 
 	self._shift_camera_translation(-relative_offset)
 
-func get_zoom_fraction():
+func get_zoom_fraction() -> float:
 	return (self.camera_distance - self.camera_distance_min) / (self.camera_distance_max - self.camera_distance_min)
 
-func get_position_state():
-	var camera_position = self.get_position()
+func get_position_state() -> Array[float]:
+	var camera_position: Vector3 = self.get_position()
+	var state: Array[float] = [
+		camera_position.x,
+		camera_position.y,
+		camera_position.z,
+		self.camera_distance,
+		self.tof_camera_distance,
+		self.aw_camera_distance,
+	]
 
-	return [camera_position.x, camera_position.y, camera_position.z, self.camera_distance, self.tof_camera_distance, self.aw_camera_distance]
+	return state
 
-func restore_from_state(state):
+func restore_from_state(state: Array) -> void:
 	self.set_position(Vector3(state[0], state[1], state[2]))
 	if state.size() > 3:
-		self.camera_distance = state[3]
-		self.tof_camera_distance = state[4]
-		self.aw_camera_distance = state[5]
+		self.camera_distance = float(state[3])
+		self.tof_camera_distance = float(state[4])
+		self.aw_camera_distance = float(state[5])
 
-func _on_edge_pan(direction_vector):
+func _on_edge_pan(direction_vector: Array) -> void:
 	if self.mouse_drag:
 		self.camera_pan.x = 0
 		self.camera_pan.y = 0
@@ -494,19 +502,19 @@ func _on_edge_pan(direction_vector):
 		return
 
 	if direction_vector[0] != null:
-		self.camera_pan.x = direction_vector[0]
+		self.camera_pan.x = float(direction_vector[0])
 	if direction_vector[1] != null:
-		self.camera_pan.y = direction_vector[1]
+		self.camera_pan.y = float(direction_vector[1])
 
-func _set_near_blur(magnitude):
+func _set_near_blur(magnitude: float) -> void:
 	_last_used_blur_magnitude = magnitude
 	if not settings.get_option("tilt_shift_enabled"):
 		self.camera_tof.attributes.dof_blur_near_enabled = false
 		return
 
-	var near_threshold = 0.60
+	var near_threshold: float = 0.60
 	if magnitude > 0:
-		var camera_fraction = float(magnitude - self.tof_camera_distance_min) / float(self.tof_camera_distance_max - self.tof_camera_distance_min)
+		var camera_fraction: float = float(magnitude - self.tof_camera_distance_min) / float(self.tof_camera_distance_max - self.tof_camera_distance_min)
 
 		if camera_fraction > near_threshold:
 			self.camera_tof.attributes.dof_blur_near_enabled = true
@@ -517,7 +525,7 @@ func _set_near_blur(magnitude):
 		self.camera_tof.attributes.dof_blur_near_enabled = false
 
 
-func _settings_changed(key: String, new_value) -> void:
+func _settings_changed(key: String, new_value: Variant) -> void:
 	if key == "tilt_shift_enabled":
-		camera_tof.attributes.dof_blur_far_enabled = new_value
+		camera_tof.attributes.dof_blur_far_enabled = bool(new_value)
 		_set_near_blur(_last_used_blur_magnitude)

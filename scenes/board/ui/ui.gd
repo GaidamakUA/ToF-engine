@@ -5,7 +5,7 @@ class_name Ui
 @onready var gamepad_adapter := GamepadAdapter
 
 # Panels
-@onready var radial = $"radial/radial"
+@onready var radial: Radial = $"radial/radial"
 @onready var resource = $"resources/coin_view"
 @onready var resource_label = $"resources/coin_view/label"
 @onready var summary = $"summary/summary_view"

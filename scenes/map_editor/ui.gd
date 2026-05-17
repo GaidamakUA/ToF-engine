@@ -2,7 +2,7 @@ extends Control
 
 @onready var settings := Settings
 
-@onready var radial = $"radial/radial"
+@onready var radial: Radial = $"radial/radial"
 @onready var picker = $"picker/picker"
 @onready var controls = $"controls/editor"
 @onready var story = $"story/StoryEditor"

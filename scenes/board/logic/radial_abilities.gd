@@ -24,14 +24,14 @@ func is_object_without_abilities(_board: Variant, context_object: Variant, inclu
     return false
 
 
-func fill_radial_with_abilities(board: Board, radial: Variant, context_object: Variant) -> void:
+func fill_radial_with_abilities(board: Board, radial: Radial, context_object: Variant) -> void:
     if context_object is BaseBuilding:
         self.fill_radial_with_building_abilities(board, radial, context_object)
     if context_object is BaseUnit:
         self.fill_radial_with_unit_abilities(board, radial, context_object)
 
 
-func fill_radial_with_building_abilities(board: Board, radial: Variant, building: BaseBuilding) -> void:
+func fill_radial_with_building_abilities(board: Board, radial: Radial, building: BaseBuilding) -> void:
     radial.set_field(board.ui.icons.cross.instantiate(), "TR_CLOSE", 6, board, "toggle_radial_menu")
 
     var icon: Variant
@@ -58,7 +58,7 @@ func fill_radial_with_building_abilities(board: Board, radial: Variant, building
 
             radial.set_field(icon, label, ability.index, board, "activate_production_ability", [ability])
 
-func fill_radial_with_unit_abilities(board: Board, radial: Variant, unit: BaseUnit) -> void:
+func fill_radial_with_unit_abilities(board: Board, radial: Radial, unit: BaseUnit) -> void:
     radial.set_field(board.ui.icons.cross.instantiate(), "TR_CLOSE", 6, board, "toggle_radial_menu")
     var label: String
 
@@ -75,11 +75,11 @@ func fill_radial_with_unit_abilities(board: Board, radial: Variant, unit: BaseUn
             if ability.is_on_cooldown():
                 radial.set_field_disabled(ability.index, ability.cd_turns_left)
 
-func fill_radial_with_ability_bans(editor: Variant, radial: Variant, context_object: Variant) -> void:
+func fill_radial_with_ability_bans(editor: Variant, radial: Radial, context_object: Variant) -> void:
     if context_object is BaseBuilding:
         self.fill_radial_with_building_abilities_bans(editor, radial, context_object)
 
-func fill_radial_with_building_abilities_bans(editor: Variant, radial: Variant, building: BaseBuilding) -> void:
+func fill_radial_with_building_abilities_bans(editor: Variant, radial: Radial, building: BaseBuilding) -> void:
     radial.set_field(editor.ui.icons.cross.instantiate(), "TR_CLOSE", 6, editor, "toggle_radial_menu")
 
     var icon: Variant

@@ -1,4 +1,5 @@
 extends Node2D
+class_name TileView
 
 @export var viewport_size: int = 20
 

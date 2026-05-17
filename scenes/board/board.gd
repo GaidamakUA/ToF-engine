@@ -34,8 +34,8 @@ var last_hover_tile = null
 @onready var explosion_anchor = $"marker_anchor"
 @onready var explosion = $"marker_anchor/explosion"
 
-var explosion_template = preload("res://scenes/fx/explosion.tscn")
-var projectile_template = preload("res://scenes/fx/projectile.tscn")
+var explosion_template: PackedScene = preload("res://scenes/fx/explosion.tscn")
+var projectile_template: PackedScene = preload("res://scenes/fx/projectile.tscn")
 
 var ending_turn_in_progress = false
 var ending_turn_multiplier = 1
@@ -623,31 +623,31 @@ func _generate_collateral_damage(tile):
     }
 
 
-func explode_a_tile(tile, grab_sfx=false):
-    var new_explosion = self._spawn_temporary_explosion_instance_on_tile(tile, 0.5)
+func explode_a_tile(tile: MapTile, grab_sfx: bool = false) -> void:
+    var new_explosion: ExplosionFx = self._spawn_temporary_explosion_instance_on_tile(tile, 0.5)
     new_explosion.explode()
     if grab_sfx:
         new_explosion.grab_sfx_effect(tile.unit.tile)
 
 
-func smoke_a_tile(tile):
-    var new_explosion = self._spawn_temporary_explosion_instance_on_tile(tile, 0.5)
+func smoke_a_tile(tile: MapTile) -> void:
+    var new_explosion: ExplosionFx = self._spawn_temporary_explosion_instance_on_tile(tile, 0.5)
     new_explosion.puff_some_smoke()
 
 
-func bless_a_tile(tile):
-    var new_explosion = self._spawn_temporary_explosion_instance_on_tile(tile, 1.0)
+func bless_a_tile(tile: MapTile) -> void:
+    var new_explosion: ExplosionFx = self._spawn_temporary_explosion_instance_on_tile(tile, 1.0)
     new_explosion.rain_bless()
 
 
-func heal_a_tile(tile):
-    var new_explosion = self._spawn_temporary_explosion_instance_on_tile(tile, 1.0)
+func heal_a_tile(tile: MapTile) -> void:
+    var new_explosion: ExplosionFx = self._spawn_temporary_explosion_instance_on_tile(tile, 1.0)
     new_explosion.rain_heal()
 
 
-func _spawn_temporary_explosion_instance_on_tile(tile, free_delay=1.5):
-    var explosion_position = self.map.map_to_local(tile.position)
-    var new_explosion = self.explosion_template.instantiate()
+func _spawn_temporary_explosion_instance_on_tile(tile: MapTile, free_delay: float = 1.5) -> ExplosionFx:
+    var explosion_position: Vector3 = self.map.map_to_local(tile.position)
+    var new_explosion: ExplosionFx = self.explosion_template.instantiate()
     self.explosion_anchor.add_child(new_explosion)
     new_explosion.set_position(Vector3(explosion_position.x, 0, explosion_position.z))
     self.destroy_explosion_with_delay(new_explosion, free_delay)
@@ -938,7 +938,7 @@ func main_menu():
     self.switcher.main_menu()
 
 
-func destroy_explosion_with_delay(explosion_object, delay):
+func destroy_explosion_with_delay(explosion_object: Node, delay: float) -> void:
     await self.get_tree().create_timer(delay).timeout
     explosion_object.queue_free()
 
@@ -949,21 +949,21 @@ func _signal_winner(winning_side):
         self.match_setup.has_won = true
 
 
-func shoot_projectile(source_tile, destination_tile, tween_time=0.5):
-    var new_projectile = self._spawn_temporary_projectile_instance_on_tile(source_tile)
-    var tile_position = self.map.map_to_local(destination_tile.position)
+func shoot_projectile(source_tile: MapTile, destination_tile: MapTile, tween_time: float = 0.5) -> void:
+    var new_projectile: ProjectileFx = self._spawn_temporary_projectile_instance_on_tile(source_tile)
+    var tile_position: Vector3 = self.map.map_to_local(destination_tile.position)
     new_projectile.shoot_at_position(Vector3(tile_position.x, 0, tile_position.z), tween_time)
 
 
-func lob_projectile(source_tile, destination_tile, tween_time=0.5):
-    var new_projectile = self._spawn_temporary_projectile_instance_on_tile(source_tile)
-    var tile_position = self.map.map_to_local(destination_tile.position)
+func lob_projectile(source_tile: MapTile, destination_tile: MapTile, tween_time: float = 0.5) -> void:
+    var new_projectile: ProjectileFx = self._spawn_temporary_projectile_instance_on_tile(source_tile)
+    var tile_position: Vector3 = self.map.map_to_local(destination_tile.position)
     new_projectile.lob_at_position(Vector3(tile_position.x, 0, tile_position.z), tween_time)
 
 
-func _spawn_temporary_projectile_instance_on_tile(tile):
-    var tile_position = self.map.map_to_local(tile.position)
-    var new_projectile = self.projectile_template.instantiate()
+func _spawn_temporary_projectile_instance_on_tile(tile: MapTile) -> ProjectileFx:
+    var tile_position: Vector3 = self.map.map_to_local(tile.position)
+    var new_projectile: ProjectileFx = self.projectile_template.instantiate()
     self.explosion_anchor.add_child(new_projectile)
     new_projectile.set_position(Vector3(tile_position.x, 0, tile_position.z))
 

@@ -1,4 +1,5 @@
 extends Node3D
+class_name ExplosionFx
 
 @onready var main: GPUParticles3D = $"main"
 @onready var smoke: GPUParticles3D = $"main/smoke"

@@ -1,4 +1,5 @@
 extends Node3D
+class_name ProjectileFx
 
 const ALTITUDE: int = 8
 @onready var mesh: Node3D = $"pivot"

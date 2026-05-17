@@ -1,5 +1,5 @@
 class_name MapTile
-var settings
+var settings: Variant
 
 const EAST := "e"
 const WEST := "w"
@@ -16,17 +16,17 @@ var building := TileFragment.new()
 var unit := TileFragment.new()
 var damage := TileFragment.new()
 
-var fragments = []
+var fragments: Array[TileFragment] = []
 
 var neighbours: Dictionary[String, MapTile] = {}
 
 var is_state_modified := false
 
-func _init(x, y):
+func _init(x: int, y: int) -> void:
     self.position.x = x
     self.position.y = y
 
-    self.fragments  = [
+    self.fragments = [
         self.ground,
         self.frame,
         self.decoration,
@@ -36,13 +36,13 @@ func _init(x, y):
         self.damage,
     ]
 
-func has_content():
-    for fragment in self.fragments:
+func has_content() -> bool:
+    for fragment: TileFragment in self.fragments:
         if fragment.is_present():
             return true
     return false
 
-func get_dict():
+func get_dict() -> Dictionary[String, Variant]:
     return {
         "ground" : self.ground.get_dict(),
         "frame" : self.frame.get_dict(),
@@ -53,7 +53,7 @@ func get_dict():
         "damage" : self.damage.get_dict(),
     }
 
-func wipe():
+func wipe() -> void:
     self.unit.clear()
     self.building.clear()
     self.terrain.clear()
@@ -62,7 +62,7 @@ func wipe():
     self.ground.clear()
     self.damage.clear()
 
-func is_selectable(side):
+func is_selectable(side: String) -> bool:
     if self.unit.is_present():
         return self.unit.tile.side == side
     elif self.building.is_present():
@@ -80,13 +80,13 @@ func get_neighbour(direction: String) -> MapTile:
     return null
 
 func is_neighbour(tile: MapTile) -> bool:
-    for direction in self.neighbours.keys():
+    for direction: String in self.neighbours.keys():
         if self.neighbours[direction] == tile:
             return true
     return false
 
 
-func can_acommodate_unit(moving_unit=null) -> bool:
+func can_acommodate_unit(moving_unit: BaseUnit = null) -> bool:
     if not self.ground.is_present():
         return false
     if self.ground.tile.unit_can_fly and (moving_unit == null or not moving_unit.can_fly):
@@ -100,7 +100,7 @@ func can_acommodate_unit(moving_unit=null) -> bool:
 
     return true
 
-func can_pass_through(moving_unit):
+func can_pass_through(moving_unit: BaseUnit) -> bool:
     if not self.ground.is_present():
         return false
     if self.ground.tile.unit_can_fly and not moving_unit.can_fly:
@@ -114,7 +114,7 @@ func can_pass_through(moving_unit):
 
     return true
 
-func has_enemy_unit(side, team=null):
+func has_enemy_unit(side: String, team: Variant = null) -> bool:
     if self.unit.is_present():
         if self.unit.tile.side != side:
             if team != null:
@@ -122,18 +122,18 @@ func has_enemy_unit(side, team=null):
             return true
     return false
 
-func has_allied_unit(team):
+func has_allied_unit(team: Variant) -> bool:
     if self.unit.is_present():
         if team != null:
             return self.unit.tile.team == team
     return false
 
-func has_friendly_unit(side) -> bool:
+func has_friendly_unit(side: String) -> bool:
     if self.unit.is_present() && self.unit.tile.side == side:
         return true
     return false
 
-func has_enemy_building(side, team=null):
+func has_enemy_building(side: String, team: Variant = null) -> bool:
     if self.building.is_present():
         if self.building.tile.side != side:
             if team != null:
@@ -141,43 +141,43 @@ func has_enemy_building(side, team=null):
             return true
     return false
 
-func has_allied_building(team):
+func has_allied_building(team: Variant) -> bool:
     if self.building.is_present():
         if team != null:
             return self.building.tile.team == team
     return false
 
-func has_friendly_building(side):
+func has_friendly_building(side: String) -> bool:
     if self.building.is_present() && self.building.tile.side == side:
         return true
     return false
 
-func neighbours_enemy_unit(side, team=null):
-    for direction in self.neighbours.keys():
+func neighbours_enemy_unit(side: String, team: Variant = null) -> bool:
+    for direction: String in self.neighbours.keys():
         if self.neighbours[direction].has_enemy_unit(side, team):
             return true
     return false
 
-func can_attack_neightbour_enemy_unit(attacking_unit):
-    for direction in self.neighbours.keys():
+func can_attack_neightbour_enemy_unit(attacking_unit: BaseUnit) -> bool:
+    for direction: String in self.neighbours.keys():
         if self.neighbours[direction].has_enemy_unit(attacking_unit.side, attacking_unit.team):
             if attacking_unit.can_attack(self.neighbours[direction].unit.tile):
                 return true
     return false
 
-func neighbours_enemy_building(side, team=null):
-    for direction in self.neighbours.keys():
+func neighbours_enemy_building(side: String, team: Variant = null) -> bool:
+    for direction: String in self.neighbours.keys():
         if self.neighbours[direction].has_enemy_building(side, team):
             return true
     return false
 
-func get_direction_to_neighbour(tile):
-    for direction in self.neighbours.keys():
+func get_direction_to_neighbour(tile: MapTile) -> Variant:
+    for direction: String in self.neighbours.keys():
         if self.neighbours[direction] == tile:
             return direction
     return null
 
-func can_unit_interact(interacting_unit):
+func can_unit_interact(interacting_unit: BaseUnit) -> bool:
     if not interacting_unit.has_moves():
         return false
 
@@ -189,17 +189,17 @@ func can_unit_interact(interacting_unit):
 
     return false
 
-func has_friendly_hq(side):
+func has_friendly_hq(side: String) -> bool:
     if self.building.is_present() && self.building.tile.side == side && self.building.tile.template_name in ["modern_hq", "steampunk_hq", "futuristic_hq", "feudal_hq"]:
         return true
     return false
 
-func has_friendly_hero(side):
+func has_friendly_hero(side: String) -> bool:
     if self.has_friendly_unit(side) && self.unit.tile.unit_class == "hero":
         return true
     return false
 
-func is_ground_damage_possible():
+func is_ground_damage_possible() -> bool:
     if not self.ground.is_present():
         return false
     if self.unit.is_present():
@@ -213,21 +213,21 @@ func is_ground_damage_possible():
 
     return true
 
-func is_object_damage_possible():
+func is_object_damage_possible() -> bool:
     return self.terrain.is_present() and self.terrain.tile.is_damageable()
 
-func is_damageable():
+func is_damageable() -> bool:
     return self.is_ground_damage_possible() or self.is_object_damage_possible()
 
-func apply_invisibility():
-    for fragment in self.fragments:
+func apply_invisibility() -> void:
+    for fragment: TileFragment in self.fragments:
         if fragment.is_present() and fragment.tile.is_invisible:
             fragment.tile.hide_mesh()
 
 
-func _settings_changed(key, _new_value):
-    var shadows = self.settings.get_option("shadows")
-    var dec_shadows = self.settings.get_option("dec_shadows")
+func _settings_changed(key: String, _new_value: Variant) -> void:
+    var shadows: bool = self.settings.get_option("shadows")
+    var dec_shadows: bool = self.settings.get_option("dec_shadows")
 
     if key == "shadows" or key == "dec_shadows":
         if shadows:
@@ -274,7 +274,7 @@ func _settings_changed(key, _new_value):
             if self.unit.is_present():
                 self.unit.tile.hide_health()
 
-func _disable_shadow(tile, shadow_setting):
+func _disable_shadow(tile: MapObject, shadow_setting: bool) -> void:
     if tile.shadow_override and shadow_setting:
         return
 

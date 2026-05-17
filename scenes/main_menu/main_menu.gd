@@ -1,9 +1,9 @@
 extends Node3D
 
-@onready var map = $"map"
-@onready var ui = $"ui"
-@onready var cart = $"map/path/cart"
-@onready var animations = $"animations"
+@onready var map: Map = $"map"
+@onready var ui: Variant = $"ui"
+@onready var cart: PathFollow3D = $"map/path/cart"
+@onready var animations: AnimationPlayer = $"animations"
 @onready var audio := SimpleAudioLibrary
 @onready var switcher := SceneSwitcher
 @onready var gamepad_adapter := GamepadAdapter
@@ -12,11 +12,11 @@ extends Node3D
 @onready var settings := Settings
 @onready var multiplayer_srv := Multiplayer
 
-const MENU_TIMEOUT := 0.2
+const MENU_TIMEOUT: float = 0.2
 
-var camera_reparented := false
+var camera_reparented: bool = false
 
-func _ready():
+func _ready() -> void:
     self.map.loader.load_map_file("main_menu_bg")
     self._setup_camera()
     self.map.hide_tile_box()
@@ -31,7 +31,7 @@ func _ready():
         self.call_deferred("_intro_finished")
 
 
-func _setup_camera():
+func _setup_camera() -> void:
     self.map.camera.paused = true
 
     self.map.camera.set_position(Vector3(220, 4.05, 196))
@@ -42,7 +42,7 @@ func _setup_camera():
     self.map.camera.camera_arm.set_rotation_degrees(Vector3(-20, 0, 0))
 
 
-func _start_intro():
+func _start_intro() -> void:
     self.switcher.intro_played = true
     $"ui/logo".hide()
     if not self.camera_reparented:
@@ -59,13 +59,13 @@ func _start_intro():
     self.animations.play("path")
     self.map.camera.animations.play("fov")
 
-func _camera_arrived():
+func _camera_arrived() -> void:
     pass
 
-func _intro_music_finished():
+func _intro_music_finished() -> void:
     self.audio.stop()
 
-func _intro_finished():
+func _intro_finished() -> void:
     self.switcher.intro_played = true
     $"ui/logo".show()
     self.audio.track("menu")
@@ -75,7 +75,7 @@ func _intro_finished():
     if self.match_setup.campaign_win:
         self.reopen_campaign_mission_selection_after_win()
 
-func open_picker():
+func open_picker() -> void:
     self.ui.hide_menu()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.picker.set_select_mode()
@@ -84,64 +84,64 @@ func open_picker():
     self.ui.picker.bind_cancel(self, "close_picker")
     self.ui.picker.bind_success(self, "handle_picker_output")
 
-func close_picker():
+func close_picker() -> void:
     self.ui.hide_picker()
     self.gamepad_adapter.enable()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_menu()
 
-func handle_picker_output(args):
+func handle_picker_output(args: Array) -> void:
     self.ui.hide_picker()
     self.gamepad_adapter.enable()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_skirmish(args[0])
 
-func close_skirmish():
+func close_skirmish() -> void:
     self.ui.hide_skirmish()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_picker()
 
-func open_settings():
+func open_settings() -> void:
     self.ui.hide_menu()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_settings()
 
-func close_settings():
+func close_settings() -> void:
     self.ui.hide_settings()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_menu()
 
-func open_campaign_selection():
+func open_campaign_selection() -> void:
     self.ui.hide_menu()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_campaign_selection(true)
 
-func close_campaign_selection():
+func close_campaign_selection() -> void:
     self.ui.hide_campaign_selection()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_menu()
 
-func open_campaign_mission_selection(campaign_name=null):
+func open_campaign_mission_selection(campaign_name: Variant = null) -> void:
     self.ui.hide_campaign_selection()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_campaign_mission_selection(campaign_name)
 
-func close_campaign_mission_selection():
+func close_campaign_mission_selection() -> void:
     self.ui.hide_campaign_mission_selection()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_campaign_selection()
 
-func open_campaign_mission(campaign_name, mission_no):
+func open_campaign_mission(campaign_name: String, mission_no: int) -> void:
     self.ui.hide_campaign_mission_selection()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_campaign_mission(campaign_name, mission_no)
 
-func close_campaign_mission():
+func close_campaign_mission() -> void:
     self.ui.hide_campaign_mission()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_campaign_mission_selection()
 
-func reopen_campaign_mission_selection_after_win():
+func reopen_campaign_mission_selection_after_win() -> void:
     self.match_setup.campaign_win = false
     self.ui.hide_menu()
     self.ui.campaign_selection.show_first_page()
@@ -155,41 +155,41 @@ func reopen_campaign_mission_selection_after_win():
         else:
             self.ui.show_campaign_mission(self.match_setup.campaign_name, self.match_setup.mission_no)
 
-func open_controls():
+func open_controls() -> void:
     self.ui.hide_settings()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_controls()
 
-func close_controls():
+func close_controls() -> void:
     self.ui.hide_controls()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_settings()
 
-func open_saves():
+func open_saves() -> void:
     self.ui.hide_menu()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_saves()
 
     self.ui.saves.bind_cancel(self, "close_saves")
 
-func close_saves():
+func close_saves() -> void:
     self.ui.hide_saves()
     self.gamepad_adapter.enable()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_menu()
 
-func open_online():
+func open_online() -> void:
     self.ui.hide_menu()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_online()
 
-func close_online():
+func close_online() -> void:
     self.ui.hide_online()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_menu()
 
 
-func open_upload_picker():
+func open_upload_picker() -> void:
     self.ui.hide_online()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.picker.set_select_mode()
@@ -199,14 +199,14 @@ func open_upload_picker():
     self.ui.picker.bind_cancel(self, "close_upload_picker")
     self.ui.picker.bind_success(self, "handle_upload_output")
 
-func close_upload_picker():
+func close_upload_picker() -> void:
     self.ui.hide_picker()
     self.gamepad_adapter.enable()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.picker.unlock_tab_bar()
     self.ui.show_online()
 
-func handle_upload_output(args):
+func handle_upload_output(args: Array) -> void:
     self.ui.hide_picker()
     self.gamepad_adapter.enable()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
@@ -214,7 +214,7 @@ func handle_upload_output(args):
     self.ui.online.selected_upload_map = args[0]
     self.ui.show_online()
 
-func open_download_picker():
+func open_download_picker() -> void:
     self.ui.hide_online()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.picker.set_browse_mode()
@@ -223,7 +223,7 @@ func open_download_picker():
     self.ui.picker.bind_cancel(self, "close_download_picker")
     self.ui.picker.bind_success(self, "handle_download_output")
 
-func close_download_picker():
+func close_download_picker() -> void:
     self.ui.hide_picker()
     self.gamepad_adapter.enable()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
@@ -233,7 +233,7 @@ func close_download_picker():
     self.ui.online.selected_download_map = null
     self.ui.show_online()
 
-func handle_download_output(args):
+func handle_download_output(args: Array) -> void:
     self.ui.hide_picker()
     self.gamepad_adapter.enable()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
@@ -243,17 +243,17 @@ func handle_download_output(args):
     self.ui.online.selected_download_map = args[0]
     self.ui.show_online()
 
-func open_multiplayer():
+func open_multiplayer() -> void:
     self.ui.hide_menu()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_multiplayer()
 
-func close_multiplayer():
+func close_multiplayer() -> void:
     self.ui.hide_multiplayer()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_menu()
 
-func open_multiplayer_picker():
+func open_multiplayer_picker() -> void:
     self.ui.hide_multiplayer()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.picker.set_select_mode()
@@ -263,36 +263,36 @@ func open_multiplayer_picker():
     self.ui.picker.bind_cancel(self, "close_multiplayer_picker")
     self.ui.picker.bind_success(self, "handle_multiplayer_picker_output")
 
-func close_multiplayer_picker():
+func close_multiplayer_picker() -> void:
     self.ui.hide_picker()
     self.gamepad_adapter.enable()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.picker.unlock_tab_bar()
     self.ui.show_multiplayer()
 
-func handle_multiplayer_picker_output(args):
+func handle_multiplayer_picker_output(args: Array) -> void:
     self.ui.hide_picker()
     self.gamepad_adapter.enable()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.picker.unlock_tab_bar()
-    var error = self.multiplayer_srv.create_game(args[0])
+    var error: Variant = self.multiplayer_srv.create_game(args[0])
     if error:
         self.ui.show_multiplayer()
         return
     self.ui.show_multiplayer_lobby()
 
-func open_multiplayer_lobby():
+func open_multiplayer_lobby() -> void:
     self.ui.hide_multiplayer()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_multiplayer_lobby()
 
-func close_multiplayer_lobby():
+func close_multiplayer_lobby() -> void:
     self.ui.hide_multiplayer_lobby()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_multiplayer()
 
 
-func open_online_match_map_picker():
+func open_online_match_map_picker() -> void:
     self.ui.hide_online()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.picker.set_select_mode()
@@ -302,14 +302,14 @@ func open_online_match_map_picker():
     self.ui.picker.bind_cancel(self, "close_online_match_map_picker")
     self.ui.picker.bind_success(self, "handle_online_match_map_picker_output")
 
-func close_online_match_map_picker():
+func close_online_match_map_picker() -> void:
     self.ui.hide_picker()
     self.gamepad_adapter.enable()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.picker.unlock_tab_bar()
     self.ui.show_online()
 
-func handle_online_match_map_picker_output(args):
+func handle_online_match_map_picker_output(args: Array) -> void:
     self.ui.hide_picker()
     self.gamepad_adapter.enable()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
@@ -317,32 +317,32 @@ func handle_online_match_map_picker_output(args):
     self.ui.show_online()
     self.ui.online.init_match(args[0])
 
-func open_online_lobby():
+func open_online_lobby() -> void:
     self.ui.hide_online()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_online_lobby()
 
-func close_online_lobby():
+func close_online_lobby() -> void:
     self.ui.hide_online_lobby()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_online()
 
-func open_credits():
+func open_credits() -> void:
     self.ui.hide_menu()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_credits()
 
-func close_credits():
+func close_credits() -> void:
     self.ui.hide_credits()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_menu()
 
-func open_changelog():
+func open_changelog() -> void:
     self.ui.hide_menu()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_changelog()
 
-func close_changelog():
+func close_changelog() -> void:
     self.ui.hide_changelog()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_menu()

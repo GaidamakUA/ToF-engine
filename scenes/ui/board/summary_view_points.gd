@@ -10,7 +10,7 @@ var _unit_points: int = 0
 var _ap_points: int = 0
 
 
-func show_player_points(player_data: Dictionary, board) -> void:
+func show_player_points(player_data: Dictionary, board: Board) -> void:
 	_set_icon(player_data["side"])
 	_calculate_building_points(player_data["side"], board)
 	_calculate_unit_points(player_data["side"], board)
@@ -25,17 +25,17 @@ func _set_icon(side: String) -> void:
 	$background/icon_anchor/icon_anchor.add_child(_current_icon)
 
 
-func _calculate_building_points(side: String, board) -> void:
+func _calculate_building_points(side: String, board: Board) -> void:
 	_building_points = 0
-	for tile in board.map.model.tiles.values():
+	for tile: MapTile in board.map.model.tiles.values():
 		if tile.building.is_present() and tile.building.tile.side == side:
 			_building_points += tile.building.tile.capture_value
 	$background/building_points.set_text(str(_building_points))
 
 
-func _calculate_unit_points(side: String, board) -> void:
+func _calculate_unit_points(side: String, board: Board) -> void:
 	_unit_points = 0
-	for tile in board.map.model.tiles.values():
+	for tile: MapTile in board.map.model.tiles.values():
 		if tile.unit.is_present() and tile.unit.tile.side == side:
 			_unit_points += tile.unit.tile.get_value()
 	$background/unit_points.set_text(str(_unit_points))

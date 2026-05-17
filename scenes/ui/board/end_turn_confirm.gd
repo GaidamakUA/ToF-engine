@@ -1,27 +1,28 @@
 extends Node2D
+class_name EndTurnConfirmPanel
 
-@onready var no_button = $"no_button"
-@onready var yes_button = $"yes_button"
+@onready var no_button: TextureButton = $"no_button"
+@onready var yes_button: TextureButton = $"yes_button"
 
 @onready var gamepad_adapter := GamepadAdapter
 @onready var audio := SimpleAudioLibrary
 
 
-var board = null
+var board: Board = null
 
 
-func show_panel():
+func show_panel() -> void:
     self.show()
     self.gamepad_adapter.enable()
     self.no_button.grab_focus()
 
-func _on_no_button_pressed():
+func _on_no_button_pressed() -> void:
     self.audio.play("menu_back")
     self.gamepad_adapter.disable()
     self.board.close_end_turn_confirm_panel()
 
 
-func _on_yes_button_pressed():
+func _on_yes_button_pressed() -> void:
     self.audio.play("menu_click")
     self.gamepad_adapter.disable()
     self.board.close_end_turn_confirm_panel()

@@ -1,48 +1,49 @@
 extends Node2D
+class_name UnitStatsPanel
 
-@onready var level1 = $"background/level1"
-@onready var level2 = $"background/level2"
-@onready var level3 = $"background/level3"
-@onready var tile_highlight = $"background/tile_view"
+@onready var level1: Node2D = $"background/level1"
+@onready var level2: Node2D = $"background/level2"
+@onready var level3: Node2D = $"background/level3"
+@onready var tile_highlight: TileView = $"background/tile_view"
 
-@onready var unit_name = $"background/unit_name"
-@onready var hp_value = $"background/hp_label/hp_value"
-@onready var armour_value = $"background/armour_label/armour_value"
-@onready var ap_value = $"background/ap_label/ap_value"
-@onready var attack_value = $"background/attack_label/attack_value"
-@onready var level_value = $"background/level_label/level_value"
-@onready var kills_value = $"background/kills_label/kills_value"
+@onready var unit_name: Label = $"background/unit_name"
+@onready var hp_value: Label = $"background/hp_label/hp_value"
+@onready var armour_value: Label = $"background/armour_label/armour_value"
+@onready var ap_value: Label = $"background/ap_label/ap_value"
+@onready var attack_value: Label = $"background/attack_label/attack_value"
+@onready var level_value: Label = $"background/level_label/level_value"
+@onready var kills_value: Label = $"background/kills_label/kills_value"
 
-@onready var ab1 = $"background/abilities/ab1"
-@onready var ab1_anchor = $"background/abilities/ab1/anchor"
-@onready var ab1_name = $"background/abilities/ab1/label"
-@onready var ab1_desc = $"background/abilities/ab1/description"
-@onready var ab2 = $"background/abilities/ab2"
-@onready var ab2_anchor = $"background/abilities/ab2/anchor"
-@onready var ab2_name = $"background/abilities/ab2/label"
-@onready var ab2_desc = $"background/abilities/ab2/description"
-@onready var ab3 = $"background/abilities/ab3"
-@onready var ab3_anchor = $"background/abilities/ab3/anchor"
-@onready var ab3_name = $"background/abilities/ab3/label"
-@onready var ab3_desc = $"background/abilities/ab3/description"
+@onready var ab1: Node2D = $"background/abilities/ab1"
+@onready var ab1_anchor: Node2D = $"background/abilities/ab1/anchor"
+@onready var ab1_name: Label = $"background/abilities/ab1/label"
+@onready var ab1_desc: Label = $"background/abilities/ab1/description"
+@onready var ab2: Node2D = $"background/abilities/ab2"
+@onready var ab2_anchor: Node2D = $"background/abilities/ab2/anchor"
+@onready var ab2_name: Label = $"background/abilities/ab2/label"
+@onready var ab2_desc: Label = $"background/abilities/ab2/description"
+@onready var ab3: Node2D = $"background/abilities/ab3"
+@onready var ab3_anchor: Node2D = $"background/abilities/ab3/anchor"
+@onready var ab3_name: Label = $"background/abilities/ab3/label"
+@onready var ab3_desc: Label = $"background/abilities/ab3/description"
 
-@onready var passive_panel = $"background/passive"
-@onready var passive_name = $"background/passive/label"
-@onready var passive_desc = $"background/passive/description"
+@onready var passive_panel: Node2D = $"background/passive"
+@onready var passive_name: Label = $"background/passive/label"
+@onready var passive_desc: Label = $"background/passive/description"
 
-@onready var back_button = $"back_button"
+@onready var back_button: TextureButton = $"back_button"
 
 @onready var audio := SimpleAudioLibrary
 
-var board = null
+var board: Board = null
 
-var icons = [null, null, null]
+var icons: Array[Node] = [null, null, null]
 
-func show_panel():
+func show_panel() -> void:
 	self.show()
 	self.call_deferred("_back_grab_focus")
 
-func reset_view():
+func reset_view() -> void:
 	self.level1.hide()
 	self.level2.hide()
 	self.level3.hide()
@@ -61,10 +62,10 @@ func reset_view():
 	self.icons = [null, null, null]
 
 
-func bind_unit(unit, tile_preview, board_object):
+func bind_unit(unit: BaseUnit, tile_preview: MapObject, board_object: Board) -> void:
 	self.reset_view()
 
-	var stats = unit.get_stats_with_modifiers()
+	var stats: Dictionary = unit.get_stats_with_modifiers()
 
 	self.tile_highlight.set_tile(tile_preview, 0)
 	self.unit_name.set_text(unit.unit_name)
@@ -89,58 +90,58 @@ func bind_unit(unit, tile_preview, board_object):
 		if self.board.map.model.metadata.has("allow_level_up") and not self.board.map.model.metadata["allow_level_up"]:
 			self.level_value.set_text("-")
 
-func show_active_abilities(unit, board_object):
+func show_active_abilities(unit: BaseUnit, board_object: Board) -> void:
 	if not unit.has_active_ability():
 		return
 
-	var index = 0
+	var index: int = 0
 
-	for ability in unit.active_abilities:
+	for ability: Ability in unit.active_abilities:
 		if ability.is_visible(board_object):
 			if index > 2:
 				return
 			self.bind_ability(index, ability, board_object)
 			index += 1
 
-func bind_ability(index, ability, board_object):
-	var boxes = [
+func bind_ability(index: int, ability: Ability, board_object: Board) -> void:
+	var boxes: Array[Node2D] = [
 		self.ab1,
 		self.ab2,
 		self.ab3
 	]
-	var anchors = [
+	var anchors: Array[Node2D] = [
 		self.ab1_anchor,
 		self.ab2_anchor,
 		self.ab3_anchor,
 	]
-	var labels = [
+	var labels: Array[Label] = [
 		self.ab1_name,
 		self.ab2_name,
 		self.ab3_name,
 	]
-	var descs = [
+	var descs: Array[Label] = [
 		self.ab1_desc,
 		self.ab2_desc,
 		self.ab3_desc,
 	]
 
 	boxes[index].show()
-	var icon = board_object.ui.icons.get_named_icon(ability.named_icon)
+	var icon: Node = board_object.ui.icons.get_named_icon(ability.named_icon)
 	if icon != null:
 		anchors[index].add_child(icon)
 	self.icons[index] = icon
 	labels[index].set_text(tr(ability.label))
 	descs[index].set_text(ability.description)
 
-func show_passive_ability(unit):
+func show_passive_ability(unit: BaseUnit) -> void:
 	if unit.passive_ability != null:
 		self.passive_name.set_text(unit.passive_ability.label)
 		self.passive_desc.set_text(unit.passive_ability.description)
 		self.passive_panel.show()
 
-func _back_grab_focus():
+func _back_grab_focus() -> void:
 	self.back_button.grab_focus()
 
-func _on_back_button_pressed():
+func _on_back_button_pressed() -> void:
 	if self.board != null:
 		self.board.close_context_panel()

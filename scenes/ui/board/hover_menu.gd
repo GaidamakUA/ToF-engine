@@ -1,19 +1,20 @@
 extends Control
+class_name HoverMenu
 
-const FADE_OUT_TIME = 3.0
+const FADE_OUT_TIME: float = 3.0
 
-@onready var animations = $"animations"
+@onready var animations: AnimationPlayer = $"animations"
 
-var board = null
-var fade_out_timer = 0.0
-var hover_stack = 0
+var board: Board = null
+var fade_out_timer: float = 0.0
+var hover_stack: int = 0
 
-var hovered_button = null
+var hovered_button: String = ""
 
-func _ready():
+func _ready() -> void:
 	pass # Replace with function body.
 
-func _input(event):
+func _input(event: InputEvent) -> void:
 	if not get_window().has_focus():
 		return
 
@@ -29,14 +30,14 @@ func _input(event):
 		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
 			self.call_deferred("_perform_action")
 
-func _should_pop_up():
+func _should_pop_up() -> bool:
 	return not self.is_visible() and self.board._can_current_player_perform_actions() and not self.board.ui.radial.is_visible() and not self.board.ui.is_popup_open()
 
-func _should_clear():
+func _should_clear() -> bool:
 	return self.is_visible() and (not self.board._can_current_player_perform_actions() or self.board.ui.radial.is_visible() or self.board.ui.is_popup_open())
 
 
-func _physics_process(delta):
+func _physics_process(delta: float) -> void:
 	if self.board == null:
 		return
 
@@ -70,15 +71,15 @@ func _physics_process(delta):
 	self.fade_out_timer += delta
 
 
-func _fade_in():
+func _fade_in() -> void:
 	self.hover_stack = 0
 	self.animations.play("show")
 
-func _fade_out():
+func _fade_out() -> void:
 	self.hover_stack = 0
 	self.animations.play("hide")
 
-func _on_mouse_click_mouse_entered(button):
+func _on_mouse_click_mouse_entered(button: String) -> void:
 	if self.board == null:
 		return
 
@@ -95,13 +96,13 @@ func _on_mouse_click_mouse_entered(button):
 		$"skills_button/button_anchor/white".show()
 
 		
-func _on_mouse_click_mouse_exited(button):
+func _on_mouse_click_mouse_exited(button: String) -> void:
 	if self.board == null:
 		return
 
 	self.hover_stack -= 1
 	if self.hovered_button == button:
-		self.hovered_button = null
+		self.hovered_button = ""
 
 	if button == "turn":
 		$"turn_button/white".hide()
@@ -112,7 +113,7 @@ func _on_mouse_click_mouse_exited(button):
 	elif button == "skills":
 		$"skills_button/button_anchor/white".hide()
 
-func _perform_action():
+func _perform_action() -> void:
 	if self.board == null:
 		return
 
@@ -126,4 +127,4 @@ func _perform_action():
 	elif self.hovered_button == "skills":
 		self.board._show_contextual_select_radial(true)
 
-	self.hovered_button = null
+	self.hovered_button = ""

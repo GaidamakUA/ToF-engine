@@ -21,7 +21,7 @@ func reset() -> void:
 
 func _update_time() -> void:
 	var time_diff: int = maxi(0, roundi(_turn_time - _accumulated_time))
-	$label.set_text(str(time_diff))
+	$"label".set_text(str(time_diff))
 
 
 func _physics_process(delta: float) -> void:

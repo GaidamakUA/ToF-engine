@@ -6,19 +6,19 @@ class_name Ui
 
 # Panels
 @onready var radial: Radial = $"radial/radial"
-@onready var resource: Variant = $"resources/coin_view"
+@onready var resource: Element3DView = $"resources/coin_view"
 @onready var resource_label: Label = $"resources/coin_view/label"
-@onready var summary: Variant = $"summary/summary_view"
-@onready var end_turn: Variant = $"end_turn/end_turn"
-@onready var end_turn_confirm: Variant = $"end_turn_confirm/end_turn_confirm"
-@onready var start_turn: Variant = $"start_turn/start_turn"
-@onready var story_dialog: Variant = $"story_dialog/story_dialog"
-@onready var cinematic_bars: Variant = $"cinematic_bars/cinematic_bars"
-@onready var unit_stats: Variant = $"unit_stats/unit_stats"
+@onready var summary: SummaryView = $"summary/summary_view"
+@onready var end_turn: EndTurnView = $"end_turn/end_turn"
+@onready var end_turn_confirm: EndTurnConfirmPanel = $"end_turn_confirm/end_turn_confirm"
+@onready var start_turn: StartTurnView = $"start_turn/start_turn"
+@onready var story_dialog: StoryDialogPanel = $"story_dialog/story_dialog"
+@onready var cinematic_bars: CinematicBars = $"cinematic_bars/cinematic_bars"
+@onready var unit_stats: UnitStatsPanel = $"unit_stats/unit_stats"
 @onready var objectives: ObjectivesUi = $"objectives/objectives"
-@onready var ap_depleted: Variant = $"ap_depleted/ap_depleted"
-@onready var saves: Variant = $"saves/saves"
-@onready var settings_panel: Variant = $"settings/settings"
+@onready var ap_depleted: ApDepletedView = $"ap_depleted/ap_depleted"
+@onready var saves: SavesPanel = $"saves/saves"
+@onready var settings_panel: MainMenuSettingsPanel = $"settings/settings"
 @onready var controls: Control = $"controls/game"
 @onready var turn_timer: TurnTimeView = $"TurnTime"
 
@@ -45,7 +45,7 @@ class_name Ui
 @onready var ab3_name: Label = $"tile_highlight/abilities/ab3/label"
 @onready var ab3_disabled: Sprite2D = $"tile_highlight/abilities/ab3/disabled"
 @onready var ab3_cd: Label = $"tile_highlight/abilities/ab3/disabled/cd"
-var ability_icons: Array[Variant] = [null, null, null]
+var ability_icons: Array[Node] = [null, null, null]
 
 # Edge pan
 @onready var edge_pan_left: Control = $"edge_pan/left"
@@ -53,7 +53,7 @@ var ability_icons: Array[Variant] = [null, null, null]
 @onready var edge_pan_top: Control = $"edge_pan/top"
 @onready var edge_pan_bottom: Control = $"edge_pan/bottom"
 
-@onready var hover_menu: Variant = $"buttons/hover_menu"
+@onready var hover_menu: HoverMenu = $"buttons/hover_menu"
 
 
 var icons: IconsFactory = IconsFactory.new()
@@ -177,7 +177,7 @@ func _bind_ability(index: int, ability: Ability) -> void:
     ]
 
     boxes[index].show()
-    var icon: Variant = self.icons.get_named_icon(ability.named_icon)
+    var icon: Node = self.icons.get_named_icon(ability.named_icon)
     if icon != null:
         anchors[index].add_child(icon)
     self.ability_icons[index] = icon
@@ -232,7 +232,7 @@ func update_end_turn_progress(value: float) -> void:
 func flash_start_end_card(player: String, turn: int) -> void:
     self.start_turn.flash(player, turn)
 
-func show_story_dialog(text: String, actor: Variant, font_size: Variant = null) -> void:
+func show_story_dialog(text: String, actor: Dictionary[String, Variant], font_size: int = 16) -> void:
     self.story_dialog.set_text(text)
     self.story_dialog.set_actor(actor)
     self.story_dialog.set_font_size(font_size)

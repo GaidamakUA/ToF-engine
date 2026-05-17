@@ -1,20 +1,22 @@
 extends Node2D
+class_name SummaryView
 
-var board
-@onready var menu_button = $"menu_button"
-@onready var restart_button = $"restart_button"
-@onready var next_mission_button = $"next_mission_button"
-@onready var next_mission_button_label = $"next_mission_button/label"
+var board: Board
 
-@onready var mission_complete = $"background/mission_complete"
-@onready var mission_failed = $"background/mission_failed"
+@onready var menu_button: TextureButton = $"menu_button"
+@onready var restart_button: TextureButton = $"restart_button"
+@onready var next_mission_button: TextureButton = $"next_mission_button"
+@onready var next_mission_button_label: Label = $"next_mission_button/label"
 
-@onready var blue_wins = $"background/blue_wins"
-@onready var red_wins = $"background/red_wins"
-@onready var green_wins = $"background/green_wins"
-@onready var yellow_wins = $"background/yellow_wins"
-@onready var black_wins = $"background/black_wins"
-@onready var game_draw = $"background/game_draw"
+@onready var mission_complete: Label = $"background/mission_complete"
+@onready var mission_failed: Label = $"background/mission_failed"
+
+@onready var blue_wins: Label = $"background/blue_wins"
+@onready var red_wins: Label = $"background/red_wins"
+@onready var green_wins: Label = $"background/green_wins"
+@onready var yellow_wins: Label = $"background/yellow_wins"
+@onready var black_wins: Label = $"background/black_wins"
+@onready var game_draw: Label = $"background/game_draw"
 
 @onready var switcher := SceneSwitcher
 @onready var gamepad_adapter := GamepadAdapter
@@ -23,7 +25,7 @@ var board
 @onready var campaign := Campaign
 @onready var multiplayer_srv := Multiplayer
 
-@onready var points_panels: Dictionary = {
+@onready var points_panels: Dictionary[String, SidePointsSummary] = {
     "blue": $"points/HBoxContainer/SummaryViewPoints0",
     "red": $"points/HBoxContainer/SummaryViewPoints1",
     "yellow": $"points/HBoxContainer/SummaryViewPoints2",
@@ -31,7 +33,7 @@ var board
     "black": $"points/HBoxContainer/SummaryViewPoints4",
 }
 
-func configure_winner(winner):
+func configure_winner(winner: String) -> void:
     self.gamepad_adapter.enable()
     self.restart_button.show()
     _clear_points()
@@ -65,16 +67,16 @@ func configure_winner(winner):
         self.menu_button.grab_focus()
         self.audio.play("fanfare")
 
-func disable_restart():
+func disable_restart() -> void:
     self.restart_button.hide()
     self.menu_button.grab_focus()
 
-func _setup_next_mission():
+func _setup_next_mission() -> void:
     self.next_mission_button.show()
     if self.campaign.is_campaign_complete(self.match_setup.campaign_name):
         self.next_mission_button_label.set_text("TR_FINISH")
 
-func _on_menu_button_pressed():
+func _on_menu_button_pressed() -> void:
     self.gamepad_adapter.disable()
     self.match_setup.reset()
     self.multiplayer_srv.close_game()
@@ -82,7 +84,7 @@ func _on_menu_button_pressed():
     self.audio.play("menu_click")
 
 
-func _on_restart_button_pressed():
+func _on_restart_button_pressed() -> void:
     self.gamepad_adapter.disable()
     if self.match_setup.restore_save_id != null:
         self.match_setup.restore_save_id = null
@@ -91,7 +93,7 @@ func _on_restart_button_pressed():
     self.switcher.board()
     self.audio.play("menu_click")
 
-func _on_next_mission_button_pressed():
+func _on_next_mission_button_pressed() -> void:
     if self.campaign.is_campaign_complete(self.match_setup.campaign_name):
         self.match_setup.animate_medal = true
     self.gamepad_adapter.disable()
@@ -100,7 +102,7 @@ func _on_next_mission_button_pressed():
 
 
 func _clear_points() -> void:
-    for panel: Node in points_panels.values():
+    for panel: SidePointsSummary in points_panels.values():
         panel.hide()
 
 

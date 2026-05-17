@@ -1,4 +1,5 @@
 extends Node3D
+class_name GameCamera
 
 const DEADZONE = 0.2
 const MOVEMENT_AXIS_X = JOY_AXIS_LEFT_X

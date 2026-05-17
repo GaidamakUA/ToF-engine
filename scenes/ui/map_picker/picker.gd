@@ -1,4 +1,5 @@
 extends Node2D
+class_name MapPickerPanel
 
 const MODE_NAME = "name"
 const MODE_SELECT = "select"

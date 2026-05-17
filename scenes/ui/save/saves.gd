@@ -1,4 +1,5 @@
 extends Node2D
+class_name SavesPanel
 
 const PAGE_SIZE = 10
 

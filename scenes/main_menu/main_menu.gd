@@ -1,7 +1,8 @@
 extends Node3D
+class_name MainMenu
 
 @onready var map: Map = $"map"
-@onready var ui: Variant = $"ui"
+@onready var ui: MainMenuUi = $"ui"
 @onready var cart: PathFollow3D = $"map/path/cart"
 @onready var animations: AnimationPlayer = $"animations"
 @onready var audio := SimpleAudioLibrary
@@ -121,7 +122,7 @@ func close_campaign_selection() -> void:
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_menu()
 
-func open_campaign_mission_selection(campaign_name: Variant = null) -> void:
+func open_campaign_mission_selection(campaign_name: String = "") -> void:
     self.ui.hide_campaign_selection()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.show_campaign_mission_selection(campaign_name)
@@ -275,7 +276,7 @@ func handle_multiplayer_picker_output(args: Array) -> void:
     self.gamepad_adapter.enable()
     await self.get_tree().create_timer(self.MENU_TIMEOUT).timeout
     self.ui.picker.unlock_tab_bar()
-    var error: Variant = self.multiplayer_srv.create_game(args[0])
+    var error: Error = self.multiplayer_srv.create_game(args[0])
     if error:
         self.ui.show_multiplayer()
         return

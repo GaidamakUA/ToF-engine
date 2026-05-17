@@ -1,4 +1,5 @@
 extends Control
+class_name MainMenuOptionsPanel
 
 @onready var campaign_button = $"campaign_button"
 @onready var skirmish_button = $"skirmish_button"

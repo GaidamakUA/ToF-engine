@@ -1,4 +1,5 @@
 extends Control
+class_name CreditsPanel
 
 @onready var audio := SimpleAudioLibrary
 

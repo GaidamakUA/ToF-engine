@@ -1,4 +1,5 @@
 extends Control
+class_name SkirmishPanel
 
 @onready var map_list_service := MapManager
 @onready var audio := SimpleAudioLibrary

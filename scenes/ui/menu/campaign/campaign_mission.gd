@@ -1,4 +1,5 @@
 extends "res://scenes/ui/menu/base_menu_panel.gd"
+class_name CampaignMissionPanel
 
 @onready var campaign := Campaign
 @onready var switcher := SceneSwitcher

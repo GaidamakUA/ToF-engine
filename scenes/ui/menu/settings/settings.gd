@@ -1,4 +1,5 @@
 extends Control
+class_name MainMenuSettingsPanel
 
 @onready var audio := SimpleAudioLibrary
 @onready var settings := Settings

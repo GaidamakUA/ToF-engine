@@ -1,4 +1,5 @@
 extends Control
+class_name CampaignSelectionPanel
 
 const TILES_PER_PAGE = 6
 

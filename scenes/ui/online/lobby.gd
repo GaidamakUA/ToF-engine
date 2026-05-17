@@ -1,4 +1,5 @@
 extends "res://scenes/ui/menu/base_menu_panel.gd"
+class_name OnlineLobbyPanel
 
 @onready var relay := Relay
 @onready var online := Online

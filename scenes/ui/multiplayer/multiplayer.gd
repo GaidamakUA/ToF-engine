@@ -1,4 +1,5 @@
 extends "res://scenes/ui/menu/base_menu_panel.gd"
+class_name MultiplayerPanel
 
 @onready var main_panel = $"widgets/main"
 @onready var address_panel = $"widgets/address"

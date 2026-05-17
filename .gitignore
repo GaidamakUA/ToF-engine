@@ -26,3 +26,6 @@ addons/
 
 # Promo files too big for github
 docs/devlog/steam/trailer/gameplay.mp4
+
+# VSCode
+.vscode/settings.json

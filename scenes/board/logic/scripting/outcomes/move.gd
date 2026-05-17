@@ -8,7 +8,7 @@ var path: Array[String]
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
     var source_tile: MapTile = self.board.map.model.get_tile(self.who)
     var destination_tile: MapTile = self.board.map.model.get_tile(self.where)
-    var unit: MapObject = source_tile.unit.tile
+    var unit: BaseUnit = source_tile.unit.tile
 
     destination_tile.unit.set_tile(source_tile.unit.tile)
     source_tile.unit.release()

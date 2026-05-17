@@ -2,28 +2,28 @@ extends Node3D
 
 class_name MapObject
 
-@export var template_name := ""
-@export var unit_can_stand = false
-@export var unit_can_fly = false
-@export var is_invisible = false
-@export var can_share_space = false
+@export var template_name: String = ""
+@export var unit_can_stand: bool = false
+@export var unit_can_fly: bool = false
+@export var is_invisible: bool = false
+@export var can_share_space: bool = false
 
-@export var main_tile_view_cam_modifier = 0
-@export var side_tile_view_cam_modifier = 0
-@export var tile_view_height_cam_modifier = 0.0
+@export var main_tile_view_cam_modifier: int = 0
+@export var side_tile_view_cam_modifier: int = 0
+@export var tile_view_height_cam_modifier: float = 0.0
 
-@export var unit_vertical_offset = 0
+@export var unit_vertical_offset: int = 0
 
-@export var next_damage_stage_template = ""
-@export var base_stage_template = ""
+@export var next_damage_stage_template: String = ""
+@export var base_stage_template: String = ""
 
-@export var shadow_override := false
+@export var shadow_override: bool = false
 
 var scripting_tags: Dictionary[String, Variant] = {}
-var current_rotation := 0
+var current_rotation: int = 0
 
 func get_dict() -> Dictionary[String, Variant]:
-    var tile_rotation = self.get_rotation_degrees()
+    var tile_rotation: Vector3 = self.get_rotation_degrees()
 
     var tile_dict: Dictionary[String, Variant] = {
         "tile" : self.template_name,
@@ -33,47 +33,47 @@ func get_dict() -> Dictionary[String, Variant]:
         tile_dict["tags"] = self.scripting_tags
     return tile_dict
 
-func reset_position_for_tile_view():
-    var mesh_position = $"mesh".get_position()
+func reset_position_for_tile_view() -> void:
+    var mesh_position: Vector3 = $"mesh".get_position()
     mesh_position.y = 0
 
     $"mesh".set_position(mesh_position)
 
-func add_script_tag(tag):
+func add_script_tag(tag: String) -> void:
     self.scripting_tags[tag] = true
 
-func has_script_tag(tag):
+func has_script_tag(tag: String) -> bool:
     return self.scripting_tags.has(tag)
 
-func is_damageable():
+func is_damageable() -> bool:
     return not self.next_damage_stage_template == ""
 
-func is_restoreable():
+func is_restoreable() -> bool:
     return not self.base_stage_template == ""
 
-func hide_mesh():
+func hide_mesh() -> void:
     $"mesh".hide()
 
-func disable_shadow():
+func disable_shadow() -> void:
     self._set_shadow(0)
 
 
-func enable_shadow():
+func enable_shadow() -> void:
     self._set_shadow(1)
 
-func _set_shadow(shadow_value):
+func _set_shadow(shadow_value: int) -> void:
     $"mesh".cast_shadow = shadow_value
-    var reflection = self.get_node_or_null("reflection")
+    var reflection: Variant = self.get_node_or_null("reflection")
     if reflection != null:
         reflection.cast_shadow = shadow_value
 
-    for child in $"mesh".get_children():
+    for child: Node in $"mesh".get_children():
         if child is MeshInstance3D:
             child.cast_shadow = shadow_value
 
-    for child in self.get_children():
+    for child: Node in self.get_children():
         if child is Node3D:
-            for next_child in child.get_children():
+            for next_child: Node in child.get_children():
                 if next_child is MeshInstance3D:
                     next_child.cast_shadow = shadow_value
                     return

@@ -3,11 +3,11 @@ class_name SettingsService
 
 const SETTINGS_FILE_PATH := "user://settings.json"
 
-signal changed(key, new_value)
+signal changed(key: String, new_value: Variant)
 
 @onready var audio: AudioService = SimpleAudioLibrary as AudioService
-var filesystem := FileSystem.new()
-var os_string := ""
+var filesystem: FileSystem = FileSystem.new()
+var os_string: String = ""
 
 var settings: Dictionary[String, Variant] = {
 	"steamdeck_detection": false,
@@ -59,9 +59,10 @@ func save_settings_to_file() -> void:
 	self.filesystem.write_data_as_json_to_file(self.SETTINGS_FILE_PATH, self.settings)
 
 func load_settings_from_file() -> void:
-	var loaded_settings = self.filesystem.read_json_from_file(self.SETTINGS_FILE_PATH)
+	var loaded_settings: Dictionary[String, Variant]
+	loaded_settings.assign(self.filesystem.read_json_from_file(self.SETTINGS_FILE_PATH))
 
-	for settings_key in loaded_settings:
+	for settings_key: String in loaded_settings:
 		self.settings[settings_key] = loaded_settings[settings_key]
 		self._apply_option(settings_key)
 
@@ -77,7 +78,7 @@ func set_option(key: String, value: Variant) -> void:
 	self._apply_option(key)
 	self.changed.emit(key, value)
 
-func _apply_option(key: String):
+func _apply_option(key: String) -> void:
 	if key == "fullscreen":
 		get_window().mode = Window.MODE_EXCLUSIVE_FULLSCREEN if (self.settings[key]) else Window.MODE_WINDOWED
 	elif key == "render_scale":
@@ -122,11 +123,11 @@ func _apply_option(key: String):
 			get_window().set_content_scale_mode(Window.CONTENT_SCALE_MODE_DISABLED)
 			get_window().set_content_scale_aspect(Window.CONTENT_SCALE_ASPECT_KEEP)
 
-func _set_bus_vol(bus_name: String, key: String):
-	var decibels := self._get_decibels(self.settings[key])
+func _set_bus_vol(bus_name: String, key: String) -> void:
+	var decibels: int = self._get_decibels(int(self.settings[key]))
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index(bus_name), decibels)
 
-func _get_decibels(value) -> int:
+func _get_decibels(value: int) -> int:
 	if value == 10:
 		return 0
 	elif value == 9:

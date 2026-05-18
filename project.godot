@@ -58,6 +58,10 @@ window/stretch/mode="canvas_items"
 window/stretch/aspect="keep_height"
 window/vsync/vsync_mode=false
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/copy_all_errors/plugin.cfg")
+
 [filesystem]
 
 import/blender/enabled=false

@@ -140,24 +140,29 @@ func _input(event: InputEvent) -> void:
     if self.camera_in_transit or self.ai_operated or self.script_operated:
         return
 
-    if event is InputEventMouseButton and event.button_index in [MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_LEFT, MOUSE_BUTTON_MIDDLE]:
-        if event.pressed:
-            self.mouse_click_position = event.position
+    var mouse_button_event: InputEventMouseButton = event as InputEventMouseButton
+    var mouse_motion_event: InputEventMouseMotion = event as InputEventMouseMotion
+    var pan_gesture_event: InputEventPanGesture = event as InputEventPanGesture
+    var magnify_gesture_event: InputEventMagnifyGesture = event as InputEventMagnifyGesture
+
+    if mouse_button_event != null and mouse_button_event.button_index in [MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_LEFT, MOUSE_BUTTON_MIDDLE]:
+        if mouse_button_event.pressed:
+            self.mouse_click_position = mouse_button_event.position
         else:
             self.mouse_click_position = null
-    elif event is InputEventMouseMotion:
+    elif mouse_motion_event != null:
         if self.mouse_click_position != null:
-            if event.position.distance_squared_to(self.mouse_click_position) > self.MOUSE_MOVE_THRESHOLD:
+            if mouse_motion_event.position.distance_squared_to(self.mouse_click_position) > self.MOUSE_MOVE_THRESHOLD:
                 self.mouse_drag = true
         else:
             self.mouse_drag = false
 
         if self.mouse_drag:
-            self._mouse_shift_camera(event.relative)
-    elif event is InputEventPanGesture:
-        self._mouse_shift_camera(event.delta * pan_speed)
-    elif event is InputEventMagnifyGesture:
-        var zoom_steps: int = int((event.factor - 1) * 100)
+            self._mouse_shift_camera(mouse_motion_event.relative)
+    elif pan_gesture_event != null:
+        self._mouse_shift_camera(pan_gesture_event.delta * pan_speed)
+    elif magnify_gesture_event != null:
+        var zoom_steps: int = int((magnify_gesture_event.factor - 1) * 100)
         self._mouse_zoom(self.mouse_zoom_step * zoom_steps)
 
 func _process(delta: float) -> void:
@@ -508,8 +513,10 @@ func _on_edge_pan(direction_vector: Array) -> void:
 
 func _set_near_blur(magnitude: float) -> void:
     _last_used_blur_magnitude = magnitude
-    if not settings.get_option("tilt_shift_enabled"):
-        self.camera_tof.attributes.dof_blur_near_enabled = false
+    var camera_attributes: CameraAttributesPractical = self.camera_tof.attributes as CameraAttributesPractical
+    assert(camera_attributes != null)
+    if not bool(settings.get_option("tilt_shift_enabled")):
+        camera_attributes.dof_blur_near_enabled = false
         return
 
     var near_threshold: float = 0.60
@@ -517,15 +524,17 @@ func _set_near_blur(magnitude: float) -> void:
         var camera_fraction: float = float(magnitude - self.tof_camera_distance_min) / float(self.tof_camera_distance_max - self.tof_camera_distance_min)
 
         if camera_fraction > near_threshold:
-            self.camera_tof.attributes.dof_blur_near_enabled = true
-            self.camera_tof.attributes.dof_blur_near_distance = 90 * ((camera_fraction - near_threshold) / (1.0 - near_threshold))
+            camera_attributes.dof_blur_near_enabled = true
+            camera_attributes.dof_blur_near_distance = 90 * ((camera_fraction - near_threshold) / (1.0 - near_threshold))
         else:
-            self.camera_tof.attributes.dof_blur_near_enabled = false
+            camera_attributes.dof_blur_near_enabled = false
     else:
-        self.camera_tof.attributes.dof_blur_near_enabled = false
+        camera_attributes.dof_blur_near_enabled = false
 
 
 func _settings_changed(key: String, new_value: Variant) -> void:
     if key == "tilt_shift_enabled":
-        camera_tof.attributes.dof_blur_far_enabled = bool(new_value)
+        var camera_attributes: CameraAttributesPractical = self.camera_tof.attributes as CameraAttributesPractical
+        assert(camera_attributes != null)
+        camera_attributes.dof_blur_far_enabled = bool(new_value)
         _set_near_blur(_last_used_blur_magnitude)

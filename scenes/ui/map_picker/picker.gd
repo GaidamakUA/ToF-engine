@@ -348,8 +348,8 @@ func connect_buttons():
     self.prev_button.connect("pressed", Callable(self, "switch_to_prev_page"))
 
     for button in self.map_selection_buttons:
-        button.bind_method(self, "map_button_pressed")
-        button.bind_focus(self, "map_button_focused")
+        button.bind_method(self, &"map_button_pressed")
+        button.bind_focus(self, &"map_button_focused")
 
 
 func _on_map_name_text_changed(new_text):

@@ -12,7 +12,7 @@ var players: Array[Dictionary] = []
 
 
 func add_player(type: String, side: String, alive: bool = true, team: Variant = null, peer_id: Variant = null) -> void:
-    self.players.append({
+    var player_data: Dictionary[String, Variant] = {
         "type": type,
         "side": side,
         "team": team,
@@ -20,7 +20,8 @@ func add_player(type: String, side: String, alive: bool = true, team: Variant = 
         "alive" : alive,
         "heroes" : {},
         "peer_id" : peer_id
-    })
+    }
+    self.players.append(player_data)
 
 
 func switch_to_next_player() -> void:
@@ -45,9 +46,10 @@ func get_current_side() -> String:
 func get_current_team() -> int:
     return self.get_player_team(String(self.get_current_param("side")))
 
-func get_current_heroes() -> Dictionary:
-    var heroes: Dictionary = {}
-    heroes.assign(self.get_current_param("heroes"))
+func get_current_heroes() -> Dictionary[int, HeroUnit]:
+    var heroes: Dictionary[int, HeroUnit]
+    var raw_heroes: Dictionary = self.get_current_param("heroes")
+    heroes.assign(raw_heroes)
     return heroes
 
 func get_player_id_by_side(side: String) -> int:
@@ -85,19 +87,19 @@ func set_player_ap(id: int, value: int) -> void:
     self.players[id]["ap"] = value
 
 func add_player_ap(id: int, value: int) -> void:
-    self.players[id]["ap"] += value
+    self.players[id]["ap"] = int(self.players[id]["ap"]) + value
 
-    if self.players[id]["ap"] < 0:
+    if int(self.players[id]["ap"]) < 0:
         self.players[id]["ap"] = 0
 
-    if self.players[id]["ap"] > 999:
+    if int(self.players[id]["ap"]) > 999:
         self.players[id]["ap"] = 999
 
 func use_player_ap(id: int, value: int) -> void:
     self.has_player_moved = true
-    self.players[id]["ap"] -= value
+    self.players[id]["ap"] = int(self.players[id]["ap"]) - value
 
-    if self.players[id]["ap"] < 0:
+    if int(self.players[id]["ap"]) < 0:
         self.players[id]["ap"] = 0
 
 func get_player_ap(id: int) -> int:
@@ -180,7 +182,7 @@ func count_alive_players() -> int:
     var amount: int = 0
 
     for player: Dictionary in self.players:
-        if player["alive"]:
+        if bool(player["alive"]):
             amount += 1
 
     return amount
@@ -190,7 +192,7 @@ func count_alive_teams() -> int:
     var team: int
 
     for player: Dictionary in self.players:
-        if player["alive"]:
+        if bool(player["alive"]):
             team = self.get_player_team(String(player["side"]))
             amount[team] = true
 
@@ -203,11 +205,13 @@ func has_side_a_hero(side: String) -> bool:
     return self.players[self.get_player_id_by_side(side)]['heroes'].size() > 0
 
 func add_hero_for_player(id: int, hero: HeroUnit) -> void:
-    self.players[id]["heroes"][hero.get_instance_id()] = hero
+    var heroes: Dictionary = self.players[id]["heroes"]
+    heroes[hero.get_instance_id()] = hero
 
 func get_heroes_for_player(id: int) -> Array[HeroUnit]:
     var heroes: Array[HeroUnit] = []
-    heroes.assign(self.players[id]["heroes"].values())
+    var player_heroes: Dictionary = self.players[id]["heroes"]
+    heroes.assign(player_heroes.values())
     return heroes
 
 func add_hero_for_side(side: String, hero: HeroUnit) -> void:
@@ -229,7 +233,8 @@ func clear_hero_for_player(id: int, hero: HeroUnit) -> void:
     if id < 0 or hero == null:
         return
 
-    self.players[id]["heroes"].erase(hero.get_instance_id())
+    var heroes: Dictionary = self.players[id]["heroes"]
+    heroes.erase(hero.get_instance_id())
 
 func clear_current_hero(hero: HeroUnit) -> void:
     self.clear_hero_for_player(self.current_player, hero)
@@ -251,14 +256,15 @@ func register_heroes(model: MapModel) -> void:
 func get_players_state_data() -> Array[Dictionary]:
     var state_data: Array[Dictionary] = []
     for player: Dictionary in self.players:
-        state_data.append({
+        var player_data: Dictionary[String, Variant] = {
             "type": player["type"],
             "side": player["side"],
             "team": player["team"],
             "ap" : player["ap"],
             "alive" : player["alive"],
             "peer_id" : player["peer_id"]
-        })
+        }
+        state_data.append(player_data)
     return state_data
 
 func are_all_peers_present() -> bool:

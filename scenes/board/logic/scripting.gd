@@ -15,8 +15,9 @@ func ingest_scripts(board_object: Board, incoming_scripts: Variant) -> void:
     if self.scripts == null or self.scripts.is_empty() or self.scripts['triggers'].is_empty():
         self._setup_basic_win_condition()
     else:
-        for trigger_name: String in self.scripts['triggers']:
-            var trigger_definition: Dictionary[String, Variant] = {}
+        var trigger_definitions: Dictionary = self.scripts['triggers']
+        for trigger_name: String in trigger_definitions:
+            var trigger_definition: Dictionary[String, Variant]
             trigger_definition.assign(self.scripts['triggers'][trigger_name])
 
             if _is_trigger_valid(trigger_definition):
@@ -52,7 +53,7 @@ func _setup_trigger(trigger_definition: Dictionary[String, Variant]) -> BaseTrig
     new_trigger.outcome = self._build_outcome_story(String(trigger_definition['story']))
 
     new_trigger.board = self.board
-    var details: Dictionary[String, Variant] = {}
+    var details: Dictionary[String, Variant]
     details.assign(trigger_definition['details'])
     new_trigger.ingest_details(details)
 
@@ -64,13 +65,13 @@ func _setup_trigger(trigger_definition: Dictionary[String, Variant]) -> BaseTrig
     return new_trigger
 
 func _build_outcome_story(story_name: String) -> StoryOutcome:
-    var story_definition: Array = []
+    var story_definition: Array[Dictionary]
     story_definition.assign(self.scripts['stories'][story_name])
     var new_story: StoryOutcome = StoryOutcome.new()
     new_story.board = self.board
 
     for step_data: Dictionary in story_definition:
-        var step: Dictionary[String, Variant] = {}
+        var step: Dictionary[String, Variant]
         step.assign(step_data)
         new_story.add_step(self._build_outcome_story_step(step))
 
@@ -80,7 +81,7 @@ func _build_outcome_story_step(step_definition: Dictionary[String, Variant]) -> 
     var new_step: BaseOutcome = self.outcome_factory.get_outcome(String(step_definition['action']))
     new_step.board = self.board
     if step_definition.has('details'):
-        var details: Dictionary[String, Variant] = {}
+        var details: Dictionary[String, Variant]
         details.assign(step_definition['details'])
         new_step.ingest_details(details)
     if step_definition.has('delay'):
@@ -127,10 +128,10 @@ func restore_from_state(state: Dictionary[String, Variant]) -> void:
     self.trigger_groups.clear()
     self.trigger_groups.assign(state["groups"])
 
-    var trigger_states: Dictionary[String, Variant] = {}
+    var trigger_states: Dictionary[String, Variant]
     trigger_states.assign(state["triggers"])
 
     for trigger_name: String in trigger_states.keys():
-        var trigger_state: Dictionary[String, Variant] = {}
+        var trigger_state: Dictionary[String, Variant]
         trigger_state.assign(trigger_states[trigger_name])
         self.triggers[trigger_name].restore_from_state(trigger_state)

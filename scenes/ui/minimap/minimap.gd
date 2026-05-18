@@ -1,4 +1,5 @@
 extends Control
+class_name MinimapView
 
 @onready var map_list_service := MapManager
 @onready var minimap := $"minimap"

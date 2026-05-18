@@ -241,18 +241,22 @@ func wipe_map() -> void:
     for tile_id: String in self.map.model.tiles.keys():
         self.map.model.tiles[tile_id].wipe()
 
-func fill_map_from_data(data: Dictionary) -> void:
-    var tiles_data: Dictionary = data["tiles"]
-    var scripts: Dictionary = {
+func fill_map_from_data(data: Dictionary[String, Variant]) -> void:
+    var tiles_data: Dictionary[String, Dictionary]
+    tiles_data.assign(data["tiles"])
+    var scripts: Dictionary[String, Dictionary] = {
         "stories" : {},
         "triggers" : {}
     }
 
     if data.has("scripts"):
-        scripts = data["scripts"]
+        scripts.clear()
+        scripts.assign(data["scripts"])
 
     if data.has("metadata"):
-        self.map.model.metadata = data["metadata"]
+        var metadata: Dictionary[String, Variant]
+        metadata.assign(data["metadata"])
+        self.map.model.metadata = metadata
 
     self.attach_mouse_layer()
 
@@ -278,31 +282,47 @@ func attach_mouse_layer() -> void:
 
 func place_tile(tile_id: String, tile_data: Dictionary) -> void:
     var tile: MapTile = self.map.model.tiles[tile_id]
+    var ground_data: Dictionary[String, Variant] = self._get_layer_data(tile_data, "ground")
+    var frame_data: Dictionary[String, Variant] = self._get_layer_data(tile_data, "frame")
+    var decoration_data: Dictionary[String, Variant] = self._get_layer_data(tile_data, "decoration")
+    var terrain_data: Dictionary[String, Variant] = self._get_layer_data(tile_data, "terrain")
+    var building_data: Dictionary[String, Variant] = self._get_layer_data(tile_data, "building")
+    var unit_data: Dictionary[String, Variant] = self._get_layer_data(tile_data, "unit")
 
-    if tile_data["ground"]["tile"] != null:
-        self.place_ground(tile.position, tile_data["ground"]["tile"], tile_data["ground"]["rotation"])
+    if ground_data["tile"] != null:
+        self.place_ground(tile.position, str(ground_data["tile"]), int(ground_data["rotation"]))
 
-    if tile_data["frame"]["tile"] != null:
-        self.place_frame(tile.position, tile_data["frame"]["tile"], tile_data["frame"]["rotation"])
+    if frame_data["tile"] != null:
+        self.place_frame(tile.position, str(frame_data["tile"]), int(frame_data["rotation"]))
 
-    if tile_data["decoration"]["tile"] != null:
-        self.place_decoration(tile.position, tile_data["decoration"]["tile"], tile_data["decoration"]["rotation"])
+    if decoration_data["tile"] != null:
+        self.place_decoration(tile.position, str(decoration_data["tile"]), int(decoration_data["rotation"]))
 
-    if tile_data.has("damage") and tile_data["damage"]["tile"] != null:
-        self.place_damage(tile.position, tile_data["damage"]["tile"], tile_data["damage"]["rotation"])
+    if tile_data.has("damage"):
+        var damage_data: Dictionary[String, Variant] = self._get_layer_data(tile_data, "damage")
+        if damage_data["tile"] != null:
+            self.place_damage(tile.position, str(damage_data["tile"]), int(damage_data["rotation"]))
 
-    if tile_data["terrain"]["tile"] != null:
-        self.place_terrain(tile.position, tile_data["terrain"]["tile"], tile_data["terrain"]["rotation"])
+    if terrain_data["tile"] != null:
+        self.place_terrain(tile.position, str(terrain_data["tile"]), int(terrain_data["rotation"]))
 
-    if tile_data["building"]["tile"] != null:
-        self.place_building(tile.position, tile_data["building"]["tile"], tile_data["building"]["rotation"], tile_data["building"]["side"])
-        if tile_data["building"].has("abilities"):
-            tile.building.tile.restore_abilities_status(tile_data["building"]["abilities"])
+    if building_data["tile"] != null:
+        self.place_building(tile.position, str(building_data["tile"]), int(building_data["rotation"]), building_data["side"])
+        if building_data.has("abilities"):
+            tile.building.tile.restore_abilities_status(building_data["abilities"])
 
-    if tile_data["unit"]["tile"] != null:
-        if not tile_data["unit"].has("ai_paused"):
-            tile_data["unit"]["ai_paused"] = false
-        self.place_unit(tile.position, tile_data["unit"]["tile"], tile_data["unit"]["rotation"], tile_data["unit"]["side"], tile_data["unit"]["ai_paused"])
+    if unit_data["tile"] != null:
+        if not unit_data.has("ai_paused"):
+            var raw_unit_data: Dictionary = tile_data["unit"]
+            raw_unit_data["ai_paused"] = false
+            unit_data["ai_paused"] = false
+        self.place_unit(tile.position, str(unit_data["tile"]), int(unit_data["rotation"]), unit_data["side"], bool(unit_data["ai_paused"]))
+
+
+func _get_layer_data(tile_data: Dictionary, layer: String) -> Dictionary[String, Variant]:
+    var layer_data: Dictionary[String, Variant]
+    layer_data.assign(tile_data[layer])
+    return layer_data
 
 
 func set_building_side(position: Vector2i, new_side: String, new_team: Variant = null) -> void:
@@ -352,14 +372,17 @@ func rebuild_tile(tile_id: String, tile_data: Dictionary) -> void:
     self.place_tile(tile_id, tile_data)
     tile.is_state_modified = true
     if tile.unit.is_present():
-        tile.unit.tile.restore_from_state(tile_data["unit"])
-        if tile_data["unit"].has("passenger"):
-            var passenger: Variant = self.map.templates.get_template(tile_data["unit"]["passenger"]["tile"])
-            passenger.set_rotation(Vector3(0, deg_to_rad(tile_data["unit"]["passenger"]["rotation"]), 0))
-            passenger.current_rotation = tile_data["unit"]["passenger"]["rotation"]
+        var unit_data: Dictionary[String, Variant] = self._get_layer_data(tile_data, "unit")
+        tile.unit.tile.restore_from_state(unit_data)
+        if unit_data.has("passenger"):
+            var passenger_data: Dictionary[String, Variant] = {}
+            passenger_data.assign(unit_data["passenger"])
+            var passenger: MapObject = self.map.templates.get_template(str(passenger_data["tile"]))
+            passenger.set_rotation(Vector3(0, deg_to_rad(int(passenger_data["rotation"])), 0))
+            passenger.current_rotation = int(passenger_data["rotation"])
             if not self.map.settings.get_option("shadows"):
                 self._disable_shadow(passenger)
-            passenger.restore_from_state(tile_data["unit"]["passenger"])
-            self._set_unit_side(passenger, tile_data["unit"]["passenger"]["side"])
+            passenger.restore_from_state(passenger_data)
+            self._set_unit_side(passenger, str(passenger_data["side"]))
 
             tile.unit.tile.passenger = passenger

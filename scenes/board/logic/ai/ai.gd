@@ -2,14 +2,14 @@ class_name Ai
 var board: Board
 var collector: Collector
 
-var _ai_paused := false
-var _ai_abort := false
+var _ai_paused: bool = false
+var _ai_abort: bool = false
 
-const FAILSAFE := 4
-var _failsafe_counter := 0
-var _last_action_signature = null
+const FAILSAFE: int = 4
+var _failsafe_counter: int = 0
+var _last_action_signature: Variant = null
 
-var _reserved_ap := 0
+var _reserved_ap: int = 0
 
 
 func _init(board_object: Board) -> void:
@@ -36,7 +36,7 @@ func _ai_tick() -> void:
         return
 
     while self._ai_paused or self.board.map.camera.camera_in_transit or self.board.map.camera.script_operated:
-        var timer := self.board.get_tree().create_timer(0.1)
+        var timer: SceneTreeTimer = self.board.get_tree().create_timer(0.1)
         timer.connect("timeout", Callable(self, "_ai_tick"))
         return
 

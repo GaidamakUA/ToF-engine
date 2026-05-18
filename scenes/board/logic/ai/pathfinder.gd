@@ -1,6 +1,6 @@
 class_name Pathfinder
 
-const NULL_VALUE := 'null_value'
+const NULL_VALUE: String = 'null_value'
 
 var visited_tiles: Dictionary[String, MapTile] = {}
 var explored_tiles: Dictionary[String, int] = {}
@@ -34,7 +34,7 @@ func mark_tile_cost(tile: MapTile, cost: int) -> void:
     self.explored_tiles[self._get_key(tile)] = cost
 
 func _get_tile_cost(tile: MapTile) -> int:
-    var key: = self._get_key(tile)
+    var key: String = self._get_key(tile)
     if self.explored_tiles.has(key):
         return self.explored_tiles[key]
 
@@ -65,8 +65,8 @@ func expand_from_tile(tile: MapTile, depth: int, reach_cost: int, unit: BaseUnit
             self.connect_path(tile, neighbour)
 
 func connect_path(source_tile: MapTile, destination_tile: MapTile) -> void:
-    var source_key := self._get_key(source_tile)
-    var destination_key := self._get_key(destination_tile)
+    var source_key: String = self._get_key(source_tile)
+    var destination_key: String = self._get_key(destination_tile)
 
     self.tile_path[destination_key] = source_key
 
@@ -77,12 +77,12 @@ func _get_key(tile: MapTile) -> String:
     return str(tile.position.x) + "_" + str(tile.position.y)
 
 func is_tile_reachable(destination_tile: MapTile) -> bool:
-    var key := self._get_key(destination_tile)
+    var key: String = self._get_key(destination_tile)
     return self.tile_path.has(key)
 
 func get_path_to_tile(destination_tile: MapTile) -> Array[String]:
     var path: Array[String] = []
-    var key := self._get_key(destination_tile)
+    var key: String = self._get_key(destination_tile)
 
     while key != NULL_VALUE:
         path.append(key)
@@ -93,7 +93,7 @@ func get_path_to_tile(destination_tile: MapTile) -> Array[String]:
     return path
 
 func _scout_tile(tile: MapTile, side: String, team: int) -> void:
-    var key := self._get_key(tile)
+    var key: String = self._get_key(tile)
     if tile.has_enemy_unit(side, team):
         if not self.enemy_units.has(key):
             self.enemy_units[key] = tile

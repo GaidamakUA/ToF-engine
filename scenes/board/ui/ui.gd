@@ -177,7 +177,7 @@ func _bind_ability(index: int, ability: Ability) -> void:
     ]
 
     boxes[index].show()
-    var icon: Node = self.icons.get_named_icon(ability.named_icon)
+    var icon: Node = self.icons.get_named_icon(ability.get_named_icon())
     if icon != null:
         anchors[index].add_child(icon)
     self.ability_icons[index] = icon

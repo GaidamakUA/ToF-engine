@@ -67,3 +67,6 @@ func get_cost() -> int:
 
 func get_cooldown() -> int:
     return self.cooldown
+
+func get_named_icon() -> String:
+    return ""

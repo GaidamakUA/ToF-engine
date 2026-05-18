@@ -7,6 +7,9 @@ class_name ActiveUnitAbility
 func _init() -> void:
     self.TYPE = "active"
 
+func get_named_icon() -> String:
+    return self.named_icon
+
 func execute(board: Board, position: Vector2i) -> void:
     board.use_current_player_ap(self.get_cost())
     super.execute(board, position)

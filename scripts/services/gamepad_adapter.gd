@@ -2,8 +2,8 @@ extends Node
 class_name GamepadAdapterService
 
 const DEADZONE: float = 0.5
-const MOVEMENT_AXIS_X: int = JOY_AXIS_LEFT_X
-const MOVEMENT_AXIS_Y: int = JOY_AXIS_LEFT_Y
+const MOVEMENT_AXIS_X: JoyAxis = JOY_AXIS_LEFT_X
+const MOVEMENT_AXIS_Y: JoyAxis = JOY_AXIS_LEFT_Y
 
 const UI_UP: String = "ui_up"
 const UI_DOWN: String = "ui_down"

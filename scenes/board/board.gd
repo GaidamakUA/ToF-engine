@@ -617,10 +617,13 @@ func battle(attacker_tile: MapTile, defender_tile: MapTile) -> void:
 
 
 func destroy_unit_on_tile(tile: MapTile, skip_explosion: bool = false) -> void:
-    if tile.unit.tile.unit_class == "hero":
+    var unit: BaseUnit = tile.unit.tile as BaseUnit
+    assert(unit != null)
+
+    if unit.unit_class == "hero":
         var hero: HeroUnit = tile.unit.tile as HeroUnit
         assert(hero != null)
-        self.state.clear_hero_for_side(tile.unit.tile.side, hero)
+        self.state.clear_hero_for_side(unit.side, hero)
 
     if not skip_explosion:
         self.explode_a_tile(tile, true)
@@ -745,7 +748,9 @@ func cheat_level_up() -> void:
         print("No unit found")
         return
 
-    tile.unit.tile.level_up()
+    var unit: BaseUnit = tile.unit.tile as BaseUnit
+    assert(unit != null)
+    unit.level_up()
 
 
 func activate_production_ability(args: Array) -> void:
@@ -851,27 +856,33 @@ func update_tile_highlight(tile: MapTile) -> void:
     var template_name: String
     var new_side: String
     var material_type: String = self.map.templates.MATERIAL_NORMAL
+    var building: BaseBuilding = null
+    var unit: BaseUnit = null
 
     if tile.building.is_present():
-        template_name = tile.building.tile.template_name
-        new_side = tile.building.tile.side
+        building = tile.building.tile as BaseBuilding
+        assert(building != null)
+        template_name = building.template_name
+        new_side = building.side
     if tile.unit.is_present():
-        if tile.unit.tile.uses_metallic_material:
+        unit = tile.unit.tile as BaseUnit
+        assert(unit != null)
+        if unit.uses_metallic_material:
             material_type = self.map.templates.MATERIAL_METALLIC
-        template_name = tile.unit.tile.template_name
-        new_side = tile.unit.tile.side
+        template_name = unit.template_name
+        new_side = unit.side
 
     var new_tile: MapObject = self.map.templates.get_template(template_name)
     new_tile.set_side_material(self.map.templates.get_side_material(new_side, material_type))
 
     self.ui.update_tile_highlight(new_tile)
 
-    if tile.building.is_present():
-        var ap_gain: int = tile.building.tile.ap_gain
-        ap_gain = self.abilities.get_modified_ap_gain(ap_gain, tile.building.tile)
+    if building != null:
+        var ap_gain: int = building.ap_gain
+        ap_gain = self.abilities.get_modified_ap_gain(ap_gain, building)
         self.ui.update_tile_highlight_building_panel(ap_gain)
-    if tile.unit.is_present():
-        self.ui.update_tile_highlight_unit_panel(tile.unit.tile, self)
+    if unit != null:
+        self.ui.update_tile_highlight_unit_panel(unit, self)
 
 
 func open_context_panel() -> void:
@@ -887,16 +898,18 @@ func _open_context_panel_for_tile(tile: MapTile) -> void:
         var template_name: String
         var new_side: String
         var material_type: String = self.map.templates.MATERIAL_NORMAL
+        var unit: BaseUnit = tile.unit.tile as BaseUnit
+        assert(unit != null)
 
-        if tile.unit.tile.uses_metallic_material:
+        if unit.uses_metallic_material:
             material_type = self.map.templates.MATERIAL_METALLIC
-        template_name = tile.unit.tile.template_name
-        new_side = tile.unit.tile.side
+        template_name = unit.template_name
+        new_side = unit.side
 
         var tile_preview: MapObject = self.map.templates.get_template(template_name)
         tile_preview.set_side_material(self.map.templates.get_side_material(new_side, material_type))
 
-        self.ui.show_unit_stats(tile.unit.tile, tile_preview, self)
+        self.ui.show_unit_stats(unit, tile_preview, self)
         self.map.camera.paused = true
 
 

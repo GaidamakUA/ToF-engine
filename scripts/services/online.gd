@@ -29,7 +29,7 @@ func _on_settings_changed(key: String, _value) -> void:
 
 
 func _read_settings() -> void:
-	var new_value = self.settings.get_option("online_domain")
+	var new_value: Variant = self.settings.get_option("online_domain")
 	if new_value is String:
 		self.THUMBNAIL_LOCATION = new_value
 
@@ -54,20 +54,20 @@ func fetch_top_downloads() -> int:
 	return await self.maps.fetch_top_downloads()
 
 
-func get_maps_page(page_number: int, page_size: int) -> Array:
-	var pages_count = self.get_pages_count(page_size)
+func get_maps_page(page_number: int, page_size: int) -> Array[Dictionary]:
+	var pages_count: int = self.get_pages_count(page_size)
 	if page_number >= pages_count:
 		return []
 
-	var index_start := page_number * page_size
-	var index_end := index_start + page_size
+	var index_start: int = page_number * page_size
+	var index_end: int = index_start + page_size
 
 	var maps_count: int = self.maps.listing_cache.size()
 	if index_end > maps_count:
 		index_end = maps_count
 
-	var index = index_start
-	var output := []
+	var index: int = index_start
+	var output: Array[Dictionary] = []
 
 	while index < index_end:
 		output.append(self.maps.listing_cache[index])
@@ -76,10 +76,10 @@ func get_maps_page(page_number: int, page_size: int) -> Array:
 	return output
 
 func get_pages_count(page_size: int) -> int:
-	var total_map_count := self.maps.listing_cache.size()
-	var last_page_overflow := total_map_count % page_size
+	var total_map_count: int = self.maps.listing_cache.size()
+	var last_page_overflow: int = total_map_count % page_size
 	@warning_ignore("integer_division")
-	var pages_count := (total_map_count - last_page_overflow) / page_size
+	var pages_count: int = (total_map_count - last_page_overflow) / page_size
 
 	if last_page_overflow > 0:
 		pages_count += 1
@@ -99,7 +99,7 @@ func fetch_thumbnail(map_code: String) -> Dictionary[String, Variant]:
 		url = self.THUMBNAIL_V1_URL + map_code + ".png"
 	elif self.api_version == 2:
 		url = self.THUMBNAIL_URL + map_code + ".png"
-	var result = await self.connector._request_any(self.THUMBNAIL_LOCATION, url, HTTPClient.METHOD_GET, "", false, false)
+	var result: Dictionary[String, Variant] = await self.connector._request_any(self.THUMBNAIL_LOCATION, url, HTTPClient.METHOD_GET, "", false, false)
 
 	if result['status'] != 'ok':
 		return {
@@ -107,8 +107,8 @@ func fetch_thumbnail(map_code: String) -> Dictionary[String, Variant]:
 			'image' : null
 		}
 
-	var image := Image.new()
-	var error = image.load_png_from_buffer(result['data'])
+	var image: Image = Image.new()
+	var error: Error = image.load_png_from_buffer(result['data'])
 
 	if error != OK:
 		return {
@@ -116,7 +116,7 @@ func fetch_thumbnail(map_code: String) -> Dictionary[String, Variant]:
 			'image' : null
 		}
 
-	var texture := ImageTexture.create_from_image(image)
+	var texture: ImageTexture = ImageTexture.create_from_image(image)
 	self.thumb_cache[map_code] = texture
 
 	return {
@@ -126,18 +126,22 @@ func fetch_thumbnail(map_code: String) -> Dictionary[String, Variant]:
 
 
 func upload_map(map_name: String) -> String:
-	var content = self.map_manager_service.get_map_data(map_name)
+	var content: Dictionary[String, Variant]
+	content.assign(self.map_manager_service.get_map_data(map_name))
 
-	var response = await self.maps.upload_map(content)
+	var response: Dictionary[String, Variant] = await self.maps.upload_map(content)
 
 	if response['status'] == 'ok':
-		content["metadata"]["name"] = map_name
-		content["metadata"]["base_code"] = response["data"]["base_code"]
-		content["metadata"]["iteration"] = response["data"]["iteration"]
-		self.map_manager_service.add_online_map_to_list(map_name, response["data"]["code"])
-		self.map_manager_service.save_online_to_file(response["data"]["code"], content)
+		var metadata: Dictionary = content["metadata"]
+		var response_data: Dictionary = response["data"]
+		metadata["name"] = map_name
+		metadata["base_code"] = response_data["base_code"]
+		metadata["iteration"] = response_data["iteration"]
+		var code: String = str(response_data["code"])
+		self.map_manager_service.add_online_map_to_list(map_name, code)
+		self.map_manager_service.save_online_to_file(code, content)
 		self.map_manager_service.save_map_to_file(map_name, content)
-		return response["data"]["code"]
+		return code
 
 	return ""
 
@@ -145,11 +149,13 @@ func download_map(map_code: String) -> bool:
 	if self.map_manager_service._is_online(map_code):
 		return true
 
-	var response = await self.maps.download_map(map_code)
+	var response: Dictionary[String, Variant] = await self.maps.download_map(map_code)
 
 	if response['status'] == 'ok':
-		var map_data: Dictionary = response["data"]["data"]
-		self.map_manager_service.add_online_map_to_list(map_data["metadata"]["name"], map_code)
+		var response_data: Dictionary = response["data"]
+		var map_data: Dictionary = response_data["data"]
+		var metadata: Dictionary = map_data["metadata"]
+		self.map_manager_service.add_online_map_to_list(str(metadata["name"]), map_code)
 		self.map_manager_service.save_online_to_file(map_code, map_data)
 		return true
 

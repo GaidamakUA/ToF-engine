@@ -11,17 +11,17 @@ signal scanned_server
 var client: PacketPeerUDP
 var server: UDPServer
 
-var scanned_servers := []
+var scanned_servers: Array[Dictionary] = []
 
-var is_scanning := false
-var is_servering := false
+var is_scanning: bool = false
+var is_servering: bool = false
 
 func scan_lan_servers() -> void:
     self.scanned_servers = []
 
     self.client = PacketPeerUDP.new()
     self.client.set_broadcast_enabled(true)
-    self.client.set_dest_address("255.255.255.255", self.settings.get_option("discovery_port"))
+    self.client.set_dest_address("255.255.255.255", int(self.settings.get_option("discovery_port")))
     self.client.put_var({'type':'get_server'})
     self.get_tree().create_timer(self.SCAN_TIME).timeout.connect(abort_lan_scan)
 
@@ -29,7 +29,7 @@ func scan_lan_servers() -> void:
 
 func start_autodiscovery_server() -> void:
     self.server = UDPServer.new()
-    self.server.listen(self.settings.get_option("discovery_port"),'0.0.0.0')
+    self.server.listen(int(self.settings.get_option("discovery_port")),'0.0.0.0')
     self.is_servering = true
 
 func stop_autodiscovery_server() -> void:
@@ -38,11 +38,11 @@ func stop_autodiscovery_server() -> void:
     self.server = null
     self.is_servering = false
 
-func _process(_delta) -> void:
+func _process(_delta: float) -> void:
     if self.is_scanning:
         if self.client.get_available_packet_count() > 0:
-            var data = self.client.get_packet().decode_var(0)
-            var server_ip = self.client.get_packet_ip()
+            var data: Dictionary = self.client.get_packet().decode_var(0)
+            var server_ip: String = self.client.get_packet_ip()
             data['server_ip'] = server_ip
             self.scanned_servers.append(data)
             scanned_server.emit()
@@ -51,7 +51,8 @@ func _process(_delta) -> void:
         self.server.poll()
         if self.server.is_connection_available():
             var peer: PacketPeerUDP = self.server.take_connection()
-            if peer.get_packet().decode_var(0)['type'] == 'get_server':
+            var packet: Dictionary = peer.get_packet().decode_var(0)
+            if packet['type'] == 'get_server':
                 peer.put_var({
                     "port": self.settings.get_option("game_port"),
                     "map": self.multiplayer_srv.selected_map,

@@ -410,17 +410,19 @@ func get_value() -> int:
 func disable_shadow() -> void:
     super.disable_shadow()
 
-    $"mesh_anchor/mesh".cast_shadow = 0
+    var mesh: MeshInstance3D = $"mesh_anchor/mesh" as MeshInstance3D
+    assert(mesh != null)
+    mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
-    var additional_mesh: Variant
+    var additional_mesh: MeshInstance3D
 
-    additional_mesh = self.get_node_or_null("mesh_anchor/mesh2")
+    additional_mesh = self.get_node_or_null("mesh_anchor/mesh2") as MeshInstance3D
     if additional_mesh != null:
-        additional_mesh.cast_shadow = 0
+        additional_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
-    additional_mesh = self.get_node_or_null("mesh_anchor/mesh3")
+    additional_mesh = self.get_node_or_null("mesh_anchor/mesh3") as MeshInstance3D
     if additional_mesh != null:
-        additional_mesh.cast_shadow = 0
+        additional_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 func _get_abilities_status() -> Dictionary[String, Array]:
     var status: Dictionary[String, Array] = {}

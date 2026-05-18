@@ -13,7 +13,9 @@ func set_side_material(material: Resource) -> void:
 func disable_shadow() -> void:
 	super.disable_shadow()
 
-	$"mesh_anchor/standard".cast_shadow = 0
+	var standard_mesh: MeshInstance3D = $"mesh_anchor/standard" as MeshInstance3D
+	assert(standard_mesh != null)
+	standard_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 func reset_position_for_tile_view() -> void:
 	super.reset_position_for_tile_view()

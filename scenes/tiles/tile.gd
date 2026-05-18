@@ -55,13 +55,13 @@ func hide_mesh() -> void:
     $"mesh".hide()
 
 func disable_shadow() -> void:
-    self._set_shadow(0)
+    self._set_shadow(GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
 
 
 func enable_shadow() -> void:
-    self._set_shadow(1)
+    self._set_shadow(GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
 
-func _set_shadow(shadow_value: int) -> void:
+func _set_shadow(shadow_value: GeometryInstance3D.ShadowCastingSetting) -> void:
     var mesh: GeometryInstance3D = $"mesh" as GeometryInstance3D
     assert(mesh != null)
     mesh.cast_shadow = shadow_value

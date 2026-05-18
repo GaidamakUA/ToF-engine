@@ -62,18 +62,23 @@ func enable_shadow() -> void:
     self._set_shadow(1)
 
 func _set_shadow(shadow_value: int) -> void:
-    $"mesh".cast_shadow = shadow_value
-    var reflection: Variant = self.get_node_or_null("reflection")
+    var mesh: GeometryInstance3D = $"mesh" as GeometryInstance3D
+    assert(mesh != null)
+    mesh.cast_shadow = shadow_value
+
+    var reflection: GeometryInstance3D = self.get_node_or_null("reflection") as GeometryInstance3D
     if reflection != null:
         reflection.cast_shadow = shadow_value
 
     for child: Node in $"mesh".get_children():
-        if child is MeshInstance3D:
-            child.cast_shadow = shadow_value
+        var child_mesh: MeshInstance3D = child as MeshInstance3D
+        if child_mesh != null:
+            child_mesh.cast_shadow = shadow_value
 
     for child: Node in self.get_children():
         if child is Node3D:
             for next_child: Node in child.get_children():
-                if next_child is MeshInstance3D:
-                    next_child.cast_shadow = shadow_value
+                var next_child_mesh: MeshInstance3D = next_child as MeshInstance3D
+                if next_child_mesh != null:
+                    next_child_mesh.cast_shadow = shadow_value
                     return

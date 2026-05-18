@@ -64,11 +64,21 @@ func wipe() -> void:
 
 func is_selectable(side: String) -> bool:
     if self.unit.is_present():
-        return self.unit.tile.side == side
+        return self._get_unit().side == side
     elif self.building.is_present():
-        return self.building.tile.side == side
+        return self._get_building().side == side
 
     return false
+
+func _get_unit() -> BaseUnit:
+    var typed_unit: BaseUnit = self.unit.tile as BaseUnit
+    assert(typed_unit != null)
+    return typed_unit
+
+func _get_building() -> BaseBuilding:
+    var typed_building: BaseBuilding = self.building.tile as BaseBuilding
+    assert(typed_building != null)
+    return typed_building
 
 func add_neighbour(direction: String, tile: MapTile) -> void:
     self.neighbours[direction] = tile
@@ -116,39 +126,41 @@ func can_pass_through(moving_unit: BaseUnit) -> bool:
 
 func has_enemy_unit(side: String, team: Variant = null) -> bool:
     if self.unit.is_present():
-        if self.unit.tile.side != side:
+        var typed_unit: BaseUnit = self._get_unit()
+        if typed_unit.side != side:
             if team != null:
-                return self.unit.tile.team != team
+                return typed_unit.team != team
             return true
     return false
 
 func has_allied_unit(team: Variant) -> bool:
     if self.unit.is_present():
         if team != null:
-            return self.unit.tile.team == team
+            return self._get_unit().team == team
     return false
 
 func has_friendly_unit(side: String) -> bool:
-    if self.unit.is_present() && self.unit.tile.side == side:
+    if self.unit.is_present() && self._get_unit().side == side:
         return true
     return false
 
 func has_enemy_building(side: String, team: Variant = null) -> bool:
     if self.building.is_present():
-        if self.building.tile.side != side:
+        var typed_building: BaseBuilding = self._get_building()
+        if typed_building.side != side:
             if team != null:
-                return self.building.tile.team != team
+                return typed_building.team != team
             return true
     return false
 
 func has_allied_building(team: Variant) -> bool:
     if self.building.is_present():
         if team != null:
-            return self.building.tile.team == team
+            return self._get_building().team == team
     return false
 
 func has_friendly_building(side: String) -> bool:
-    if self.building.is_present() && self.building.tile.side == side:
+    if self.building.is_present() && self._get_building().side == side:
         return true
     return false
 
@@ -161,7 +173,7 @@ func neighbours_enemy_unit(side: String, team: Variant = null) -> bool:
 func can_attack_neightbour_enemy_unit(attacking_unit: BaseUnit) -> bool:
     for direction: String in self.neighbours.keys():
         if self.neighbours[direction].has_enemy_unit(attacking_unit.side, attacking_unit.team):
-            if attacking_unit.can_attack(self.neighbours[direction].unit.tile):
+            if attacking_unit.can_attack(self.neighbours[direction]._get_unit()):
                 return true
     return false
 
@@ -181,7 +193,7 @@ func can_unit_interact(interacting_unit: BaseUnit) -> bool:
     if not interacting_unit.has_moves():
         return false
 
-    if self.has_enemy_unit(interacting_unit.side, interacting_unit.team) && interacting_unit.can_attack(self.unit.tile) && interacting_unit.has_attacks():
+    if self.has_enemy_unit(interacting_unit.side, interacting_unit.team) && interacting_unit.can_attack(self._get_unit()) && interacting_unit.has_attacks():
         return true
 
     if self.has_enemy_building(interacting_unit.side, interacting_unit.team) && interacting_unit.can_capture:
@@ -190,12 +202,14 @@ func can_unit_interact(interacting_unit: BaseUnit) -> bool:
     return false
 
 func has_friendly_hq(side: String) -> bool:
-    if self.building.is_present() && self.building.tile.side == side && self.building.tile.template_name in ["modern_hq", "steampunk_hq", "futuristic_hq", "feudal_hq"]:
-        return true
+    if self.building.is_present():
+        var typed_building: BaseBuilding = self._get_building()
+        if typed_building.side == side && typed_building.template_name in ["modern_hq", "steampunk_hq", "futuristic_hq", "feudal_hq"]:
+            return true
     return false
 
 func has_friendly_hero(side: String) -> bool:
-    if self.has_friendly_unit(side) && self.unit.tile.unit_class == "hero":
+    if self.has_friendly_unit(side) && self._get_unit().unit_class == "hero":
         return true
     return false
 

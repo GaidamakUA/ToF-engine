@@ -12,7 +12,7 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, _board: Board) -> Ar
 
     var path: Array[String]
     var actions: Array[AbstractAction] = []
-    var action: Variant
+    var action: MoveAction
     var action_value: int
     var tiles_visited: Array[MapTile] = []
     var target_tile: MapTile

@@ -1,10 +1,10 @@
 extends AbstractBrain
 class_name AbstractBuildingBrain
 
-const ENEMY_PROXIMITY := 4
-const UNITS_HARD_LIMIT := 5
-const HARD_LIMIT_MULTIPLIER := 1.3
-const UNITS_SOFT_LIMIT := 10
+const ENEMY_PROXIMITY: int = 4
+const UNITS_HARD_LIMIT: int = 5
+const HARD_LIMIT_MULTIPLIER: float = 1.3
+const UNITS_SOFT_LIMIT: int = 10
 
 func get_actions(context: BrainContext) -> Array[AbstractAction]:
     var spawn_points: Array[MapTile] = self._get_spawn_points(context.entity_tile)

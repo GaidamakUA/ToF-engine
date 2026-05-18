@@ -1,16 +1,16 @@
 class_name AbstractUnitBrain
 extends AbstractBrain
 
-const EXPLORE_DISTANCE := 16
-const EXTRA_EXPLORE_DISTANCE := 32
+const EXPLORE_DISTANCE: int = 16
+const EXTRA_EXPLORE_DISTANCE: int = 32
 
-var pathfinder := Pathfinder.new()
+var pathfinder: Pathfinder = Pathfinder.new()
 
-var counter_death_penalty := 20
+var counter_death_penalty: int = 20
 
 func get_actions(context: BrainContext) -> Array[AbstractAction]:
     self.pathfinder.explore(context.entity_tile, self.EXPLORE_DISTANCE)
-    var actions := _gather_all_actions(context.entity_tile, context.ap, context.board)
+    var actions: Array[AbstractAction] = _gather_all_actions(context.entity_tile, context.ap, context.board)
 
     if actions.size() == 0 and context.entity_tile.unit.tile.perform_extra_lookup:
         self.pathfinder.explore(context.entity_tile, self.EXTRA_EXPLORE_DISTANCE)
@@ -40,12 +40,12 @@ func _gather_attack_actions(entity_tile: MapTile, ap: int) -> Array[AbstractActi
     var action: AbstractAction
     var path: Array[String]
     var interaction_tiles: Array[MapTile]
-    var unit_range := unit.get_move()
+    var unit_range: int = unit.get_move()
 
     if unit_range > ap:
         unit_range = ap
 
-    for enemy_unit_tile in self.pathfinder.enemy_units:
+    for enemy_unit_tile: String in self.pathfinder.enemy_units:
         target_tile = self.pathfinder.enemy_units[enemy_unit_tile]
         if not unit.can_attack(target_tile.unit.tile):
             continue
@@ -69,7 +69,7 @@ func _gather_attack_actions(entity_tile: MapTile, ap: int) -> Array[AbstractActi
         else:
             interaction_tiles = self._get_interaction_tiles(target_tile, entity_tile)
 
-            for interaction_tile in interaction_tiles:
+            for interaction_tile: MapTile in interaction_tiles:
                 path = self.pathfinder.get_path_to_tile(interaction_tile)
 
                 if path.size() - 1 > unit_range - 1:
@@ -93,15 +93,15 @@ func _gather_capture_actions(entity_tile: MapTile, ap: int) -> Array[AbstractAct
 
     var actions: Array[AbstractAction] = []
     var target_tile: MapTile
-    var action: Variant # Nullable
+    var action: AbstractAction
     var path: Array[String]
     var interaction_tiles: Array[MapTile]
-    var unit_range := unit.get_move()
+    var unit_range: int = unit.get_move()
 
     if unit_range > ap:
         unit_range = ap
 
-    for enemy_building_tile in self.pathfinder.enemy_buildings:
+    for enemy_building_tile: String in self.pathfinder.enemy_buildings:
         target_tile = self.pathfinder.enemy_buildings[enemy_building_tile]
 
         if entity_tile.is_neighbour(target_tile):
@@ -120,7 +120,7 @@ func _gather_capture_actions(entity_tile: MapTile, ap: int) -> Array[AbstractAct
         else:
             interaction_tiles = self._get_interaction_tiles(target_tile, entity_tile)
 
-            for interaction_tile in interaction_tiles:
+            for interaction_tile: MapTile in interaction_tiles:
                 path = self.pathfinder.get_path_to_tile(interaction_tile)
 
                 if path.size() - 1 > unit_range - 1:
@@ -140,11 +140,11 @@ func _gather_capture_actions(entity_tile: MapTile, ap: int) -> Array[AbstractAct
 func _gather_ability_actions(_entity_tile: MapTile, _ap: int, _board: Board) -> Array[AbstractAction]:
     return []
 
-func _attack_action(entity_tile: MapTile, interaction_tile: MapTile, target_tile: MapTile, path: Array[String]) -> Variant: # nullable AbstractAction
+func _attack_action(entity_tile: MapTile, interaction_tile: MapTile, target_tile: MapTile, path: Array[String]) -> AttackAction:
     if self._is_beyond_tether(entity_tile.unit.tile, interaction_tile):
         return null
 
-    var action := AttackAction.new(entity_tile, interaction_tile, target_tile, path.size())
+    var action: AttackAction = AttackAction.new(entity_tile, interaction_tile, target_tile, path.size())
 
     var value: int = target_tile.unit.tile.get_value()
 
@@ -160,7 +160,7 @@ func _attack_action(entity_tile: MapTile, interaction_tile: MapTile, target_tile
 
     return action
 
-func _capture_action(entity_tile: MapTile, interaction_tile: MapTile, target_tile: MapTile, path: Array[String]) -> Variant: # Nullable CaptureAction
+func _capture_action(entity_tile: MapTile, interaction_tile: MapTile, target_tile: MapTile, path: Array[String]) -> CaptureAction:
     if self._is_beyond_tether(entity_tile.unit.tile, interaction_tile):
         return null
 
@@ -178,9 +178,9 @@ func _can_approach(entity_tile: MapTile, path: Array[String], unit_range: int) -
         return false
     if target_tile.can_acommodate_unit(entity_tile.unit.tile):
         return true
-    var interation_tiles := self._get_interaction_tiles(target_tile, entity_tile)
+    var interation_tiles: Array[MapTile] = self._get_interaction_tiles(target_tile, entity_tile)
     var index: int = interation_tiles.find_custom(func (nearby_tile: MapTile) -> bool:
-        var nearby_path := self.pathfinder.get_path_to_tile(nearby_tile)
+        var nearby_path: Array[String] = self.pathfinder.get_path_to_tile(nearby_tile)
         return nearby_path.size() - 1 <= unit_range and nearby_tile.can_acommodate_unit(entity_tile.unit.tile)
         )
     return index != -1
@@ -191,16 +191,16 @@ func _approach_action(entity_tile: MapTile, path: Array[String], unit_range: int
     if target_tile.can_acommodate_unit(entity_tile.unit.tile):
         return MoveAction.new(entity_tile, target_tile, unit_range)
     else:
-        var nearby_tiles := self._get_interaction_tiles(target_tile, entity_tile)
-        var index := nearby_tiles.find_custom(func (nt: MapTile) -> bool:
-            var np := self.pathfinder.get_path_to_tile(nt)
+        var nearby_tiles: Array[MapTile] = self._get_interaction_tiles(target_tile, entity_tile)
+        var index: int = nearby_tiles.find_custom(func (nt: MapTile) -> bool:
+            var np: Array[String] = self.pathfinder.get_path_to_tile(nt)
             return np.size() - 1 <= unit_range and nt.can_acommodate_unit(entity_tile.unit.tile)
             )
-        var nearby_tile := nearby_tiles[index]
-        var nearby_path := self.pathfinder.get_path_to_tile(nearby_tile)
+        var nearby_tile: MapTile = nearby_tiles[index]
+        var nearby_path: Array[String] = self.pathfinder.get_path_to_tile(nearby_tile)
         return MoveAction.new(entity_tile, nearby_tile, nearby_path.size())
 
-func _move_action(entity_tile: MapTile, path: Array[String], unit_range: int) -> Variant: # Nullable MoveAction
+func _move_action(entity_tile: MapTile, path: Array[String], unit_range: int) -> MoveAction:
     if unit_range < 1:
         return null
 

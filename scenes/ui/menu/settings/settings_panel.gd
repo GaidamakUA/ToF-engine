@@ -7,7 +7,8 @@ signal clear_help_requested()
 
 
 func _ready() -> void:
-	for option in $VBoxContainer.get_children():
+	for option_node: Node in $VBoxContainer.get_children():
+		var option: SettingsItem = option_node as SettingsItem
 		option.help_requested.connect(_on_help_requested)
 		option.clear_help_requested.connect(_on_clear_help_requested)
 

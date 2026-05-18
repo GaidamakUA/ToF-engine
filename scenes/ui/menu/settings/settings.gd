@@ -4,50 +4,51 @@ class_name MainMenuSettingsPanel
 @onready var audio: AudioService = SimpleAudioLibrary as AudioService
 @onready var settings: SettingsService = Settings as SettingsService
 
-@onready var animations = $"animations"
+@onready var animations: AnimationPlayer = $"animations"
 
-@onready var general_button = $"widgets/tabs/general"
-@onready var video_button = $"widgets/tabs/video"
-@onready var audio_button = $"widgets/tabs/audio"
-@onready var gameplay_button = $"widgets/tabs/gameplay"
-@onready var controls_button = $"widgets/tabs/controls"
-@onready var back_button = $"widgets/back_button"
+@onready var general_button: TextureButton = $"widgets/tabs/general"
+@onready var video_button: TextureButton = $"widgets/tabs/video"
+@onready var audio_button: TextureButton = $"widgets/tabs/audio"
+@onready var gameplay_button: TextureButton = $"widgets/tabs/gameplay"
+@onready var controls_button: TextureButton = $"widgets/tabs/controls"
+@onready var back_button: TextureButton = $"widgets/back_button"
 
-@onready var general_panel = $"widgets/boxes/settings_general"
-@onready var video_panel = $"widgets/boxes/settings_video"
-@onready var audio_panel = $"widgets/boxes/settings_audio"
-@onready var gameplay_panel = $"widgets/boxes/settings_gameplay"
-@onready var multiplayer_panel = $"widgets/boxes/settings_multi"
+@onready var general_panel: SettingsCategoryPanel = $"widgets/boxes/settings_general"
+@onready var video_panel: SettingsCategoryPanel = $"widgets/boxes/settings_video"
+@onready var audio_panel: SettingsCategoryPanel = $"widgets/boxes/settings_audio"
+@onready var gameplay_panel: SettingsCategoryPanel = $"widgets/boxes/settings_gameplay"
+@onready var multiplayer_panel: MultiplayerSettingsCategoryPanel = $"widgets/boxes/settings_multi"
 
-@onready var help = $"help"
-@onready var help_text = $"help/text"
+@onready var help: Control = $"help"
+@onready var help_text: Label = $"help/text"
 
-var main_menu
+var main_menu: Variant
 
 
-func bind_menu(menu):
+func bind_menu(menu: Variant) -> void:
 	self.main_menu = menu
 
 
-func _ready():
+func _ready() -> void:
 	self.set_process_input(false)
-	for category_panel in $widgets/boxes.get_children():
+	for category_panel_node: Node in $"widgets/boxes".get_children():
+		var category_panel: SettingsCategoryPanel = category_panel_node as SettingsCategoryPanel
 		category_panel.help_requested.connect(show_help)
 		category_panel.clear_help_requested.connect(hide_help)
 
 
-func _input(event):
+func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel") or event.is_action_pressed('editor_menu'):
 		self._on_back_button_pressed()
 
 
-func _on_back_button_pressed():
+func _on_back_button_pressed() -> void:
 	self.hide_help()
 	self.audio.play("menu_back")
 	self.main_menu.close_settings()
 
 
-func show_panel():
+func show_panel() -> void:
 	self.hide_help()
 	self.general_panel.show()
 	self.video_panel.hide()
@@ -61,17 +62,17 @@ func show_panel():
 	self.general_button.grab_focus()
 
 
-func hide_panel():
+func hide_panel() -> void:
 	self.hide_help()
 	self.animations.play("hide")
 	self.set_process_input(false)
 
 
-func hide_controls_button():
+func hide_controls_button() -> void:
 	self.controls_button.hide()
 
 
-func _on_general_pressed():
+func _on_general_pressed() -> void:
 	self.general_panel.show()
 	self.video_panel.hide()
 	self.audio_panel.hide()
@@ -80,7 +81,7 @@ func _on_general_pressed():
 	self.audio.play("menu_click")
 
 
-func _on_video_pressed():
+func _on_video_pressed() -> void:
 	self.general_panel.hide()
 	self.video_panel.show()
 	self.audio_panel.hide()
@@ -89,7 +90,7 @@ func _on_video_pressed():
 	self.audio.play("menu_click")
 
 
-func _on_audio_pressed():
+func _on_audio_pressed() -> void:
 	self.video_panel.hide()
 	self.general_panel.hide()
 	self.audio_panel.show()
@@ -98,7 +99,7 @@ func _on_audio_pressed():
 	self.audio.play("menu_click")
 
 
-func _on_gameplay_pressed():
+func _on_gameplay_pressed() -> void:
 	self.video_panel.hide()
 	self.general_panel.hide()
 	self.audio_panel.hide()
@@ -107,7 +108,7 @@ func _on_gameplay_pressed():
 	self.audio.play("menu_click")
 
 
-func _on_multiplayer_pressed():
+func _on_multiplayer_pressed() -> void:
 	self.video_panel.hide()
 	self.general_panel.hide()
 	self.audio_panel.hide()
@@ -116,15 +117,15 @@ func _on_multiplayer_pressed():
 	self.audio.play("menu_click")
 
 
-func show_help(text):
+func show_help(text: String) -> void:
 	self.help_text.set_text(text)
 	self.help.show()
 
 
-func hide_help():
+func hide_help() -> void:
 	self.help.hide()
 
 
-func _on_controls_pressed():
+func _on_controls_pressed() -> void:
 	self.audio.play("menu_click")
 	self.main_menu.open_controls()

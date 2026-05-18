@@ -6,7 +6,7 @@ extends SettingsCategoryPanel
 @onready var settings: SettingsService = Settings as SettingsService
 
 
-var defaults: Dictionary = {
+var defaults: Dictionary[String, Variant] = {
 	"game_port": 3959,
 	"discovery_port": 3960,
 	"online_domain": "api.tof.p1x.in",
@@ -30,9 +30,9 @@ func _on_reset_button_pressed() -> void:
 		self.settings.set_option(setting_key, self.defaults[setting_key])
 
 	self.audio.play("menu_click")
-	$VBoxContainer/game_port._read_setting()
-	$VBoxContainer/discovery_port._read_setting()
-	$VBoxContainer/online_domain._read_setting()
-	$VBoxContainer/online_port._read_setting()
-	$VBoxContainer/relay_domain._read_setting()
-	$VBoxContainer/relay_port._read_setting()
+	($"VBoxContainer/game_port" as SettingsText)._read_setting()
+	($"VBoxContainer/discovery_port" as SettingsText)._read_setting()
+	($"VBoxContainer/online_domain" as SettingsText)._read_setting()
+	($"VBoxContainer/online_port" as SettingsText)._read_setting()
+	($"VBoxContainer/relay_domain" as SettingsText)._read_setting()
+	($"VBoxContainer/relay_port" as SettingsText)._read_setting()

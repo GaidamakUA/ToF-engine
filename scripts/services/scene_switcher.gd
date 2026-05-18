@@ -19,6 +19,6 @@ func board_multiplayer() -> void:
 func board_online() -> void:
     _switch_to("res://scenes/board_online/board_online.tscn")
 
-func _switch_to(path):
+func _switch_to(path: String) -> int:
     self.mouse_layer.detach()
     return self.get_tree().change_scene_to_file(path)

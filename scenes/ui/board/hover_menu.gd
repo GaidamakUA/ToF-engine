@@ -21,14 +21,17 @@ func _input(event: InputEvent) -> void:
 	if self.board == null:
 		return
 
-	if event is InputEventMouseMotion:
+	var mouse_motion_event: InputEventMouseMotion = event as InputEventMouseMotion
+	var mouse_button_event: InputEventMouseButton = event as InputEventMouseButton
+
+	if mouse_motion_event != null:
 		self.fade_out_timer = 0.0
 		if self._should_pop_up():
 			self._fade_in()
 
 	if self.is_visible():
-		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
-			self.call_deferred("_perform_action")
+		if mouse_button_event != null and mouse_button_event.button_index == MOUSE_BUTTON_LEFT and not mouse_button_event.pressed:
+			self.call_deferred(&"_perform_action")
 
 func _should_pop_up() -> bool:
 	return not self.is_visible() and self.board._can_current_player_perform_actions() and not self.board.ui.radial.is_visible() and not self.board.ui.is_popup_open()
@@ -49,7 +52,9 @@ func _physics_process(delta: float) -> void:
 
 		if self.board.selected_tile.unit.is_present():
 			$"stats_button".show()
-			if self.board.selected_tile.unit.tile.has_active_ability():
+			var unit: BaseUnit = self.board.selected_tile.unit.tile as BaseUnit
+			assert(unit != null)
+			if unit.has_active_ability():
 				$"skills_button".show()
 			else:
 				$"skills_button".hide()

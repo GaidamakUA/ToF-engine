@@ -30,7 +30,7 @@ func _clear_slot(slot: Label) -> void:
     slot.set_text("")
     slot.hide()
 
-func restore_from_state(state: Array[String]) -> void:
+func restore_from_state(state: Array) -> void:
     for i: int in range(self.objectives.size()):
         if state[i] != null:
             self.set_objective_slot(i, state[i])

@@ -1044,7 +1044,9 @@ func _restore_saved_state(save_data):
     self.state.register_heroes(self.map.model)
 
     # restore triggers
-    self.scripting.restore_from_state(save_data["triggers"])
+    var triggers: Dictionary[String, Variant]
+    triggers.assign(save_data["triggers"])
+    self.scripting.restore_from_state(triggers)
 
     # resume turn after state is loaded
     self.update_for_current_player()

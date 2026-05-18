@@ -1,31 +1,32 @@
 extends Node3D
+class_name MapEditor
 
-const AUTOSAVE_FILE = "__autosave__"
+const AUTOSAVE_FILE: String = "__autosave__"
 
-@onready var map = $"map"
-@onready var ui = $"ui"
+@onready var map: Map = $"map"
+@onready var ui: MapEditorUi = $"ui"
 @onready var map_list_service: MapManagerService = MapManager as MapManagerService
 @onready var online_service: OnlineService = Online as OnlineService
 
 @onready var audio: AudioService = SimpleAudioLibrary as AudioService
 @onready var switcher: SceneSwitcherService = SceneSwitcher as SceneSwitcherService
 
-var rotations = preload("res://scenes/map_editor/rotations.gd").new()
+var rotations: MapEditorRotations = MapEditorRotations.new()
 var radial_abilities: RadialAbilities = RadialAbilities.new()
 
-var tile_rotation = 0
-var selected_tile = "ground_grass"
-var selected_class = "ground"
-var mouse_click_position = null
+var tile_rotation: int = 0
+var selected_tile: String = "ground_grass"
+var selected_class: String = "ground"
+var mouse_click_position: Variant = null
 
-var current_map_name = ""
+var current_map_name: String = ""
 
-const HISTORY_MAX_SIZE = 50
-var actions_history = []
+const HISTORY_MAX_SIZE: int = 50
+var actions_history: Array[Dictionary] = []
 
-var picker_context = null
+var picker_context: Variant = null
 
-func _ready():
+func _ready() -> void:
     self.rotations.build_rotations(self.map.templates, self.map.builder)
     self.select_tile(self.map.templates.GROUND_GRASS, self.map.builder.CLASS_GROUND)
     self.map.loader.load_map_file(self.AUTOSAVE_FILE)
@@ -53,15 +54,15 @@ func _ready():
     self.ui.story.picker_requested.connect(self._on_picker_requested)
 
 
-func _physics_process(_delta):
+func _physics_process(_delta: float) -> void:
     self.update_ui_position()
 
 
-func update_ui_position():
+func update_ui_position() -> void:
     self.ui.update_position(self.map.tile_box_position.x, self.map.tile_box_position.y)
 
 
-func _input(event):
+func _input(event: InputEvent) -> void:
     if not get_window().has_focus():
         return
 
@@ -74,15 +75,18 @@ func _input(event):
         _input_menu(event)
 
 
-func _input_tile_edit(event):
+func _input_tile_edit(event: InputEvent) -> void:
     if event.is_action_pressed("ui_accept"):
         self.place_tile()
         self.audio.play("menu_click")
 
     if event.is_action_pressed("mouse_click"):
-        self.mouse_click_position = event.position
+        var click_press_event: InputEventMouseButton = event as InputEventMouseButton
+        if click_press_event != null:
+            self.mouse_click_position = click_press_event.position
     if event.is_action_released("mouse_click"):
-        if self.mouse_click_position != null and event.position.distance_squared_to(self.mouse_click_position) < self.map.camera.MOUSE_MOVE_THRESHOLD:
+        var click_release_event: InputEventMouseButton = event as InputEventMouseButton
+        if click_release_event != null and self.mouse_click_position != null and click_release_event.position.distance_squared_to(self.mouse_click_position) < self.map.camera.MOUSE_MOVE_THRESHOLD:
             self.audio.play("menu_click")
             self.place_tile()
         self.mouse_click_position = null
@@ -127,9 +131,10 @@ func _input_tile_edit(event):
 
     if event.is_action_pressed("ui_cancel"):
         if event is InputEventMouseButton:
-            self.mouse_click_position = event.position
+            self.mouse_click_position = (event as InputEventMouseButton).position
     if event.is_action_released("ui_cancel"):
-        if (self.mouse_click_position != null and event.position.distance_squared_to(self.mouse_click_position) < self.map.camera.MOUSE_MOVE_THRESHOLD) or not event is InputEventMouseButton:
+        var cancel_release_event: InputEventMouseButton = event as InputEventMouseButton
+        if (cancel_release_event != null and self.mouse_click_position != null and cancel_release_event.position.distance_squared_to(self.mouse_click_position) < self.map.camera.MOUSE_MOVE_THRESHOLD) or cancel_release_event == null:
             self.audio.play("menu_click")
             self.undo_action()
         self.mouse_click_position = null
@@ -142,24 +147,28 @@ func _input_tile_edit(event):
         self.toggle_unit_ai_pause()
         self.audio.play("menu_click")
 
-func _input_picker(event):
+func _input_picker(event: InputEvent) -> void:
     if event.is_action_pressed("ui_accept"):
         self._confirm_position_pick()
         self.audio.play("menu_click")
 
     if event.is_action_pressed("mouse_click"):
-        self.mouse_click_position = event.position
+        var picker_click_press_event: InputEventMouseButton = event as InputEventMouseButton
+        if picker_click_press_event != null:
+            self.mouse_click_position = picker_click_press_event.position
     if event.is_action_released("mouse_click"):
-        if self.mouse_click_position != null and event.position.distance_squared_to(self.mouse_click_position) < self.map.camera.MOUSE_MOVE_THRESHOLD:
+        var picker_click_release_event: InputEventMouseButton = event as InputEventMouseButton
+        if picker_click_release_event != null and self.mouse_click_position != null and picker_click_release_event.position.distance_squared_to(self.mouse_click_position) < self.map.camera.MOUSE_MOVE_THRESHOLD:
             self.audio.play("menu_click")
             self._confirm_position_pick()
         self.mouse_click_position = null
 
     if event.is_action_pressed("ui_cancel"):
         if event is InputEventMouseButton:
-            self.mouse_click_position = event.position
+            self.mouse_click_position = (event as InputEventMouseButton).position
     if event.is_action_released("ui_cancel"):
-        if (self.mouse_click_position != null and event.position.distance_squared_to(self.mouse_click_position) < self.map.camera.MOUSE_MOVE_THRESHOLD) or not event is InputEventMouseButton:
+        var picker_cancel_release_event: InputEventMouseButton = event as InputEventMouseButton
+        if (picker_cancel_release_event != null and self.mouse_click_position != null and picker_cancel_release_event.position.distance_squared_to(self.mouse_click_position) < self.map.camera.MOUSE_MOVE_THRESHOLD) or picker_cancel_release_event == null:
             self.audio.play("menu_click")
             _cancel_position_pick()
         self.mouse_click_position = null
@@ -168,7 +177,7 @@ func _input_picker(event):
         _cancel_position_pick()
         self.audio.play("menu_click")
 
-func _input_menu(event):
+func _input_menu(event: InputEvent) -> void:
     if self.ui.radial.is_visible() and not self.ui.is_popup_open():
         if event.is_action_pressed("ui_cancel"):
             self.toggle_radial_menu()
@@ -187,14 +196,14 @@ func _input_menu(event):
             self.ui.story._on_back_button_pressed()
             self.audio.play("menu_click")
 
-func autosave():
+func autosave() -> void:
     _apply_map_settings()
     self.map.loader.save_map_file(self.AUTOSAVE_FILE)
     self.ui.load_minimap(self.AUTOSAVE_FILE)
 
 
-func place_tile():
-    var tile = self.map.model.get_tile(self.map.tile_box_position)
+func place_tile() -> void:
+    var tile: MapTile = self.map.model.get_tile(self.map.tile_box_position)
     if tile == null:
         return
 
@@ -208,7 +217,7 @@ func place_tile():
     self._place_tile(self.selected_class, self.map.tile_box_position, self.selected_tile, self.tile_rotation)
     self.autosave()
 
-func _place_tile(tile_class, tile_position, tile_type, _tile_rotation):
+func _place_tile(tile_class: String, tile_position: Vector2i, tile_type: String, _tile_rotation: int) -> void:
     if tile_class == self.map.builder.CLASS_GROUND:
         self.map.builder.place_ground(tile_position, tile_type, _tile_rotation)
     if tile_class == self.map.builder.CLASS_FRAME:
@@ -227,14 +236,14 @@ func _place_tile(tile_class, tile_position, tile_type, _tile_rotation):
         self.map.builder.place_unit(tile_position, tile_type, _tile_rotation)
 
 
-func clear_tile():
+func clear_tile() -> void:
     self.map.builder.clear_tile_layer(self.map.tile_box_position)
     self.autosave()
 
-func undo_action():
+func undo_action() -> void:
     if self.actions_history.size() > 0:
-        var recent_action = self.actions_history.pop_back()
-        var tile = self.map.model.get_tile(recent_action["position"])
+        var recent_action: Dictionary[String, Variant] = self.actions_history.pop_back()
+        var tile: MapTile = self.map.model.get_tile(recent_action["position"] as Vector2i)
 
         if recent_action["type"] == "add":
             match recent_action["class"]:
@@ -259,33 +268,33 @@ func undo_action():
         elif recent_action["type"] == "remove":
             if recent_action["double"]:
                 self.undo_action()
-            self._place_tile(recent_action["class"], recent_action["position"], recent_action["tile"], recent_action["rotation"])
+            self._place_tile(str(recent_action["class"]), recent_action["position"] as Vector2i, str(recent_action["tile"]), int(recent_action["rotation"]))
             match recent_action["class"]:
                 "building":
-                    self.map.builder.set_building_side(recent_action["position"], recent_action["side"])
+                    self.map.builder.set_building_side(recent_action["position"] as Vector2i, str(recent_action["side"]))
                     tile.building.tile.restore_abilities_status(recent_action["modifiers"])
                 "unit":
-                    self.map.builder.set_unit_side(recent_action["position"], recent_action["side"])
+                    self.map.builder.set_unit_side(recent_action["position"] as Vector2i, str(recent_action["side"]))
                 "hero":
-                    self.map.builder.set_unit_side(recent_action["position"], recent_action["side"])
+                    self.map.builder.set_unit_side(recent_action["position"] as Vector2i, str(recent_action["side"]))
         elif recent_action["type"] == "side":
             match recent_action["class"]:
                 "building":
-                    self.map.builder.set_building_side(recent_action["position"], recent_action["old_side"])
+                    self.map.builder.set_building_side(recent_action["position"] as Vector2i, str(recent_action["old_side"]))
                 "unit":
-                    self.map.builder.set_unit_side(recent_action["position"], recent_action["old_side"])
+                    self.map.builder.set_unit_side(recent_action["position"] as Vector2i, str(recent_action["old_side"]))
         self.autosave()
 
-func refresh_tile():
+func refresh_tile() -> void:
     self.select_tile(self.selected_tile, self.selected_class)
 
-func select_tile(tile_name, type):
+func select_tile(tile_name: String, type: String) -> void:
     self.selected_tile = tile_name
     self.selected_class = type
 
-    var rotation_map = self.rotations.get_map(tile_name, type)
-    var type_map = self.rotations.get_type_map(self.selected_class)
-    var first_tile
+    var rotation_map: Dictionary[String, String] = self.rotations.get_map(tile_name, type)
+    var type_map: Dictionary[String, String] = self.rotations.get_type_map(self.selected_class)
+    var first_tile: String
 
     self.rotations.store_state(type, tile_name)
 
@@ -299,38 +308,38 @@ func select_tile(tile_name, type):
     self.ui.set_type_next(self.map.templates.get_template(first_tile), self.tile_rotation)
 
 
-func switch_to_prev_tile():
-    var rotation_map = self.rotations.get_map(self.selected_tile, self.selected_class)
+func switch_to_prev_tile() -> void:
+    var rotation_map: Dictionary[String, String] = self.rotations.get_map(self.selected_tile, self.selected_class)
     self.select_tile(rotation_map["prev"], self.selected_class)
 
-func switch_to_next_tile():
-    var rotation_map = self.rotations.get_map(self.selected_tile, self.selected_class)
+func switch_to_next_tile() -> void:
+    var rotation_map: Dictionary[String, String] = self.rotations.get_map(self.selected_tile, self.selected_class)
     self.select_tile(rotation_map["next"], self.selected_class)
 
 
-func rotate_ccw():
+func rotate_ccw() -> void:
     self.tile_rotation += 90
     if self.tile_rotation >= 360:
         self.tile_rotation = 0
 
-func rotate_cw():
+func rotate_cw() -> void:
     self.tile_rotation -= 90
     if self.tile_rotation < 0:
         self.tile_rotation = 270
 
 
-func switch_to_prev_type():
-    var type_map = self.rotations.get_type_map(self.selected_class)
-    var first_tile = self.rotations.get_first_tile(type_map["prev"])
+func switch_to_prev_type() -> void:
+    var type_map: Dictionary[String, String] = self.rotations.get_type_map(self.selected_class)
+    var first_tile: String = self.rotations.get_first_tile(type_map["prev"])
     self.select_tile(first_tile, type_map["prev"])
 
-func switch_to_next_type():
-    var type_map = self.rotations.get_type_map(self.selected_class)
-    var first_tile = self.rotations.get_first_tile(type_map["next"])
+func switch_to_next_type() -> void:
+    var type_map: Dictionary[String, String] = self.rotations.get_type_map(self.selected_class)
+    var first_tile: String = self.rotations.get_first_tile(type_map["next"])
     self.select_tile(first_tile, type_map["next"])
 
 
-func toggle_radial_menu(context_object=null):
+func toggle_radial_menu(context_object: Variant = null) -> void:
     if self.radial_abilities.is_object_without_abilities(self, context_object, true):
         return
 
@@ -343,11 +352,11 @@ func toggle_radial_menu(context_object=null):
     self.map.camera.paused = not self.map.camera.paused
     self.map.tile_box.set_visible(not self.map.tile_box.is_visible())
 
-func setup_radial_menu(context_object=null):
+func setup_radial_menu(context_object: Variant = null) -> void:
     self.ui.radial.clear_fields()
     if context_object == null:
         self.ui.radial.set_field(self.ui.icons.trash.instantiate(), "TR_WIPE_EDITOR", 0, self, "wipe_editor")
-        if self.current_map_name != "" and not self.map_list_service.is_reserved_name(current_map_name):
+        if self.current_map_name != "" and not self.map_list_service.is_reserved_name(self.current_map_name):
             self.ui.radial.set_field(self.ui.icons.quicksave.instantiate(), "TR_QUICKSAVE", 1, self, "quicksave")
         self.ui.radial.set_field(self.ui.icons.disk.instantiate(), "TR_SAVE_LOAD_MAP", 2, self, "open_picker")
         self.ui.radial.set_field(self.ui.icons.tof.instantiate(), "TR_TOF1_IMPORT", 3, self, "open_tof_import")
@@ -357,9 +366,9 @@ func setup_radial_menu(context_object=null):
     else:
         self.radial_abilities.fill_radial_with_ability_bans(self, self.ui.radial, context_object)
 
-func handle_picker_output(args):
-    var map_name = args[0]
-    var context = args[1]
+func handle_picker_output(args: Array) -> void:
+    var map_name: String = str(args[0])
+    var context: Variant = args[1]
 
     if context == "save":
         _apply_map_settings()
@@ -375,28 +384,28 @@ func handle_picker_output(args):
     self.close_picker()
     self.set_map_name(map_name)
     if self.map.model.metadata.has("name"):
-        self.set_map_name(self.map.model.metadata["name"])
+        self.set_map_name(str(self.map.model.metadata["name"]))
 
 
-func quicksave():
+func quicksave() -> void:
     if self.current_map_name != "":
         _apply_map_settings()
         self.map.loader.save_map_file(self.current_map_name)
     self.toggle_radial_menu()
 
-func _load_map_settings():
+func _load_map_settings() -> void:
     self.ui.story.ingest_map_data(self.map.model.metadata, self.map.model.scripts["triggers"], self.map.model.scripts["stories"])
 
-func _apply_map_settings():
+func _apply_map_settings() -> void:
     self.map.model.metadata = self.ui.story.fill_metadata(self.map.model.metadata)
     self.map.model.scripts["triggers"] = self.ui.story.compile_triggers()
     self.map.model.scripts["stories"] = self.ui.story.compile_stories()
 
-func set_map_name(map_name):
+func set_map_name(map_name: String) -> void:
     self.current_map_name = map_name
     self.ui.set_map_name(map_name)
 
-func open_picker():
+func open_picker() -> void:
     self.ui.hide_radial()
     self.ui.show_picker()
 
@@ -405,14 +414,14 @@ func open_picker():
     self.ui.picker.set_name_mode()
     self.ui.set_map_name(self.current_map_name, true)
 
-func close_picker():
+func close_picker() -> void:
     self.ui.hide_picker()
     self.map.camera.paused = false
     self.map.tile_box.set_visible(true)
     self.ui.show_tiles()
     self.ui.show_position()
 
-func open_tof_import():
+func open_tof_import() -> void:
     self.ui.hide_radial()
     self.ui.picker.set_browse_v1_mode()
     self.ui.show_picker()
@@ -420,7 +429,7 @@ func open_tof_import():
     self.ui.picker.bind_cancel(self, "close_tof_import")
     self.ui.picker.bind_success(self, "handle_tof_import")
 
-func close_tof_import():
+func close_tof_import() -> void:
     self.ui.hide_picker()
     self.ui.picker.unlock_tab_bar()
     self.ui.picker.list_mode = self.ui.picker.map_list_service.LIST_STOCK
@@ -431,27 +440,27 @@ func close_tof_import():
     self.ui.show_tiles()
     self.ui.show_position()
 
-func handle_tof_import(args):
-    var code = args[0]
+func handle_tof_import(args: Array) -> void:
+    var code: String = str(args[0])
     self.close_tof_import()
-    var result = await self.online_service.maps.download_map(code, 1)
+    var result: Dictionary[String, Variant] = await self.online_service.maps.download_map(code, 1)
     if result['status'] == 'ok':
-        self.ui.set_map_name(result["data"]["data"]["name"])
-        self.map.loader.load_from_v1_data(result["data"])
+        self.ui.set_map_name(str(result["data"]["data"]["name"]))
+        self.map.loader.load_from_v1_data(result["data"] as Dictionary)
     self.autosave()
 
-func open_story():
+func open_story() -> void:
     self.ui.hide_radial()
     self.ui.show_story()
 
-func close_story():
+func close_story() -> void:
     self.ui.hide_story()
     self.map.camera.paused = false
     self.map.tile_box.set_visible(true)
     self.ui.show_tiles()
     self.ui.show_position()
 
-func wipe_editor():
+func wipe_editor() -> void:
     self.toggle_radial_menu()
     self.set_map_name("")
     self.map.builder.wipe_map()
@@ -460,9 +469,9 @@ func wipe_editor():
     self.map.model.wipe_scripts()
     self.actions_history = []
 
-func next_alternative():
-    var tile = self.map.model.get_tile(self.map.tile_box_position)
-    var old_side
+func next_alternative() -> void:
+    var tile: MapTile = self.map.model.get_tile(self.map.tile_box_position)
+    var old_side: String
 
     if tile.building.is_present():
         old_side = tile.building.tile.side
@@ -493,40 +502,40 @@ func next_alternative():
 
     self.autosave()
 
-func next_building_side(building_object):
-    var side_map = self.rotations.get_player_map(building_object.side)
+func next_building_side(building_object: BaseBuilding) -> void:
+    var side_map: Dictionary[String, String] = self.rotations.get_player_map(building_object.side)
     self.map.builder.set_building_side(self.map.tile_box_position, side_map["next"])
 
-func next_unit_side(unit_object):
-    var side_map = self.rotations.get_player_map(unit_object.side)
+func next_unit_side(unit_object: BaseUnit) -> void:
+    var side_map: Dictionary[String, String] = self.rotations.get_player_map(unit_object.side)
 
     #if side_map["next"] == "neutral":
     #    side_map = self.rotations.get_player_map(side_map["next"])
 
     self.map.builder.set_unit_side(self.map.tile_box_position, side_map["next"])
 
-func next_damage_stage(tile):
+func next_damage_stage(tile: MapTile) -> void:
     self.replace_terrain(tile, tile.terrain.tile.next_damage_stage_template)
 
-func restore_damage_stage(tile):
+func restore_damage_stage(tile: MapTile) -> void:
     self.replace_terrain(tile, tile.terrain.tile.base_stage_template)
 
-func replace_terrain(tile, template_name):
-    var t_rotation = tile.terrain.tile.get_rotation_degrees()
+func replace_terrain(tile: MapTile, template_name: String) -> void:
+    var t_rotation: Vector3 = tile.terrain.tile.get_rotation_degrees()
 
     tile.terrain.clear()
-    self.map.builder.place_terrain(tile.position, template_name, t_rotation.y)
+    self.map.builder.place_terrain(tile.position, template_name, int(t_rotation.y))
 
-func notify_about_removal(action_details):
+func notify_about_removal(action_details: Dictionary[String, Variant]) -> void:
     self.write_action_history(action_details)
 
-func _open_ability_ban_menu():
-    var tile = self.map.model.get_tile(self.map.tile_box_position)
+func _open_ability_ban_menu() -> void:
+    var tile: MapTile = self.map.model.get_tile(self.map.tile_box_position)
     if tile.building.is_present():
         self.toggle_radial_menu(tile.building.tile)
 
-func toggle_unit_ai_pause():
-    var tile = self.map.model.get_tile(self.map.tile_box_position)
+func toggle_unit_ai_pause() -> void:
+    var tile: MapTile = self.map.model.get_tile(self.map.tile_box_position)
     if tile.unit.is_present():
         tile.unit.tile.ai_paused = not tile.unit.tile.ai_paused
 
@@ -535,15 +544,15 @@ func toggle_unit_ai_pause():
         else:
             tile.unit.tile.restore_highlight()
 
-func write_action_history(action_details):
+func write_action_history(action_details: Dictionary[String, Variant]) -> void:
     self.actions_history.append(action_details)
 
 
-func _on_picker_requested(context):
+func _on_picker_requested(context: Dictionary[String, Variant]) -> void:
     self.picker_context = context
 
     if context.has("position") and context["position"] is Array:
-        self.map.snap_camera_to_position(Vector2i(context["position"][0], context["position"][1]))
+        self.map.snap_camera_to_position(Vector2i(int(context["position"][0]), int(context["position"][1])))
 
     self.ui.hide_story()
     self.map.camera.paused = false
@@ -551,7 +560,7 @@ func _on_picker_requested(context):
     self.ui.show_minimap()
     self.ui.show_position()
 
-func _confirm_position_pick():
+func _confirm_position_pick() -> void:
     self.ui.story._handle_picker_response(self.map.tile_box_position, self.picker_context)
     self.picker_context = null
 
@@ -561,7 +570,7 @@ func _confirm_position_pick():
     self.ui.hide_minimap()
     self.ui.hide_position()
 
-func _cancel_position_pick():
+func _cancel_position_pick() -> void:
     self.picker_context = null
 
     self.ui.show_story()

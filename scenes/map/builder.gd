@@ -327,7 +327,7 @@ func _set_unit_side(unit: Variant, new_side: String) -> void:
 
 func _notify_removal(tile_fragment: TileFragment, position: Vector2i, tile_class: String, side: Variant = null, modifiers: Dictionary = {}, double: bool = true) -> void:
     if self.editor != null:
-        self.editor.notify_about_removal({
+        var removal_data: Dictionary[String, Variant] = {
             "type" : "remove",
             "class" : tile_class,
             "position" : position,
@@ -336,7 +336,8 @@ func _notify_removal(tile_fragment: TileFragment, position: Vector2i, tile_class
             "side" : side,
             "modifiers" : modifiers,
             "double" : double
-        })
+        }
+        self.editor.notify_about_removal(removal_data)
 
 func _disable_shadow(tile: MapObject) -> void:
     if tile.shadow_override and self.map.settings.get_option("shadows"):

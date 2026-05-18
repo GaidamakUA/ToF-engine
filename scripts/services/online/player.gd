@@ -18,10 +18,10 @@ var integration_data: Dictionary[String, Variant] = {
 	}
 }
 
-var online_service = null
+var online_service: OnlineService = null
 
 
-func _init(online):
+func _init(online: OnlineService) -> void:
 	self.online_service = online
 
 

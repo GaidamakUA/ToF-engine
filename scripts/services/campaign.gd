@@ -1,4 +1,5 @@
 extends Node
+class_name CampaignService
 
 const PROGRESS_FILE_PATH := "user://campaigns.json"
 const CORE_CAMPAIGNS_BASE_PATH := "res://assets/campaigns/"

@@ -3,8 +3,8 @@ class_name CampaignSelectionPanel
 
 const TILES_PER_PAGE = 6
 
-@onready var audio := SimpleAudioLibrary
-@onready var campaign := Campaign
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
+@onready var campaign: CampaignService = Campaign as CampaignService
 
 @onready var animations = $"animations"
 @onready var prev_button = $"widgets/prev_button"

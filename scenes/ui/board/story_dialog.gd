@@ -1,7 +1,7 @@
 extends Node2D
 class_name StoryDialogPanel
 
-@onready var audio := SimpleAudioLibrary
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
 
 @onready var text: Label = $"background/text"
 @onready var continue_button: TextureButton = $"background/continue"

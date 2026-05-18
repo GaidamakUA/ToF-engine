@@ -1,14 +1,16 @@
 extends Node
+class_name OnlineService
 
 var THUMBNAIL_LOCATION: String = "api.tof.p1x.in"
 const THUMBNAIL_URL: String = "/browser/public/thumbs/v2/"
 const THUMBNAIL_V1_URL: String = "/browser/public/thumbs/"
 
-@onready var connector := OnlineConnector.new(self)
-@onready var player := OnlinePlayer.new(self)
-@onready var maps := OnlineMaps.new(self)
+@onready var connector: OnlineConnector = OnlineConnector.new(self)
+@onready var player: OnlinePlayer = OnlinePlayer.new(self)
+@onready var maps: OnlineMaps = OnlineMaps.new(self)
 
-@onready var settings := Settings
+@onready var map_manager_service: MapManagerService = MapManager as MapManagerService
+@onready var settings: SettingsService = Settings as SettingsService
 
 var thumb_cache: Dictionary[String, ImageTexture] = {}
 var api_version: int = 2
@@ -124,7 +126,7 @@ func fetch_thumbnail(map_code: String) -> Dictionary[String, Variant]:
 
 
 func upload_map(map_name: String) -> String:
-	var content = MapManager.get_map_data(map_name)
+	var content = self.map_manager_service.get_map_data(map_name)
 
 	var response = await self.maps.upload_map(content)
 
@@ -132,23 +134,23 @@ func upload_map(map_name: String) -> String:
 		content["metadata"]["name"] = map_name
 		content["metadata"]["base_code"] = response["data"]["base_code"]
 		content["metadata"]["iteration"] = response["data"]["iteration"]
-		MapManager.add_online_map_to_list(map_name, response["data"]["code"])
-		MapManager.save_online_to_file(response["data"]["code"], content)
-		MapManager.save_map_to_file(map_name, content)
+		self.map_manager_service.add_online_map_to_list(map_name, response["data"]["code"])
+		self.map_manager_service.save_online_to_file(response["data"]["code"], content)
+		self.map_manager_service.save_map_to_file(map_name, content)
 		return response["data"]["code"]
 
 	return ""
 
 func download_map(map_code: String) -> bool:
-	if MapManager._is_online(map_code):
+	if self.map_manager_service._is_online(map_code):
 		return true
 
 	var response = await self.maps.download_map(map_code)
 
 	if response['status'] == 'ok':
 		var map_data: Dictionary = response["data"]["data"]
-		MapManager.add_online_map_to_list(map_data["metadata"]["name"], map_code)
-		MapManager.save_online_to_file(map_code, map_data)
+		self.map_manager_service.add_online_map_to_list(map_data["metadata"]["name"], map_code)
+		self.map_manager_service.save_online_to_file(map_code, map_data)
 		return true
 
 	return false

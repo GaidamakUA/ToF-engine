@@ -1,11 +1,11 @@
 extends "res://scenes/ui/menu/base_menu_panel.gd"
 class_name OnlineLobbyPanel
 
-@onready var relay := Relay
-@onready var online := Online
-@onready var map_list_service := MapManager
-@onready var switcher := SceneSwitcher
-@onready var match_setup := MatchSetup
+@onready var relay: RelayService = Relay as RelayService
+@onready var online: OnlineService = Online as OnlineService
+@onready var map_list_service: MapManagerService = MapManager as MapManagerService
+@onready var switcher: SceneSwitcherService = SceneSwitcher as SceneSwitcherService
+@onready var match_setup: MatchSetupData = MatchSetup as MatchSetupData
 @onready var start_button = $"widgets/start_button"
 @onready var back_button = $"widgets/back_button"
 @onready var minimap = $"widgets/minimap"
@@ -95,7 +95,7 @@ func _prepare_initial_panel_state(map_name):
     self.join_code_label.set_text(tr("TR_JOIN_CODE") + " " + self.relay.join_code)
     _fill_player_labels()
     self._apply_server_state()
-    if Relay.is_server():
+    if self.relay.is_server():
         self.turn_config.unlock_buttons()
     else:
         self.turn_config.lock_buttons()
@@ -146,9 +146,9 @@ func _fill_player_labels():
         label.hide()
 
     var index: int = 0
-    for player_peer_id: int in Relay.players:
+    for player_peer_id: int in self.relay.players:
         self.player_labels[index].show()
-        self.player_labels[index].bind_player(player_peer_id, Relay.players[player_peer_id])
+        self.player_labels[index].bind_player(player_peer_id, self.relay.players[player_peer_id])
         index += 1
 
 
@@ -430,7 +430,7 @@ func load_game_from_state(state):
 
 
 func _on_player_kick_requested(player_peer_id: int) -> void:
-    if Relay.is_server():
+    if self.relay.is_server():
         self.relay.message_direct(player_peer_id, {
             "type": "kick"
         })
@@ -455,5 +455,5 @@ func _on_turn_config_changed() -> void:
 
 
 func _on_copy_button_pressed() -> void:
-    DisplayServer.clipboard_set(Relay.join_code)
-    SimpleAudioLibrary.play("menu_click")
+    DisplayServer.clipboard_set(self.relay.join_code)
+    self.audio.play("menu_click")

@@ -3,7 +3,7 @@ class_name SavesPanel
 
 const PAGE_SIZE = 10
 
-@onready var audio := SimpleAudioLibrary
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
 @onready var animations = $"animations"
 
 @onready var save_button = $"widgets/save_button"
@@ -13,12 +13,12 @@ const PAGE_SIZE = 10
 @onready var next_button = $"widgets/list_next"
 @onready var prev_button = $"widgets/list_prev"
 
-@onready var campaign := Campaign
-@onready var saves_manager := SavesManager
-@onready var gamepad_adapter := GamepadAdapter
+@onready var campaign: CampaignService = Campaign as CampaignService
+@onready var saves_manager: SavesManagerService = SavesManager as SavesManagerService
+@onready var gamepad_adapter: GamepadAdapterService = GamepadAdapter as GamepadAdapterService
 
-@onready var switcher := SceneSwitcher
-@onready var match_setup := MatchSetup
+@onready var switcher: SceneSwitcherService = SceneSwitcher as SceneSwitcherService
+@onready var match_setup: MatchSetupData = MatchSetup as MatchSetupData
 
 @onready var entry_buttons = [
     $"widgets/save_list/entry0",

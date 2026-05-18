@@ -1,10 +1,11 @@
 extends Node
+class_name SettingsService
 
 const SETTINGS_FILE_PATH := "user://settings.json"
 
 signal changed(key, new_value)
 
-@onready var audio := SimpleAudioLibrary
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
 var filesystem := FileSystem.new()
 var os_string := ""
 

@@ -3,6 +3,7 @@ class_name MapLoader
 const EDITOR_VERSION: int = 2
 
 var importer: MapImporter = MapImporter.new()
+var map_list_service: MapManagerService = MapManager as MapManagerService
 
 var map: Map
 
@@ -18,10 +19,10 @@ func save_map_file(filename: String) -> void:
         self.map.model.metadata["base_code"] = null
     self.map.model.metadata["editor_version"] = self.EDITOR_VERSION
     var map_data: Dictionary = self.map.model.get_dict()
-    MapManager.save_map_to_file(filename, map_data)
+    self.map_list_service.save_map_to_file(filename, map_data)
 
 func load_map_file(filename: String) -> void:
-    var content: Dictionary = MapManager.get_map_data(filename)
+    var content: Dictionary = self.map_list_service.get_map_data(filename)
     if content.is_empty():
         return
 

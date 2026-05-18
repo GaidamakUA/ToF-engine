@@ -1,7 +1,7 @@
 extends MapObject
 class_name BaseBuilding
 
-@onready var audio := SimpleAudioLibrary
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
 
 @onready var animations: AnimationPlayer = $"animations"
 

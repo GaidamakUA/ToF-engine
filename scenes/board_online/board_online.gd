@@ -1,6 +1,6 @@
 extends "res://scenes/board/board.gd"
 
-@onready var relay := Relay
+@onready var relay: RelayService = Relay as RelayService
 
 @onready var ui_multiplayer = $"ui_multiplayer"
 

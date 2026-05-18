@@ -1,9 +1,9 @@
 extends "res://scenes/ui/menu/base_menu_panel.gd"
 class_name OnlinePanel
 
-@onready var online := Online
-@onready var settings := Settings
-@onready var relay := Relay
+@onready var online: OnlineService = Online as OnlineService
+@onready var settings: SettingsService = Settings as SettingsService
+@onready var relay: RelayService = Relay as RelayService
 
 @onready var back_button = $"widgets/back_button"
 

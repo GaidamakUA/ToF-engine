@@ -1,6 +1,6 @@
 extends "res://scenes/board/board.gd"
 
-@onready var multiplayer_srv := Multiplayer
+@onready var multiplayer_srv: MultiplayerService = Multiplayer as MultiplayerService
 
 @onready var ui_multiplayer = $"ui_multiplayer"
 

@@ -1,8 +1,8 @@
 extends Control
 class_name Ui
 
-@onready var settings := Settings
-@onready var gamepad_adapter := GamepadAdapter
+@onready var settings: SettingsService = Settings as SettingsService
+@onready var gamepad_adapter: GamepadAdapterService = GamepadAdapter as GamepadAdapterService
 
 # Panels
 @onready var radial: Radial = $"radial/radial"

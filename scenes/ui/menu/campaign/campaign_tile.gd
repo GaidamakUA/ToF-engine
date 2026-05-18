@@ -1,6 +1,6 @@
 extends Control
 
-@onready var audio := SimpleAudioLibrary
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
 
 @onready var button = $"button"
 @onready var icon_anchor = $"icon_anchor"

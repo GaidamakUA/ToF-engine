@@ -1,4 +1,5 @@
 extends Node
+class_name MapManagerService
 
 const MAX_MAP_SIZE := 40
 const LIST_FILE_PATH := "user://known_maps_list.json"

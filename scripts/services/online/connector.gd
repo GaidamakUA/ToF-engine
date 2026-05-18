@@ -6,9 +6,9 @@ var API_LOCATION: String = "api.tof.p1x.in"
 const API_USE_SSL: bool = true
 const API_PRESENT_VERSION: String = "1.0.0"
 
-var online_service = null
+var online_service: OnlineService = null
 
-func _init(online) -> void:
+func _init(online: OnlineService) -> void:
 	self.online_service = online
 
 func _read_settings() -> void:

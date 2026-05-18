@@ -5,13 +5,13 @@ class_name MainMenu
 @onready var ui: MainMenuUi = $"ui"
 @onready var cart: PathFollow3D = $"map/path/cart"
 @onready var animations: AnimationPlayer = $"animations"
-@onready var audio := SimpleAudioLibrary
-@onready var switcher := SceneSwitcher
-@onready var gamepad_adapter := GamepadAdapter
-@onready var match_setup := MatchSetup
-@onready var campaign := Campaign
-@onready var settings := Settings
-@onready var multiplayer_srv := Multiplayer
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
+@onready var switcher: SceneSwitcherService = SceneSwitcher as SceneSwitcherService
+@onready var gamepad_adapter: GamepadAdapterService = GamepadAdapter as GamepadAdapterService
+@onready var match_setup: MatchSetupData = MatchSetup as MatchSetupData
+@onready var campaign: CampaignService = Campaign as CampaignService
+@onready var settings: SettingsService = Settings as SettingsService
+@onready var multiplayer_srv: MultiplayerService = Multiplayer as MultiplayerService
 
 const MENU_TIMEOUT: float = 0.2
 

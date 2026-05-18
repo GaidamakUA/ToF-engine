@@ -1,10 +1,10 @@
 extends Control
 class_name SkirmishPanel
 
-@onready var map_list_service := MapManager
-@onready var audio := SimpleAudioLibrary
-@onready var switcher = SceneSwitcher
-@onready var match_setup = MatchSetup
+@onready var map_list_service: MapManagerService = MapManager as MapManagerService
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
+@onready var switcher: SceneSwitcherService = SceneSwitcher as SceneSwitcherService
+@onready var match_setup: MatchSetupData = MatchSetup as MatchSetupData
 @onready var start_button = $"widgets/start_button"
 @onready var player_panels = [
     $"widgets/skirmish_player_0",

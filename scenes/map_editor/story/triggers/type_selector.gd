@@ -3,7 +3,7 @@ extends Control
 var trigger_name
 var trigger_data
 
-@onready var audio := SimpleAudioLibrary
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
 
 signal trigger_data_updated(trigger_name, trigger_data)
 signal trigger_removal_requested(trigger_name)

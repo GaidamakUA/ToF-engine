@@ -37,8 +37,8 @@ var attached_icon
 var locked_out = false
 var ai_mode = false
 
-@onready var audio := SimpleAudioLibrary
-@onready var relay := Relay
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
+@onready var relay: RelayService = Relay as RelayService
 var icons = preload("res://scenes/ui/icons/icons.gd").new()
 
 func _ready():

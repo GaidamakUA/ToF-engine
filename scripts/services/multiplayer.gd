@@ -1,4 +1,5 @@
 extends Node
+class_name MultiplayerService
 
 signal connection_failed
 signal connection_success
@@ -7,9 +8,9 @@ signal player_disconnected(peer_id)
 signal server_disconnected
 signal all_players_loaded
 
-@onready var autodiscovery := Autodiscovery
-@onready var map_list_service := MapManager
-@onready var settings := Settings
+@onready var autodiscovery: AutodiscoveryService = Autodiscovery as AutodiscoveryService
+@onready var map_list_service: MapManagerService = MapManager as MapManagerService
+@onready var settings: SettingsService = Settings as SettingsService
 
 var players: Dictionary[int, Dictionary] = {}
 var players_loaded: int = 0

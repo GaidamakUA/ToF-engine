@@ -1,11 +1,12 @@
 extends Node
+class_name AutodiscoveryService
 
 const SCAN_TIME: int = 5
 
 signal scanned_server
 
-@onready var settings := Settings
-@onready var multiplayer_srv := Multiplayer
+@onready var settings: SettingsService = Settings as SettingsService
+@onready var multiplayer_srv: MultiplayerService = Multiplayer as MultiplayerService
 
 var client: PacketPeerUDP
 var server: UDPServer

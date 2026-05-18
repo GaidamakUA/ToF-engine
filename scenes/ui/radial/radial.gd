@@ -3,7 +3,7 @@ class_name Radial
 
 signal close_requested
 
-@onready var audio := SimpleAudioLibrary
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
 @onready var animations: AnimationPlayer = $"animations"
 @onready var label_node: Node2D = $"label"
 @onready var label_text: Label = $"label/label"

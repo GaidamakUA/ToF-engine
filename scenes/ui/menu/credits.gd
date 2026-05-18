@@ -1,7 +1,7 @@
 extends Control
 class_name CreditsPanel
 
-@onready var audio := SimpleAudioLibrary
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
 
 @onready var animations = $"animations"
 @onready var back_button = $"widgets/back_button"

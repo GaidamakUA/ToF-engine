@@ -10,11 +10,11 @@ class_name MainMenuOptionsPanel
 @onready var online_button = $"online_button"
 @onready var quit_button = $"quit_button"
 @onready var animations = $"animations"
-@onready var gamepad_adapter := GamepadAdapter
+@onready var gamepad_adapter: GamepadAdapterService = GamepadAdapter as GamepadAdapterService
 
-@onready var switcher := SceneSwitcher
-@onready var audio := SimpleAudioLibrary
-@onready var mouse_layer := MouseLayer
+@onready var switcher: SceneSwitcherService = SceneSwitcher as SceneSwitcherService
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
+@onready var mouse_layer: MouseLayerService = MouseLayer as MouseLayerService
 
 var main_menu
 var recent_button_used = null

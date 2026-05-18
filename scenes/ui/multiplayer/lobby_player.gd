@@ -37,8 +37,8 @@ var attached_icon
 var locked_out = false
 var ai_mode = false
 
-@onready var audio := SimpleAudioLibrary
-@onready var multiplayer_srv := Multiplayer
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
+@onready var multiplayer_srv: MultiplayerService = Multiplayer as MultiplayerService
 var icons = preload("res://scenes/ui/icons/icons.gd").new()
 
 func _ready():

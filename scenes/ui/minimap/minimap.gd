@@ -1,7 +1,7 @@
 extends Control
 class_name MinimapView
 
-@onready var map_list_service := MapManager
+@onready var map_list_service: MapManagerService = MapManager as MapManagerService
 @onready var minimap := $"minimap"
 
 var grass_tiles: Array[String] = ["ground_grass"]

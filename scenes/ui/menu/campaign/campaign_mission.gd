@@ -1,9 +1,9 @@
 extends "res://scenes/ui/menu/base_menu_panel.gd"
 class_name CampaignMissionPanel
 
-@onready var campaign := Campaign
-@onready var switcher := SceneSwitcher
-@onready var match_setup := MatchSetup
+@onready var campaign: CampaignService = Campaign as CampaignService
+@onready var switcher: SceneSwitcherService = SceneSwitcher as SceneSwitcherService
+@onready var match_setup: MatchSetupData = MatchSetup as MatchSetupData
 
 @onready var back_button = $"widgets/back_button"
 @onready var start_button = $"widgets/start_button"

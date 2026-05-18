@@ -1,4 +1,5 @@
 extends Node
+class_name SavesManagerService
 
 const AUTOSAVE_ID := 0
 const LIST_FILE_PATH := "user://saves.json"

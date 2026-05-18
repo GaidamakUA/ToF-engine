@@ -1,9 +1,9 @@
 extends Control
 class_name CampaignMissionSelectionPanel
 
-@onready var audio = SimpleAudioLibrary
-@onready var campaign := Campaign
-@onready var match_setup := MatchSetup
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
+@onready var campaign: CampaignService = Campaign as CampaignService
+@onready var match_setup: MatchSetupData = MatchSetup as MatchSetupData
 
 @onready var animations = $"animations"
 @onready var back_button = $"widgets/back_button"

@@ -33,7 +33,7 @@ class_name UnitStatsPanel
 
 @onready var back_button: TextureButton = $"back_button"
 
-@onready var audio := SimpleAudioLibrary
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
 
 var board: Board = null
 

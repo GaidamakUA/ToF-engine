@@ -4,8 +4,8 @@ class_name EndTurnConfirmPanel
 @onready var no_button: TextureButton = $"no_button"
 @onready var yes_button: TextureButton = $"yes_button"
 
-@onready var gamepad_adapter := GamepadAdapter
-@onready var audio := SimpleAudioLibrary
+@onready var gamepad_adapter: GamepadAdapterService = GamepadAdapter as GamepadAdapterService
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
 
 
 var board: Board = null

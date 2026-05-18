@@ -1,4 +1,5 @@
 extends Node
+class_name GamepadAdapterService
 
 const DEADZONE := 0.5
 const MOVEMENT_AXIS_X := JOY_AXIS_LEFT_X

@@ -1,7 +1,7 @@
 extends Control
 class_name MapEditorUi
 
-@onready var settings := Settings
+@onready var settings: SettingsService = Settings as SettingsService
 
 @onready var radial: Radial = $"radial/radial"
 @onready var picker: MapPickerPanel = $"picker/picker"

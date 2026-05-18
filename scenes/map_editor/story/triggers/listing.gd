@@ -12,7 +12,7 @@ signal picker_requested(context)
 @onready var prev_button = $"list_prev"
 @onready var next_button = $"list_next"
 @onready var add_button = $"new_trigger/add_button"
-@onready var audio := SimpleAudioLibrary
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
 
 var list_elements = []
 var current_page := 0

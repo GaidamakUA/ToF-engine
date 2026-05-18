@@ -1,4 +1,5 @@
 extends Node
+class_name RelayService
 
 var RELAY_PORT: int = 9939
 var RELAY_URL: String = "api.tof.p1x.in"
@@ -12,8 +13,8 @@ signal server_disconnected
 signal all_players_loaded
 signal message_received(message_data: Dictionary)
 
-@onready var map_list_service := MapManager
-@onready var settings := Settings
+@onready var map_list_service: MapManagerService = MapManager as MapManagerService
+@onready var settings: SettingsService = Settings as SettingsService
 @onready var socket: WebSocketPeer = WebSocketPeer.new()
 
 var players: Dictionary[int, Dictionary] = {}

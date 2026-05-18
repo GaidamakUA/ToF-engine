@@ -18,12 +18,12 @@ var board: Board
 @onready var black_wins: Label = $"background/black_wins"
 @onready var game_draw: Label = $"background/game_draw"
 
-@onready var switcher := SceneSwitcher
-@onready var gamepad_adapter := GamepadAdapter
-@onready var audio := SimpleAudioLibrary
-@onready var match_setup := MatchSetup
-@onready var campaign := Campaign
-@onready var multiplayer_srv := Multiplayer
+@onready var switcher: SceneSwitcherService = SceneSwitcher as SceneSwitcherService
+@onready var gamepad_adapter: GamepadAdapterService = GamepadAdapter as GamepadAdapterService
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
+@onready var match_setup: MatchSetupData = MatchSetup as MatchSetupData
+@onready var campaign: CampaignService = Campaign as CampaignService
+@onready var multiplayer_srv: MultiplayerService = Multiplayer as MultiplayerService
 
 @onready var points_panels: Dictionary[String, SidePointsSummary] = {
     "blue": $"points/HBoxContainer/SummaryViewPoints0",

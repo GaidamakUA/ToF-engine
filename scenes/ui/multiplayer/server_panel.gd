@@ -6,7 +6,7 @@ signal server_selected(address, port)
 @onready var name_label = $"name"
 @onready var capacity_label = $"capacity"
 
-@onready var audio := SimpleAudioLibrary
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
 
 var address = ""
 var port = 0

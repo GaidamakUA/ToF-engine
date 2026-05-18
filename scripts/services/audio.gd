@@ -1,4 +1,5 @@
 extends Node
+class_name AudioService
 
 const BUS_SFX: String = "SFX"
 const BUS_MUSIC: String = "Music"

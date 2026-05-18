@@ -1,58 +1,58 @@
 extends Node3D
 class_name Board
 
-const RETALIATION_DELAY = 0.1
+const RETALIATION_DELAY: float = 0.1
 
 @onready var map: Map = $"map"
 @onready var ui: Ui = $"ui"
 
-@onready var audio := SimpleAudioLibrary
-@onready var switcher := SceneSwitcher
-@onready var match_setup := MatchSetup
-@onready var settings := Settings
-@onready var campaign := Campaign
-@onready var saves_manager := SavesManager
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
+@onready var switcher: SceneSwitcherService = SceneSwitcher as SceneSwitcherService
+@onready var match_setup: MatchSetupData = MatchSetup as MatchSetupData
+@onready var settings: SettingsService = Settings as SettingsService
+@onready var campaign: CampaignService = Campaign as CampaignService
+@onready var saves_manager: SavesManagerService = SavesManager as SavesManagerService
 
-var state := State.new()
+var state: State = State.new()
 var radial_abilities: RadialAbilities = RadialAbilities.new()
-var abilities := Abilities.new(self)
-var events := Events.new()
-var observers := Observers.new(self)
-var scripting := Scripting.new()
-var ai := Ai.new(self)
+var abilities: Abilities = Abilities.new(self)
+var events: Events = Events.new()
+var observers: Observers = Observers.new(self)
+var scripting: Scripting = Scripting.new()
+var ai: Ai = Ai.new(self)
 var collateral: Collateral = Collateral.new(self)
 
 
-var selected_tile = null
-var active_ability = null
-var last_hover_tile = null
-@onready var selected_tile_marker = $"marker_anchor/tile_marker"
-@onready var movement_markers = $"marker_anchor/movement_markers"
-@onready var interaction_markers = $"marker_anchor/interaction_markers"
-@onready var path_markers = $"marker_anchor/path_markers"
+var selected_tile: MapTile = null
+var active_ability: Variant = null
+var last_hover_tile: MapTile = null
+@onready var selected_tile_marker: Node3D = $"marker_anchor/tile_marker"
+@onready var movement_markers: MovementMarkers = $"marker_anchor/movement_markers"
+@onready var interaction_markers: InteractionMarkers = $"marker_anchor/interaction_markers"
+@onready var path_markers: PathMarkers = $"marker_anchor/path_markers"
 @onready var ability_markers: AbilityMarkers = $"marker_anchor/ability_markers"
-@onready var explosion_anchor = $"marker_anchor"
-@onready var explosion = $"marker_anchor/explosion"
+@onready var explosion_anchor: Node3D = $"marker_anchor"
+@onready var explosion: Node3D = $"marker_anchor/explosion"
 
 var explosion_template: PackedScene = preload("res://scenes/fx/explosion.tscn")
 var projectile_template: PackedScene = preload("res://scenes/fx/projectile.tscn")
 
-var ending_turn_in_progress = false
-var ending_turn_multiplier = 1
-var initial_hq_cam_skipped = false
-var mouse_click_position = null
+var ending_turn_in_progress: bool = false
+var ending_turn_multiplier: int = 1
+var initial_hq_cam_skipped: bool = false
+var mouse_click_position: Variant = null
 
-var last_unit_move = null
+var last_unit_move: Variant = null
 
 
-func _ready():
+func _ready() -> void:
     self.set_up_ui()
     self.set_up_map()
     self.set_up_board()
     _ready_start()
 
 
-func _ready_start():
+func _ready_start() -> void:
     if self.match_setup.restore_save_id == null:
         self.match_setup.store_setup()
         self.start_turn()
@@ -157,7 +157,7 @@ func hover_tile():
                 self.path_markers.draw_path(path)
 
 
-func set_up_ui():
+func set_up_ui() -> void:
     self.ui.settings_panel.bind_menu(self)
     self.ui.hover_menu.board = self
     self.ui.unit_stats.board = self
@@ -180,7 +180,7 @@ func set_up_ui():
     self.ui.turn_timer.turn_timeout.connect(_timer_end_turn)
 
 
-func set_up_map():
+func set_up_map() -> void:
     self.map.builder.enable_health = true
     if self.match_setup.campaign_name != null:
         self.load_campaign_map()
@@ -189,32 +189,32 @@ func set_up_map():
     self.map.hide_invisible_tiles()
 
 
-func set_up_board():
+func set_up_board() -> void:
     self.ui.objectives.clear()
     self.scripting.ingest_scripts(self, self.map.model.scripts)
     self.start_music_track()
 
-    var index = 0
-    for player_setup in self.match_setup.setup:
+    var index: int = 0
+    for player_setup: Dictionary in self.match_setup.setup:
         if player_setup["side"] != self.map.templates.PLAYER_NEUTRAL:
             _add_player_to_state(player_setup)
             self.state.add_player_ap(index, player_setup["ap"])
 
             self.state.set_player_team(player_setup["side"], self.state.get_player_team(player_setup["side"]))
 
-            var units = self.map.model.get_player_units(player_setup["side"])
-            for unit in units:
+            var units: Array[BaseUnit] = self.map.model.get_player_units(player_setup["side"])
+            for unit: BaseUnit in units:
                 unit.team = self.state.get_player_team(player_setup["side"])
 
-            var buildings = self.map.model.get_player_buildings(player_setup["side"])
-            for building in buildings:
+            var buildings: Array[BaseBuilding] = self.map.model.get_player_buildings(player_setup["side"])
+            for building: BaseBuilding in buildings:
                 building.team = self.state.get_player_team(player_setup["side"])
 
             index += 1
     self.state.register_heroes(self.map.model)
 
 
-func _add_player_to_state(data):
+func _add_player_to_state(data: Dictionary) -> void:
     self.state.add_player(data["type"], data["side"], data["alive"], data["team"])
 
 
@@ -400,7 +400,7 @@ func update_for_current_player():
     self.map.set_tile_box_side(current_player["side"])
 
 
-func toggle_radial_menu(context_object=null):
+func toggle_radial_menu(context_object: Variant = null) -> void:
     if self.map.camera.script_operated:
         return
 
@@ -431,7 +431,7 @@ func toggle_radial_menu(context_object=null):
         self.map.tile_box.set_visible(not self.map.tile_box.is_visible())
 
 
-func setup_radial_menu(context_object=null):
+func setup_radial_menu(context_object: Variant = null) -> void:
     self.ui.radial.clear_fields()
     if context_object == null:
         self.ui.radial.set_field(self.ui.icons.back.instantiate(), "TR_RES_MISS", 0, self, "_restart_board")
@@ -448,27 +448,27 @@ func setup_radial_menu(context_object=null):
         _setup_radial_menu_with_abilities(context_object)
 
 
-func _setup_radial_menu_with_abilities(context_object):
+func _setup_radial_menu_with_abilities(context_object: Variant) -> void:
     self.radial_abilities.fill_radial_with_abilities(self, self.ui.radial, context_object)
 
 
-func place_selection_marker():
+func place_selection_marker() -> void:
     self.selected_tile_marker.show()
-    var new_position = self.selected_tile_marker.get_position()
-    var placement = self.map.map_to_local(self.selected_tile.position)
+    var new_position: Vector3 = self.selected_tile_marker.get_position()
+    var placement: Vector3 = self.map.map_to_local(self.selected_tile.position)
     placement.y = new_position.y
     self.selected_tile_marker.set_position(placement)
 
 
-func show_unit_movement_markers():
+func show_unit_movement_markers() -> void:
     self.movement_markers.show_unit_movement_markers_for_tile(self.selected_tile, self.state.get_current_ap())
 
 
-func show_unit_interaction_markers():
+func show_unit_interaction_markers() -> void:
     self.interaction_markers.show_interaction_markers_for_tile(self.selected_tile, self.state.get_current_ap())
 
 
-func show_contextual_select(open_unit_abilities=false):
+func show_contextual_select(open_unit_abilities: bool = false) -> void:
     self.place_selection_marker()
     self.movement_markers.reset()
     self.interaction_markers.reset()
@@ -480,7 +480,7 @@ func show_contextual_select(open_unit_abilities=false):
     _show_contextual_select_radial(open_unit_abilities)
 
 
-func _show_contextual_select_radial(open_unit_abilities):
+func _show_contextual_select_radial(open_unit_abilities: bool) -> void:
     if self.selected_tile.unit.is_present():
         if open_unit_abilities and self.selected_tile.unit.tile.has_active_ability():
             self.toggle_radial_menu(self.selected_tile.unit.tile)
@@ -811,7 +811,7 @@ func use_current_player_ap(value):
         self.ui.ap_depleted.flash()
 
 
-func update_tile_highlight(tile):
+func update_tile_highlight(tile: MapTile) -> void:
     if not tile.building.is_present() and not tile.unit.is_present():
         self.ui.clear_tile_highlight()
         return
@@ -819,9 +819,9 @@ func update_tile_highlight(tile):
     if not _can_current_player_perform_actions() or self.map.camera.ai_operated:
         return
 
-    var template_name
-    var new_side
-    var material_type = self.map.templates.MATERIAL_NORMAL
+    var template_name: String
+    var new_side: String
+    var material_type: String = self.map.templates.MATERIAL_NORMAL
 
     if tile.building.is_present():
         template_name = tile.building.tile.template_name
@@ -832,62 +832,62 @@ func update_tile_highlight(tile):
         template_name = tile.unit.tile.template_name
         new_side = tile.unit.tile.side
 
-    var new_tile = self.map.templates.get_template(template_name)
+    var new_tile: MapObject = self.map.templates.get_template(template_name)
     new_tile.set_side_material(self.map.templates.get_side_material(new_side, material_type))
 
     self.ui.update_tile_highlight(new_tile)
 
     if tile.building.is_present():
-        var ap_gain = tile.building.tile.ap_gain
+        var ap_gain: int = tile.building.tile.ap_gain
         ap_gain = self.abilities.get_modified_ap_gain(ap_gain, tile.building.tile)
         self.ui.update_tile_highlight_building_panel(ap_gain)
     if tile.unit.is_present():
         self.ui.update_tile_highlight_unit_panel(tile.unit.tile, self)
 
 
-func open_context_panel():
-    var tile = self.map.model.get_tile(self.map.tile_box_position)
+func open_context_panel() -> void:
+    var tile: MapTile = self.map.model.get_tile(self.map.tile_box_position)
     self._open_context_panel_for_tile(tile)
 
 
-func _open_context_panel_for_tile(tile):
+func _open_context_panel_for_tile(tile: MapTile) -> void:
     if tile != null:
         if not tile.unit.is_present():
             return
 
-        var template_name
-        var new_side
-        var material_type = self.map.templates.MATERIAL_NORMAL
+        var template_name: String
+        var new_side: String
+        var material_type: String = self.map.templates.MATERIAL_NORMAL
 
         if tile.unit.tile.uses_metallic_material:
             material_type = self.map.templates.MATERIAL_METALLIC
         template_name = tile.unit.tile.template_name
         new_side = tile.unit.tile.side
 
-        var tile_preview = self.map.templates.get_template(template_name)
+        var tile_preview: MapObject = self.map.templates.get_template(template_name)
         tile_preview.set_side_material(self.map.templates.get_side_material(new_side, material_type))
 
         self.ui.show_unit_stats(tile.unit.tile, tile_preview, self)
         self.map.camera.paused = true
 
 
-func _open_context_panel_for_active_tile():
+func _open_context_panel_for_active_tile() -> void:
     if self.selected_tile != null:
         self._open_context_panel_for_tile(self.selected_tile)
 
 
-func close_context_panel():
+func close_context_panel() -> void:
     self.audio.play("menu_back")
     self.ui.hide_unit_stats()
     self.map.camera.paused = false
 
 
-func show_end_turn_confirm_panel():
+func show_end_turn_confirm_panel() -> void:
     self.map.camera.paused = true
     self.ui.end_turn_confirm.show_panel()
 
 
-func close_end_turn_confirm_panel():
+func close_end_turn_confirm_panel() -> void:
     self.map.camera.paused = false
     self.ui.end_turn_confirm.hide()
 

@@ -13,9 +13,9 @@ class_name MultiplayerPanel
 @onready var connect_port = $"widgets/address/port"
 @onready var connect_message = $"widgets/address/message"
 
-@onready var settings := Settings
-@onready var multiplayer_srv := Multiplayer
-@onready var autodiscovery := Autodiscovery
+@onready var settings: SettingsService = Settings as SettingsService
+@onready var multiplayer_srv: MultiplayerService = Multiplayer as MultiplayerService
+@onready var autodiscovery: AutodiscoveryService = Autodiscovery as AutodiscoveryService
 
 @onready var server_panels = [
     $"widgets/address/server_panel_0",

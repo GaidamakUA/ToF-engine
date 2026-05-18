@@ -1,6 +1,7 @@
 extends Node
+class_name SceneSwitcherService
 
-@onready var mouse_layer := MouseLayer
+@onready var mouse_layer: MouseLayerService = MouseLayer as MouseLayerService
 var intro_played := false
 
 func main_menu() -> void:

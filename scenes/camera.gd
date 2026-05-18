@@ -88,7 +88,7 @@ var mouse_click_position: Variant = null
 var camera_pan := Vector2(0, 0)
 var _last_used_blur_magnitude: float = 0
 
-@onready var settings := Settings
+@onready var settings: SettingsService = Settings as SettingsService
 
 func _ready() -> void:
 	randomize()
@@ -121,7 +121,7 @@ func _ready() -> void:
 
 	self.switch_to_camera_style(self.settings.get_option("def_cam_st"))
 	self._set_near_blur(0)
-	self._settings_changed("tilt_shift_enabled", Settings.get_option("tilt_shift_enabled"))
+	self._settings_changed("tilt_shift_enabled", self.settings.get_option("tilt_shift_enabled"))
 
 func _input(event: InputEvent) -> void:
 	if not get_window().has_focus():

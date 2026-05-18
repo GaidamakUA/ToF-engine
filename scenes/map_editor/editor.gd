@@ -4,11 +4,11 @@ const AUTOSAVE_FILE = "__autosave__"
 
 @onready var map = $"map"
 @onready var ui = $"ui"
-@onready var map_list_service := MapManager
-@onready var online_service := Online
+@onready var map_list_service: MapManagerService = MapManager as MapManagerService
+@onready var online_service: OnlineService = Online as OnlineService
 
-@onready var audio := SimpleAudioLibrary
-@onready var switcher := SceneSwitcher
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
+@onready var switcher: SceneSwitcherService = SceneSwitcher as SceneSwitcherService
 
 var rotations = preload("res://scenes/map_editor/rotations.gd").new()
 var radial_abilities: RadialAbilities = RadialAbilities.new()

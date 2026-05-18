@@ -4,7 +4,7 @@ class_name MapEditorStoryEditor
 var editor
 
 @onready var map_settings_button = $"widgets/tabs/map_settings_button"
-@onready var audio := SimpleAudioLibrary
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
 
 @onready var map_settings_panel = $"widgets/panels/MapSettings"
 @onready var triggers_panel = $"widgets/panels/Triggers"

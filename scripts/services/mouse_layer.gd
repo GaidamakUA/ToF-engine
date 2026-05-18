@@ -1,4 +1,5 @@
 extends Node
+class_name MouseLayerService
 
 var initialized := false
 var mouse_layer := Node3D.new()

@@ -8,11 +8,14 @@ signal kick_requested(peer_id: int)
 @export var is_online_relay: bool = false
 var player_peer_id: int = 0
 
+@onready var multiplayer_srv: MultiplayerService = Multiplayer as MultiplayerService
+@onready var relay: RelayService = Relay as RelayService
+
 
 func bind_player(peer_id: int, player_info: Dictionary) -> void:
 	player_peer_id = peer_id
 	set_player_name(player_info["name"])
-	if ((not is_online_relay and Multiplayer.is_server()) or (is_online_relay and Relay.is_server())) and player_peer_id > 1:
+	if ((not is_online_relay and self.multiplayer_srv.is_server()) or (is_online_relay and self.relay.is_server())) and player_peer_id > 1:
 		show_kick_button()
 	else:
 		hide_kick_button()

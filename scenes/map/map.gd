@@ -6,9 +6,9 @@ const GROUND_HEIGHT: int = 4
 
 @onready var tile_box: TileBox = $"tiles/tile_box"
 @onready var camera: GameCamera = $"camera"
-@onready var campaign := Campaign
-@onready var mouse_layer := MouseLayer
-@onready var settings := Settings
+@onready var campaign: CampaignService = Campaign as CampaignService
+@onready var mouse_layer: MouseLayerService = MouseLayer as MouseLayerService
+@onready var settings: SettingsService = Settings as SettingsService
 
 var tile_box_space_size: int
 var tile_box_position := Vector2i(0, 0)

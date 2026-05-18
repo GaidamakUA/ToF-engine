@@ -5,8 +5,8 @@ signal help_requested(tip: String)
 signal clear_help_requested()
 
 
-@onready var audio := SimpleAudioLibrary
-@onready var settings := Settings
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
+@onready var settings: SettingsService = Settings as SettingsService
 
 @onready var label = $"label"
 @onready var button = $"toggle"

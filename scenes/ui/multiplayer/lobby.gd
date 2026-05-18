@@ -1,11 +1,11 @@
 extends "res://scenes/ui/menu/base_menu_panel.gd"
 class_name MultiplayerLobbyPanel
 
-@onready var multiplayer_srv := Multiplayer
-@onready var online := Online
-@onready var map_list_service := MapManager
-@onready var switcher := SceneSwitcher
-@onready var match_setup := MatchSetup
+@onready var multiplayer_srv: MultiplayerService = Multiplayer as MultiplayerService
+@onready var online: OnlineService = Online as OnlineService
+@onready var map_list_service: MapManagerService = MapManager as MapManagerService
+@onready var switcher: SceneSwitcherService = SceneSwitcher as SceneSwitcherService
+@onready var match_setup: MatchSetupData = MatchSetup as MatchSetupData
 @onready var start_button = $"widgets/start_button"
 @onready var back_button = $"widgets/back_button"
 @onready var minimap = $"widgets/minimap"
@@ -142,9 +142,9 @@ func _fill_player_labels() -> void:
         label.hide()
 
     var index: int = 0
-    for player_peer_id: int in Multiplayer.players:
+    for player_peer_id: int in self.multiplayer_srv.players:
         self.player_labels[index].show()
-        self.player_labels[index].bind_player(player_peer_id, Multiplayer.players[player_peer_id])
+        self.player_labels[index].bind_player(player_peer_id, self.multiplayer_srv.players[player_peer_id])
         index += 1
 
 
@@ -362,7 +362,7 @@ func load_game_from_state(state):
 
 
 func _on_player_kick_requested(player_peer_id: int) -> void:
-    if Multiplayer.is_server():
+    if self.multiplayer_srv.is_server():
         _kick_player.rpc_id(player_peer_id)
         back_button.grab_focus()
 

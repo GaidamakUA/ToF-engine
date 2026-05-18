@@ -6,7 +6,7 @@ signal move_finished
 const MAX_LEVEL: int = 3
 const EXP_PER_LEVEL: int = 2
 
-@onready var audio := SimpleAudioLibrary
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
 
 @onready var animations: AnimationPlayer = $"animations"
 @onready var spotlight: SpotLight3D = $"mesh_anchor/activity_light"

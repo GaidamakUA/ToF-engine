@@ -1,4 +1,5 @@
 extends Node3D
+class_name MovementMarkers
 
 @export var map: NodePath
 var map_obj: Map

@@ -8,12 +8,12 @@ var MAPS_V1_URL: String = "/maps"
 var BROWSE_LISTING: String = "/listing"
 var BROWSE_TOP: String = "/top/downloads"
 
-var online_service
+var online_service: OnlineService
 var listing_cache: Array = []
 var listing_end: bool = false
 
 
-func _init(online) -> void:
+func _init(online: OnlineService) -> void:
 	self.online_service = online
 
 

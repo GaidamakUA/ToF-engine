@@ -10,7 +10,7 @@ const LIST_DOWNLOADED = "downloaded"
 
 const PAGE_SIZE = 10
 
-@onready var audio := SimpleAudioLibrary
+@onready var audio: AudioService = SimpleAudioLibrary as AudioService
 @onready var animations = $"animations"
 
 @onready var tabs_bar = $"widgets/tabs"
@@ -29,9 +29,9 @@ const PAGE_SIZE = 10
 
 @onready var custom_maps_button = $"widgets/tabs/custom_button"
 
-@onready var map_list_service := MapManager
-@onready var gamepad_adapter := GamepadAdapter
-@onready var online_service := Online
+@onready var map_list_service: MapManagerService = MapManager as MapManagerService
+@onready var gamepad_adapter: GamepadAdapterService = GamepadAdapter as GamepadAdapterService
+@onready var online_service: OnlineService = Online as OnlineService
 
 @onready var map_selection_buttons = [
     $"widgets/map_list/map0",

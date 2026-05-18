@@ -270,60 +270,74 @@ func set_cell_from_data(x: int, y: int, data) -> void:
         return
 
     if data["building"]["tile"] != null:
-        self.set_cell(x, y, self.TILE_BUILDING)
-        return
+        var building_tile: String = data["building"]["tile"]
+        if building_tile != null:
+            self.set_cell(x, y, self.TILE_BUILDING)
+            return
 
-    if data["terrain"]["tile"] in self.city_tiles:
-        self.set_cell(x, y, self.TILE_CITY)
-        return
+    if data["terrain"]["tile"] != null:
+        var terraint_tile: String = data["terrain"]["tile"]
+        if terraint_tile in self.city_tiles:
+            self.set_cell(x, y, self.TILE_CITY)
+            return
 
-    if data["terrain"]["tile"] in self.mountain_tiles:
-        self.set_cell(x, y, self.TILE_MOUNTAIN)
-        return
+        if terraint_tile in self.mountain_tiles:
+            self.set_cell(x, y, self.TILE_MOUNTAIN)
+            return
 
-    if data["terrain"]["tile"] in self.forest_tiles:
-        self.set_cell(x, y, self.TILE_FOREST)
-        return
+        if terraint_tile in self.forest_tiles:
+            self.set_cell(x, y, self.TILE_FOREST)
+            return
 
-    if data["terrain"]["tile"] in self.forest_autumn_tiles:
-        self.set_cell(x, y, self.TILE_AUTUMN)
-        return
+        if terraint_tile in self.forest_autumn_tiles:
+            self.set_cell(x, y, self.TILE_AUTUMN)
+            return
 
-    if data["terrain"]["tile"] in self.dune_tiles:
-        self.set_cell(x, y, self.TILE_DUNES)
-        return
+        if terraint_tile in self.dune_tiles:
+            self.set_cell(x, y, self.TILE_DUNES)
+            return
 
-    if data["terrain"]["tile"] in self.cacti_tiles:
-        self.set_cell(x, y, self.TILE_CACTI)
-        return
+        if terraint_tile in self.cacti_tiles:
+            self.set_cell(x, y, self.TILE_CACTI)
+            return
 
-    if data["ground"]["tile"] in self.dirt_road_tiles || data["terrain"]["tile"] in self.dirt_road_tiles:
-        self.set_cell(x, y, self.TILE_DIRT_ROAD)
-        return
+        if terraint_tile in self.dirt_road_tiles:
+            self.set_cell(x, y, self.TILE_DIRT_ROAD)
+            return
 
-    if data["ground"]["tile"] in self.road_tiles || data["terrain"]["tile"] in self.road_tiles:
-        self.set_cell(x, y, self.TILE_ROAD)
-        return
+        if terraint_tile in self.road_tiles:
+            self.set_cell(x, y, self.TILE_ROAD)
+            return
 
-    if data["ground"]["tile"] in self.river_tiles:
-        self.set_cell(x, y, self.TILE_RIVER)
-        return
+    if data["ground"]["tile"] != null:
+        var ground_tile: String = data["ground"]["tile"]
+        if ground_tile in self.dirt_road_tiles:
+            self.set_cell(x, y, self.TILE_DIRT_ROAD)
+            return
 
-    if data["ground"]["tile"] in self.concrete_tiles:
-        self.set_cell(x, y, self.TILE_CONCRETE)
-        return
+        if ground_tile in self.road_tiles:
+            self.set_cell(x, y, self.TILE_ROAD)
+            return
 
-    if data["ground"]["tile"] in self.grass_tiles:
-        self.set_cell(x, y, self.TILE_GRASS)
-        return
+        if ground_tile in self.river_tiles:
+            self.set_cell(x, y, self.TILE_RIVER)
+            return
 
-    if data["ground"]["tile"] in self.snow_tiles:
-        self.set_cell(x, y, self.TILE_SNOW)
-        return
+        if ground_tile in self.concrete_tiles:
+            self.set_cell(x, y, self.TILE_CONCRETE)
+            return
 
-    if data["ground"]["tile"] in self.sand_tiles:
-        self.set_cell(x, y, self.TILE_SAND)
-        return
+        if ground_tile in self.grass_tiles:
+            self.set_cell(x, y, self.TILE_GRASS)
+            return
+
+        if ground_tile in self.snow_tiles:
+            self.set_cell(x, y, self.TILE_SNOW)
+            return
+
+        if ground_tile in self.sand_tiles:
+            self.set_cell(x, y, self.TILE_SAND)
+            return
 
     #fallback for undefined tiles
     self.set_cell(x, y, self.TILE_WATER)

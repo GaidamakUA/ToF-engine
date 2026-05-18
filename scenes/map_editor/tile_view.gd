@@ -5,6 +5,11 @@ class_name TileView
 
 @export var is_side_tile: bool = false
 
+@onready var screen: Sprite2D = $"screen"
+@onready var viewport: SubViewport = $"SubViewport"
+@onready var tile_camera: Node3D = $"SubViewport/tile_cam"
+@onready var lens: Camera3D = $"SubViewport/tile_cam/pivot/arm/lens"
+
 var tile: MapObject = null
 var final_viewport_size: Variant = null
 
@@ -12,19 +17,19 @@ func _ready() -> void:
     if self.final_viewport_size == null:
         self.final_viewport_size = self.viewport_size
 
-    $"SubViewport/tile_cam/pivot/arm/lens".set_size(self.final_viewport_size)
+    self.lens.set_size(self.final_viewport_size)
     self.refresh()
 
 func refresh() -> void:
-    var texture: Texture2D = $"SubViewport".get_texture()
-    $"screen".texture = texture
+    var texture: Texture2D = self.viewport.get_texture()
+    self.screen.texture = texture
 
 func set_tile(new_tile: MapObject, requested_rotation: int) -> void:
     if self.tile != null:
         self.clear()
 
     self.tile = new_tile
-    $"SubViewport/tile_cam".add_child(new_tile)
+    self.tile_camera.add_child(new_tile)
 
     var tile_rotation: Vector3 = Vector3(0, deg_to_rad(requested_rotation), 0)
     new_tile.set_rotation(tile_rotation)
@@ -40,7 +45,7 @@ func set_tile(new_tile: MapObject, requested_rotation: int) -> void:
         tile_position.y += new_tile.tile_view_height_cam_modifier
         new_tile.set_position(tile_position)
 
-    $"SubViewport/tile_cam/pivot/arm/lens".set_size(self.final_viewport_size)
+    self.lens.set_size(self.final_viewport_size)
     self.refresh()
 
 func clear() -> void:

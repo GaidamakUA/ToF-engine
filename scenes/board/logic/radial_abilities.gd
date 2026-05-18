@@ -70,7 +70,7 @@ func fill_radial_with_unit_abilities(board: Board, radial: Radial, unit: BaseUni
                 if not board.state.can_current_player_afford(ability.get_cost()):
                     label += "\n" + tr("TR_NOT_ENOUGH_AP")
                     radial.set_field_disabled(ability.index, "")
-            radial.set_field(board.ui.icons.get_named_icon(ability.named_icon), label, ability.index, board, "activate_ability", [ability])
+            radial.set_field(board.ui.icons.get_named_icon(ability.get_named_icon()), label, ability.index, board, "activate_ability", [ability])
 
             if ability.is_on_cooldown():
                 radial.set_field_disabled(ability.index, ability.cd_turns_left)

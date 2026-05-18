@@ -259,14 +259,16 @@ func load_state_from_id(save_id: int) -> void:
     self.match_setup.map_name = save_data["map_name"]
     self.match_setup.campaign_name = save_data["campaign_name"]
     self.match_setup.mission_no = int(save_data["mission_no"])
-    self.match_setup.stored_setup = save_data["initial_setup"]
+    var initial_setup: Array[Dictionary]
+    initial_setup.assign(save_data["initial_setup"])
+    self.match_setup.stored_setup = initial_setup
     var players: Array = save_data["players"] as Array
     for player: Dictionary in players:
         self.match_setup.add_player(
-            player["side"],
-            player["ap"],
-            player["type"],
-            player["alive"],
+            str(player["side"]),
+            int(player["ap"]),
+            str(player["type"]),
+            bool(player["alive"]),
             player["team"]
         )
 

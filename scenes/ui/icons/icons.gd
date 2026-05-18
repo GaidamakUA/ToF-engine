@@ -1,51 +1,51 @@
 class_name IconsFactory
 
-var disk = preload("res://scenes/ui/icons/disk.tscn")
-var quicksave = preload("res://scenes/ui/icons/quicksave.tscn")
-var back = preload("res://scenes/ui/icons/back.tscn")
-var quit = preload("res://scenes/ui/icons/quit.tscn")
-var trash = preload("res://scenes/ui/icons/trash.tscn")
-var tick = preload("res://scenes/ui/icons/tick.tscn")
-var star = preload("res://scenes/ui/icons/star.tscn")
-var star2 = preload("res://scenes/ui/icons/star2.tscn")
-var info = preload("res://scenes/ui/icons/info.tscn")
-var book = preload("res://scenes/ui/icons/book.tscn")
-var cross = preload("res://scenes/ui/icons/cross.tscn")
-var arrow_left = preload("res://scenes/ui/icons/arrow_left.tscn")
-var arrow_right = preload("res://scenes/ui/icons/arrow_right.tscn")
-var cog = preload("res://scenes/ui/icons/cog.tscn")
-var hourglass = preload("res://scenes/ui/icons/hourglass.tscn")
-var coin = preload("res://scenes/ui/icons/coin.tscn")
-var pen = preload("res://scenes/ui/icons/pen.tscn")
+var disk: PackedScene = preload("res://scenes/ui/icons/disk.tscn")
+var quicksave: PackedScene = preload("res://scenes/ui/icons/quicksave.tscn")
+var back: PackedScene = preload("res://scenes/ui/icons/back.tscn")
+var quit: PackedScene = preload("res://scenes/ui/icons/quit.tscn")
+var trash: PackedScene = preload("res://scenes/ui/icons/trash.tscn")
+var tick: PackedScene = preload("res://scenes/ui/icons/tick.tscn")
+var star: PackedScene = preload("res://scenes/ui/icons/star.tscn")
+var star2: PackedScene = preload("res://scenes/ui/icons/star2.tscn")
+var info: PackedScene = preload("res://scenes/ui/icons/info.tscn")
+var book: PackedScene = preload("res://scenes/ui/icons/book.tscn")
+var cross: PackedScene = preload("res://scenes/ui/icons/cross.tscn")
+var arrow_left: PackedScene = preload("res://scenes/ui/icons/arrow_left.tscn")
+var arrow_right: PackedScene = preload("res://scenes/ui/icons/arrow_right.tscn")
+var cog: PackedScene = preload("res://scenes/ui/icons/cog.tscn")
+var hourglass: PackedScene = preload("res://scenes/ui/icons/hourglass.tscn")
+var coin: PackedScene = preload("res://scenes/ui/icons/coin.tscn")
+var pen: PackedScene = preload("res://scenes/ui/icons/pen.tscn")
 
-var tof = preload("res://scenes/ui/icons/tof.tscn")
+var tof: PackedScene = preload("res://scenes/ui/icons/tof.tscn")
 
-var deep_strike = preload("res://scenes/ui/icons/abilities/deep_strike.tscn")
-var infiltration = preload("res://scenes/ui/icons/abilities/infiltration.tscn")
-var targeting_automaton = preload("res://scenes/ui/icons/abilities/targeting_automaton.tscn")
-var hardened_armour = preload("res://scenes/ui/icons/abilities/hardened_armour.tscn")
-var precision_strike = preload("res://scenes/ui/icons/abilities/precision_strike.tscn")
-var supply = preload("res://scenes/ui/icons/abilities/supply.tscn")
-var inspire = preload("res://scenes/ui/icons/abilities/inspire.tscn")
-var promote = preload("res://scenes/ui/icons/abilities/promote.tscn")
+var deep_strike: PackedScene = preload("res://scenes/ui/icons/abilities/deep_strike.tscn")
+var infiltration: PackedScene = preload("res://scenes/ui/icons/abilities/infiltration.tscn")
+var targeting_automaton: PackedScene = preload("res://scenes/ui/icons/abilities/targeting_automaton.tscn")
+var hardened_armour: PackedScene = preload("res://scenes/ui/icons/abilities/hardened_armour.tscn")
+var precision_strike: PackedScene = preload("res://scenes/ui/icons/abilities/precision_strike.tscn")
+var supply: PackedScene = preload("res://scenes/ui/icons/abilities/supply.tscn")
+var inspire: PackedScene = preload("res://scenes/ui/icons/abilities/inspire.tscn")
+var promote: PackedScene = preload("res://scenes/ui/icons/abilities/promote.tscn")
 
-var heavy_weapon = preload("res://scenes/ui/icons/abilities/heavy_weapon.tscn")
-var long_range_shell = preload("res://scenes/ui/icons/abilities/long_range_shell.tscn")
-var pick_up = preload("res://scenes/ui/icons/abilities/pick_up.tscn")
-var drop_off = preload("res://scenes/ui/icons/abilities/drop_off.tscn")
-var medkit = preload("res://scenes/ui/icons/abilities/medkit.tscn")
-var repair_kit = preload("res://scenes/ui/icons/abilities/repair_kit.tscn")
-var missile = preload("res://scenes/ui/icons/abilities/missile.tscn")
-var heavy_missile = preload("res://scenes/ui/icons/abilities/heavy_missile.tscn")
-var rapid_response = preload("res://scenes/ui/icons/abilities/rapid_response.tscn")
+var heavy_weapon: PackedScene = preload("res://scenes/ui/icons/abilities/heavy_weapon.tscn")
+var long_range_shell: PackedScene = preload("res://scenes/ui/icons/abilities/long_range_shell.tscn")
+var pick_up: PackedScene = preload("res://scenes/ui/icons/abilities/pick_up.tscn")
+var drop_off: PackedScene = preload("res://scenes/ui/icons/abilities/drop_off.tscn")
+var medkit: PackedScene = preload("res://scenes/ui/icons/abilities/medkit.tscn")
+var repair_kit: PackedScene = preload("res://scenes/ui/icons/abilities/repair_kit.tscn")
+var missile: PackedScene = preload("res://scenes/ui/icons/abilities/missile.tscn")
+var heavy_missile: PackedScene = preload("res://scenes/ui/icons/abilities/heavy_missile.tscn")
+var rapid_response: PackedScene = preload("res://scenes/ui/icons/abilities/rapid_response.tscn")
 
-var blue_gem = preload("res://scenes/ui/icons/nations/blue.tscn")
-var red_gem = preload("res://scenes/ui/icons/nations/red.tscn")
-var green_gem = preload("res://scenes/ui/icons/nations/green.tscn")
-var yellow_gem = preload("res://scenes/ui/icons/nations/yellow.tscn")
-var black_gem = preload("res://scenes/ui/icons/nations/black.tscn")
+var blue_gem: PackedScene = preload("res://scenes/ui/icons/nations/blue.tscn")
+var red_gem: PackedScene = preload("res://scenes/ui/icons/nations/red.tscn")
+var green_gem: PackedScene = preload("res://scenes/ui/icons/nations/green.tscn")
+var yellow_gem: PackedScene = preload("res://scenes/ui/icons/nations/yellow.tscn")
+var black_gem: PackedScene = preload("res://scenes/ui/icons/nations/black.tscn")
 
-var named_icons = {
+var named_icons: Dictionary[String, PackedScene] = {
 	"disk" : self.disk,
 	"quicksave" : self.quicksave,
 	"back" : self.back,
@@ -92,7 +92,7 @@ var named_icons = {
 	"black_gem" : self.black_gem,
 }
 
-func get_named_icon(name):
+func get_named_icon(name: String) -> Node:
 	if self.named_icons.has(name):
 		return self.named_icons[name].instantiate()
 	return null

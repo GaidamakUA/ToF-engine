@@ -409,8 +409,8 @@ func open_picker() -> void:
     self.ui.hide_radial()
     self.ui.show_picker()
 
-    self.ui.picker.bind_cancel(self, "close_picker")
-    self.ui.picker.bind_success(self, "handle_picker_output")
+    self.ui.picker.bind_cancel(self, &"close_picker")
+    self.ui.picker.bind_success(self, &"handle_picker_output")
     self.ui.picker.set_name_mode()
     self.ui.set_map_name(self.current_map_name, true)
 
@@ -426,8 +426,8 @@ func open_tof_import() -> void:
     self.ui.picker.set_browse_v1_mode()
     self.ui.show_picker()
 
-    self.ui.picker.bind_cancel(self, "close_tof_import")
-    self.ui.picker.bind_success(self, "handle_tof_import")
+    self.ui.picker.bind_cancel(self, &"close_tof_import")
+    self.ui.picker.bind_success(self, &"handle_tof_import")
 
 func close_tof_import() -> void:
     self.ui.hide_picker()

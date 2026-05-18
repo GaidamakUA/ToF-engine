@@ -82,8 +82,8 @@ func open_picker() -> void:
     self.ui.picker.set_select_mode()
     self.ui.show_picker()
 
-    self.ui.picker.bind_cancel(self, "close_picker")
-    self.ui.picker.bind_success(self, "handle_picker_output")
+    self.ui.picker.bind_cancel(self, &"close_picker")
+    self.ui.picker.bind_success(self, &"handle_picker_output")
 
 func close_picker() -> void:
     self.ui.hide_picker()
@@ -197,8 +197,8 @@ func open_upload_picker() -> void:
     self.ui.picker.lock_tab_bar()
     self.ui.show_picker()
 
-    self.ui.picker.bind_cancel(self, "close_upload_picker")
-    self.ui.picker.bind_success(self, "handle_upload_output")
+    self.ui.picker.bind_cancel(self, &"close_upload_picker")
+    self.ui.picker.bind_success(self, &"handle_upload_output")
 
 func close_upload_picker() -> void:
     self.ui.hide_picker()
@@ -221,8 +221,8 @@ func open_download_picker() -> void:
     self.ui.picker.set_browse_mode()
     self.ui.show_picker()
 
-    self.ui.picker.bind_cancel(self, "close_download_picker")
-    self.ui.picker.bind_success(self, "handle_download_output")
+    self.ui.picker.bind_cancel(self, &"close_download_picker")
+    self.ui.picker.bind_success(self, &"handle_download_output")
 
 func close_download_picker() -> void:
     self.ui.hide_picker()
@@ -261,8 +261,8 @@ func open_multiplayer_picker() -> void:
     self.ui.picker.lock_custom_maps()
     self.ui.show_picker()
 
-    self.ui.picker.bind_cancel(self, "close_multiplayer_picker")
-    self.ui.picker.bind_success(self, "handle_multiplayer_picker_output")
+    self.ui.picker.bind_cancel(self, &"close_multiplayer_picker")
+    self.ui.picker.bind_success(self, &"handle_multiplayer_picker_output")
 
 func close_multiplayer_picker() -> void:
     self.ui.hide_picker()
@@ -300,8 +300,8 @@ func open_online_match_map_picker() -> void:
     self.ui.picker.lock_custom_maps()
     self.ui.show_picker()
 
-    self.ui.picker.bind_cancel(self, "close_online_match_map_picker")
-    self.ui.picker.bind_success(self, "handle_online_match_map_picker_output")
+    self.ui.picker.bind_cancel(self, &"close_online_match_map_picker")
+    self.ui.picker.bind_success(self, &"handle_online_match_map_picker_output")
 
 func close_online_match_map_picker() -> void:
     self.ui.hide_picker()

@@ -616,7 +616,7 @@ func destroy_unit_on_tile(tile, skip_explosion=false):
     tile.unit.clear()
 
 
-func _generate_collateral_damage(tile):
+func _generate_collateral_damage(tile: MapTile) -> Dictionary[String, Variant]:
     return {
         "collateral": self.collateral.generate_collateral(tile),
         "damage": self.collateral.damage_tile(tile)

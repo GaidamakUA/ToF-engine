@@ -263,7 +263,7 @@ func fill_map_from_data(data: Dictionary) -> void:
     self.map.model.ingest_scripts(scripts)
 
 func attach_mouse_layer() -> void:
-    var ground_point: Variant
+    var ground_point: BaseGround
     var tile: MapTile
 
     self.map.mouse_layer.initialize(self.map.model.SIZE, self.map.TILE_SIZE)

@@ -167,20 +167,20 @@ var units: Array[String] = [
 func build_from_v1_data(map: Map, data: Dictionary) -> void:
 	self._fill_metadata(map, data)
 
-	var map_data: Dictionary = {}
+	var map_data: Dictionary[String, Variant]
 	map_data.assign(data["data"])
 
 	if not map_data.has("theme"):
 		map_data["theme"] = "summer"
 
-	var tiles: Array = []
+	var tiles: Array[Dictionary]
 	tiles.assign(map_data["tiles"])
 
 	self._build_tiles(map, tiles, String(map_data["theme"]))
 	self._fix_map_elements(map)
 
 func _fill_metadata(map: Map, data: Dictionary) -> void:
-	var map_data: Dictionary = {}
+	var map_data: Dictionary[String, Variant]
 	map_data.assign(data["data"])
 
 	map.model.ingest_scripts({
@@ -191,19 +191,20 @@ func _fill_metadata(map: Map, data: Dictionary) -> void:
 	map.model.metadata["iteration"] = 0
 	map.model.metadata["base_code"] = data["code"]
 
-func _build_tiles(map: Map, tiles: Array, theme: String) -> void:
-	var tilemap: Dictionary = self.mappings[theme]
+func _build_tiles(map: Map, tiles: Array[Dictionary], theme: String) -> void:
+	var tilemap: Dictionary[int, Dictionary]
+	tilemap.assign(self.mappings[theme])
 	self._pre_fill_tilemap(map, tilemap, tiles)
 
-func _pre_fill_tilemap(map: Map, tilemap: Dictionary, tiles: Array) -> void:
+func _pre_fill_tilemap(map: Map, tilemap: Dictionary[int, Dictionary], tiles: Array[Dictionary]) -> void:
 	var tile_key: String
-	var tile_template: Dictionary
-	var mapping: Dictionary
+	var tile_template: Dictionary[String, Variant]
+	var mapping: Dictionary[String, Variant]
 	var unit: int
 
 	for tile_data: Dictionary in tiles:
 		tile_key = str(tile_data["x"]) + "_" + str(tile_data["y"])
-		mapping = tilemap[int(tile_data["terrain"])]
+		mapping.assign(tilemap[int(tile_data["terrain"])])
 		unit = int(tile_data["unit"])
 
 		tile_template = {
@@ -512,45 +513,45 @@ func _fix_roads_and_rivers(map: Map, tile: MapTile) -> void:
 			])
 
 
-func _fix_path_element(map: Map, tile: MapTile, templates: Array, neighbours: Array[String]) -> void:
+func _fix_path_element(map: Map, tile: MapTile, templates: Array[Variant], neighbours: Array[String]) -> void:
 	var nbin: int = 0
 	nbin = self._count_neighbours_in_binary(tile, neighbours)
 	if nbin in [1, 4, 5]:
-		map.builder.place_ground(tile.position, templates[0], 0)
+		map.builder.place_ground(tile.position, str(templates[0]), 0)
 		if tile.terrain.is_present() and tile.terrain.tile.template_name == "city_bridge":
 			map.builder.place_terrain(tile.position, "city_bridge", 0)
 		return
 	if nbin in [2, 8, 10]:
-		map.builder.place_ground(tile.position, templates[0], 90)
+		map.builder.place_ground(tile.position, str(templates[0]), 90)
 		if tile.terrain.is_present() and tile.terrain.tile.template_name == "city_bridge":
 			map.builder.place_terrain(tile.position, "city_bridge", 90)
 		return
 	if nbin == 6:
-		map.builder.place_ground(tile.position, templates[1], 0)
+		map.builder.place_ground(tile.position, str(templates[1]), 0)
 		return
 	if nbin == 12:
-		map.builder.place_ground(tile.position, templates[1], 270)
+		map.builder.place_ground(tile.position, str(templates[1]), 270)
 		return
 	if nbin == 9:
-		map.builder.place_ground(tile.position, templates[1], 180)
+		map.builder.place_ground(tile.position, str(templates[1]), 180)
 		return
 	if nbin == 3:
-		map.builder.place_ground(tile.position, templates[1], 90)
+		map.builder.place_ground(tile.position, str(templates[1]), 90)
 		return
 	if nbin == 7 and templates[2] != null:
-		map.builder.place_ground(tile.position, templates[2], 0)
+		map.builder.place_ground(tile.position, str(templates[2]), 0)
 		return
 	if nbin == 11 and templates[2] != null:
-		map.builder.place_ground(tile.position, templates[2], 90)
+		map.builder.place_ground(tile.position, str(templates[2]), 90)
 		return
 	if nbin == 13 and templates[2] != null:
-		map.builder.place_ground(tile.position, templates[2], 180)
+		map.builder.place_ground(tile.position, str(templates[2]), 180)
 		return
 	if nbin == 14 and templates[2] != null:
-		map.builder.place_ground(tile.position, templates[2], 270)
+		map.builder.place_ground(tile.position, str(templates[2]), 270)
 		return
 	if nbin == 15 and templates[3] != null:
-		map.builder.place_ground(tile.position, templates[3], 0)
+		map.builder.place_ground(tile.position, str(templates[3]), 0)
 		return
 
 func _count_neighbours_in_binary(tile: MapTile, templates: Array[String]) -> int:

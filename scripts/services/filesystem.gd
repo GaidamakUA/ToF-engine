@@ -20,12 +20,15 @@ func read_json_from_file(filepath: String) -> Variant:
     if not FileAccess.file_exists(filepath):
         return {}
 
-    var file := FileAccess.open(filepath, FileAccess.READ)
-    var file_text := file.get_as_text()
+    var file: FileAccess = FileAccess.open(filepath, FileAccess.READ)
+    assert(file != null)
+
+    var file_text: String = file.get_as_text()
     file.close()
+
     var test_json_conv: JSON = JSON.new()
     test_json_conv.parse(file_text)
-    var content = test_json_conv.get_data()
+    var content: Variant = test_json_conv.get_data()
 
     if content != null:
         return content
@@ -33,24 +36,26 @@ func read_json_from_file(filepath: String) -> Variant:
     return {}
 
 func write_data_as_json_to_file(filepath: String, data: Variant) -> void:
-    var content := JSON.stringify(data, "    ", true)
+    var content: String = JSON.stringify(data, "    ", true)
 
-    var file := FileAccess.open(filepath, FileAccess.WRITE)
+    var file: FileAccess = FileAccess.open(filepath, FileAccess.WRITE)
+    assert(file != null)
+
     file.store_string(content)
     file.close()
 
-func dir_list(dirpath: String, files:=false) -> Array[String]:
+func dir_list(dirpath: String, files: bool = false) -> Array[String]:
     if self._dir_exists_os(dirpath):
         return self._dir_list_os(dirpath, files)
     elif self._dir_exists_project(dirpath):
         return self._dir_list(dirpath, files)
     return []
 
-func _dir_list(dirpath: String, files:=false) -> Array[String]:
+func _dir_list(dirpath: String, files: bool = false) -> Array[String]:
     var listing: Array[String] = []
     var file_name: String
 
-    var dir := DirAccess.open(dirpath)
+    var dir: DirAccess = DirAccess.open(dirpath)
 
     if dir != null:
         dir.list_dir_begin() # TODOGODOT4 fill missing arguments https://github.com/godotengine/godot/pull/40547
@@ -68,6 +73,6 @@ func _dir_list(dirpath: String, files:=false) -> Array[String]:
     return listing
 
 
-func _dir_list_os(dirpath: String, files:=false) -> Array[String]:
-    var real_path := OS.get_executable_path().get_base_dir().path_join(dirpath)
+func _dir_list_os(dirpath: String, files: bool = false) -> Array[String]:
+    var real_path: String = OS.get_executable_path().get_base_dir().path_join(dirpath)
     return self._dir_list(real_path, files)

@@ -71,7 +71,7 @@ func stop(track_name: Variant = null) -> void:
     if track_name == null and self.current_track != null:
         self.current_track.stop()
         self.current_track = null
-    elif self.soundtracks.has(track_name):
+    elif track_name != null and self.soundtracks.has(track_name):
         self.soundtracks[track_name].stop()
 
 func pause(track_name: Variant = null) -> void:

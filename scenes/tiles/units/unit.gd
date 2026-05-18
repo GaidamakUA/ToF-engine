@@ -80,7 +80,7 @@ func _ready() -> void:
     $"mesh_anchor/healthbar".texture = $"mesh_anchor/healthbar/SubViewport".get_texture()
 
 func reset() -> void:
-    var stats: Dictionary = self.get_stats_with_modifiers()
+    var stats: Dictionary[String, int] = self.get_stats_with_modifiers()
 
     self.hp = stats["max_hp"]
     self.move = stats["max_move"]
@@ -125,8 +125,8 @@ func set_side_material(material: Resource) -> void:
         additional_mesh.set_surface_override_material(0, material)
 
 
-func get_stats() -> Dictionary:
-    var stats: Dictionary = {
+func get_stats() -> Dictionary[String, int]:
+    var stats: Dictionary[String, int] = {
         "hp" : self.hp,
         "move" : self.move,
         "attack" : self.attack,
@@ -142,16 +142,16 @@ func get_stats() -> Dictionary:
 
     return stats
 
-func get_stats_with_modifiers() -> Dictionary:
-    var stats: Dictionary = self.get_stats()
+func get_stats_with_modifiers() -> Dictionary[String, int]:
+    var stats: Dictionary[String, int] = self.get_stats()
 
     for stat_key: String in stats:
         if self.modifiers.has(stat_key):
-            stats[stat_key] += self.modifiers[stat_key]
+            stats[stat_key] += int(self.modifiers[stat_key])
 
     return _apply_experience_modifiers(stats)
 
-func _apply_experience_modifiers(stats: Dictionary) -> Dictionary:
+func _apply_experience_modifiers(stats: Dictionary[String, int]) -> Dictionary[String, int]:
     if self.level > 1:
         stats["armor"] += 1
     if self.level > 2:
@@ -160,7 +160,7 @@ func _apply_experience_modifiers(stats: Dictionary) -> Dictionary:
     return stats
 
 func get_move() -> int:
-    var stats: Dictionary = self.get_stats_with_modifiers()
+    var stats: Dictionary[String, int] = self.get_stats_with_modifiers()
     return stats["move"]
 
 func has_moves() -> bool:
@@ -182,14 +182,14 @@ func restore_move(value: int) -> void:
     self._update_energy()
 
 func reset_move() -> void:
-    var stats: Dictionary = self.get_stats_with_modifiers()
+    var stats: Dictionary[String, int] = self.get_stats_with_modifiers()
     self.move = stats["max_move"]
     self.restore_highlight()
     self._update_energy()
 
 func replenish_moves() -> void:
     self.reset_move()
-    var stats: Dictionary = self.get_stats_with_modifiers()
+    var stats: Dictionary[String, int] = self.get_stats_with_modifiers()
     self.attacks = stats["max_attacks"]
 
 func remove_moves() -> void:
@@ -314,11 +314,11 @@ func is_damaged() -> bool:
 
 
 func get_attack() -> int:
-    var stats: Dictionary = self.get_stats_with_modifiers()
+    var stats: Dictionary[String, int] = self.get_stats_with_modifiers()
     return stats["attack"]
 
 func get_armor() -> int:
-    var stats: Dictionary = self.get_stats_with_modifiers()
+    var stats: Dictionary[String, int] = self.get_stats_with_modifiers()
     return stats["armor"]
 
 func remove_highlight() -> void:
@@ -397,7 +397,7 @@ func is_max_level() -> bool:
     return self.level >= self.MAX_LEVEL
 
 func heal(value: int) -> void:
-    var stats: Dictionary = self.get_stats_with_modifiers()
+    var stats: Dictionary[String, int] = self.get_stats_with_modifiers()
     self.hp += value
     if self.hp > stats["max_hp"]:
         self.hp = stats["max_hp"]
@@ -431,14 +431,20 @@ func _get_abilities_status() -> Dictionary[String, Array]:
     return status
 
 func restore_from_state(state: Dictionary) -> void:
+    var stats: Dictionary[String, int]
+    stats.assign(state["stats"])
+
+    var abilities_status: Dictionary[String, Array]
+    abilities_status.assign(state["abilities"])
+
     if state.has("tags"):
         self.scripting_tags.assign(state["tags"])
-    self.hp = state["stats"]["hp"]
-    self.move = state["stats"]["move"]
-    self.attacks = state["stats"]["attacks"]
-    self.level = int(state["stats"]["level"])
-    self.experience = int(state["stats"]["experience"])
-    self.kills = int(state["stats"]["kills"])
+    self.hp = stats["hp"]
+    self.move = stats["move"]
+    self.attacks = stats["attacks"]
+    self.level = stats["level"]
+    self.experience = stats["experience"]
+    self.kills = stats["kills"]
     self.team = state["team"]
     self.modifiers.clear()
     self.modifiers.assign(state["modifiers"])
@@ -450,10 +456,12 @@ func restore_from_state(state: Dictionary) -> void:
     if self.move < 1:
         self.remove_highlight()
 
+    var key: String
     for ability: Ability in self.active_abilities:
-        if state["abilities"].has("ability" + str(ability.index)):
-            ability.disabled = state["abilities"]["ability" + str(ability.index)][0]
-            ability.cd_turns_left = state["abilities"]["ability" + str(ability.index)][1]
+        key = "ability" + str(ability.index)
+        if abilities_status.has(key):
+            ability.disabled = bool(abilities_status[key][0])
+            ability.cd_turns_left = int(abilities_status[key][1])
 
 func disable_dlc_abilities(editor_version: int) -> void:
     for ability: Ability in self.active_abilities:

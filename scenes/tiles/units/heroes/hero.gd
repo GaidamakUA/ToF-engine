@@ -56,7 +56,7 @@ func restore_from_state(state: Dictionary) -> void:
 func is_hero() -> bool:
     return true
 
-func _apply_experience_modifiers(stats: Dictionary) -> Dictionary:
+func _apply_experience_modifiers(stats: Dictionary[String, int]) -> Dictionary[String, int]:
     if self.level > 0:
         stats["armor"] += 1
     if self.level > 1:

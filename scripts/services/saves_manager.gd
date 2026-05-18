@@ -1,12 +1,12 @@
 extends Node
 class_name SavesManagerService
 
-const AUTOSAVE_ID := 0
-const LIST_FILE_PATH := "user://saves.json"
-const SAVE_PATH := "user://save"
-const SAVE_EXTENSION := ".tofsave.json"
+const AUTOSAVE_ID: int = 0
+const LIST_FILE_PATH: String = "user://saves.json"
+const SAVE_PATH: String = "user://save"
+const SAVE_EXTENSION: String = ".tofsave.json"
 
-var filesystem := FileSystem.new()
+var filesystem: FileSystem = FileSystem.new()
 
 var autosave: Array = [null, null, null]
 var saves: Array[Dictionary] = []
@@ -17,7 +17,7 @@ func _ready() -> void:
 
 
 func add_new_save(map_name: String, map_label: String, turn_no: int, save_data: Dictionary) -> void:
-	var new_save_id := self.saves.size() + 3
+	var new_save_id: int = self.saves.size() + 3
 	self.saves.append({
 		"map": map_name,
 		"label": map_label,
@@ -47,11 +47,11 @@ func write_autosave(map_name: String, map_label: String, turn_no: int, save_data
 	self.autosave[2] = self.autosave[1]
 	if self.autosave[2] != null:
 		self.autosave[2]["save_id"] = 2
-		_move_save_file(1, 2)
+		self._move_save_file(1, 2)
 	self.autosave[1] = self.autosave[0]
 	if self.autosave[1] != null:
 		self.autosave[1]["save_id"] = 1
-		_move_save_file(0, 1)
+		self._move_save_file(0, 1)
 	self.autosave[0] = {
 		"map": map_name,
 		"label": map_label,
@@ -65,7 +65,7 @@ func write_autosave(map_name: String, map_label: String, turn_no: int, save_data
 
 
 func save_list_to_file() -> void:
-	var save_data := {
+	var save_data: Dictionary = {
 		"autosave": self.autosave,
 		"saves": self.saves
 	}
@@ -73,35 +73,35 @@ func save_list_to_file() -> void:
 
 
 func load_saves_from_file() -> void:
-	var save_data = self.filesystem.read_json_from_file(self.LIST_FILE_PATH)
+	var save_data: Dictionary = self.filesystem.read_json_from_file(self.LIST_FILE_PATH)
 	if save_data.has("saves"):
 		self.saves.assign(save_data["saves"])
 	if save_data.has("autosave"):
 		if save_data["autosave"] is Dictionary:
 			save_data["autosave"] = [save_data["autosave"], null, null]
 			self.autosave = save_data["autosave"]
-			_migrate_saves()
+			self._migrate_saves()
 			self.save_list_to_file()
 		self.autosave = save_data["autosave"]
 
 
-func get_entries_page(page_number: int, page_size: int) -> Array:
-	var pages_count := self.get_pages_count(page_size)
+func get_entries_page(page_number: int, page_size: int) -> Array[Dictionary]:
+	var pages_count: int = self.get_pages_count(page_size)
 
 	if page_number >= pages_count:
 		return []
 
-	var index_start := page_number * page_size
-	var index_end := index_start + page_size
+	var index_start: int = page_number * page_size
+	var index_end: int = index_start + page_size
 
 	var entries_list: Array[Dictionary] = []
 
-	for autosave_entry: Dictionary in self.autosave:
+	for autosave_entry: Variant in self.autosave:
 		if autosave_entry != null:
-			entries_list.append(autosave_entry)
+			entries_list.append(autosave_entry as Dictionary)
 
 	if self.saves.size() > 0:
-		var saves_copy := self.saves.duplicate()
+		var saves_copy: Array[Dictionary] = self.saves.duplicate()
 		saves_copy.reverse()
 		entries_list += saves_copy
 
@@ -109,7 +109,7 @@ func get_entries_page(page_number: int, page_size: int) -> Array:
 	if index_end > entries_count:
 		index_end = entries_count
 
-	var index := index_start
+	var index: int = index_start
 	var output: Array[Dictionary] = []
 
 	while index < index_end:
@@ -120,14 +120,14 @@ func get_entries_page(page_number: int, page_size: int) -> Array:
 
 
 func get_pages_count(page_size: int) -> int:
-	var total_saves_count := self.saves.size()
-	for autosave_entry: Dictionary in self.autosave:
+	var total_saves_count: int = self.saves.size()
+	for autosave_entry: Variant in self.autosave:
 		if autosave_entry != null:
 			total_saves_count += 1
 
-	var last_page_overflow := total_saves_count % page_size
+	var last_page_overflow: int = total_saves_count % page_size
 	@warning_ignore("integer_division")
-	var pages_count := (total_saves_count - last_page_overflow) / page_size
+	var pages_count: int = (total_saves_count - last_page_overflow) / page_size
 
 	if last_page_overflow > 0:
 		pages_count += 1
@@ -136,7 +136,7 @@ func get_pages_count(page_size: int) -> int:
 
 
 func get_save_data(save_id: int) -> Dictionary:
-	var filepath := self.get_save_path(save_id)
+	var filepath: String = self.get_save_path(save_id)
 	return self.filesystem.read_json_from_file(filepath)
 
 
@@ -149,19 +149,20 @@ func get_save_path(save_id: int) -> String:
 
 
 func compile_save_data(board: Board) -> Dictionary:
-	var map_name: String
-	var map_label: String
+	var map_name: String = ""
+	var map_label: String = ""
 
 	if board.match_setup.map_name != null:
-		map_name = board.match_setup.map_name
-		map_label = board.match_setup.map_name
+		map_name = str(board.match_setup.map_name)
+		map_label = str(board.match_setup.map_name)
 
 	if board.match_setup.campaign_name != null:
-		var manifest: Dictionary = board.campaign.get_campaign(board.match_setup.campaign_name)
-		var mission_details: Dictionary = manifest["missions"][board.match_setup.mission_no]
-		map_label = tr(manifest["title"]) + " - " + tr(mission_details["title"])
+		var manifest: Dictionary = board.campaign.get_campaign(str(board.match_setup.campaign_name))
+		var missions: Array = manifest["missions"] as Array
+		var mission_details: Dictionary = missions[board.match_setup.mission_no] as Dictionary
+		map_label = tr(str(manifest["title"])) + " - " + tr(str(mission_details["title"]))
 
-	var save_data := {
+	var save_data: Dictionary = {
 		"map_name": board.match_setup.map_name,
 		"campaign_name": board.match_setup.campaign_name,
 		"mission_no": board.match_setup.mission_no,
@@ -186,10 +187,10 @@ func compile_save_data(board: Board) -> Dictionary:
 	}
 
 func _compile_tiles_data(board: Board) -> Dictionary:
-	var tiles_data := {}
-	var tile
+	var tiles_data: Dictionary = {}
+	var tile: Variant
 
-	for tile_key in board.map.model.tiles.keys():
+	for tile_key: Variant in board.map.model.tiles.keys():
 		tile = board.map.model.tiles[tile_key]
 
 		if tile.is_state_modified or tile.building.is_present() or tile.unit.is_present() or tile.damage.is_present():
@@ -199,14 +200,15 @@ func _compile_tiles_data(board: Board) -> Dictionary:
 
 
 func _move_save_file(source_id: int, destination_id: int) -> void:
-	store_save_data(destination_id, get_save_data(source_id))
+	self.store_save_data(destination_id, self.get_save_data(source_id))
 
 
 func _migrate_saves() -> void:
-	var saves_copy := self.saves.duplicate()
+	var saves_copy: Array[Dictionary] = self.saves.duplicate()
 	saves_copy.reverse()
 	for save: Dictionary in saves_copy:
-		_move_save_file(save["save_id"], int(save["save_id"] + 2))
-		save["save_id"] = int(save["save_id"] + 2)
+		var save_id: int = int(save["save_id"])
+		self._move_save_file(save_id, save_id + 2)
+		save["save_id"] = save_id + 2
 	saves_copy.reverse()
 	self.saves = saves_copy

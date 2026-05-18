@@ -65,7 +65,8 @@ func reset_view() -> void:
 func bind_unit(unit: BaseUnit, tile_preview: MapObject, board_object: Board) -> void:
 	self.reset_view()
 
-	var stats: Dictionary = unit.get_stats_with_modifiers()
+	var stats: Dictionary[String, int]
+	stats.assign(unit.get_stats_with_modifiers())
 
 	self.tile_highlight.set_tile(tile_preview, 0)
 	self.unit_name.set_text(unit.unit_name)

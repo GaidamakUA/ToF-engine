@@ -108,10 +108,13 @@ func _clear_points() -> void:
 
 func _show_points() -> void:
     for player_data: Dictionary in board.state.players:
-        _show_points_for_player(player_data)
+        var typed_player_data: Dictionary[String, Variant]
+        typed_player_data.assign(player_data)
+        _show_points_for_player(typed_player_data)
 
 
-func _show_points_for_player(player_data: Dictionary) -> void:
-    if points_panels.has(player_data["side"]):
-        points_panels[player_data["side"]].show()
-        points_panels[player_data["side"]].show_player_points(player_data, board)
+func _show_points_for_player(player_data: Dictionary[String, Variant]) -> void:
+    var side: String = str(player_data["side"])
+    if points_panels.has(side):
+        points_panels[side].show()
+        points_panels[side].show_player_points(player_data, board)

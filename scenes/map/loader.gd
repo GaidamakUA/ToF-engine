@@ -33,7 +33,7 @@ func load_map_file(filename: String) -> void:
     self._initialize_camera_position()
 
 func load_campaign_map(campaign_name: String, mission_no: int) -> void:
-    var content: Dictionary[String, Variant] = {}
+    var content: Dictionary[String, Variant]
     content.assign(self.map.campaign.get_campaign_mission_map(campaign_name, mission_no))
     content["metadata"] = self._fill_missing_metadata(content)
     self.map.builder.wipe_map()

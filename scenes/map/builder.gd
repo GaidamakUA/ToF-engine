@@ -375,7 +375,7 @@ func rebuild_tile(tile_id: String, tile_data: Dictionary) -> void:
         var unit_data: Dictionary[String, Variant] = self._get_layer_data(tile_data, "unit")
         tile.unit.tile.restore_from_state(unit_data)
         if unit_data.has("passenger"):
-            var passenger_data: Dictionary[String, Variant] = {}
+            var passenger_data: Dictionary[String, Variant]
             passenger_data.assign(unit_data["passenger"])
             var passenger: MapObject = self.map.templates.get_template(str(passenger_data["tile"]))
             passenger.set_rotation(Vector3(0, deg_to_rad(int(passenger_data["rotation"])), 0))

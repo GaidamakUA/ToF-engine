@@ -5,28 +5,30 @@ class_name CampaignMissionPanel
 @onready var switcher: SceneSwitcherService = SceneSwitcher as SceneSwitcherService
 @onready var match_setup: MatchSetupData = MatchSetup as MatchSetupData
 
-@onready var back_button = $"widgets/back_button"
-@onready var start_button = $"widgets/start_button"
-@onready var title = $"widgets/title"
-@onready var description = $"widgets/description"
+@onready var back_button: TextureButton = $"widgets/back_button"
+@onready var start_button: TextureButton = $"widgets/start_button"
+@onready var title: Label = $"widgets/title"
+@onready var description: Label = $"widgets/description"
 
-var manifest
-var mission_no = 0
+var manifest: Dictionary = {}
+var mission_no: int = 0
 
-func _on_back_button_pressed():
+func _on_back_button_pressed() -> void:
     super._on_back_button_pressed()
     self.main_menu.close_campaign_mission()
 
-func _on_start_button_pressed():
+func _on_start_button_pressed() -> void:
     self.audio.play("menu_click")
 
-    var mission_details = self.manifest["missions"][self.mission_no]
+    var missions: Array = self.manifest["missions"] as Array
+    var mission_details: Dictionary = missions[self.mission_no] as Dictionary
+    var players: Array = mission_details["players"] as Array
 
     self.match_setup.reset()
-    self.match_setup.campaign_name = self.manifest["name"]
+    self.match_setup.campaign_name = str(self.manifest["name"])
     self.match_setup.mission_no = self.mission_no
 
-    for player in mission_details["players"]:
+    for player: Dictionary in players:
         if not player.has("alive"):
             player["alive"] = true
         if not player.has("team"):
@@ -35,20 +37,21 @@ func _on_start_button_pressed():
 
     self.switcher.board()
 
-func show_panel():
+func show_panel() -> void:
     super.show_panel()
     await self.get_tree().create_timer(0.1).timeout
     self.start_button.grab_focus()
 
-func load_mission(campaign_name, _mission_no):
+func load_mission(campaign_name: String, _mission_no: int) -> void:
     self.manifest = self.campaign.get_campaign(campaign_name)
     self.mission_no = _mission_no
 
-    if self.manifest == null:
+    if self.manifest.is_empty():
         self.main_menu.close_campaign_mission()
         return
 
-    var mission_details = self.manifest["missions"][self.mission_no]
+    var missions: Array = self.manifest["missions"] as Array
+    var mission_details: Dictionary = missions[self.mission_no] as Dictionary
 
-    self.title.set_text(mission_details["title"])
-    self.description.set_text(mission_details["description"])
+    self.title.set_text(str(mission_details["title"]))
+    self.description.set_text(str(mission_details["description"]))

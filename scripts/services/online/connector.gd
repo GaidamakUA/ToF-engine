@@ -12,30 +12,30 @@ func _init(online: OnlineService) -> void:
 	self.online_service = online
 
 func _read_settings() -> void:
-	var new_value = self.online_service.settings.get_option("online_domain")
+	var new_value: Variant = self.online_service.settings.get_option("online_domain")
 	if new_value is String:
 		self.API_LOCATION = new_value
 	self.API_PORT = int(self.online_service.settings.get_option("online_port"))
 
-func _get_request(resource: String, expect_json: bool = true) -> Dictionary:
+func _get_request(resource: String, expect_json: bool = true) -> Dictionary[String, Variant]:
 	return await self._request(resource, HTTPClient.METHOD_GET, "", expect_json)
 
-func _post_request(resource: String, data: String = "", expect_json: bool = true) -> Dictionary:
+func _post_request(resource: String, data: String = "", expect_json: bool = true) -> Dictionary[String, Variant]:
 	return await self._request(resource, HTTPClient.METHOD_POST, data, expect_json)
 
-func _request(resource: String, method, data: String, expect_json: bool = true) -> Dictionary:
+func _request(resource: String, method: int, data: String, expect_json: bool = true) -> Dictionary[String, Variant]:
 	return await self._request_any(self.API_LOCATION, resource, method, data, expect_json)
 
-func _request_any(location: String, resource: String, method, data: String, expect_json: bool = true, expect_text: bool = true) -> Dictionary:
-	var error
-	var result := {
+func _request_any(location: String, resource: String, method: int, data: String, expect_json: bool = true, expect_text: bool = true) -> Dictionary[String, Variant]:
+	var error: Error
+	var result: Dictionary[String, Variant] = {
 		'status' : null,
 		'response_code' : 0,
 		'data' : {}
 	}
 
 	var http_client: HTTPClient = HTTPClient.new()
-	var client_trusted_cas = load("res://assets/czlowiekimadlo.crt")
+	var client_trusted_cas: X509Certificate = load("res://assets/czlowiekimadlo.crt") as X509Certificate
 	error = http_client.connect_to_host(location, self.API_PORT, TLSOptions.client(client_trusted_cas))
 
 	if error != OK:
@@ -52,10 +52,10 @@ func _request_any(location: String, resource: String, method, data: String, expe
 		result['message'] = 'Could not connect'
 		return result
 
-	var headers := [
+	var headers: PackedStringArray = PackedStringArray([
 		"User-Agent: ToF-II/" + self.API_PRESENT_VERSION,
 		"Accept: */*"
-	]
+	])
 	if data != "":
 		headers.append("Content-Type: application/json")
 		error = http_client.request(method, resource, headers, data)
@@ -80,8 +80,8 @@ func _request_any(location: String, resource: String, method, data: String, expe
 		result['headers'] = http_client.get_response_headers_as_dictionary()
 		result['response_code'] = http_client.get_response_code()
 
-		var read_buffer := PackedByteArray()
-		var chunk
+		var read_buffer: PackedByteArray = PackedByteArray()
+		var chunk: PackedByteArray
 
 		while http_client.get_status() == HTTPClient.STATUS_BODY:
 			error = http_client.poll()
@@ -91,14 +91,9 @@ func _request_any(location: String, resource: String, method, data: String, expe
 			else:
 				read_buffer = read_buffer + chunk
 
-		var response_text
-		if expect_text:
-			response_text = read_buffer.get_string_from_utf8()
-		else:
-			response_text = read_buffer
-
 		if expect_json:
-			var test_json_conv = JSON.new()
+			var response_text: String = read_buffer.get_string_from_utf8()
+			var test_json_conv: JSON = JSON.new()
 			test_json_conv.parse(response_text)
 			result['data'] = test_json_conv.get_data()
 			if result['data'] == null:
@@ -114,6 +109,9 @@ func _request_any(location: String, resource: String, method, data: String, expe
 				result['status'] = 'ok'
 		else:
 			result['status'] = 'ok'
-			result['data'] = response_text
+			if expect_text:
+				result['data'] = read_buffer.get_string_from_utf8()
+			else:
+				result['data'] = read_buffer
 
 	return result

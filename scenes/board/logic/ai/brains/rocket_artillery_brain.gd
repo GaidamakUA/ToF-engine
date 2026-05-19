@@ -2,7 +2,7 @@ extends AbstractUnitBrain
 class_name RocketArtilleryBrain
 
 func _gather_ability_actions(entity_tile: MapTile, ap: int, board: Board) -> Array[AbstractAction]:
-    var unit: BaseUnit = entity_tile.unit.tile
+    var unit: BaseUnit = self._get_unit(entity_tile)
 
     if not unit.has_moves():
         return []
@@ -32,8 +32,9 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, board: Board) -> Arr
             path = self.pathfinder.get_path_to_tile(approach_target_tile)
             if path.size() - 1 > unit_range + 2:
                 if self._can_approach(entity_tile, path, unit_range - 1):
+                    var approach_target_unit: BaseUnit = self._get_unit(approach_target_tile)
                     action = self._approach_action(entity_tile, path, unit_range - 1)
-                    action.value = approach_target_tile.unit.tile.unit_value - 20
+                    action.value = approach_target_unit.unit_value - 20
                     actions.append(action)
 
     for ability: ActiveUnitAbility in unit.active_abilities:
@@ -45,10 +46,11 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, board: Board) -> Arr
                     targets_in_range.append(tile)
 
             for target_tile: MapTile in targets_in_range:
+                var target_unit: BaseUnit = self._get_unit(target_tile)
                 var ability_action: UseAbilityAction = self._ability_action(ability, target_tile)
                 ability.active_source_tile = entity_tile
                 ability_action.delay = 0.5
-                ability_action.value = target_tile.unit.tile.unit_value
+                ability_action.value = target_unit.unit_value
                 actions.append(ability_action)
 
     return actions

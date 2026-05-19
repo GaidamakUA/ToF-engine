@@ -17,7 +17,8 @@ func get_actions(context: BrainContext) -> Array[AbstractAction]:
     if units_stats["total"] >= final_units_hard_limit:
         return []
 
-    var building: BaseBuilding = context.entity_tile.building.tile
+    var building: BaseBuilding = context.entity_tile.building.tile as BaseBuilding
+    assert(building != null)
     var actions: Array[AbstractAction] = []
     var action: AbstractAction
     var ability_cost: int
@@ -113,11 +114,13 @@ func _gather_unit_stats(units: Array[MapTile]) -> Dictionary[String, int]:
     var unit_class: String
 
     for unit_tile: MapTile in units:
-        if unit_tile.unit.tile.ai_paused:
+        var unit: BaseUnit = unit_tile.unit.tile as BaseUnit
+        assert(unit != null)
+        if unit.ai_paused:
             stats['total'] -= 1
             continue
 
-        unit_class = unit_tile.unit.tile.unit_class
+        unit_class = unit.unit_class
         if stats.has(unit_class):
             stats[unit_class] += 1
         else:

@@ -3,7 +3,7 @@ class_name MobileInfantryBrain
 
 
 func _gather_ability_actions(entity_tile: MapTile, ap: int, _board: Board) -> Array[AbstractAction]:
-    var unit: BaseUnit = entity_tile.unit.tile
+    var unit: BaseUnit = self._get_unit(entity_tile)
 
     if not unit.has_moves():
         return []
@@ -25,8 +25,9 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, _board: Board) -> Ar
         if ability.is_visible() and ability.get_cost() <= ap and not ability.is_on_cooldown():
             for friendly_unit_tile: String in self.pathfinder.own_units:
                 target_tile = self.pathfinder.own_units[friendly_unit_tile]
+                var target_unit: BaseUnit = self._get_unit(target_tile)
 
-                if target_tile.unit.tile.max_hp - target_tile.unit.tile.hp < 5:
+                if target_unit.max_hp - target_unit.hp < 5:
                     continue
                 if not ability.is_tile_applicable(target_tile, entity_tile):
                     continue
@@ -35,7 +36,7 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, _board: Board) -> Ar
                     var ability_action: UseAbilityAction = self._ability_action(ability, target_tile)
                     ability_action.delay = 0.5
                     ability.active_source_tile = entity_tile
-                    ability_action.value += target_tile.unit.tile.get_value()
+                    ability_action.value += target_unit.get_value()
                     actions.append(ability_action)
                     continue
 
@@ -44,7 +45,7 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, _board: Board) -> Ar
                 if path.size() - 1 > unit_range:
                     if self._can_approach(entity_tile, path, unit_range - 1):
                         action = self._approach_action(entity_tile, path, unit_range - 1)
-                        action.value = target_tile.unit.tile.get_value() - 20
+                        action.value = target_unit.get_value() - 20
                         actions.append(action)
                 else:
                     interaction_tiles = self._get_interaction_tiles(target_tile, entity_tile)
@@ -55,12 +56,12 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, _board: Board) -> Ar
                         if path.size() - 1 > unit_range - 1:
                             if self._can_approach(entity_tile, path, unit_range - 1):
                                 action = self._approach_action(entity_tile, path, unit_range - 1)
-                                action.value = target_tile.unit.tile.get_value() - 20
+                                action.value = target_unit.get_value() - 20
                                 actions.append(action)
                         else:
                             if self._can_approach(entity_tile, path, path.size() - 1):
                                 action = self._approach_action(entity_tile, path, path.size() - 1)
-                                action.value = target_tile.unit.tile.get_value() - path.size()
+                                action.value = target_unit.get_value() - path.size()
                                 actions.append(action)
 
     return actions

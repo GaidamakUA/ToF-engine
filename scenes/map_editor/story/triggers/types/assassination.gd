@@ -1,6 +1,6 @@
 extends BaseTriggerTypeEditor
 
-func fill_trigger_data(new_trigger_name, new_trigger_data):
+func fill_trigger_data(new_trigger_name: String, new_trigger_data: Dictionary) -> void:
 	super.fill_trigger_data(new_trigger_name, new_trigger_data)
 	
 	$"vip/x".set_text("")
@@ -15,10 +15,10 @@ func fill_trigger_data(new_trigger_name, new_trigger_data):
 		if self.trigger_data["details"].has("type"):
 			$"unit_type/unit_type_input".set_text(self.trigger_data["details"]["type"])
 
-func _compile_trigger_data():
-	var x = $"vip/x".get_text()
-	var y = $"vip/y".get_text()
-	var unit_type = $"unit_type/unit_type_input".get_text()
+func _compile_trigger_data() -> Dictionary:
+	var x: String = $"vip/x".get_text()
+	var y: String = $"vip/y".get_text()
+	var unit_type: String = $"unit_type/unit_type_input".get_text()
 
 	self.trigger_data["details"] = {}
 
@@ -29,13 +29,13 @@ func _compile_trigger_data():
 
 	return self.trigger_data
 
-func _on_text_changed(_new_text):
+func _on_text_changed(_new_text: String) -> void:
 	_emit_updated_signal()
 
-func _on_picker_button_pressed():
+func _on_picker_button_pressed() -> void:
 	self.audio.play("menu_click")
 
-	var vip_position = null
+	var vip_position: Variant = null
 	if self.trigger_data["details"].has("vip"):
 		vip_position = self.trigger_data["details"]["vip"]
 
@@ -45,7 +45,7 @@ func _on_picker_button_pressed():
 		"trigger_name": self.trigger_name
 	})
 
-func _handle_picker_response(response, context):
+func _handle_picker_response(response: Variant, context: Dictionary) -> void:
 	super._handle_picker_response(response, context)
 	if context["type"] == "position":
 		$"vip/x".set_text(str(response.x))
@@ -55,7 +55,7 @@ func _handle_picker_response(response, context):
 	_emit_updated_signal()
 
 
-func _on_unit_picker_button_pressed():
+func _on_unit_picker_button_pressed() -> void:
 	self.audio.play("menu_click")
 
 	self.picker_requested.emit({

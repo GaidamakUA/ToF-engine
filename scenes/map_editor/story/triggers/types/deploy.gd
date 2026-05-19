@@ -1,6 +1,6 @@
 extends BaseTriggerTypeEditor
 
-func fill_trigger_data(new_trigger_name, new_trigger_data):
+func fill_trigger_data(new_trigger_name: String, new_trigger_data: Dictionary) -> void:
 	super.fill_trigger_data(new_trigger_name, new_trigger_data)
 	
 	$"player_id/id".set_text("")
@@ -21,11 +21,11 @@ func fill_trigger_data(new_trigger_name, new_trigger_data):
 		if self.trigger_data["details"].has("type"):
 			$"unit_type/unit_type_input".set_text(self.trigger_data["details"]["type"])
 
-func _compile_trigger_data():
-	var player_id = $"player_id/id".get_text()
-	var player_side = $"player_side/side".get_text()
-	var amount = $"amount/amount".get_text()
-	var unit_type = $"unit_type/unit_type_input".get_text()
+func _compile_trigger_data() -> Dictionary:
+	var player_id: String = $"player_id/id".get_text()
+	var player_side: String = $"player_side/side".get_text()
+	var amount: String = $"amount/amount".get_text()
+	var unit_type: String = $"unit_type/unit_type_input".get_text()
 
 	self.trigger_data["details"] = {}
 
@@ -40,10 +40,10 @@ func _compile_trigger_data():
 
 	return self.trigger_data
 
-func _on_text_changed(_new_text):
+func _on_text_changed(_new_text: String) -> void:
 	_emit_updated_signal()
 
-func _handle_picker_response(response, context):
+func _handle_picker_response(response: Variant, context: Dictionary) -> void:
 	super._handle_picker_response(response, context)
 	if context["type"] == "unit_type":
 		$"unit_type/unit_type_input".set_text(response)
@@ -51,7 +51,7 @@ func _handle_picker_response(response, context):
 		$"player_side/side".set_text(response)
 	_emit_updated_signal()
 
-func _on_unit_picker_button_pressed():
+func _on_unit_picker_button_pressed() -> void:
 	self.audio.play("menu_click")
 
 	self.picker_requested.emit({
@@ -60,7 +60,7 @@ func _on_unit_picker_button_pressed():
 	})
 
 
-func _on_side_picker_button_pressed():
+func _on_side_picker_button_pressed() -> void:
 	self.audio.play("menu_click")
 
 	self.picker_requested.emit({

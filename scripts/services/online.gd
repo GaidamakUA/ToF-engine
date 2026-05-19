@@ -22,7 +22,7 @@ func _ready() -> void:
 	self.settings.changed.connect(self._on_settings_changed)
 
 
-func _on_settings_changed(key: String, _value) -> void:
+func _on_settings_changed(key: String, _value: Variant) -> void:
 	if key == "online_domain" or key == "online_port":
 		self._read_settings()
 		self.connector._read_settings()

@@ -237,12 +237,12 @@ const TILE_CACTI := 14
 var cache: Dictionary[String, Dictionary] = {}
 
 func fill_minimap(map_name: String) -> void:
-    var map_data := self.get_map_data(map_name)
+    var map_data: Dictionary = self.get_map_data(map_name)
 
     var key: String
 
-    for y in range(self.map_list_service.MAX_MAP_SIZE):
-        for x in range(self.map_list_service.MAX_MAP_SIZE):
+    for y: int in range(self.map_list_service.MAX_MAP_SIZE):
+        for x: int in range(self.map_list_service.MAX_MAP_SIZE):
             key = str(x) + "_" + str(y)
             if map_data.has("tiles") and map_data["tiles"].has(key):
                 self.set_cell_from_data(x, y, map_data["tiles"][key])
@@ -254,7 +254,7 @@ func get_map_data(map_name: String) -> Dictionary:
     if self.cache.has(map_name):
         return self.cache[map_name]
 
-    var map_data := self.map_list_service.get_map_data(map_name)
+    var map_data: Dictionary = self.map_list_service.get_map_data(map_name)
 
     self.cache[map_name] = map_data
 
@@ -264,7 +264,7 @@ func remove_from_cache(map_name: String) -> void:
     if self.cache.has(map_name):
         self.cache.erase(map_name)
 
-func set_cell_from_data(x: int, y: int, data) -> void:
+func set_cell_from_data(x: int, y: int, data: Variant) -> void:
     if data == null:
         self.set_cell(x, y, self.TILE_WATER)
         return
@@ -346,6 +346,6 @@ func set_cell(x: int, y: int, id: int) -> void:
     self.minimap.set_cell(0, Vector2i(x, y), id, Vector2i(0, 0))
 
 func wipe() -> void:
-    for y in range(self.map_list_service.MAX_MAP_SIZE):
-        for x in range(self.map_list_service.MAX_MAP_SIZE):
+    for y: int in range(self.map_list_service.MAX_MAP_SIZE):
+        for x: int in range(self.map_list_service.MAX_MAP_SIZE):
             self.set_cell_from_data(x, y, null)

@@ -38,19 +38,19 @@ func _ready() -> void:
     self.message_received.connect(self._message_received)
 
 
-func _on_settings_changed(key: String, _value) -> void:
+func _on_settings_changed(key: String, _value: Variant) -> void:
     if key == "relay_port" or key == "relay_domain":
         self._read_settings()
 
 
 func _read_settings() -> void:
-    var new_value = self.settings.get_option("relay_domain")
+    var new_value: Variant = self.settings.get_option("relay_domain")
     if new_value is String:
         self.RELAY_URL = new_value
     self.RELAY_PORT = int(self.settings.get_option("relay_port"))
 
 
-func is_server():
+func is_server() -> bool:
     return self.peer_id == 1
 
 
@@ -143,9 +143,9 @@ func _send_message(action: String, payload: Dictionary) -> Error:
     return self.socket.send_text(JSON.stringify(message_data))
 
 
-func _process(_delta) -> void:
+func _process(_delta: float) -> void:
     self.socket.poll()
-    var state = socket.get_ready_state()
+    var state: WebSocketPeer.State = socket.get_ready_state()
     if state == WebSocketPeer.STATE_OPEN:
         if self.connecting:
             self.connection_success.emit()
@@ -204,7 +204,7 @@ func _join_session(session_code: String) -> void:
 
 
 func _on_player_connected(payload: Dictionary) -> void:
-    var new_player_id := int(payload["peer_id"])
+    var new_player_id: int = int(payload["peer_id"])
     players[new_player_id] = payload["player_data"]
     player_connected.emit(new_player_id, payload["player_data"])
 
@@ -232,14 +232,14 @@ func _get_player_info() -> Dictionary:
 
 
 func _get_player_count(map_name: String) -> int:
-    var map_data = self.map_list_service.get_map_data(map_name)
+    var map_data: Dictionary = self.map_list_service.get_map_data(map_name)
 
-    var sides = {}
-    var side
-    var key
+    var sides: Dictionary[String, String] = {}
+    var side: String
+    var key: String
 
-    for y in range(self.map_list_service.MAX_MAP_SIZE):
-        for x in range(self.map_list_service.MAX_MAP_SIZE):
+    for y: int in range(self.map_list_service.MAX_MAP_SIZE):
+        for x: int in range(self.map_list_service.MAX_MAP_SIZE):
             key = str(x) + "_" + str(y)
             if map_data["tiles"].has(key):
                 side = self._lookup_side(map_data["tiles"][key])
@@ -250,7 +250,7 @@ func _get_player_count(map_name: String) -> int:
 
 
 func _lookup_side(data: Dictionary) -> String:
-    var hq_templates = [
+    var hq_templates: Array[String] = [
         "modern_hq",
         "steampunk_hq",
         "futuristic_hq",

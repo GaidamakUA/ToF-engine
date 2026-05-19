@@ -35,16 +35,22 @@ func _set_icon(side: String) -> void:
 func _calculate_building_points(side: String, board: Board) -> void:
 	_building_points = 0
 	for tile: MapTile in board.map.model.tiles.values():
-		if tile.building.is_present() and tile.building.tile.side == side:
-			_building_points += tile.building.tile.capture_value
+		if tile.building.is_present():
+			var building: BaseBuilding = tile.building.tile as BaseBuilding
+			assert(building != null)
+			if building.side == side:
+				_building_points += building.capture_value
 	_building_points_label.set_text(str(_building_points))
 
 
 func _calculate_unit_points(side: String, board: Board) -> void:
 	_unit_points = 0
 	for tile: MapTile in board.map.model.tiles.values():
-		if tile.unit.is_present() and tile.unit.tile.side == side:
-			_unit_points += tile.unit.tile.get_value()
+		if tile.unit.is_present():
+			var unit: BaseUnit = tile.unit.tile as BaseUnit
+			assert(unit != null)
+			if unit.side == side:
+				_unit_points += unit.get_value()
 	_unit_points_label.set_text(str(_unit_points))
 
 

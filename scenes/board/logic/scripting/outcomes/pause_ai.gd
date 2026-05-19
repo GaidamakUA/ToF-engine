@@ -10,12 +10,15 @@ func _execute(_metadata: Dictionary[String, Variant]) -> void:
     if not tile.unit.is_present():
         return
 
+    var unit: BaseUnit = tile.unit.tile as BaseUnit
+    assert(unit != null)
+
     if self.pause:
-        tile.unit.tile.ai_paused = true
-        tile.unit.tile.remove_moves()
+        unit.ai_paused = true
+        unit.remove_moves()
     else:
-        tile.unit.tile.ai_paused = false
-        tile.unit.tile.replenish_moves()
+        unit.ai_paused = false
+        unit.replenish_moves()
 
 func _ingest_details(details: Dictionary[String, Variant]) -> void:
     self.who = Vector2i(details['who'][0], details['who'][1])

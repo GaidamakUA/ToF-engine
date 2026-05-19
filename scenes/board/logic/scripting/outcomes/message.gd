@@ -22,7 +22,11 @@ func _execute(_metadata: Dictionary[String, Variant]) -> void:
 
     if self.colour != null:
         var material_type: String = self.board.map.templates.MATERIAL_NORMAL
-        if portrait_tile.uses_metallic_material:
+        var portrait_unit: BaseUnit = portrait_tile as BaseUnit
+        if portrait_unit != null and portrait_unit.uses_metallic_material:
+            material_type = self.board.map.templates.MATERIAL_METALLIC
+        var portrait_building: BaseBuilding = portrait_tile as BaseBuilding
+        if portrait_building != null and portrait_building.uses_metallic_material:
             material_type = self.board.map.templates.MATERIAL_METALLIC
 
         portrait_tile.set_side_materials(self.board.map.templates.get_side_material(self.colour, material_type), self.board.map.templates.get_side_material(self.colour, material_type))

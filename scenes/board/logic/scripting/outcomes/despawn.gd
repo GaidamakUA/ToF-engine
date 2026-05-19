@@ -9,8 +9,12 @@ func _execute(_metadata: Dictionary[String, Variant]) -> void:
     if self.who != null:
         tile = self.board.map.model.get_tile(self.who)
         if tile.unit.is_present():
-            if tile.unit.tile.unit_class == "hero":
-                self.board.state.clear_hero_for_side(tile.unit.tile.side, tile.unit.tile)
+            var unit: BaseUnit = tile.unit.tile as BaseUnit
+            assert(unit != null)
+            if unit.unit_class == "hero":
+                var hero: HeroUnit = unit as HeroUnit
+                assert(hero != null)
+                self.board.state.clear_hero_for_side(unit.side, hero)
             tile.unit.clear()
             self.board.smoke_a_tile(tile)
     elif not self.fields.is_empty():
@@ -24,8 +28,12 @@ func _execute(_metadata: Dictionary[String, Variant]) -> void:
                 while y_index <= rectangle["y2"]:
                     tile = self.board.map.model.get_tile(Vector2i(x_index, y_index))
                     if tile.unit.is_present():
-                        if tile.unit.tile.unit_class == "hero":
-                            self.board.state.clear_hero_for_side(tile.unit.tile.side, tile.unit.tile)
+                        var unit: BaseUnit = tile.unit.tile as BaseUnit
+                        assert(unit != null)
+                        if unit.unit_class == "hero":
+                            var hero: HeroUnit = unit as HeroUnit
+                            assert(hero != null)
+                            self.board.state.clear_hero_for_side(unit.side, hero)
                         tile.unit.clear()
                         self.board.smoke_a_tile(tile)
                     y_index += 1

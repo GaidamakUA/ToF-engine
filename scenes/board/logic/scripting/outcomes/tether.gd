@@ -10,9 +10,11 @@ func _execute(_metadata: Dictionary[String, Variant]) -> void:
     if not tile.unit.is_present():
         return
 
-    tile.unit.tile.tether_point.x = self.who.x
-    tile.unit.tile.tether_point.y = self.who.y
-    tile.unit.tile.tether_length = self.length
+    var unit: BaseUnit = tile.unit.tile as BaseUnit
+    assert(unit != null)
+    unit.tether_point.x = self.who.x
+    unit.tether_point.y = self.who.y
+    unit.tether_length = self.length
 
 func _ingest_details(details: Dictionary[String, Variant]) -> void:
     self.who = Vector2i(details['who'][0], details['who'][1])

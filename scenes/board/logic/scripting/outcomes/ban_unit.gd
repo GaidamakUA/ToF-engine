@@ -7,8 +7,10 @@ var ban: bool
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
     var tile: MapTile = self.board.map.model.get_tile(self.where)
+    var building: BaseBuilding = tile.building.tile as BaseBuilding
+    assert(building != null)
 
-    for ability: Ability in tile.building.tile.abilities:
+    for ability: Ability in building.abilities:
         if ability.index == self.ability_id:
             ability.disabled = self.ban
 

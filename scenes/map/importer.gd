@@ -203,7 +203,7 @@ func _pre_fill_tilemap(map: Map, tilemap: Dictionary[int, Dictionary], tiles: Ar
 	var unit: int
 
 	for tile_data: Dictionary in tiles:
-		tile_key = str(tile_data["x"]) + "_" + str(tile_data["y"])
+		tile_key = str(int(tile_data["x"])) + "_" + str(int(tile_data["y"]))
 		mapping.assign(tilemap[int(tile_data["terrain"])])
 		unit = int(tile_data["unit"])
 

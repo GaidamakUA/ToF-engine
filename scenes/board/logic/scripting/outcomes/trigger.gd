@@ -1,19 +1,21 @@
 extends BaseOutcome
 class_name TriggerOutcome
 
-var name: Variant = null
-var group: Variant = null
+var name: String = ""
+var group: String = ""
 var suspended: bool
-var turns: Variant = null
+var turns: int = -1
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
-    if self.group != null:
+    if self.group != "":
         self.board.scripting.suspend_group(self.group, self.suspended)
-    elif self.name != null:
+    elif self.name != "":
         self.board.scripting.suspend_trigger(self.name, self.suspended)
 
-        if self.turns != null:
-            self.board.scripting.triggers[self.name].turn_no = self.board.state.turn + self.turns
+        if self.turns >= 0:
+            var trigger: TurnTrigger = self.board.scripting.triggers[self.name] as TurnTrigger
+            assert(trigger != null)
+            trigger.turn_no = self.board.state.turn + self.turns
 
 func _ingest_details(details: Dictionary[String, Variant]) -> void:
     self.suspended = bool(details['suspended'])

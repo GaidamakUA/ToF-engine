@@ -3,8 +3,8 @@ class_name MultiplayerService
 
 signal connection_failed
 signal connection_success
-signal player_connected(peer_id, player_info)
-signal player_disconnected(peer_id)
+signal player_connected(peer_id: int, player_info: Dictionary)
+signal player_disconnected(peer_id: int)
 signal server_disconnected
 signal all_players_loaded
 
@@ -32,8 +32,8 @@ func _ready() -> void:
 func create_game(map_name: String) -> Error:
     self.players.clear()
     self.player_limit = 7 #_get_player_count(map_name)
-    var peer = ENetMultiplayerPeer.new()
-    var error = peer.create_server(self.settings.get_option("game_port"), self.player_limit)
+    var peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
+    var error: Error = peer.create_server(self.settings.get_option("game_port"), self.player_limit)
     if error:
         return error
 
@@ -48,8 +48,8 @@ func create_game(map_name: String) -> Error:
 
 
 func connect_server(ip_address: String, port: int) -> Error:
-    var peer = ENetMultiplayerPeer.new()
-    var error = peer.create_client(ip_address, port)
+    var peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
+    var error: Error = peer.create_client(ip_address, port)
     if error:
         return error
     multiplayer.multiplayer_peer = peer
@@ -90,7 +90,7 @@ func _on_player_connected(id: int) -> void:
 
 @rpc("any_peer", "reliable")
 func _register_player(new_player_info: Dictionary) -> void:
-    var new_player_id := multiplayer.get_remote_sender_id()
+    var new_player_id: int = multiplayer.get_remote_sender_id()
     players[new_player_id] = new_player_info
     player_connected.emit(new_player_id, new_player_info)
 
@@ -104,7 +104,7 @@ func _on_player_disconnected(id: int) -> void:
 
 
 func _on_connected_ok() -> void:
-    var peer_id = multiplayer.get_unique_id()
+    var peer_id: int = multiplayer.get_unique_id()
     self.players[peer_id] = self._get_player_info()
     connection_success.emit()
     player_connected.emit(peer_id, self._get_player_info())
@@ -130,17 +130,20 @@ func _get_player_info() -> Dictionary:
 
 
 func _get_player_count(map_name: String) -> int:
-    var map_data = self.map_list_service.get_map_data(map_name)
+    var map_data: Dictionary = self.map_list_service.get_map_data(map_name)
+    var tiles: Dictionary = map_data["tiles"]
 
     var sides: Dictionary[String, String] = {}
     var side: String
     var key: String
 
-    for y in range(self.map_list_service.MAX_MAP_SIZE):
-        for x in range(self.map_list_service.MAX_MAP_SIZE):
+    for y: int in range(self.map_list_service.MAX_MAP_SIZE):
+        for x: int in range(self.map_list_service.MAX_MAP_SIZE):
             key = str(x) + "_" + str(y)
-            if map_data["tiles"].has(key):
-                side = self._lookup_side(map_data["tiles"][key])
+            if tiles.has(key):
+                var tile_data: Dictionary
+                tile_data.assign(tiles[key])
+                side = self._lookup_side(tile_data)
 
                 if side != "":
                     sides[side] = side
@@ -155,9 +158,11 @@ func _lookup_side(data: Dictionary) -> String:
         "feudal_hq",
     ]
 
-    if data["building"]["tile"] != null:
-        if data["building"]["tile"] in hq_templates:
-            return data["building"]["side"]
+    var building_data: Dictionary = data["building"]
+
+    if building_data["tile"] != null:
+        if building_data["tile"] in hq_templates:
+            return building_data["side"]
 
     return ""
 

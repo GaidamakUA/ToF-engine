@@ -67,12 +67,14 @@ func _calculate_blast_value(source: BaseUnit, target_tile: MapTile) -> int:
 
     for tile: MapTile in tiles_in_blast_area:
         if tile.has_enemy_unit(source.side, source.team):
-            final_value += tile.unit.tile.get_value()
-            if tile.unit.tile.hp <= 5:
+            var unit: BaseUnit = self._get_unit(tile)
+            final_value += unit.get_value()
+            if unit.hp <= 5:
                 final_value += 10
         if tile.has_friendly_unit(source.side) or tile.has_allied_unit(source.team):
-            final_value -= tile.unit.tile.get_value()
-            if tile.unit.tile.hp <= 5:
+            var unit: BaseUnit = self._get_unit(tile)
+            final_value -= unit.get_value()
+            if unit.hp <= 5:
                 final_value -= 10
 
     return final_value

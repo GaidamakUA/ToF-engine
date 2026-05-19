@@ -22,6 +22,7 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, _board: Board) -> Ar
 
     for friendly_unit_tile: String in self.pathfinder.own_units:
         target_tile = self.pathfinder.own_units[friendly_unit_tile]
+        var target_unit: BaseUnit = self._get_unit(target_tile)
 
         if not ability.is_tile_applicable(target_tile, entity_tile):
             continue
@@ -30,9 +31,9 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, _board: Board) -> Ar
             var ability_action: UseAbilityAction = self._ability_action(ability, target_tile)
             ability_action.delay = 0.5
             ability.active_source_tile = entity_tile
-            ability_action.value = target_tile.unit.tile.unit_value
-            if target_tile.unit.tile.level == 0:
-                ability_action.value += target_tile.unit.tile.unit_value
+            ability_action.value = target_unit.unit_value
+            if target_unit.level == 0:
+                ability_action.value += target_unit.unit_value
             actions.append(ability_action)
             continue
 
@@ -41,9 +42,9 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, _board: Board) -> Ar
         if path.size() - 1 > unit_range:
             if self._can_approach(entity_tile, path, unit_range - 1):
                 action = self._approach_action(entity_tile, path, unit_range - 1)
-                action.value = target_tile.unit.tile.unit_value - 20
-                if target_tile.unit.tile.level == 0:
-                    action.value += target_tile.unit.tile.unit_value
+                action.value = target_unit.unit_value - 20
+                if target_unit.level == 0:
+                    action.value += target_unit.unit_value
                 actions.append(action)
         else:
             interaction_tiles = self._get_interaction_tiles(target_tile, entity_tile)
@@ -54,16 +55,16 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, _board: Board) -> Ar
                 if path.size() - 1 > unit_range - 1:
                     if self._can_approach(entity_tile, path, unit_range - 1):
                         action = self._approach_action(entity_tile, path, unit_range - 1)
-                        action.value = target_tile.unit.tile.unit_value - 10
-                        if target_tile.unit.tile.level == 0:
-                            action.value += target_tile.unit.tile.unit_value
+                        action.value = target_unit.unit_value - 10
+                        if target_unit.level == 0:
+                            action.value += target_unit.unit_value
                         actions.append(action)
                 else:
                     if self._can_approach(entity_tile, path, path.size() - 1):
                         action = self._approach_action(entity_tile, path, path.size() - 1)
-                        action.value = target_tile.unit.tile.unit_value - path.size()
-                        if target_tile.unit.tile.level == 0:
-                            action.value += target_tile.unit.tile.unit_value
+                        action.value = target_unit.unit_value - path.size()
+                        if target_unit.level == 0:
+                            action.value += target_unit.unit_value
                         actions.append(action)
 
     return actions

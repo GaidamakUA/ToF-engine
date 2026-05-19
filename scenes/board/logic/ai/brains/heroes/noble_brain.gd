@@ -24,8 +24,9 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, _board: Board) -> Ar
 
     for friendly_unit_tile: String in self.pathfinder.own_units:
         target_tile = self.pathfinder.own_units[friendly_unit_tile]
+        var target_unit: BaseUnit = self._get_unit(target_tile)
 
-        if target_tile.unit.tile == self:
+        if target_unit == unit:
             continue
 
         for neighbour: MapTile in target_tile.neighbours.values():
@@ -57,9 +58,10 @@ func _calculate_support_value(source: BaseUnit, target_tile: MapTile) -> int:
 
     for tile: MapTile in target_tile.neighbours.values():
         if tile.has_friendly_unit(source.side) and tile.neighbours_enemy_unit(source.side, source.team):
-            if tile.unit.tile != self:
-                final_value += tile.unit.tile.get_value()
-                if tile.unit.tile.attacks > 0:
+            var unit: BaseUnit = self._get_unit(tile)
+            if unit != source:
+                final_value += unit.get_value()
+                if unit.attacks > 0:
                     final_value += 20
 
     return final_value

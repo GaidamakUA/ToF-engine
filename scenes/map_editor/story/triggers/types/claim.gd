@@ -1,10 +1,10 @@
 extends BaseTriggerTypeEditor
 
-var current_index = 0
-var tmp_x = ""
-var tmp_y = ""
+var current_index: int = 0
+var tmp_x: String = ""
+var tmp_y: String = ""
 
-func fill_trigger_data(new_trigger_name, new_trigger_data):
+func fill_trigger_data(new_trigger_name: String, new_trigger_data: Dictionary) -> void:
 	super.fill_trigger_data(new_trigger_name, new_trigger_data)
 	
 	$"player_id/id".set_text("")
@@ -22,7 +22,7 @@ func fill_trigger_data(new_trigger_name, new_trigger_data):
 			$"player_id/id".set_text(str(self.trigger_data["details"]["player"]))
 
 		if self.trigger_data["details"].has("player_side"):
-			var side = self.trigger_data["details"]["player_side"]
+			var side: Variant = self.trigger_data["details"]["player_side"]
 			if side is Array:
 				side = ",".join(side)
 			$"player_side/side".set_text(side)
@@ -36,8 +36,8 @@ func fill_trigger_data(new_trigger_name, new_trigger_data):
 	_manage_list_buttons()
 
 
-func _fill_list_item(index):
-	var list_size = 0
+func _fill_list_item(index: int) -> void:
+	var list_size: int = 0
 	if self.trigger_data["details"].has("list"):
 		list_size = self.trigger_data["details"]["list"].size()
 		
@@ -50,18 +50,18 @@ func _fill_list_item(index):
 		$"list/y".set_text(self.tmp_y)
 	_manage_list_buttons()
 
-func _compile_trigger_data():
-	var current_list = []
+func _compile_trigger_data() -> Dictionary:
+	var current_list: Array = []
 	if self.trigger_data.has("details") and self.trigger_data["details"].has("list"):
 		current_list = self.trigger_data["details"]["list"]
 	
-	var player_id = $"player_id/id".get_text()
-	var player_side = Array($"player_side/side".get_text().split(","))
-	var amount = $"amount/amount".get_text()
+	var player_id: String = $"player_id/id".get_text()
+	var player_side: Array = Array($"player_side/side".get_text().split(","))
+	var amount: String = $"amount/amount".get_text()
 	
 	
-	var x = $"list/x".get_text()
-	var y = $"list/y".get_text()
+	var x: String = $"list/x".get_text()
+	var y: String = $"list/y".get_text()
 
 	self.trigger_data["details"] = {}
 
@@ -90,11 +90,11 @@ func _compile_trigger_data():
 
 	return self.trigger_data
 
-func _on_text_changed(_new_text):
+func _on_text_changed(_new_text: String) -> void:
 	_emit_updated_signal()
 
-func _manage_list_buttons():
-	var list_size = 0
+func _manage_list_buttons() -> void:
+	var list_size: int = 0
 	if self.trigger_data["details"].has("list"):
 		list_size = self.trigger_data["details"]["list"].size()
 	$"list/no".set_text(str(self.current_index + 1) + "/" + str(list_size))
@@ -108,11 +108,11 @@ func _manage_list_buttons():
 		$"list/next_button".hide()
 
 
-func _handle_element_removal():
-	var x = $"list/x".get_text()
-	var y = $"list/y".get_text()
+func _handle_element_removal() -> bool:
+	var x: String = $"list/x".get_text()
+	var y: String = $"list/y".get_text()
 	
-	var list_size = 0
+	var list_size: int = 0
 	if self.trigger_data["details"].has("list"):
 		list_size = self.trigger_data["details"]["list"].size()
 	
@@ -122,13 +122,13 @@ func _handle_element_removal():
 			return true
 	return false
 
-func _on_prev_button_pressed():
+func _on_prev_button_pressed() -> void:
 	self.audio.play("menu_click")
 	_handle_element_removal()
 	_fill_list_item(self.current_index - 1)
 
 
-func _on_next_button_pressed():
+func _on_next_button_pressed() -> void:
 	self.audio.play("menu_click")
 	if _handle_element_removal():
 		_fill_list_item(self.current_index)
@@ -136,13 +136,13 @@ func _on_next_button_pressed():
 		_fill_list_item(self.current_index + 1)
 
 
-func _on_picker_button_pressed():
+func _on_picker_button_pressed() -> void:
 	self.audio.play("menu_click")
 
-	var x = $"list/x".get_text()
-	var y = $"list/y".get_text()
+	var x: String = $"list/x".get_text()
+	var y: String = $"list/y".get_text()
 
-	var building_position = null
+	var building_position: Variant = null
 	if x != "" and y != "":
 		building_position = [int(x), int(y)]
 
@@ -152,7 +152,7 @@ func _on_picker_button_pressed():
 		"trigger_name": self.trigger_name
 	})
 
-func _handle_picker_response(response, context):
+func _handle_picker_response(response: Variant, context: Dictionary) -> void:
 	super._handle_picker_response(response, context)
 	if context["type"] == "position":
 		$"list/x".set_text(str(response.x))
@@ -162,7 +162,7 @@ func _handle_picker_response(response, context):
 	_emit_updated_signal()
 
 
-func _on_side_picker_button_pressed():
+func _on_side_picker_button_pressed() -> void:
 	self.audio.play("menu_click")
 
 	self.picker_requested.emit({

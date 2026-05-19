@@ -1,6 +1,6 @@
 extends BaseStepActionEditor
 
-func fill_step_data(new_step_no, new_step_data):
+func fill_step_data(new_step_no: int, new_step_data: Dictionary) -> void:
 	super.fill_step_data(new_step_no, new_step_data)
 	
 	$"trigger/trigger".set_text("")
@@ -16,12 +16,12 @@ func fill_step_data(new_step_no, new_step_data):
 		if self.step_data["details"].has("action"):
 			$"trigger_action/trigger_action".set_text(str(self.step_data["details"]["action"]))
 
-func _compile_step_data():
+func _compile_step_data() -> Dictionary:
 	self.step_data = super._compile_step_data()
 	
-	var trigger = $"trigger/trigger".get_text()
-	var group = $"group/group".get_text()
-	var trigger_action = $"trigger_action/trigger_action".get_text()
+	var trigger: String = $"trigger/trigger".get_text()
+	var group: String = $"group/group".get_text()
+	var trigger_action: String = $"trigger_action/trigger_action".get_text()
 
 	self.step_data["details"] = {}
 
@@ -35,14 +35,14 @@ func _compile_step_data():
 	return self.step_data
 
 
-func _handle_picker_response(response, context):
+func _handle_picker_response(response: Variant, context: Dictionary) -> void:
 	super._handle_picker_response(response, context)
 	if context["type"] == "trigger":
 		$"trigger/trigger".set_text(response)
 	_emit_updated_signal()
 
 
-func _on_trigger_picker_button_pressed():
+func _on_trigger_picker_button_pressed() -> void:
 	self.audio.play("menu_click")
 
 	self.picker_requested.emit({

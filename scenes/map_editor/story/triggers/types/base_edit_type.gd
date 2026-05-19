@@ -1,19 +1,19 @@
 extends Control
 class_name BaseTriggerTypeEditor
 
-var trigger_name
-var trigger_data
+var trigger_name: String = ""
+var trigger_data: Dictionary = {}
 
 @onready var audio: AudioService = SimpleAudioLibrary as AudioService
 
-signal trigger_data_updated(trigger_name, trigger_data)
-signal trigger_removal_requested(trigger_name)
-signal picker_requested(context)
+signal trigger_data_updated(trigger_name: String, trigger_data: Dictionary)
+signal trigger_removal_requested(trigger_name: String)
+signal picker_requested(context: Dictionary)
 
-func show_panel():
+func show_panel() -> void:
 	self.show()
 
-func fill_trigger_data(new_trigger_name, new_trigger_data):
+func fill_trigger_data(new_trigger_name: String, new_trigger_data: Dictionary) -> void:
 	self.trigger_name = new_trigger_name
 	self.trigger_data = new_trigger_data
 	
@@ -33,25 +33,25 @@ func fill_trigger_data(new_trigger_name, new_trigger_data):
 	else:
 		$"oneoff_button/label".set_text("TR_OFF")
 
-func _emit_updated_signal():
+func _emit_updated_signal() -> void:
 	self.trigger_data_updated.emit(self.trigger_name, _compile_trigger_data())
 
-func _compile_trigger_data():
+func _compile_trigger_data() -> Dictionary:
 	return self.trigger_data
 
 
-func _on_delete_button_pressed():
+func _on_delete_button_pressed() -> void:
 	self.audio.play("menu_click")
 	self.trigger_removal_requested.emit(self.trigger_name)
 
 
-func _on_change_button_pressed():
+func _on_change_button_pressed() -> void:
 	self.audio.play("menu_click")
 	self.trigger_data["type"] = null
 	_emit_updated_signal()
 
 
-func _on_story_button_pressed():
+func _on_story_button_pressed() -> void:
 	self.audio.play("menu_click")
 	self.picker_requested.emit({
 		"type": "story",
@@ -59,7 +59,7 @@ func _on_story_button_pressed():
 	})
 
 
-func _on_oneoff_button_pressed():
+func _on_oneoff_button_pressed() -> void:
 	self.audio.play("menu_click")
 	self.trigger_data["one_off"] = not self.trigger_data["one_off"]
 	if self.trigger_data["one_off"]:
@@ -68,7 +68,7 @@ func _on_oneoff_button_pressed():
 		$"oneoff_button/label".set_text("TR_OFF")
 	_emit_updated_signal()
 
-func _handle_picker_response(response, context):
+func _handle_picker_response(response: Variant, context: Dictionary) -> void:
 	if context["type"] == "story":
 		self.trigger_data["story"] = response
 		$"story".set_text(response)

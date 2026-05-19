@@ -56,7 +56,7 @@ func _clear_page() -> void:
 func _slice_page(steps_list: Array, page_no: int) -> Array:
 	var paging: Array[Variant] = _normalize_page_no(steps_list.size(), page_no)
 	page_no = int(paging[0])
-	
+
 	return steps_list.slice(page_no * self._page_size, (page_no + 1) * self._page_size)
 
 func _fill_page(list_slice: Array, steps_list: Array, page_no: int) -> void:
@@ -72,7 +72,7 @@ func _fill_page(list_slice: Array, steps_list: Array, page_no: int) -> void:
 		if self.edit_panels.has(list_slice[index]["action"]):
 			step_label = self.edit_panels[list_slice[index]["action"]].build_step_label(list_slice[index])
 
-		self.list_elements[index].set_step_name(page_no * self._page_size + index, step_label)
+		self.list_elements[index].set_step_name(page_no * self._page_size + index, str(step_label))
 		self.list_elements[index].show()
 
 func _manage_buttons(list_size: int, page_no: int) -> void:
@@ -104,7 +104,7 @@ func _normalize_page_no(list_size: int, page_no: int, index_search: int = -1) ->
 
 	page_no = max(page_no, 0)
 	page_no = min(page_no, all_pages - 1)
-	
+
 	return [page_no, page_no == all_pages - 1]
 
 func _find_step_page(steps_list: Array, step_no: int) -> int:

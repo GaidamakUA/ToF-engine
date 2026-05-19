@@ -6,21 +6,21 @@ class_name MultiplayerLobbyPanel
 @onready var map_list_service: MapManagerService = MapManager as MapManagerService
 @onready var switcher: SceneSwitcherService = SceneSwitcher as SceneSwitcherService
 @onready var match_setup: MatchSetupData = MatchSetup as MatchSetupData
-@onready var start_button = $"widgets/start_button"
-@onready var back_button = $"widgets/back_button"
-@onready var minimap = $"widgets/minimap"
+@onready var start_button: TextureButton = $"widgets/start_button"
+@onready var back_button: TextureButton = $"widgets/back_button"
+@onready var minimap: MinimapView = $"widgets/minimap"
 
-@onready var widgets = $"widgets"
-@onready var downloading_label = $"downloading"
-@onready var turn_config = $"widgets/TurnConfig"
+@onready var widgets: Control = $"widgets"
+@onready var downloading_label: Label = $"downloading"
+@onready var turn_config: TurnConfigView = $"widgets/TurnConfig"
 
-@onready var player_panels = [
+@onready var player_panels: Array[MultiplayerLobbyPlayerPanel] = [
     $"widgets/lobby_player_0",
     $"widgets/lobby_player_1",
     $"widgets/lobby_player_2",
     $"widgets/lobby_player_3",
 ]
-@onready var player_labels = [
+@onready var player_labels: Array[ConnectedPlayerPanel] = [
     $"widgets/player_labels/labels_grid/player_0",
     $"widgets/player_labels/labels_grid/player_1",
     $"widgets/player_labels/labels_grid/player_2",
@@ -30,13 +30,13 @@ class_name MultiplayerLobbyPanel
     $"widgets/player_labels/labels_grid/player_6",
     $"widgets/player_labels/labels_grid/player_7",
 ]
-var hq_templates = [
+var hq_templates: Array[String] = [
     "modern_hq",
     "steampunk_hq",
     "futuristic_hq",
     "feudal_hq",
 ]
-var server_state = null
+var server_state: Dictionary = {}
 
 
 func _ready() -> void:
@@ -46,7 +46,7 @@ func _ready() -> void:
     self.multiplayer_srv.server_disconnected.connect(_on_server_disconnected)
     self.turn_config.configuration_changed.connect(_on_turn_config_changed)
 
-    for panel in self.player_panels:
+    for panel: MultiplayerLobbyPlayerPanel in self.player_panels:
         panel.player_joined.connect(_on_player_joined_side)
         panel.player_left.connect(_on_player_left_side)
         panel.state_changed.connect(_on_panel_state_changed)
@@ -55,7 +55,7 @@ func _ready() -> void:
         label.kick_requested.connect(_on_player_kick_requested)
 
 
-func show_panel():
+func show_panel() -> void:
     super.show_panel()
     self.turn_config.reset()
 
@@ -66,11 +66,11 @@ func show_panel():
         self._download_map_data(self.multiplayer_srv.selected_map)
 
 
-func _download_map_data(map_name):
+func _download_map_data(map_name: String) -> void:
     self.widgets.hide()
     self.downloading_label.show()
 
-    var result = await self.online.download_map(map_name)
+    var result: bool = await self.online.download_map(map_name)
 
     self.downloading_label.hide()
     self.widgets.show()
@@ -81,7 +81,7 @@ func _download_map_data(map_name):
         _on_back_button_pressed()
 
 
-func _prepare_initial_panel_state(map_name):
+func _prepare_initial_panel_state(map_name: String) -> void:
     if self.multiplayer_srv.players[1]["in_progress"]:
         self.widgets.hide()
         while not self.multiplayer_srv.match_state_available:
@@ -99,7 +99,7 @@ func _prepare_initial_panel_state(map_name):
     _manage_start_button(true)
 
 
-func _manage_start_button(grab):
+func _manage_start_button(grab: bool) -> void:
     if multiplayer.is_server() and _is_ready_to_start():
         self.start_button.show()
         if grab:
@@ -110,13 +110,13 @@ func _manage_start_button(grab):
             self.back_button.grab_focus()
 
 
-func _is_ready_to_start():
-    var player_spots = 0
+func _is_ready_to_start() -> bool:
+    var player_spots: int = 0
     #var human_players = self.multiplayer_srv.players.size()
-    var players_assigned = 0
-    var ai_assigned = 0
+    var players_assigned: int = 0
+    var ai_assigned: int = 0
 
-    for panel in self.player_panels:
+    for panel: MultiplayerLobbyPlayerPanel in self.player_panels:
         if panel.is_visible():
             player_spots += 1
             if panel.type == "human":
@@ -131,7 +131,7 @@ func _is_ready_to_start():
     return players_assigned + ai_assigned == player_spots
 
 
-func _fill_map_data(fill_name):
+func _fill_map_data(fill_name: String) -> void:
     self.minimap.fill_minimap(fill_name)
     $"widgets/minimap/map_name/label".set_text(fill_name)
     self._fill_player_panels(fill_name)
@@ -148,20 +148,20 @@ func _fill_player_labels() -> void:
         index += 1
 
 
-func _hide_player_panels():
-    for panel in self.player_panels:
+func _hide_player_panels() -> void:
+    for panel: MultiplayerLobbyPlayerPanel in self.player_panels:
         panel.hide()
         panel._reset_labels()
 
 
-func _fill_player_panels(fill_name):
+func _fill_player_panels(fill_name: String) -> void:
     self._hide_player_panels()
 
-    var sides = self._gather_player_sides(self.map_list_service.get_map_data(fill_name))
+    var sides: Dictionary[String, String] = self._gather_player_sides(self.map_list_service.get_map_data(fill_name))
 
-    var index = 0
+    var index: int = 0
 
-    for side in sides:
+    for side: String in sides:
         if index >= self.player_panels.size():
             continue
         self.player_panels[index].fill_panel(side)
@@ -169,32 +169,32 @@ func _fill_player_panels(fill_name):
         index += 1
 
 
-func _gather_player_sides(map_data):
-    var sides = {}
-    var side
-    var key
+func _gather_player_sides(map_data: Dictionary) -> Dictionary[String, String]:
+    var sides: Dictionary[String, String] = {}
+    var side: String
+    var key: String
 
-    for y in range(self.map_list_service.MAX_MAP_SIZE):
-        for x in range(self.map_list_service.MAX_MAP_SIZE):
+    for y: int in range(self.map_list_service.MAX_MAP_SIZE):
+        for x: int in range(self.map_list_service.MAX_MAP_SIZE):
             key = str(x) + "_" + str(y)
             if map_data["tiles"].has(key):
                 side = self._lookup_side(map_data["tiles"][key])
 
-                if side != null:
+                if side != "":
                     sides[side] = side
 
     return sides
 
 
-func _lookup_side(data):
+func _lookup_side(data: Dictionary) -> String:
     if data["building"]["tile"] != null:
         if data["building"]["tile"] in self.hq_templates:
-            return data["building"]["side"]
+            return String(data["building"]["side"])
 
-    return null
+    return ""
 
 
-func _on_back_button_pressed():
+func _on_back_button_pressed() -> void:
     if self.downloading_label.is_visible():
         return
 
@@ -204,15 +204,15 @@ func _on_back_button_pressed():
     self.main_menu.close_multiplayer_lobby()
 
 
-func _on_player_connected(peer_id, _player_info):
+func _on_player_connected(peer_id: int, _player_info: Dictionary) -> void:
     _fill_player_labels()
     if multiplayer.is_server() and peer_id != multiplayer.get_unique_id():
-        var state = {
+        var state: Dictionary = {
             "turn_limit": self.turn_config.turn_limit,
             "time_limit": self.turn_config.time_limit,
             "panels": {}
         }
-        for panel in self.player_panels:
+        for panel: MultiplayerLobbyPlayerPanel in self.player_panels:
             state["panels"][panel.index] = {
                 "type": panel.type,
                 "side": panel.side,
@@ -221,134 +221,136 @@ func _on_player_connected(peer_id, _player_info):
                 "team": panel.team
             }
         _set_lobby_state.rpc_id(peer_id, state)
-    for panel in self.player_panels:
+    for panel: MultiplayerLobbyPlayerPanel in self.player_panels:
         panel._update_join_label()
 
 
-func _on_player_disconnected(peer_id):
+func _on_player_disconnected(peer_id: int) -> void:
     _fill_player_labels()
-    for panel in self.player_panels:
+    for panel: MultiplayerLobbyPlayerPanel in self.player_panels:
         if panel.player_peer_id == peer_id:
             panel._set_peer_id(null)
     _manage_start_button(false)
 
 
-func _on_server_disconnected():
+func _on_server_disconnected() -> void:
     _on_back_button_pressed()
 
 
-func _on_start_button_pressed():
+func _on_start_button_pressed() -> void:
     self.audio.play("menu_click")
     _load_multiplayer_game.rpc()
 
 
 @rpc("call_local", "reliable")
-func _load_multiplayer_game():
+func _load_multiplayer_game() -> void:
     self.match_setup.reset()
     self.match_setup.map_name = self.multiplayer_srv.selected_map
     self.match_setup.is_multiplayer = true
     self.match_setup.turn_limit = self.turn_config.turn_limit
     self.match_setup.time_limit = self.turn_config.time_limit
 
-    for player in self.player_panels:
+    for player: MultiplayerLobbyPlayerPanel in self.player_panels:
         if player.player_peer_id != null or player.type == "ai":
             self.match_setup.add_player(player.side, player.ap, player.type, true, player.team, player.player_peer_id)
 
     self.switcher.board_multiplayer()
 
 
-func _on_player_joined_side(index):
-    for panel in self.player_panels:
+func _on_player_joined_side(index: int) -> void:
+    for panel: MultiplayerLobbyPlayerPanel in self.player_panels:
         if panel.index != index:
             if multiplayer.is_server():
                 panel.switch_to_ai()
             else:
                 panel.lock_side()
-    for peer_id in self.multiplayer_srv.players:
+    for peer_id: int in self.multiplayer_srv.players:
         if peer_id != multiplayer.get_unique_id():
             _player_joined_a_side.rpc_id(peer_id, multiplayer.get_unique_id(), index)
     _manage_start_button(false)
 
 
-func _on_player_left_side(index):
-    for panel in self.player_panels:
+func _on_player_left_side(index: int) -> void:
+    for panel: MultiplayerLobbyPlayerPanel in self.player_panels:
         if panel.index != index:
             panel.unlock_side()
-    for peer_id in self.multiplayer_srv.players:
+    for peer_id: int in self.multiplayer_srv.players:
         if peer_id != multiplayer.get_unique_id():
             _player_left_a_side.rpc_id(peer_id, index)
     _manage_start_button(false)
 
 
-func _on_panel_state_changed(index):
-    for peer_id in self.multiplayer_srv.players:
+func _on_panel_state_changed(index: int) -> void:
+    for peer_id: int in self.multiplayer_srv.players:
         if peer_id != multiplayer.get_unique_id():
             _update_panel_state.rpc_id(peer_id, index, self.player_panels[index].ap, self.player_panels[index].team, self.player_panels[index].type)
     _manage_start_button(false)
 
 
-func _on_panel_swap(index):
-    for peer_id in self.multiplayer_srv.players:
+func _on_panel_swap(index: int) -> void:
+    for peer_id: int in self.multiplayer_srv.players:
         if peer_id != multiplayer.get_unique_id():
             _swap_panel.rpc_id(peer_id, index)
 
 
 @rpc("any_peer", "reliable")
-func _player_joined_a_side(peer_id, index):
+func _player_joined_a_side(peer_id: int, index: int) -> void:
     self.player_panels[index]._set_peer_id(peer_id)
     _manage_start_button(false)
 
 
 @rpc("any_peer", "reliable")
-func _player_left_a_side(index):
+func _player_left_a_side(index: int) -> void:
     self.player_panels[index]._set_peer_id(null)
     _manage_start_button(false)
 
 
 @rpc("any_peer", "reliable")
-func _set_lobby_state(state):
+func _set_lobby_state(state: Dictionary) -> void:
     self.server_state = state
 
 
-func _apply_server_state():
-    if self.server_state != null:
+func _apply_server_state() -> void:
+    var int_index: int
+    if not self.server_state.is_empty():
         self.turn_config.set_turn_limit(int(self.server_state["turn_limit"]))
         self.turn_config.set_time_limit(int(self.server_state["time_limit"]))
 
-        var panels_state = self.server_state["panels"]
-        for index in panels_state:
-            if self.player_panels[index].is_visible():
-                self.player_panels[index].fill_panel(panels_state[index]["side"])
-                self.player_panels[index]._set_peer_id(panels_state[index]["peer_id"])
-                self.player_panels[index]._set_ap(panels_state[index]["ap"])
-                self.player_panels[index]._set_team(panels_state[index]["team"])
-                self.player_panels[index]._set_type(panels_state[index]["type"])
-    self.server_state = null
+        var panels_state: Dictionary = self.server_state["panels"]
+        for index: Variant in panels_state:
+            int_index = int(index)
+            if self.player_panels[int_index].is_visible():
+                self.player_panels[int_index].fill_panel(panels_state[index]["side"])
+                self.player_panels[int_index]._set_peer_id(panels_state[index]["peer_id"])
+                self.player_panels[int_index]._set_ap(panels_state[index]["ap"])
+                self.player_panels[int_index]._set_team(panels_state[index]["team"])
+                self.player_panels[int_index]._set_type(panels_state[index]["type"])
+    self.server_state.clear()
 
 
 @rpc("any_peer", "reliable")
-func _update_panel_state(index, ap, team, type):
+func _update_panel_state(index: int, ap: int, team: Variant, type: String) -> void:
     self.player_panels[index]._set_ap(ap)
     self.player_panels[index]._set_team(team)
     self.player_panels[index]._set_type(type)
 
 
 @rpc("any_peer", "reliable")
-func _swap_panel(index):
+func _swap_panel(index: int) -> void:
     self.player_panels[index]._perform_panel_swap()
 
 
-func load_game_from_state(state):
+func load_game_from_state(state: Dictionary) -> void:
     self.match_setup.reset()
 
-    self.match_setup.map_name = state["map_name"]
+    self.match_setup.map_name = String(state["map_name"])
     self.match_setup.restore_save_id = "multiplayer"
     self.match_setup.is_multiplayer = true
     if state.has("turn_limit"):
         self.match_setup.turn_limit = int(state["turn_limit"])
     if state.has("time_limit"):
         self.match_setup.time_limit = int(state["time_limit"])
-    for player in state["players"]:
+    for player: Dictionary in state["players"]:
         self.match_setup.add_player(
             player["side"],
             player["ap"],

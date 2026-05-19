@@ -1,4 +1,5 @@
 extends Control
+class_name StoryListingPanel
 
 var _page_size: int
 

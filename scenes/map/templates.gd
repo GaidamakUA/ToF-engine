@@ -832,8 +832,8 @@ func _compile_templates_list() -> void:
         self._hero_templates,
         self._other_templates
     ]
-    for partial_dict in partial_templates:
-        for template_key in partial_dict:
+    for partial_dict: Dictionary in partial_templates:
+        for template_key: String in partial_dict:
             self.templates[template_key] = partial_dict[template_key]
 
 func get_template(template: String) -> MapObject:
@@ -843,7 +843,7 @@ func get_template(template: String) -> MapObject:
     if self.templates.size() == 0:
         _compile_templates_list()
 
-    var new_tile = self.templates[template].instantiate()
+    var new_tile: MapObject = self.templates[template].instantiate()
     new_tile.template_name = template
 
     return new_tile

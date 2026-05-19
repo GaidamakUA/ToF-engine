@@ -1,8 +1,9 @@
 extends Control
+class_name StoryElementPicker
 
 var _page_size: int
 
-signal value_selected(element_value: String, context: Variant)
+signal value_selected(element_value: String, context: Dictionary)
 
 @onready var prev_button: TextureButton = $"prev"
 @onready var next_button: TextureButton = $"next"
@@ -11,7 +12,7 @@ signal value_selected(element_value: String, context: Variant)
 var list_elements: Array[StoryElementPickerListElement] = []
 var current_page: int = 0
 var current_data: Array = []
-var picker_context: Variant = null
+var picker_context: Dictionary = {}
 
 func _ready() -> void:
 	for element: StoryElementPickerListElement in $"elements".get_children():
@@ -54,6 +55,7 @@ func _manage_buttons(list_size: int, page_no: int) -> void:
 func _normalize_page_no(list_size: int, page_no: int, index_search: int = -1) -> Array[Variant]:
 	if list_size == 0:
 		return [0, true]
+	@warning_ignore("integer_division")
 	var full_pages: int = list_size / self._page_size
 	var page_overflow: int = list_size % self._page_size
 	var all_pages: int = full_pages
@@ -69,7 +71,7 @@ func _normalize_page_no(list_size: int, page_no: int, index_search: int = -1) ->
 	
 	return [page_no, page_no == all_pages - 1]
 
-func load_list(names_list: Array, context: Variant) -> void:
+func load_list(names_list: Array, context: Dictionary) -> void:
 	self.current_data = names_list
 	self.current_page = 0
 	self.picker_context = context

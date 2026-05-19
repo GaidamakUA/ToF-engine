@@ -1,4 +1,5 @@
 extends Control
+class_name MapStorySettingsPanel
 
 @onready var skip_initial_hq_cam_label = $"skip_initial_hq_cam/skip_initial_hq_cam_toggle/label"
 @onready var initial_cam_pos_x = $"initial_cam_position/x"

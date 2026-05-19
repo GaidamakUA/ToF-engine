@@ -1,4 +1,5 @@
 extends Control
+class_name MapStoryTriggersPanel
 
 @onready var listing_panel = $Listing
 

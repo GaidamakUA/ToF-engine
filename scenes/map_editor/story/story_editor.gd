@@ -1,68 +1,68 @@
 extends Node2D
 class_name MapEditorStoryEditor
 
-var editor
+var editor: MapEditor = null
 
-@onready var map_settings_button = $"widgets/tabs/map_settings_button"
+@onready var map_settings_button: TextureButton = $"widgets/tabs/map_settings_button"
 @onready var audio: AudioService = SimpleAudioLibrary as AudioService
 
-@onready var map_settings_panel = $"widgets/panels/MapSettings"
-@onready var triggers_panel = $"widgets/panels/Triggers"
-@onready var stories_panel = $"widgets/panels/Stories"
+@onready var map_settings_panel: MapStorySettingsPanel = $"widgets/panels/MapSettings"
+@onready var triggers_panel: MapStoryTriggersPanel = $"widgets/panels/Triggers"
+@onready var stories_panel: MapStoryStoriesPanel = $"widgets/panels/Stories"
 
-@onready var picker_panel = $"widgets/panels/StoryElementPicker"
+@onready var picker_panel: StoryElementPicker = $"widgets/panels/StoryElementPicker"
 
-signal picker_requested(context)
+signal picker_requested(context: Dictionary)
 
-func _ready():
+func _ready() -> void:
 	self.map_settings_panel.picker_requested.connect(self._on_picker_requested)
 	self.triggers_panel.picker_requested.connect(self._on_picker_requested)
 	self.stories_panel.picker_requested.connect(self._on_picker_requested)
 	self.picker_panel.value_selected.connect(self._on_picker_value_selected)
 	_switch_to_panel(self.map_settings_panel)
 
-func show_panel():
+func show_panel() -> void:
 	self.show()
 	self.map_settings_button.grab_focus()
 
 
-func _switch_to_panel(panel):
+func _switch_to_panel(panel: Variant) -> void:
 	self.map_settings_panel.hide()
 	self.triggers_panel.hide()
 	self.stories_panel.hide()
 	self.picker_panel.hide()
 	panel.show_panel()
 
-func ingest_map_data(metadata, triggers, stories):
+func ingest_map_data(metadata: Dictionary, triggers: Dictionary, stories: Dictionary) -> void:
 	self.map_settings_panel.ingest_metadata(metadata)
 	self.triggers_panel.ingest_triggers_data(triggers)
 	self.stories_panel.ingest_stories_data(stories)
 
-func fill_metadata(metadata):
+func fill_metadata(metadata: Dictionary) -> Dictionary:
 	return self.map_settings_panel.fill_metadata(metadata)
 
-func compile_triggers():
+func compile_triggers() -> Dictionary:
 	return self.triggers_panel.compile_triggers_data()
 
-func compile_stories():
+func compile_stories() -> Dictionary:
 	return self.stories_panel.compile_stories_data()
 
-func _on_map_settings_button_pressed():
+func _on_map_settings_button_pressed() -> void:
 	self.audio.play("menu_click")
 	_switch_to_panel(self.map_settings_panel)
 
 
-func _on_triggers_button_pressed():
+func _on_triggers_button_pressed() -> void:
 	self.audio.play("menu_click")
 	_switch_to_panel(self.triggers_panel)
 
 
-func _on_stories_button_pressed():
+func _on_stories_button_pressed() -> void:
 	self.audio.play("menu_click")
 	_switch_to_panel(self.stories_panel)
 
 
-func _on_back_button_pressed():
+func _on_back_button_pressed() -> void:
 	self.audio.play("menu_back")
 	if self.picker_panel.is_visible():
 		if self.picker_panel.picker_context["tab"] == "triggers":
@@ -77,7 +77,7 @@ func _on_back_button_pressed():
 		self.editor.close_story()
 
 
-func _on_picker_requested(context):
+func _on_picker_requested(context: Dictionary) -> void:
 	if context["type"] == "position":
 		self.picker_requested.emit(context)
 	else:
@@ -148,7 +148,7 @@ func _on_picker_requested(context):
 				)
 		_switch_to_panel(self.picker_panel)	
 
-func _handle_picker_response(response, context):
+func _handle_picker_response(response: Variant, context: Dictionary) -> void:
 	if context["tab"] == "settings":
 		self.map_settings_panel._handle_picker_response(response, context)
 		_switch_to_panel(self.map_settings_panel)	
@@ -159,5 +159,5 @@ func _handle_picker_response(response, context):
 		self.stories_panel._handle_picker_response(response, context)
 		_switch_to_panel(self.stories_panel)
 
-func _on_picker_value_selected(response, context):
+func _on_picker_value_selected(response: String, context: Dictionary) -> void:
 	_handle_picker_response(response, context)

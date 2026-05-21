@@ -1,6 +1,6 @@
 extends BaseStepActionEditor
 
-func fill_step_data(new_step_no, new_step_data):
+func fill_step_data(new_step_no: int, new_step_data: Dictionary) -> void:
 	super.fill_step_data(new_step_no, new_step_data)
 	
 	$"vip/x".set_text("")
@@ -15,12 +15,12 @@ func fill_step_data(new_step_no, new_step_data):
 		if self.step_data["details"].has("length"):
 			$"length/length".set_text(str(self.step_data["details"]["length"]))
 
-func _compile_step_data():
+func _compile_step_data() -> Dictionary:
 	self.step_data = super._compile_step_data()
 	
-	var x = $"vip/x".get_text()
-	var y = $"vip/y".get_text()
-	var length = $"length/length".get_text()
+	var x: String = $"vip/x".get_text()
+	var y: String = $"vip/y".get_text()
+	var length: String = $"length/length".get_text()
 
 	self.step_data["details"] = {}
 
@@ -32,10 +32,10 @@ func _compile_step_data():
 	return self.step_data
 
 
-func _on_picker_button_pressed():
+func _on_picker_button_pressed() -> void:
 	self.audio.play("menu_click")
 
-	var vip_position = null
+	var vip_position: Variant = null
 	if self.step_data["details"].has("who"):
 		vip_position = self.step_data["details"]["who"]
 
@@ -45,7 +45,7 @@ func _on_picker_button_pressed():
 		"step_no": self.step_no
 	})
 
-func _handle_picker_response(response, context):
+func _handle_picker_response(response: Variant, context: Dictionary) -> void:
 	super._handle_picker_response(response, context)
 	if context["type"] == "position":
 		$"vip/x".set_text(str(response.x))

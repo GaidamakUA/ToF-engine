@@ -1,6 +1,6 @@
 extends BaseStepActionEditor
 
-func fill_step_data(new_step_no, new_step_data):
+func fill_step_data(new_step_no: int, new_step_data: Dictionary) -> void:
 	super.fill_step_data(new_step_no, new_step_data)
 	
 	$"where/x".set_text("")
@@ -22,13 +22,13 @@ func fill_step_data(new_step_no, new_step_data):
 			else:
 				$"ban/ban_button/label".set_text("TR_OFF")
 
-func _compile_step_data():
+func _compile_step_data() -> Dictionary:
 	self.step_data = super._compile_step_data()
 	
-	var x = $"where/x".get_text()
-	var y = $"where/y".get_text()
-	var ability_id = $"ability/id".get_text()
-	var ban = false
+	var x: String = $"where/x".get_text()
+	var y: String = $"where/y".get_text()
+	var ability_id: String = $"ability/id".get_text()
+	var ban: bool = false
 
 	if self.step_data["details"].has("ban"):
 		ban = self.step_data["details"]["ban"]
@@ -45,10 +45,10 @@ func _compile_step_data():
 	return self.step_data
 
 
-func _on_picker_button_pressed():
+func _on_picker_button_pressed() -> void:
 	self.audio.play("menu_click")
 
-	var vip_position = null
+	var vip_position: Variant = null
 	if self.step_data["details"].has("where"):
 		vip_position = self.step_data["details"]["where"]
 
@@ -58,7 +58,7 @@ func _on_picker_button_pressed():
 		"step_no": self.step_no
 	})
 
-func _handle_picker_response(response, context):
+func _handle_picker_response(response: Variant, context: Dictionary) -> void:
 	super._handle_picker_response(response, context)
 	if context["type"] == "position":
 		$"where/x".set_text(str(response.x))
@@ -66,7 +66,7 @@ func _handle_picker_response(response, context):
 	_emit_updated_signal()
 
 
-func _on_ban_button_pressed():
+func _on_ban_button_pressed() -> void:
 	self.audio.play("menu_click")
 	if not self.step_data["details"].has("ban"):
 		self.step_data["details"]["ban"] = false

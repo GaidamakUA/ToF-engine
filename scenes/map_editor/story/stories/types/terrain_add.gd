@@ -1,6 +1,6 @@
 extends BaseStepActionEditor
 
-func fill_step_data(new_step_no, new_step_data):
+func fill_step_data(new_step_no: int, new_step_data: Dictionary) -> void:
 	super.fill_step_data(new_step_no, new_step_data)
 	
 	$"where/x".set_text("")
@@ -34,23 +34,23 @@ func fill_step_data(new_step_no, new_step_data):
 			else:
 				$"smoke/smoke_button/label".set_text("TR_OFF")
 
-func build_step_label(requested_step_data):
-	var label = requested_step_data["action"]
+func build_step_label(requested_step_data: Dictionary) -> String:
+	var label: String = requested_step_data["action"]
 	if requested_step_data.has("details"):
 		if requested_step_data["details"].has("template"):
 			label += " " + requested_step_data["details"]["template"]
 	return label
 
-func _compile_step_data():
+func _compile_step_data() -> Dictionary:
 	self.step_data = super._compile_step_data()
 	
-	var x = $"where/x".get_text()
-	var y = $"where/y".get_text()
-	var tile_type = $"tile_type/tile_type".get_text()
-	var template = $"template/template".get_text()
-	var player_side = $"player_side/side".get_text()
-	var unit_rotation = $"rotation/rotation".get_text()
-	var smoke = false
+	var x: String = $"where/x".get_text()
+	var y: String = $"where/y".get_text()
+	var tile_type: String = $"tile_type/tile_type".get_text()
+	var template: String = $"template/template".get_text()
+	var player_side: String = $"player_side/side".get_text()
+	var unit_rotation: String = $"rotation/rotation".get_text()
+	var smoke: bool = false
 
 	if self.step_data["details"].has("smoke"):
 		smoke = self.step_data["details"]["smoke"]
@@ -73,10 +73,10 @@ func _compile_step_data():
 	return self.step_data
 
 
-func _on_picker_button_pressed():
+func _on_picker_button_pressed() -> void:
 	self.audio.play("menu_click")
 
-	var vip_position = null
+	var vip_position: Variant = null
 	if self.step_data["details"].has("where"):
 		vip_position = self.step_data["details"]["where"]
 
@@ -86,7 +86,7 @@ func _on_picker_button_pressed():
 		"step_no": self.step_no
 	})
 
-func _on_side_picker_button_pressed():
+func _on_side_picker_button_pressed() -> void:
 	self.audio.play("menu_click")
 
 	self.picker_requested.emit({
@@ -94,7 +94,7 @@ func _on_side_picker_button_pressed():
 		"step_no": self.step_no
 	})
 
-func _handle_picker_response(response, context):
+func _handle_picker_response(response: Variant, context: Dictionary) -> void:
 	super._handle_picker_response(response, context)
 	if context["type"] == "position":
 		$"where/x".set_text(str(response.x))
@@ -108,7 +108,7 @@ func _handle_picker_response(response, context):
 	_emit_updated_signal()
 
 
-func _on_type_picker_button_pressed():
+func _on_type_picker_button_pressed() -> void:
 	self.audio.play("menu_click")
 
 	self.picker_requested.emit({
@@ -117,10 +117,10 @@ func _on_type_picker_button_pressed():
 	})
 
 
-func _on_template_picker_button_pressed():
+func _on_template_picker_button_pressed() -> void:
 	self.audio.play("menu_click")
 	
-	var type = ""
+	var type: String = ""
 	if self.step_data["details"].has("type"):
 		type =  self.step_data["details"]["type"]
 	self.picker_requested.emit({
@@ -130,7 +130,7 @@ func _on_template_picker_button_pressed():
 	})
 
 
-func _on_smoke_button_pressed():
+func _on_smoke_button_pressed() -> void:
 	self.audio.play("menu_click")
 	if not self.step_data["details"].has("smoke"):
 		self.step_data["details"]["smoke"] = false

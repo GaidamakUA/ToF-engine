@@ -26,132 +26,132 @@ var loader: MapLoader = MapLoader.new(self)
 @onready var tiles_units_anchor: Node3D = $"tiles/units"
 
 func _ready() -> void:
-    self.tile_box_space_size = self.camera.camera_space_size - self.TILE_SIZE
+	self.tile_box_space_size = self.camera.camera_space_size - self.TILE_SIZE
 
-    self.settings.changed.connect(_settings_changed)
-    for i: String in self.model.tiles.keys():
-        self.model.tiles[i].settings = self.settings
-        self.settings.changed.connect(self.model.tiles[i]._settings_changed)
+	self.settings.changed.connect(_settings_changed)
+	for i: String in self.model.tiles.keys():
+		self.model.tiles[i].settings = self.settings
+		self.settings.changed.connect(self.model.tiles[i]._settings_changed)
 
-    if not self.settings.get_option("decorations"):
-        self.tiles_frames_anchor.hide()
+	if not self.settings.get_option("decorations"):
+		self.tiles_frames_anchor.hide()
 
 func _input(raw_event: InputEvent) -> void:
-    if raw_event is InputEventMouseMotion:
-        var event: InputEventMouseMotion = raw_event as InputEventMouseMotion
-        if event.relative.length_squared() > 0.01:
-            self.tile_box_mouse = true
+	if raw_event is InputEventMouseMotion:
+		var event: InputEventMouseMotion = raw_event as InputEventMouseMotion
+		if event.relative.length_squared() > 0.01:
+			self.tile_box_mouse = true
 
 func _physics_process(_delta: float) -> void:
-    self._manage_mouse_input()
-    self.update_tile_box_position_from_camera()
-    self.snap_tile_box()
+	self._manage_mouse_input()
+	self.update_tile_box_position_from_camera()
+	self.snap_tile_box()
 
 func _manage_mouse_input() -> void:
-    var gamepad_offset: Vector2 = Vector2(
-        Input.get_joy_axis(0, JOY_AXIS_LEFT_X),
-        Input.get_joy_axis(0, JOY_AXIS_LEFT_Y)
-    )
-    if gamepad_offset.length_squared() > 0.1:
-        self.tile_box_mouse = false
+	var gamepad_offset: Vector2 = Vector2(
+		Input.get_joy_axis(0, JOY_AXIS_LEFT_X),
+		Input.get_joy_axis(0, JOY_AXIS_LEFT_Y)
+	)
+	if gamepad_offset.length_squared() > 0.1:
+		self.tile_box_mouse = false
 
 
 func update_tile_box_position_from_camera() -> void:
-    if self.camera.snap_tile_box_to_camera:
-        self.tile_box_position = self.local_to_map(self.camera.get_position())
+	if self.camera.snap_tile_box_to_camera:
+		self.tile_box_position = self.local_to_map(self.camera.get_position())
 
 func set_tile_box_position(box_position: Vector2i) -> void:
-    self.camera.snap_tile_box_to_camera = false
-    self.tile_box_position = box_position
+	self.camera.snap_tile_box_to_camera = false
+	self.tile_box_position = box_position
 
 func set_mouse_box_position(box_position: Vector2i) -> void:
-    if self.tile_box_mouse:
-        self.set_tile_box_position(box_position)
+	if self.tile_box_mouse:
+		self.set_tile_box_position(box_position)
 
 
 func snap_tile_box() -> void:
-    var box_position: Vector3 = self.tile_box.get_position()
-    var placement: Vector3 = self.map_to_local(self.tile_box_position)
+	var box_position: Vector3 = self.tile_box.get_position()
+	var placement: Vector3 = self.map_to_local(self.tile_box_position)
 
-    placement.y = box_position.y
+	placement.y = box_position.y
 
-    self.tile_box.set_position(placement)
+	self.tile_box.set_position(placement)
 
 func map_to_local(queried_position: Vector2i) -> Vector3:
-    return Vector3(queried_position.x * self.TILE_SIZE, 0, queried_position.y * self.TILE_SIZE)
+	return Vector3(queried_position.x * self.TILE_SIZE, 0, queried_position.y * self.TILE_SIZE)
 
 func local_to_map(queried_position: Vector3) -> Vector2i:
-    var tile_position := Vector2i(0, 0)
+	var tile_position := Vector2i(0, 0)
 
-    if queried_position.x == self.camera.camera_space_size:
-        queried_position.x = self.tile_box_space_size
-    if queried_position.z == self.camera.camera_space_size:
-        queried_position.z = self.tile_box_space_size
+	if queried_position.x == self.camera.camera_space_size:
+		queried_position.x = self.tile_box_space_size
+	if queried_position.z == self.camera.camera_space_size:
+		queried_position.z = self.tile_box_space_size
 
-    var camera_position_x: int = int(queried_position.x)
-    var camera_position_z: int = int(queried_position.z)
+	var camera_position_x: int = int(queried_position.x)
+	var camera_position_z: int = int(queried_position.z)
 
-    @warning_ignore('integer_division')
-    tile_position.x = int((camera_position_x - (camera_position_x % self.TILE_SIZE)) / self.TILE_SIZE)
-    @warning_ignore('integer_division')
-    tile_position.y = int((camera_position_z - (camera_position_z % self.TILE_SIZE)) / self.TILE_SIZE)
+	@warning_ignore('integer_division')
+	tile_position.x = int((camera_position_x - (camera_position_x % self.TILE_SIZE)) / self.TILE_SIZE)
+	@warning_ignore('integer_division')
+	tile_position.y = int((camera_position_z - (camera_position_z % self.TILE_SIZE)) / self.TILE_SIZE)
 
-    return tile_position
+	return tile_position
 
 
 func set_tile_box_side(side: String) -> void:
-    self.tile_box.set_mesh_material(self.templates.get_side_material(side))
+	self.tile_box.set_mesh_material(self.templates.get_side_material(side))
 
 func show_tile_box() -> void:
-    self.tile_box.show()
+	self.tile_box.show()
 
 func hide_tile_box() -> void:
-    self.tile_box.hide()
+	self.tile_box.hide()
 
 func move_camera_to_position(destination: Variant) -> void:
-    if destination == null:
-        return
+	if destination == null:
+		return
 
-    var destination_position: Vector2 = Vector2(destination)
-    self.camera.move_camera_to_position(destination_position * self.TILE_SIZE * 1.0 + Vector2(0.5, 0.5) * self.TILE_SIZE)
+	var destination_position: Vector2 = Vector2(destination)
+	self.camera.move_camera_to_position(destination_position * self.TILE_SIZE * 1.0 + Vector2(0.5, 0.5) * self.TILE_SIZE)
 
 func move_camera_to_position_if_far_away(destination: Variant, tolerance: int = 5, zoom: Variant = null) -> bool:
-    if zoom != null:
-        self.camera.set_camera_zoom(zoom)
+	if zoom != null:
+		self.camera.set_camera_zoom(zoom)
 
-    if destination == null:
-        return false
+	if destination == null:
+		return false
 
-    var destination_position: Vector2i = Vector2i(destination)
-    self.camera.snap_tile_box_to_camera = true
-    self.update_tile_box_position_from_camera()
-    var adj_tol: float = tolerance * self.camera.get_zoom_fraction()
-    if self.tile_box_position.distance_squared_to(destination_position) > (adj_tol * adj_tol) or zoom != null:
-        self.move_camera_to_position(destination_position)
+	var destination_position: Vector2i = Vector2i(destination)
+	self.camera.snap_tile_box_to_camera = true
+	self.update_tile_box_position_from_camera()
+	var adj_tol: float = tolerance * self.camera.get_zoom_fraction()
+	if self.tile_box_position.distance_squared_to(destination_position) > (adj_tol * adj_tol) or zoom != null:
+		self.move_camera_to_position(destination_position)
 
-    return true
+	return true
 
 func snap_camera_to_position(destination: Vector2i) -> void:
-    self.camera.set_camera_position(Vector2(destination) * self.TILE_SIZE + Vector2(0.5, 0.5) * self.TILE_SIZE)
+	self.camera.set_camera_position(Vector2(destination) * self.TILE_SIZE + Vector2(0.5, 0.5) * self.TILE_SIZE)
 
 func anchor_unit(unit: BaseUnit, unit_position: Vector2i) -> void:
-    var world_position: Vector3 = self.map_to_local(unit_position)
-    world_position.y = self.GROUND_HEIGHT
-    self.tiles_units_anchor.add_child(unit)
-    unit.set_position(world_position)
+	var world_position: Vector3 = self.map_to_local(unit_position)
+	world_position.y = self.GROUND_HEIGHT
+	self.tiles_units_anchor.add_child(unit)
+	unit.set_position(world_position)
 
 
 func detach_unit(unit: BaseUnit) -> void:
-    self.tiles_units_anchor.remove_child(unit)
+	self.tiles_units_anchor.remove_child(unit)
 
 func hide_invisible_tiles() -> void:
-    for i: String in self.model.tiles.keys():
-        self.model.tiles[i].apply_invisibility()
+	for i: String in self.model.tiles.keys():
+		self.model.tiles[i].apply_invisibility()
 
 
 func _settings_changed(key: String, new_value: Variant) -> void:
-    if key == "decorations":
-        if new_value:
-            self.tiles_frames_anchor.show()
-        else:
-            self.tiles_frames_anchor.hide()
+	if key == "decorations":
+		if new_value:
+			self.tiles_frames_anchor.show()
+		else:
+			self.tiles_frames_anchor.hide()

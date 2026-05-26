@@ -23,62 +23,62 @@ var scripting_tags: Dictionary[String, Variant] = {}
 var current_rotation: int = 0
 
 func get_dict() -> Dictionary[String, Variant]:
-    var tile_rotation: Vector3 = self.get_rotation_degrees()
+	var tile_rotation: Vector3 = self.get_rotation_degrees()
 
-    var tile_dict: Dictionary[String, Variant] = {
-        "tile" : self.template_name,
-        "rotation" : tile_rotation.y
-    }
-    if self.scripting_tags.size() > 0:
-        tile_dict["tags"] = self.scripting_tags
-    return tile_dict
+	var tile_dict: Dictionary[String, Variant] = {
+		"tile" : self.template_name,
+		"rotation" : tile_rotation.y
+	}
+	if self.scripting_tags.size() > 0:
+		tile_dict["tags"] = self.scripting_tags
+	return tile_dict
 
 func reset_position_for_tile_view() -> void:
-    var mesh_position: Vector3 = $"mesh".get_position()
-    mesh_position.y = 0
+	var mesh_position: Vector3 = $"mesh".get_position()
+	mesh_position.y = 0
 
-    $"mesh".set_position(mesh_position)
+	$"mesh".set_position(mesh_position)
 
 func add_script_tag(tag: String) -> void:
-    self.scripting_tags[tag] = true
+	self.scripting_tags[tag] = true
 
 func has_script_tag(tag: String) -> bool:
-    return self.scripting_tags.has(tag)
+	return self.scripting_tags.has(tag)
 
 func is_damageable() -> bool:
-    return not self.next_damage_stage_template == ""
+	return not self.next_damage_stage_template == ""
 
 func is_restoreable() -> bool:
-    return not self.base_stage_template == ""
+	return not self.base_stage_template == ""
 
 func hide_mesh() -> void:
-    $"mesh".hide()
+	$"mesh".hide()
 
 func disable_shadow() -> void:
-    self._set_shadow(GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
+	self._set_shadow(GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
 
 
 func enable_shadow() -> void:
-    self._set_shadow(GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
+	self._set_shadow(GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
 
 func _set_shadow(shadow_value: GeometryInstance3D.ShadowCastingSetting) -> void:
-    var mesh: GeometryInstance3D = $"mesh" as GeometryInstance3D
-    assert(mesh != null)
-    mesh.cast_shadow = shadow_value
+	var mesh: GeometryInstance3D = $"mesh" as GeometryInstance3D
+	assert(mesh != null)
+	mesh.cast_shadow = shadow_value
 
-    var reflection: GeometryInstance3D = self.get_node_or_null("reflection") as GeometryInstance3D
-    if reflection != null:
-        reflection.cast_shadow = shadow_value
+	var reflection: GeometryInstance3D = self.get_node_or_null("reflection") as GeometryInstance3D
+	if reflection != null:
+		reflection.cast_shadow = shadow_value
 
-    for child: Node in $"mesh".get_children():
-        var child_mesh: MeshInstance3D = child as MeshInstance3D
-        if child_mesh != null:
-            child_mesh.cast_shadow = shadow_value
+	for child: Node in $"mesh".get_children():
+		var child_mesh: MeshInstance3D = child as MeshInstance3D
+		if child_mesh != null:
+			child_mesh.cast_shadow = shadow_value
 
-    for child: Node in self.get_children():
-        if child is Node3D:
-            for next_child: Node in child.get_children():
-                var next_child_mesh: MeshInstance3D = next_child as MeshInstance3D
-                if next_child_mesh != null:
-                    next_child_mesh.cast_shadow = shadow_value
-                    return
+	for child: Node in self.get_children():
+		if child is Node3D:
+			for next_child: Node in child.get_children():
+				var next_child_mesh: MeshInstance3D = next_child as MeshInstance3D
+				if next_child_mesh != null:
+					next_child_mesh.cast_shadow = shadow_value
+					return

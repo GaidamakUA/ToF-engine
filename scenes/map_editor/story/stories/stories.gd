@@ -5,6 +5,7 @@ class_name MapStoryStoriesPanel
 @onready var story_panel: MapStoryStepsPanel = $Story
 
 signal picker_requested(context: Dictionary)
+@warning_ignore("unused_signal")
 signal edit_requested(story_name: String)
 
 var stories_data: Dictionary = {}

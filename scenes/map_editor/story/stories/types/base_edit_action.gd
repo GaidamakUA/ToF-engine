@@ -9,6 +9,7 @@ var step_data: Dictionary = {}
 signal step_data_updated(step_no: int, step_data: Dictionary)
 signal step_move_requested(step_no: int, new_step_no: int)
 signal step_removal_requested(step_no: int)
+@warning_ignore("unused_signal")
 signal picker_requested(context: Dictionary)
 
 func show_panel() -> void:

@@ -474,25 +474,27 @@ func next_alternative() -> void:
     var old_side: String
 
     if tile.building.is_present():
-        old_side = tile.building.tile.side
-        self.next_building_side(tile.building.tile)
+        var building: BaseBuilding = tile._get_building()
+        old_side = building.side
+        self.next_building_side(building)
         self.write_action_history({
             "type" : "side",
             "class" : "building",
             "position" : self.map.tile_box_position,
             "old_side" : old_side,
-            "new_side" : tile.building.tile.side,
+            "new_side" : building.side,
         })
 
     if tile.unit.is_present():
-        old_side = tile.unit.tile.side
-        self.next_unit_side(tile.unit.tile)
+        var unit: BaseUnit = tile._get_unit()
+        old_side = unit.side
+        self.next_unit_side(unit)
         self.write_action_history({
             "type" : "side",
             "class" : "unit",
             "position" : self.map.tile_box_position,
             "old_side" : old_side,
-            "new_side" : tile.unit.tile.side,
+            "new_side" : unit.side,
         })
 
     if tile.terrain.is_present() and tile.terrain.tile.is_damageable():
@@ -537,12 +539,13 @@ func _open_ability_ban_menu() -> void:
 func toggle_unit_ai_pause() -> void:
     var tile: MapTile = self.map.model.get_tile(self.map.tile_box_position)
     if tile.unit.is_present():
-        tile.unit.tile.ai_paused = not tile.unit.tile.ai_paused
+        var unit: BaseUnit = tile._get_unit()
+        unit.ai_paused = not unit.ai_paused
 
-        if tile.unit.tile.ai_paused:
-            tile.unit.tile.remove_highlight()
+        if unit.ai_paused:
+            unit.remove_highlight()
         else:
-            tile.unit.tile.restore_highlight()
+            unit.restore_highlight()
 
 func write_action_history(action_details: Dictionary[String, Variant]) -> void:
     self.actions_history.append(action_details)

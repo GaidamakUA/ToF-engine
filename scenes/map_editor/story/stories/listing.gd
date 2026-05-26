@@ -60,6 +60,7 @@ func _manage_buttons(list_size: int, page_no: int) -> void:
 func _normalize_page_no(list_size: int, page_no: int, index_search: int = -1) -> Array[Variant]:
 	if list_size == 0:
 		return [0, true]
+	@warning_ignore("integer_division")
 	var full_pages: int = list_size / self._page_size
 	var page_overflow: int = list_size % self._page_size
 	var all_pages: int = full_pages

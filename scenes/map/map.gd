@@ -91,7 +91,9 @@ func local_to_map(queried_position: Vector3) -> Vector2i:
     var camera_position_x: int = int(queried_position.x)
     var camera_position_z: int = int(queried_position.z)
 
+    @warning_ignore('integer_division')
     tile_position.x = int((camera_position_x - (camera_position_x % self.TILE_SIZE)) / self.TILE_SIZE)
+    @warning_ignore('integer_division')
     tile_position.y = int((camera_position_z - (camera_position_z % self.TILE_SIZE)) / self.TILE_SIZE)
 
     return tile_position

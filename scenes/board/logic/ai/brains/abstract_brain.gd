@@ -1,4 +1,4 @@
 class_name AbstractBrain
 
-func get_actions(context: BrainContext) -> Array[AbstractAction]:
+func get_actions(_context: BrainContext) -> Array[AbstractAction]:
     return []

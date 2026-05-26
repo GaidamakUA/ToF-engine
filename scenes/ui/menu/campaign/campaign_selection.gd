@@ -89,6 +89,7 @@ func _get_amount_of_pages() -> int:
 
     var amount: int = campaigns.size()
     var overflow: int = amount % self.TILES_PER_PAGE
+    @warning_ignore('integer_division')
     var pages: int = (amount - overflow) / self.TILES_PER_PAGE
 
     if overflow > 0:

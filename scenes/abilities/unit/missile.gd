@@ -19,10 +19,11 @@ func _execute(board: Board, position: Vector2i) -> void:
 	
 	self.source.sfx_effect("hit")
 	if tile.unit.is_present():
-		if not tile.unit.tile.is_alive():
-			var unit_id: int = tile.unit.tile.get_instance_id()
-			var unit_type: String = tile.unit.tile.template_name
-			var unit_side: String = tile.unit.tile.side
+		var target_unit: BaseUnit = tile._get_unit()
+		if not target_unit.is_alive():
+			var unit_id: int = target_unit.get_instance_id()
+			var unit_type: String = target_unit.template_name
+			var unit_side: String = target_unit.side
 			board.events.emit_unit_destroyed(self.source, unit_id, unit_type, unit_side)
 			board.destroy_unit_on_tile(tile)
 

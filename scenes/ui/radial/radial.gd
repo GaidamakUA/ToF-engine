@@ -53,6 +53,7 @@ func _input(event: InputEvent) -> void:
 
         var rounded_angle: int = int(round(angle))
 
+        @warning_ignore('integer_division')
         var option: int = int((rounded_angle - (rounded_angle % 45)) / 45)
 
         self.focus_field(option)

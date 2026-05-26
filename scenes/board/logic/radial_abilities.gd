@@ -49,7 +49,6 @@ func fill_radial_with_building_abilities(board: Board, radial: Radial, building:
             icon.hide_background()
             icon.is_side_tile = false
             icon.viewport_size = 20
-            icon.set_tile(icon_model, 0)
             label = tr(ability.label)
             label += "\n" + str(ap_cost) + " " + tr("TR_AP")
             if not board.state.can_current_player_afford(ap_cost):
@@ -57,6 +56,7 @@ func fill_radial_with_building_abilities(board: Board, radial: Radial, building:
                 radial.set_field_disabled(ability.index, "")
 
             radial.set_field(icon, label, ability.index, board, "activate_production_ability", [ability])
+            icon.set_tile(icon_model, 0)
 
 func fill_radial_with_unit_abilities(board: Board, radial: Radial, unit: BaseUnit) -> void:
     radial.set_field(board.ui.icons.cross.instantiate(), "TR_CLOSE", 6, board, "toggle_radial_menu")

@@ -35,6 +35,7 @@ func get_actions(context: BrainContext) -> Array[AbstractAction]:
             action = self._create_ability_action(ability, self._select_random_spawn_point(spawn_points))
             ability.active_source_tile = context.entity_tile
         elif ability_cost * 0.75 <= context.ap:
+            @warning_ignore('integer_division')
             action = self._create_reserve_ap_action(ability_cost/2)
 
         if action != null:

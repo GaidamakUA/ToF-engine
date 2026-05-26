@@ -5,8 +5,8 @@ var brains: Brains = Brains.new()
 var board: Board
 
 
-func _init(board: Board) -> void:
-    self.board = board
+func _init(new_board: Board) -> void:
+    self.board = new_board
 
 
 func select_best_action() -> Variant:
@@ -70,10 +70,11 @@ func _gather_unit_actions(units: Array[MapTile],
     var brain: AbstractBrain
 
     for unit_tile: MapTile in units:
-        if unit_tile.unit.tile.ai_paused:
+        var unit: BaseUnit = unit_tile._get_unit()
+        if unit.ai_paused:
             continue
 
-        brain = self.brains.get_brain_for_unit(unit_tile.unit.tile)
+        brain = self.brains.get_brain_for_unit(unit)
         if brain == null:
             continue
         var brain_context: BrainContext = BrainContext.new(unit_tile, enemy_buildings, enemy_units, own_buildings, own_units, ap, self.board)

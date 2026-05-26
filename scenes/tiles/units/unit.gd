@@ -77,7 +77,7 @@ var desaturated_material: Resource = null
 
 func _ready() -> void:
     self.animations.animation_finished.connect(_on_animation_finished)
-    $"mesh_anchor/healthbar".texture = $"mesh_anchor/healthbar/SubViewport".get_texture()
+    self.healthbar_sprite.texture = $"mesh_anchor/healthbar/SubViewport".get_texture()
 
 func reset() -> void:
     var stats: Dictionary[String, int] = self.get_stats_with_modifiers()

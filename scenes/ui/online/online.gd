@@ -58,7 +58,7 @@ func _ready() -> void:
     self.relay.session_success.connect(self._on_session_success)
     self.relay.connection_failed.connect(self._on_connection_failed)
 
-func _on_back_button_pressed():
+func _on_back_button_pressed() -> void:
     if self.working:
         return
     self.audio.play("menu_back")

@@ -2,9 +2,10 @@ extends ActiveUnitAbility
 
 func _execute(board: Board, position: Vector2i) -> void:
 	var tile := board.map.model.get_tile(position)
-	tile.unit.tile.sfx_effect("move")
+	var target_unit: BaseUnit = tile._get_unit()
+	target_unit.sfx_effect("move")
 	
-	self.source.passenger = tile.unit.tile
+	self.source.passenger = target_unit
 	tile.unit.release()
 	board.map.detach_unit(self.source.passenger)
 
@@ -25,5 +26,5 @@ func is_tile_applicable(tile: MapTile, _source_tile: MapTile) -> bool:
 	if self.source.level == 3:
 		applicable_types.append("mobile_infantry")
 	if tile.has_friendly_unit(self.source.side):
-		return tile.unit.tile.unit_class in applicable_types
+		return tile._get_unit().unit_class in applicable_types
 	return false

@@ -1,6 +1,6 @@
 extends BaseStepActionEditor
 
-func fill_step_data(new_step_no, new_step_data):
+func fill_step_data(new_step_no: int, new_step_data: Dictionary) -> void:
 	super.fill_step_data(new_step_no, new_step_data)
 	
 	$"name/name".set_text("")
@@ -34,23 +34,23 @@ func fill_step_data(new_step_no, new_step_data):
 
 
 
-func build_step_label(requested_step_data):
-	var label = requested_step_data["action"]
+func build_step_label(requested_step_data: Dictionary) -> String:
+	var label: String = requested_step_data["action"]
 	if requested_step_data.has("details"):
 		if requested_step_data["details"].has("name"):
 			label += " " + requested_step_data["details"]["name"]
 	return label
 
-func _compile_step_data():
+func _compile_step_data() -> Dictionary:
 	self.step_data = super._compile_step_data()
 	
-	var actor_name = $"name/name".get_text()
-	var portrait = $"portrait/portrait".get_text()
-	var actor_side = "left"
-	var colour = $"colour/colour".get_text()
-	var font = $"font/font".get_text()
-	var sound = $"sound/sound".get_text()
-	var text = $"text".get_text()
+	var actor_name: String = $"name/name".get_text()
+	var portrait: String = $"portrait/portrait".get_text()
+	var actor_side: String = "left"
+	var colour: String = $"colour/colour".get_text()
+	var font: String = $"font/font".get_text()
+	var sound: String = $"sound/sound".get_text()
+	var text: String = $"text".get_text()
 
 	if self.step_data["details"].has("side"):
 		actor_side = self.step_data["details"]["side"]
@@ -75,7 +75,7 @@ func _compile_step_data():
 	return self.step_data
 
 
-func _handle_picker_response(response, context):
+func _handle_picker_response(response: Variant, context: Dictionary) -> void:
 	super._handle_picker_response(response, context)
 	if context["type"] == "side":
 		$"colour/colour".set_text(response)
@@ -86,7 +86,7 @@ func _handle_picker_response(response, context):
 	_emit_updated_signal()
 
 
-func _on_portrait_picker_button_pressed():
+func _on_portrait_picker_button_pressed() -> void:
 	self.audio.play("menu_click")
 
 	self.picker_requested.emit({
@@ -95,7 +95,7 @@ func _on_portrait_picker_button_pressed():
 	})
 
 
-func _on_side_button_pressed():
+func _on_side_button_pressed() -> void:
 	self.audio.play("menu_click")
 	if not self.step_data["details"].has("side"):
 		self.step_data["details"]["side"] = "left"
@@ -109,7 +109,7 @@ func _on_side_button_pressed():
 	_emit_updated_signal()
 
 
-func _on_colour_picker_button_pressed():
+func _on_colour_picker_button_pressed() -> void:
 	self.audio.play("menu_click")
 
 	self.picker_requested.emit({
@@ -118,7 +118,7 @@ func _on_colour_picker_button_pressed():
 	})
 
 
-func _on_sound_picker_button_pressed():
+func _on_sound_picker_button_pressed() -> void:
 	self.audio.play("menu_click")
 
 	self.picker_requested.emit({
@@ -127,5 +127,5 @@ func _on_sound_picker_button_pressed():
 	})
 
 
-func _on_text_area_changed():
+func _on_text_area_changed() -> void:
 	_emit_updated_signal()

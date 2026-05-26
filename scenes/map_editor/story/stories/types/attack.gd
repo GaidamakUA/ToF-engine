@@ -1,6 +1,6 @@
 extends BaseStepActionEditor
 
-func fill_step_data(new_step_no, new_step_data):
+func fill_step_data(new_step_no: int, new_step_data: Dictionary) -> void:
 	super.fill_step_data(new_step_no, new_step_data)
 	
 	$"who/x".set_text("")
@@ -20,14 +20,14 @@ func fill_step_data(new_step_no, new_step_data):
 		if self.step_data["details"].has("damage"):
 			$"damage/damage".set_text(str(self.step_data["details"]["damage"]))
 
-func _compile_step_data():
+func _compile_step_data() -> Dictionary:
 	self.step_data = super._compile_step_data()
 	
-	var x1 = $"who/x".get_text()
-	var y1 = $"who/y".get_text()
-	var x2 = $"whom/x".get_text()
-	var y2 = $"whom/y".get_text()
-	var damage = $"damage/damage".get_text()
+	var x1: String = $"who/x".get_text()
+	var y1: String = $"who/y".get_text()
+	var x2: String = $"whom/x".get_text()
+	var y2: String = $"whom/y".get_text()
+	var damage: String = $"damage/damage".get_text()
 
 	self.step_data["details"] = {}
 
@@ -41,7 +41,7 @@ func _compile_step_data():
 
 	return self.step_data
 
-func _handle_picker_response(response, context):
+func _handle_picker_response(response: Variant, context: Dictionary) -> void:
 	super._handle_picker_response(response, context)
 	if context["type"] == "position":
 		if context.has("field_id"):
@@ -51,24 +51,24 @@ func _handle_picker_response(response, context):
 				_handle_picker_response_for_fields($"whom/x", $"whom/y", response)
 
 
-func _handle_picker_response_for_fields(input_x, input_y, response):
+func _handle_picker_response_for_fields(input_x: LineEdit, input_y: LineEdit, response: Variant) -> void:
 	input_x.set_text(str(response.x))
 	input_y.set_text(str(response.y))
 	_emit_updated_signal()
 
 
-func _on_who_picker_button_pressed():
+func _on_who_picker_button_pressed() -> void:
 	_request_picker_for_fields("who", $"who/x", $"who/y")
 
 
-func _on_whom_picker_button_pressed():
+func _on_whom_picker_button_pressed() -> void:
 	_request_picker_for_fields("whom", $"whom/x", $"whom/y")
 
-func _request_picker_for_fields(identifier, input_x, input_y):
-	var x = input_x.get_text()
-	var y = input_y.get_text()
+func _request_picker_for_fields(identifier: String, input_x: LineEdit, input_y: LineEdit) -> void:
+	var x: String = input_x.get_text()
+	var y: String = input_y.get_text()
 
-	var current_position = null
+	var current_position: Variant = null
 	if x != "" and y != "":
 		current_position = [int(x), int(y)]
 

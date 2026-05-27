@@ -2,13 +2,13 @@ extends SpawnUnit
 class_name SpawnHero
 
 func _is_visible(board: Board) -> bool:
-	if self.source == null:
-		return false
+    if self.source == null:
+        return false
 
-	if board == null:
-		return false
+    if board == null:
+        return false
 
-	if board.state.has_side_a_hero(self.source.side):
-		return false
+    if board.state.has_side_a_hero(self.source.side):
+        return false
 
-	return true
+    return true

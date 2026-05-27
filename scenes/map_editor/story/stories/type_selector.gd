@@ -15,18 +15,18 @@ signal step_removal_requested(step_no: int)
 signal picker_requested(context: Dictionary)
 
 func _ready() -> void:
-	for button: BaseButton in $"buttons".get_children():
-		button.pressed.connect(self._on_type_pressed.bind(button))
-		
+    for button: BaseButton in $"buttons".get_children():
+        button.pressed.connect(self._on_type_pressed.bind(button))
+        
 func show_panel() -> void:
-	self.show()
+    self.show()
 
 func _on_type_pressed(button: BaseButton) -> void:
-	self.audio.play("menu_click")
-	self.step_data["action"] = str(button.name)
-	self.step_data_updated.emit(self.step_no, self.step_data)
+    self.audio.play("menu_click")
+    self.step_data["action"] = str(button.name)
+    self.step_data_updated.emit(self.step_no, self.step_data)
 
 
 func fill_step_data(new_step_no: int, new_step_data: Dictionary) -> void:
-	self.step_no = new_step_no
-	self.step_data = new_step_data
+    self.step_no = new_step_no
+    self.step_data = new_step_data

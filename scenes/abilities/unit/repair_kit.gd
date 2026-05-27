@@ -1,40 +1,40 @@
 extends ActiveUnitAbility
 
 const REPAIR_UNITS: Array[String] = [
-	"tank",
-	"heli",
-	"rocket_artillery",
-	"scout",
+    "tank",
+    "heli",
+    "rocket_artillery",
+    "scout",
 ]
 
 @export var heal: int = 5
 
 func _execute(board: Board, position: Vector2i) -> void:
-	var tile := board.map.model.get_tile(position)
-	var target_unit: BaseUnit = tile._get_unit()
-	target_unit.sfx_effect("spawn")
+    var tile := board.map.model.get_tile(position)
+    var target_unit: BaseUnit = tile._get_unit()
+    target_unit.sfx_effect("spawn")
 
-	target_unit.heal(self.heal)
-	board.heal_a_tile(tile)
-	self.source.gain_exp()
+    target_unit.heal(self.heal)
+    board.heal_a_tile(tile)
+    self.source.gain_exp()
 
 func is_tile_applicable(tile: MapTile, source_tile: MapTile) -> bool:
-	if not tile.has_friendly_unit(self.source.side) or tile == source_tile:
-		return false
+    if not tile.has_friendly_unit(self.source.side) or tile == source_tile:
+        return false
 
-	var target_unit: BaseUnit = tile._get_unit()
-	return target_unit.unit_class in self.REPAIR_UNITS and target_unit.is_damaged()
+    var target_unit: BaseUnit = tile._get_unit()
+    return target_unit.unit_class in self.REPAIR_UNITS and target_unit.is_damaged()
 
 func _is_visible(_board: Board) -> bool:
-	if self.source == null:
-		return false
+    if self.source == null:
+        return false
 
-	return self.source.level >= 1
+    return self.source.level >= 1
 
 func get_cost() -> int:
-	if self.source == null or self.source.level < 2:
-		return super.get_cost()
+    if self.source == null or self.source.level < 2:
+        return super.get_cost()
 
-	if self.source.level == 2:
-		return 10
-	return 5
+    if self.source.level == 2:
+        return 10
+    return 5

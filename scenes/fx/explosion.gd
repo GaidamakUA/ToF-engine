@@ -8,26 +8,26 @@ class_name ExplosionFx
 @onready var heal: GPUParticles3D = $"heal"
 
 func grab_sfx_effect(unit: BaseUnit) -> void:
-	var audio_player: Variant = unit.give_sfx_effect("die")
-	if audio_player == null:
-		return
+    var audio_player: Variant = unit.give_sfx_effect("die")
+    if audio_player == null:
+        return
 
-	audio_player.connect("finished", Callable(audio_player, "queue_free"))
-	$"audio".add_child(audio_player)
-	audio_player.play()
+    audio_player.connect("finished", Callable(audio_player, "queue_free"))
+    $"audio".add_child(audio_player)
+    audio_player.play()
 
 func explode() -> void:
-	self.smoke.set_emitting(true)
-	self.main.set_emitting(true)
+    self.smoke.set_emitting(true)
+    self.main.set_emitting(true)
 
 func explode_a_bit() -> void:
-	self.small_main.set_emitting(true)
+    self.small_main.set_emitting(true)
 
 func puff_some_smoke() -> void:
-	self.smoke.set_emitting(true)
+    self.smoke.set_emitting(true)
 
 func rain_bless() -> void:
-	self.bless.set_emitting(true)
+    self.bless.set_emitting(true)
 
 func rain_heal() -> void:
-	self.heal.set_emitting(true)
+    self.heal.set_emitting(true)

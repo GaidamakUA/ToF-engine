@@ -9,25 +9,25 @@ class_name ChangelogPanel
 var main_menu: Variant
 
 func bind_menu(menu: Variant) -> void:
-	self.main_menu = menu
+    self.main_menu = menu
 
 func _ready() -> void:
-	self.set_process_input(false)
+    self.set_process_input(false)
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel") or event.is_action_pressed('editor_menu'):
-		self._on_back_button_pressed()
+    if event.is_action_pressed("ui_cancel") or event.is_action_pressed('editor_menu'):
+        self._on_back_button_pressed()
 
 func _on_back_button_pressed() -> void:
-	self.audio.play("menu_back")
-	self.main_menu.close_changelog()
+    self.audio.play("menu_back")
+    self.main_menu.close_changelog()
 
 func show_panel() -> void:
-	self.animations.play("show")
-	self.set_process_input(true)
-	await self.get_tree().create_timer(0.1).timeout
-	self.back_button.grab_focus()
+    self.animations.play("show")
+    self.set_process_input(true)
+    await self.get_tree().create_timer(0.1).timeout
+    self.back_button.grab_focus()
 
 func hide_panel() -> void:
-	self.animations.play("hide")
-	self.set_process_input(false)
+    self.animations.play("hide")
+    self.set_process_input(false)

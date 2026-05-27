@@ -15,25 +15,25 @@ var player_peer_id: int = 0
 
 
 func bind_player(peer_id: int, player_info: Dictionary) -> void:
-	player_peer_id = peer_id
-	set_player_name(str(player_info["name"]))
-	if ((not is_online_relay and self.multiplayer_srv.is_server()) or (is_online_relay and self.relay.is_server())) and player_peer_id > 1:
-		show_kick_button()
-	else:
-		hide_kick_button()
+    player_peer_id = peer_id
+    set_player_name(str(player_info["name"]))
+    if ((not is_online_relay and self.multiplayer_srv.is_server()) or (is_online_relay and self.relay.is_server())) and player_peer_id > 1:
+        show_kick_button()
+    else:
+        hide_kick_button()
 
 
 func set_player_name(player_name: String) -> void:
-	self.label.set_text(player_name)
+    self.label.set_text(player_name)
 
 
 func show_kick_button() -> void:
-	self.kick_button.show()
+    self.kick_button.show()
 
 
 func hide_kick_button() -> void:
-	self.kick_button.hide()
+    self.kick_button.hide()
 
 
 func _on_kick_button_pressed() -> void:
-	kick_requested.emit(player_peer_id)
+    kick_requested.emit(player_peer_id)

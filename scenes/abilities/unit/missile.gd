@@ -7,35 +7,35 @@ const TWEEN_TIME := 0.5
 @export var max_level: int = 3
 
 func _execute(board: Board, position: Vector2i) -> void:
-	var tile := board.map.model.get_tile(position)
+    var tile := board.map.model.get_tile(position)
 
-	if tile.unit.is_present():
-		tile.unit.tile.receive_damage(self.damage)
-	self.source.sfx_effect("attack")
+    if tile.unit.is_present():
+        tile.unit.tile.receive_damage(self.damage)
+    self.source.sfx_effect("attack")
 
-	board.smoke_a_tile(self.active_source_tile)
-	board.lob_projectile(self.active_source_tile, tile, self.TWEEN_TIME)
-	await self.get_tree().create_timer(self.TWEEN_TIME).timeout
-	
-	self.source.sfx_effect("hit")
-	if tile.unit.is_present():
-		var target_unit: BaseUnit = tile._get_unit()
-		if not target_unit.is_alive():
-			var unit_id: int = target_unit.get_instance_id()
-			var unit_type: String = target_unit.template_name
-			var unit_side: String = target_unit.side
-			board.events.emit_unit_destroyed(self.source, unit_id, unit_type, unit_side)
-			board.destroy_unit_on_tile(tile)
+    board.smoke_a_tile(self.active_source_tile)
+    board.lob_projectile(self.active_source_tile, tile, self.TWEEN_TIME)
+    await self.get_tree().create_timer(self.TWEEN_TIME).timeout
+    
+    self.source.sfx_effect("hit")
+    if tile.unit.is_present():
+        var target_unit: BaseUnit = tile._get_unit()
+        if not target_unit.is_alive():
+            var unit_id: int = target_unit.get_instance_id()
+            var unit_type: String = target_unit.template_name
+            var unit_side: String = target_unit.side
+            board.events.emit_unit_destroyed(self.source, unit_id, unit_type, unit_side)
+            board.destroy_unit_on_tile(tile)
 
-	board.explode_a_tile(tile)
-	self.source.activate_all_cooldowns(board)
-	board.refresh_tile_selection()
+    board.explode_a_tile(tile)
+    self.source.activate_all_cooldowns(board)
+    board.refresh_tile_selection()
 
 func _is_visible(_board: Board) -> bool:
-	if self.source == null:
-		return false
+    if self.source == null:
+        return false
 
-	return self.source.level >= self.min_level and self.source.level <= self.max_level
+    return self.source.level >= self.min_level and self.source.level <= self.max_level
 
 func is_tile_applicable(tile: MapTile, source_tile: MapTile) -> bool:
-	return tile.has_enemy_unit(self.source.side, self.source.team) and not tile.is_neighbour(source_tile)
+    return tile.has_enemy_unit(self.source.side, self.source.team) and not tile.is_neighbour(source_tile)

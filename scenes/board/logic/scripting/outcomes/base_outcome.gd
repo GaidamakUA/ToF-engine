@@ -4,13 +4,13 @@ var board: Board
 var delay: float = 0.0
 
 func execute(metadata: Dictionary[String, Variant] = {}) -> void:
-	self._execute(metadata)
+    self._execute(metadata)
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
-	return
+    return
 
 func ingest_details(details: Dictionary[String, Variant] = {}) -> void:
-	self._ingest_details(details)
+    self._ingest_details(details)
 
 func _ingest_details(_details: Dictionary[String, Variant]) -> void:
-	return
+    return

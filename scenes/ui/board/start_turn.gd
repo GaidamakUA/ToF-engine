@@ -12,26 +12,26 @@ class_name StartTurnView
 @onready var turn_label: Label = $"background/turn"
 
 func flash(player: String, turn: int) -> void:
-	self._reset_labels()
-	self.turn_label.set_text(tr("TR_TURN") + " " + str(turn))
+    self._reset_labels()
+    self.turn_label.set_text(tr("TR_TURN") + " " + str(turn))
 
-	match player:
-		"blue":
-			self.blue_player.show()
-		"red":
-			self.red_player.show()
-		"yellow":
-			self.yellow_player.show()
-		"green":
-			self.green_player.show()
-		"black":
-			self.black_player.show()
+    match player:
+        "blue":
+            self.blue_player.show()
+        "red":
+            self.red_player.show()
+        "yellow":
+            self.yellow_player.show()
+        "green":
+            self.green_player.show()
+        "black":
+            self.black_player.show()
 
-	self.animations.play("show")
+    self.animations.play("show")
 
 func _reset_labels() -> void:
-	self.blue_player.hide()
-	self.red_player.hide()
-	self.yellow_player.hide()
-	self.green_player.hide()
-	self.black_player.hide()
+    self.blue_player.hide()
+    self.red_player.hide()
+    self.yellow_player.hide()
+    self.green_player.hide()
+    self.black_player.hide()

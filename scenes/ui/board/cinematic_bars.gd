@@ -6,9 +6,9 @@ class_name CinematicBars
 var is_extended: bool = false
 
 func show_bars() -> void:
-	self.animations.play("show")
-	self.is_extended = true
+    self.animations.play("show")
+    self.is_extended = true
 
 func hide_bars() -> void:
-	self.animations.play("hide")
-	self.is_extended = false
+    self.animations.play("hide")
+    self.is_extended = false

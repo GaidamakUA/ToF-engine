@@ -44,7 +44,7 @@ func _handle_message(message: Dictionary) -> void:
 	if message["type"] == "player_reconnected":
 		self._notify_player_reconnected()
 	if message["type"] == "camera_position":
-		self._update_camera_position(message["position"] as Dictionary)
+		self._update_camera_position(message["position"])
 	if message["type"] == "tile_select":
 		self._update_tile_select(Vector2i(int(message["x"]), int(message["y"])))
 	if message["type"] == "activate_production_ability":
@@ -218,7 +218,7 @@ func _physics_process(_delta: float) -> void:
 
 
 #@rpc("any_peer", "call_remote", "unreliable_ordered")
-func _update_camera_position(camera_state: Array[float]) -> void:
+func _update_camera_position(camera_state: Array) -> void:
 	self.map.camera.restore_from_state(camera_state)
 
 

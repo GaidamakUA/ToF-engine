@@ -1,9 +1,9 @@
-[gd_scene format=3 uid="uid://besqifsd1pqmm"]
+[gd_scene format=3 uid="uid://cis7d7f082vdh"]
 
-[ext_resource type="PackedScene" uid="uid://2tj73ejmcn0s" path="res://scenes/tiles/ground/mouse_collision.tscn" id="2"]
-[ext_resource type="Script" uid="uid://bs8pr03s1wxtc" path="res://scenes/tiles/ground/base_ground.gd" id="3"]
+[ext_resource type="PackedScene" uid="uid://besqifsd1pqmm" path="res://scenes/tiles/ground/map_tile_hitbox.tscn" id="2"]
+[ext_resource type="Script" uid="uid://bs8pr03s1wxtc" path="res://scenes/tiles/ground/map_tile_hitbox.gd" id="3"]
 
-[node name="base_ground" type="Node3D"]
+[node name="base_ground" type="Node3D" unique_id=936350475]
 script = ExtResource("3")
 
-[node name="mouse_collision" parent="." instance=ExtResource("2")]
+[node name="mouse_collision" parent="." unique_id=1002880624 instance=ExtResource("2")]

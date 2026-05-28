@@ -1,7 +1,5 @@
 class_name MapTemplates
 
-const DUMMY_GROUND := "dummy_ground"
-
 const GROUND_GRASS := "ground_grass"
 const GROUND_CONCRETE := "ground_concrete"
 const GROUND_RIVER1 := "ground_river1"
@@ -772,7 +770,7 @@ var _hero_templates: Dictionary[String, PackedScene] = {
 }
 
 var _other_templates: Dictionary[String, PackedScene] = {
-    self.DUMMY_GROUND : preload("res://scenes/tiles/ground/base_ground.tscn"),
+    self.MAP_TILE_HITBOX : preload("res://scenes/tiles/ground/map_tile_hitbox.tscn"),
 }
 
 var templates: Dictionary[String, PackedScene] = {}

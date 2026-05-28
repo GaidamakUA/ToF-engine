@@ -289,17 +289,17 @@ func fill_map_from_data(data: Dictionary[String, Variant]) -> void:
     self.map.model.ingest_scripts(scripts)
 
 func attach_mouse_layer() -> void:
-    var ground_point: BaseGround
+    var tile_hitbox: MapTileHitbox
     var tile: MapTile
 
     self.map.mouse_layer.initialize(self.map.model.SIZE, self.map.TILE_SIZE)
     if self.map.mouse_layer.mouse_layer.get_parent():
         self.map.mouse_layer.mouse_layer.get_parent().remove_child(self.map.mouse_layer.mouse_layer)
     self.map.tiles_ground_anchor.add_child(self.map.mouse_layer.mouse_layer)
-    for key: String in self.map.mouse_layer.ground_points.keys():
-        ground_point = self.map.mouse_layer.ground_points[key]
+    for key: String in self.map.mouse_layer.tile_hitboxes.keys():
+        tile_hitbox = self.map.mouse_layer.tile_hitboxes[key]
         tile = self.map.model.tiles[key]
-        ground_point.bind_ground_for_mouse(self.map, tile.position)
+        tile_hitbox.bind_map_tile(self.map, tile.position)
 
 
 func place_tile(tile_id: String, tile_data: Dictionary) -> void:

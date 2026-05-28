@@ -280,7 +280,7 @@ func _fix_land_bridges(map: Map, tile: MapTile) -> void:
         "ground_snow_dirt_road1",
     ]
 
-    if watched_types.has(tile.ground.tile.template_name):
+    if watched_types.has(tile.ground.get_map_object().template_name):
         var e: MapTile = tile.get_neighbour("e")
         var w: MapTile = tile.get_neighbour("w")
         var n: MapTile = tile.get_neighbour("n")
@@ -303,7 +303,7 @@ func _fix_road_bridges(map: Map, tile: MapTile) -> void:
         "ground_snow_road1",
     ]
 
-    if watched_types.has(tile.ground.tile.template_name):
+    if watched_types.has(tile.ground.get_map_object().template_name):
         var e: MapTile = tile.get_neighbour("e")
         var w: MapTile = tile.get_neighbour("w")
         var n: MapTile = tile.get_neighbour("n")
@@ -322,7 +322,7 @@ func _fix_city_buildings(map: Map, tile: MapTile) -> void:
     if not tile.terrain.is_present():
         return
 
-    if tile.terrain.tile.template_name != "city_building_big1" and tile.terrain.tile.template_name != "destroyed_building_big1":
+    if tile.terrain.get_map_object().template_name != "city_building_big1" and tile.terrain.get_map_object().template_name != "destroyed_building_big1":
         return
 
     var small_neighbours: int = self._count_neighbours(map, tile, [
@@ -341,9 +341,9 @@ func _fix_city_buildings(map: Map, tile: MapTile) -> void:
     ])
 
     if small_neighbours > 0 or city_neighbours < 5:
-        if tile.terrain.tile.template_name == "city_building_big1":
+        if tile.terrain.get_map_object().template_name == "city_building_big1":
             map.builder.place_terrain(tile.position, "city_building_small4", 0)
-        if tile.terrain.tile.template_name == "destroyed_building_big1":
+        if tile.terrain.get_map_object().template_name == "destroyed_building_big1":
             map.builder.place_terrain(tile.position, "destroyed_building_small4", 0)
 
 
@@ -367,11 +367,11 @@ func _fix_roads_and_rivers(map: Map, tile: MapTile) -> void:
 
     var affected_tile_types: Array[String] = roads + dirt_roads + rivers
 
-    if not affected_tile_types.has(tile.ground.tile.template_name):
+    if not affected_tile_types.has(tile.ground.get_map_object().template_name):
         return
 
-    if roads.has(tile.ground.tile.template_name):
-        if tile.ground.tile.template_name == "ground_road1":
+    if roads.has(tile.ground.get_map_object().template_name):
+        if tile.ground.get_map_object().template_name == "ground_road1":
             self._fix_path_element(map, tile, [
                 "ground_road1",
                 "ground_road2",
@@ -399,70 +399,12 @@ func _fix_roads_and_rivers(map: Map, tile: MapTile) -> void:
                 "bridge_stone",
                 "bridge_legs",
             ])
-        if tile.ground.tile.template_name == "ground_snow_road1":
+        if tile.ground.get_map_object().template_name == "ground_snow_road1":
             self._fix_path_element(map, tile, [
                 "ground_snow_road1",
                 "ground_snow_road2",
                 "ground_snow_road3",
                 "ground_snow_road4",
-            ], [
-                "ground_road1",
-                "ground_road2",
-                "ground_road3",
-                "ground_road4",
-                "ground_snow_road1",
-                "ground_snow_road2",
-                "ground_snow_road3",
-                "ground_snow_road4",
-                "ground_dirt_road1",
-                "ground_dirt_road2",
-                "ground_dirt_road3",
-                "ground_dirt_road4",
-                "ground_snow_dirt_road1",
-                "ground_snow_dirt_road2",
-                "ground_snow_dirt_road3",
-                "ground_snow_dirt_road4",
-                "city_bridge",
-                "city_bridge_wood",
-                "bridge_stone",
-                "bridge_legs",
-            ])
-
-    if dirt_roads.has(tile.ground.tile.template_name):
-        if tile.ground.tile.template_name == "ground_dirt_road1":
-            self._fix_path_element(map, tile, [
-                "ground_dirt_road1",
-                "ground_dirt_road2",
-                "ground_dirt_road3",
-                "ground_dirt_road4",
-            ], [
-                "ground_road1",
-                "ground_road2",
-                "ground_road3",
-                "ground_road4",
-                "ground_snow_road1",
-                "ground_snow_road2",
-                "ground_snow_road3",
-                "ground_snow_road4",
-                "ground_dirt_road1",
-                "ground_dirt_road2",
-                "ground_dirt_road3",
-                "ground_dirt_road4",
-                "ground_snow_dirt_road1",
-                "ground_snow_dirt_road2",
-                "ground_snow_dirt_road3",
-                "ground_snow_dirt_road4",
-                "city_bridge",
-                "city_bridge_wood",
-                "bridge_stone",
-                "bridge_legs",
-            ])
-        if tile.ground.tile.template_name == "ground_snow_dirt_road1":
-            self._fix_path_element(map, tile, [
-                "ground_snow_dirt_road1",
-                "ground_snow_dirt_road2",
-                "ground_snow_dirt_road3",
-                "ground_snow_dirt_road4",
             ], [
                 "ground_road1",
                 "ground_road2",
@@ -486,8 +428,66 @@ func _fix_roads_and_rivers(map: Map, tile: MapTile) -> void:
                 "bridge_legs",
             ])
 
-    if rivers.has(tile.ground.tile.template_name):
-        if tile.ground.tile.template_name == "ground_river1":
+    if dirt_roads.has(tile.ground.get_map_object().template_name):
+        if tile.ground.get_map_object().template_name == "ground_dirt_road1":
+            self._fix_path_element(map, tile, [
+                "ground_dirt_road1",
+                "ground_dirt_road2",
+                "ground_dirt_road3",
+                "ground_dirt_road4",
+            ], [
+                "ground_road1",
+                "ground_road2",
+                "ground_road3",
+                "ground_road4",
+                "ground_snow_road1",
+                "ground_snow_road2",
+                "ground_snow_road3",
+                "ground_snow_road4",
+                "ground_dirt_road1",
+                "ground_dirt_road2",
+                "ground_dirt_road3",
+                "ground_dirt_road4",
+                "ground_snow_dirt_road1",
+                "ground_snow_dirt_road2",
+                "ground_snow_dirt_road3",
+                "ground_snow_dirt_road4",
+                "city_bridge",
+                "city_bridge_wood",
+                "bridge_stone",
+                "bridge_legs",
+            ])
+        if tile.ground.get_map_object().template_name == "ground_snow_dirt_road1":
+            self._fix_path_element(map, tile, [
+                "ground_snow_dirt_road1",
+                "ground_snow_dirt_road2",
+                "ground_snow_dirt_road3",
+                "ground_snow_dirt_road4",
+            ], [
+                "ground_road1",
+                "ground_road2",
+                "ground_road3",
+                "ground_road4",
+                "ground_snow_road1",
+                "ground_snow_road2",
+                "ground_snow_road3",
+                "ground_snow_road4",
+                "ground_dirt_road1",
+                "ground_dirt_road2",
+                "ground_dirt_road3",
+                "ground_dirt_road4",
+                "ground_snow_dirt_road1",
+                "ground_snow_dirt_road2",
+                "ground_snow_dirt_road3",
+                "ground_snow_dirt_road4",
+                "city_bridge",
+                "city_bridge_wood",
+                "bridge_stone",
+                "bridge_legs",
+            ])
+
+    if rivers.has(tile.ground.get_map_object().template_name):
+        if tile.ground.get_map_object().template_name == "ground_river1":
             self._fix_path_element(map, tile, [
                 "ground_river1",
                 "ground_river2",
@@ -499,7 +499,7 @@ func _fix_roads_and_rivers(map: Map, tile: MapTile) -> void:
                 "ground_snow_river1",
                 "ground_snow_river2",
             ])
-        if tile.ground.tile.template_name == "ground_snow_river1":
+        if tile.ground.get_map_object().template_name == "ground_snow_river1":
             self._fix_path_element(map, tile, [
                 "ground_snow_river1",
                 "ground_snow_river2",
@@ -518,12 +518,12 @@ func _fix_path_element(map: Map, tile: MapTile, templates: Array[Variant], neigh
     nbin = self._count_neighbours_in_binary(tile, neighbours)
     if nbin in [1, 4, 5]:
         map.builder.place_ground(tile.position, str(templates[0]), 0)
-        if tile.terrain.is_present() and tile.terrain.tile.template_name == "city_bridge":
+        if tile.terrain.is_present() and tile.terrain.get_map_object().template_name == "city_bridge":
             map.builder.place_terrain(tile.position, "city_bridge", 0)
         return
     if nbin in [2, 8, 10]:
         map.builder.place_ground(tile.position, str(templates[0]), 90)
-        if tile.terrain.is_present() and tile.terrain.tile.template_name == "city_bridge":
+        if tile.terrain.is_present() and tile.terrain.get_map_object().template_name == "city_bridge":
             map.builder.place_terrain(tile.position, "city_bridge", 90)
         return
     if nbin == 6:
@@ -566,9 +566,9 @@ func _lookup_neighbour(tile: MapTile, templates: Array[String], direction: Strin
     var neighbour: MapTile = tile.get_neighbour(direction)
     if neighbour == null:
         return 0
-    if neighbour.ground.is_present() and templates.has(neighbour.ground.tile.template_name):
+    if neighbour.ground.is_present() and templates.has(neighbour.ground.get_map_object().template_name):
         return value
-    if neighbour.terrain.is_present() and templates.has(neighbour.terrain.tile.template_name):
+    if neighbour.terrain.is_present() and templates.has(neighbour.terrain.get_map_object().template_name):
         return value
     return 0
 
@@ -583,9 +583,9 @@ func _count_neighbours(map: Map, tile: MapTile, templates: Array[String]) -> int
             neighbour = map.model.get_tile(Vector2i(tile.position.x - 1 + x, tile.position.y - 1 + y))
             if neighbour != null:
                 if neighbour.ground.is_present():
-                    if templates.has(neighbour.ground.tile.template_name):
+                    if templates.has(neighbour.ground.get_map_object().template_name):
                         count += 1
                 if neighbour.terrain.is_present():
-                    if templates.has(neighbour.terrain.tile.template_name):
+                    if templates.has(neighbour.terrain.get_map_object().template_name):
                         count += 1
     return count

@@ -68,7 +68,7 @@ func get_player_units(side: String) -> Array[BaseUnit]:
     var units: Array[BaseUnit] = []
     for key: String in self.tiles.keys():
         if self.tiles[key].has_friendly_unit(side):
-            units.append(self.tiles[key].unit.tile)
+            units.append(self.tiles[key].unit.get_map_object())
 
     return units
 
@@ -85,7 +85,7 @@ func get_player_buildings(side: String) -> Array[BaseBuilding]:
     var buildings: Array[BaseBuilding] = []
     for key: String in self.tiles.keys():
         if self.tiles[key].has_friendly_building(side):
-            buildings.append(self.tiles[key].building.tile)
+            buildings.append(self.tiles[key].building.get_map_object())
 
     return buildings
 
@@ -155,7 +155,7 @@ func get_player_heroes(side: String) -> Array[HeroUnit]:
 
     for key: String in self.tiles.keys():
         if self.tiles[key].has_friendly_hero(side):
-            heroes.append(self.tiles[key].unit.tile)
+            heroes.append(self.tiles[key].unit.get_map_object())
 
     return heroes
 
@@ -164,7 +164,7 @@ func get_unit_position(unit: BaseUnit) -> Variant:
         return null
 
     for key: String in self.tiles.keys():
-        if self.tiles[key].unit.tile == unit:
+        if self.tiles[key].unit.get_map_object() == unit:
             return [self.tiles[key].position.x, self.tiles[key].position.y]
 
     return null

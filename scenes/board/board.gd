@@ -339,7 +339,7 @@ func select_tile(tile_position: Vector2i) -> void:
                 self.selected_tile = tile
                 self.show_contextual_select()
 
-            elif self.selected_tile.is_neighbour(tile) && tile.can_unit_interact(self.selected_tile.unit.tile) && self.state.can_current_player_afford(1):
+            elif self.selected_tile.is_neighbour(tile) && tile.can_unit_interact(self.selected_tile.unit.get_map_object()) && self.state.can_current_player_afford(1):
                 set_last_unit_move(null)
                 self.handle_interaction(tile)
 
@@ -489,10 +489,10 @@ func show_contextual_select(open_unit_abilities: bool = false) -> void:
 
 func _show_contextual_select_radial(open_unit_abilities: bool) -> void:
     if self.selected_tile.unit.is_present():
-        if open_unit_abilities and self.selected_tile.unit.tile.has_active_ability():
-            self.toggle_radial_menu(self.selected_tile.unit.tile)
+        if open_unit_abilities and self.selected_tile.unit.get_map_object().has_active_ability():
+            self.toggle_radial_menu(self.selected_tile.unit.get_map_object())
     if self.selected_tile.building.is_present():
-        self.toggle_radial_menu(self.selected_tile.building.tile)
+        self.toggle_radial_menu(self.selected_tile.building.get_map_object())
 
 
 func move_unit(source_tile: MapTile, destination_tile: MapTile) -> void:
@@ -507,21 +507,21 @@ func move_unit(source_tile: MapTile, destination_tile: MapTile) -> void:
         })
     else:
         set_last_unit_move(null)
-    destination_tile.unit.set_tile(source_tile.unit.tile)
+    destination_tile.unit.set_map_object(source_tile.unit.get_map_object())
     source_tile.unit.release()
     self.use_current_player_ap(move_cost)
-    destination_tile.unit.tile.use_move(move_cost)
+    destination_tile.unit.get_map_object().use_move(move_cost)
 
-    self.reset_unit_position(source_tile, destination_tile.unit.tile)
+    self.reset_unit_position(source_tile, destination_tile.unit.get_map_object())
     self.update_unit_position(destination_tile)
 
-    self.events.emit_unit_moved(destination_tile.unit.tile, source_tile, destination_tile)
+    self.events.emit_unit_moved(destination_tile.unit.get_map_object(), source_tile, destination_tile)
 
 
 func update_unit_position(tile: MapTile) -> void:
     var path: Array[String] = self.movement_markers.get_path_to_tile(tile)
     var movement_path: Array[String] = self.path_markers.convert_path_to_directions(path)
-    var unit: BaseUnit = tile.unit.tile as BaseUnit
+    var unit: BaseUnit = tile.unit.get_map_object() as BaseUnit
     assert(unit != null)
 
     unit.animate_path(movement_path)
@@ -537,7 +537,7 @@ func reset_unit_position(tile: MapTile, unit: BaseUnit) -> void:
 
 func can_move_to_tile(tile: MapTile) -> bool:
     var move_cost: Variant = self.movement_markers.get_tile_cost(tile)
-    if move_cost != null and int(move_cost) > 0 and tile.can_acommodate_unit(self.selected_tile.unit.tile):
+    if move_cost != null and int(move_cost) > 0 and tile.can_acommodate_unit(self.selected_tile.unit.get_map_object()):
         return true
     return false
 
@@ -566,8 +566,8 @@ func handle_interaction(tile: MapTile) -> void:
 
 
 func battle(attacker_tile: MapTile, defender_tile: MapTile) -> void:
-    var attacker: BaseUnit = attacker_tile.unit.tile as BaseUnit
-    var defender: BaseUnit = defender_tile.unit.tile as BaseUnit
+    var attacker: BaseUnit = attacker_tile.unit.get_map_object() as BaseUnit
+    var defender: BaseUnit = defender_tile.unit.get_map_object() as BaseUnit
     assert(attacker != null)
     assert(defender != null)
 
@@ -617,11 +617,11 @@ func battle(attacker_tile: MapTile, defender_tile: MapTile) -> void:
 
 
 func destroy_unit_on_tile(tile: MapTile, skip_explosion: bool = false) -> void:
-    var unit: BaseUnit = tile.unit.tile as BaseUnit
+    var unit: BaseUnit = tile.unit.get_map_object() as BaseUnit
     assert(unit != null)
 
     if unit.unit_class == "hero":
-        var hero: HeroUnit = tile.unit.tile as HeroUnit
+        var hero: HeroUnit = tile.unit.get_map_object() as HeroUnit
         assert(hero != null)
         self.state.clear_hero_for_side(unit.side, hero)
 
@@ -644,7 +644,7 @@ func explode_a_tile(tile: MapTile, grab_sfx: bool = false) -> void:
     var new_explosion: ExplosionFx = self._spawn_temporary_explosion_instance_on_tile(tile, 0.5)
     new_explosion.explode()
     if grab_sfx:
-        new_explosion.grab_sfx_effect(tile.unit.tile)
+        new_explosion.grab_sfx_effect(tile.unit.get_map_object())
 
 
 func smoke_a_tile(tile: MapTile) -> void:
@@ -674,8 +674,8 @@ func _spawn_temporary_explosion_instance_on_tile(tile: MapTile, free_delay: floa
 
 
 func capture(attacker_tile: MapTile, building_tile: MapTile) -> void:
-    var attacker: BaseUnit = attacker_tile.unit.tile as BaseUnit
-    var building: BaseBuilding = building_tile.building.tile as BaseBuilding
+    var attacker: BaseUnit = attacker_tile.unit.get_map_object() as BaseUnit
+    var building: BaseBuilding = building_tile.building.get_map_object() as BaseBuilding
     assert(attacker != null)
     assert(building != null)
 
@@ -706,7 +706,7 @@ func cheat_capture() -> void:
         print("No building found")
         return
 
-    var building: BaseBuilding = tile.building.tile as BaseBuilding
+    var building: BaseBuilding = tile.building.get_map_object() as BaseBuilding
     assert(building != null)
     var old_side: String = building.side
 
@@ -727,7 +727,7 @@ func cheat_kill() -> void:
         print("No unit found")
         return
 
-    var unit: BaseUnit = tile.unit.tile as BaseUnit
+    var unit: BaseUnit = tile.unit.get_map_object() as BaseUnit
     assert(unit != null)
     var unit_id: int = unit.get_instance_id()
     var unit_type: String = unit.template_name
@@ -748,7 +748,7 @@ func cheat_level_up() -> void:
         print("No unit found")
         return
 
-    var unit: BaseUnit = tile.unit.tile as BaseUnit
+    var unit: BaseUnit = tile.unit.get_map_object() as BaseUnit
     assert(unit != null)
     unit.level_up()
 
@@ -860,12 +860,12 @@ func update_tile_highlight(tile: MapTile) -> void:
     var unit: BaseUnit = null
 
     if tile.building.is_present():
-        building = tile.building.tile as BaseBuilding
+        building = tile.building.get_map_object() as BaseBuilding
         assert(building != null)
         template_name = building.template_name
         new_side = building.side
     if tile.unit.is_present():
-        unit = tile.unit.tile as BaseUnit
+        unit = tile.unit.get_map_object() as BaseUnit
         assert(unit != null)
         if unit.uses_metallic_material:
             material_type = self.map.templates.MATERIAL_METALLIC
@@ -898,7 +898,7 @@ func _open_context_panel_for_tile(tile: MapTile) -> void:
         var template_name: String
         var new_side: String
         var material_type: String = self.map.templates.MATERIAL_NORMAL
-        var unit: BaseUnit = tile.unit.tile as BaseUnit
+        var unit: BaseUnit = tile.unit.get_map_object() as BaseUnit
         assert(unit != null)
 
         if unit.uses_metallic_material:
@@ -1152,11 +1152,11 @@ func _undo_unit_move() -> void:
         assert(source_tile != null)
         assert(destination_tile != null)
         var move_cost: int = int(last_unit_move["cost"])
-        destination_tile.unit.set_tile(source_tile.unit.tile)
+        destination_tile.unit.set_map_object(source_tile.unit.get_map_object())
         source_tile.unit.release()
         self.state.add_current_player_ap(move_cost)
         self.ui.update_resource_value(self.state.get_current_ap())
-        destination_tile.unit.tile.restore_move(move_cost)
-        self.reset_unit_position(destination_tile, destination_tile.unit.tile)
+        destination_tile.unit.get_map_object().restore_move(move_cost)
+        self.reset_unit_position(destination_tile, destination_tile.unit.get_map_object())
         self.unselect_tile()
         set_last_unit_move(null)

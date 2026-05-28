@@ -811,9 +811,6 @@ var side_materials_metallic_desat: Dictionary[String, Resource] = {
     self.PLAYER_BLACK : ResourceLoader.load("res://assets/materials/arne32_metallic_black_desat.tres"),
 }
 
-var generic_building: Script = preload("res://scenes/tiles/buildings/building.gd")
-var generic_unit: Script = preload("res://scenes/tiles/units/unit.gd")
-
 func _compile_templates_list() -> void:
     var partial_templates: Array[Dictionary] = [
         self._ground_templates,

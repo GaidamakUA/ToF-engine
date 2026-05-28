@@ -12,5 +12,5 @@ func _execute(board: Board, position: Vector2i) -> void:
 
     for neighbour: MapTile in source_tile.neighbours.values():
         if neighbour.has_friendly_unit(self.source.side):
-            neighbour.unit.tile.heal(self.HEAL)
+            neighbour.unit.get_map_object().heal(self.HEAL)
             board.heal_a_tile(neighbour)

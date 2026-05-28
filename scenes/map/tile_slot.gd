@@ -1,31 +1,34 @@
 class_name TileSlot
-var tile: MapObject = null
+var _map_object: MapObject = null
 
-func set_tile(new_tile: MapObject) -> void:
-    if self.tile != null:
+func get_map_object() -> MapObject:
+    return self._map_object
+
+func set_map_object(new_map_object: MapObject) -> void:
+    if self._map_object != null:
         self.clear()
 
-    self.tile = new_tile
+    self._map_object = new_map_object
 
 func clear() -> void:
-    if self.tile == null:
+    if self._map_object == null:
         return
 
-    self.tile.queue_free()
-    self.tile = null
+    self._map_object.queue_free()
+    self._map_object = null
 
 func release() -> void:
-    if self.tile != null:
-        self.tile = null
+    if self._map_object != null:
+        self._map_object = null
 
 func is_present() -> bool:
-    return self.tile != null
+    return self._map_object != null
 
 func get_dict() -> Dictionary[String, Variant]:
-    if self.tile == null:
+    if self._map_object == null:
         return {
             "tile" : null,
             "rotation" : 0,
         }
     else:
-        return self.tile.get_dict()
+        return self._map_object.get_dict()

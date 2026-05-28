@@ -27,7 +27,7 @@ func show_interaction_markers_for_tile(tile: MapTile, ap_limit: int) -> void:
     if not tile.unit.is_present() || ap_limit < 1:
         return
 
-    var unit: BaseUnit = tile.unit.tile as BaseUnit
+    var unit: BaseUnit = tile.unit.get_map_object() as BaseUnit
     var neighbour: MapTile
     for key: String in tile.neighbours.keys():
         neighbour = tile.get_neighbour(key)
@@ -61,7 +61,7 @@ func should_place_attack_marker(tile: MapTile, unit: BaseUnit) -> bool:
     if unit.move < 1 || not unit.has_attacks():
         return false
 
-    if not unit.can_attack(tile.unit.tile):
+    if not unit.can_attack(tile.unit.get_map_object()):
         return false
 
     return true

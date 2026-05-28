@@ -29,7 +29,7 @@ func _execute(_metadata: Dictionary[String, Variant]) -> void:
     elif self.type == "building":
         tile.building.clear()
         self.board.map.builder.place_building(self.where, self.template_name, self.rotation, self.side)
-        var building: BaseBuilding = tile.building.tile as BaseBuilding
+        var building: BaseBuilding = tile.building.get_map_object() as BaseBuilding
         assert(building != null)
         building.team = self.board.state.get_player_team(self.side)
 

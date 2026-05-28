@@ -36,8 +36,8 @@ func _bomb_tile(tile: MapTile) -> void:
     heli.sfx_effect("attack")
 
     if tile.unit.is_present():
-        tile.unit.tile.receive_direct_damage(self.DAMAGE)
-        if not tile.unit.tile.is_alive():
+        tile.unit.get_map_object().receive_direct_damage(self.DAMAGE)
+        if not tile.unit.get_map_object().is_alive():
             self.board.destroy_unit_on_tile(tile)
 
     self.board.explode_a_tile(tile)

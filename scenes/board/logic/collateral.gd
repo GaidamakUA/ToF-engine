@@ -8,7 +8,7 @@ func _init(board_object: Board) -> void:
     self.board = board_object
 
 func damage_tile(tile: MapTile) -> Variant:
-    if tile.damage.is_present() or tile.terrain.is_present() or tile.ground.tile.unit_can_fly:
+    if tile.damage.is_present() or tile.terrain.is_present() or tile.ground.get_map_object().unit_can_fly:
         return null
 
     var angles: Array[int] = [0, 90, 180, 270]
@@ -46,15 +46,15 @@ func damage_terrain(tile: MapTile) -> bool:
     if not tile.terrain.is_present():
         return false
 
-    if not tile.terrain.tile.is_damageable():
+    if not tile.terrain.get_map_object().is_damageable():
         return false
 
-    var next_damage_stage_template: String = tile.terrain.tile.next_damage_stage_template
-    var rotation: Vector3 = tile.terrain.tile.get_rotation_degrees()
+    var next_damage_stage_template: String = tile.terrain.get_map_object().next_damage_stage_template
+    var rotation: Vector3 = tile.terrain.get_map_object().get_rotation_degrees()
 
     tile.terrain.clear()
     self.board.map.builder.place_terrain(tile.position, next_damage_stage_template, int(rotation.y))
-    tile.terrain.tile.show_explosion()
+    tile.terrain.get_map_object().show_explosion()
     tile.is_state_modified = true
 
     return true

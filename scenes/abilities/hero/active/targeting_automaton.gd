@@ -12,7 +12,7 @@ func _execute(board: Board, position: Vector2i) -> void:
 
     for neighbour: MapTile in source_tile.neighbours.values():
         if neighbour.has_friendly_unit(self.source.side):
-            unit = neighbour.unit.tile
+            unit = neighbour.unit.get_map_object()
             if unit.unit_class in ["tank", "mobile_infantry"]:
                 unit.apply_modifier("attack_air", true)
                 board.bless_a_tile(neighbour)

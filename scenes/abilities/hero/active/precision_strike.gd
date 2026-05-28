@@ -12,5 +12,5 @@ func _execute(board: Board, position: Vector2i) -> void:
 
 func is_tile_applicable(tile: MapTile, _source_tile: MapTile) -> bool:
     if tile.unit.is_present():
-        return tile.unit.tile != self.source
+        return tile.unit.get_map_object() != self.source
     return true

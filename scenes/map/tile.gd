@@ -62,12 +62,12 @@ func is_selectable(side: String) -> bool:
     return false
 
 func _get_unit() -> BaseUnit:
-    var typed_unit: BaseUnit = self.unit.tile as BaseUnit
+    var typed_unit: BaseUnit = self.unit.get_map_object() as BaseUnit
     assert(typed_unit != null)
     return typed_unit
 
 func _get_building() -> BaseBuilding:
-    var typed_building: BaseBuilding = self.building.tile as BaseBuilding
+    var typed_building: BaseBuilding = self.building.get_map_object() as BaseBuilding
     assert(typed_building != null)
     return typed_building
 
@@ -90,28 +90,28 @@ func is_neighbour(tile: MapTile) -> bool:
 func can_acommodate_unit(moving_unit: BaseUnit = null) -> bool:
     if not self.ground.is_present():
         return false
-    if self.ground.tile.unit_can_fly and (moving_unit == null or not moving_unit.can_fly):
+    if self.ground.get_map_object().unit_can_fly and (moving_unit == null or not moving_unit.can_fly):
         return false
     if self.unit.is_present():
         return false
     if self.building.is_present():
         return false
     if self.terrain.is_present():
-        return self.terrain.tile.unit_can_stand
+        return self.terrain.get_map_object().unit_can_stand
 
     return true
 
 func can_pass_through(moving_unit: BaseUnit) -> bool:
     if not self.ground.is_present():
         return false
-    if self.ground.tile.unit_can_fly and not moving_unit.can_fly:
+    if self.ground.get_map_object().unit_can_fly and not moving_unit.can_fly:
         return false
     if self.building.is_present() and not moving_unit.can_fly:
         return false
     if self.has_enemy_unit(moving_unit.side, moving_unit.team):
         return false
     if self.terrain.is_present() and not moving_unit.can_fly:
-        return self.terrain.tile.unit_can_stand
+        return self.terrain.get_map_object().unit_can_stand
 
     return true
 
@@ -219,15 +219,15 @@ func is_ground_damage_possible() -> bool:
     return true
 
 func is_object_damage_possible() -> bool:
-    return self.terrain.is_present() and self.terrain.tile.is_damageable()
+    return self.terrain.is_present() and self.terrain.get_map_object().is_damageable()
 
 func is_damageable() -> bool:
     return self.is_ground_damage_possible() or self.is_object_damage_possible()
 
 func apply_invisibility() -> void:
     for fragment: TileSlot in self.fragments:
-        if fragment.is_present() and fragment.tile.is_invisible:
-            fragment.tile.hide_mesh()
+        if fragment.is_present() and fragment.get_map_object().is_invisible:
+            fragment.get_map_object().hide_mesh()
 
 
 func _settings_changed(key: String, _new_value: Variant) -> void:
@@ -237,47 +237,47 @@ func _settings_changed(key: String, _new_value: Variant) -> void:
     if key == "shadows" or key == "dec_shadows":
         if shadows:
             if self.ground.is_present():
-                self.ground.tile.enable_shadow()
+                self.ground.get_map_object().enable_shadow()
 
             if self.terrain.is_present():
-                self.terrain.tile.enable_shadow()
+                self.terrain.get_map_object().enable_shadow()
 
             if self.building.is_present():
-                self.building.tile.enable_shadow()
+                self.building.get_map_object().enable_shadow()
 
             if self.unit.is_present():
-                self.unit.tile.enable_shadow()
+                self.unit.get_map_object().enable_shadow()
 
             if dec_shadows:
                 if self.frame.is_present():
-                    self.frame.tile.enable_shadow()
+                    self.frame.get_map_object().enable_shadow()
                 if self.decoration.is_present():
-                    self.decoration.tile.enable_shadow()
+                    self.decoration.get_map_object().enable_shadow()
             else:
                 if self.frame.is_present():
-                    _disable_shadow(self.frame.tile, shadows)
+                    _disable_shadow(self.frame.get_map_object(), shadows)
                 if self.decoration.is_present():
-                    _disable_shadow(self.decoration.tile, shadows)
+                    _disable_shadow(self.decoration.get_map_object(), shadows)
         else:
             if self.ground.is_present():
-                _disable_shadow(self.ground.tile, shadows)
+                _disable_shadow(self.ground.get_map_object(), shadows)
             if self.frame.is_present():
-                _disable_shadow(self.frame.tile, shadows)
+                _disable_shadow(self.frame.get_map_object(), shadows)
             if self.decoration.is_present():
-                _disable_shadow(self.decoration.tile, shadows)
+                _disable_shadow(self.decoration.get_map_object(), shadows)
             if self.terrain.is_present():
-                _disable_shadow(self.terrain.tile, shadows)
+                _disable_shadow(self.terrain.get_map_object(), shadows)
             if self.building.is_present():
-                _disable_shadow(self.building.tile, shadows)
+                _disable_shadow(self.building.get_map_object(), shadows)
             if self.unit.is_present():
-                _disable_shadow(self.unit.tile, shadows)
+                _disable_shadow(self.unit.get_map_object(), shadows)
     if key == "show_health":
         if _new_value:
             if self.unit.is_present():
-                self.unit.tile.show_health()
+                self.unit.get_map_object().show_health()
         else:
             if self.unit.is_present():
-                self.unit.tile.hide_health()
+                self.unit.get_map_object().hide_health()
 
 func _disable_shadow(tile: MapObject, shadow_setting: bool) -> void:
     if tile.shadow_override and shadow_setting:

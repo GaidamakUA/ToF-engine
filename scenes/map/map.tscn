@@ -65,12 +65,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
 
 [node name="camera" parent="." unique_id=659550158 instance=ExtResource("11")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 164, 4.05, 164)
-zoom_speed = 60
-move_speed = 40
-camera_max_deg = -35
-camera_distance_max = 60
-tof_camera_distance_max = 110
-aw_camera_distance_max = 110
+camera_distance_min = 5.0
+tof_camera_distance_min = 25.0
+aw_camera_distance_min = 25.0
 camera_space_size = 320
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=161696235]

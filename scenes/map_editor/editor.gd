@@ -272,7 +272,7 @@ func undo_action() -> void:
             match recent_action["class"]:
                 "building":
                     self.map.builder.set_building_side(recent_action["position"] as Vector2i, str(recent_action["side"]))
-                    tile.building.tile.restore_abilities_status(recent_action["modifiers"])
+                    tile.building.get_map_object().restore_abilities_status(recent_action["modifiers"])
                 "unit":
                     self.map.builder.set_unit_side(recent_action["position"] as Vector2i, str(recent_action["side"]))
                 "hero":
@@ -497,9 +497,9 @@ func next_alternative() -> void:
             "new_side" : unit.side,
         })
 
-    if tile.terrain.is_present() and tile.terrain.tile.is_damageable():
+    if tile.terrain.is_present() and tile.terrain.get_map_object().is_damageable():
         self.next_damage_stage(tile)
-    elif tile.terrain.is_present() and tile.terrain.tile.is_restoreable():
+    elif tile.terrain.is_present() and tile.terrain.get_map_object().is_restoreable():
         self.restore_damage_stage(tile)
 
     self.autosave()
@@ -517,13 +517,13 @@ func next_unit_side(unit_object: BaseUnit) -> void:
     self.map.builder.set_unit_side(self.map.tile_box_position, side_map["next"])
 
 func next_damage_stage(tile: MapTile) -> void:
-    self.replace_terrain(tile, tile.terrain.tile.next_damage_stage_template)
+    self.replace_terrain(tile, tile.terrain.get_map_object().next_damage_stage_template)
 
 func restore_damage_stage(tile: MapTile) -> void:
-    self.replace_terrain(tile, tile.terrain.tile.base_stage_template)
+    self.replace_terrain(tile, tile.terrain.get_map_object().base_stage_template)
 
 func replace_terrain(tile: MapTile, template_name: String) -> void:
-    var t_rotation: Vector3 = tile.terrain.tile.get_rotation_degrees()
+    var t_rotation: Vector3 = tile.terrain.get_map_object().get_rotation_degrees()
 
     tile.terrain.clear()
     self.map.builder.place_terrain(tile.position, template_name, int(t_rotation.y))
@@ -534,7 +534,7 @@ func notify_about_removal(action_details: Dictionary[String, Variant]) -> void:
 func _open_ability_ban_menu() -> void:
     var tile: MapTile = self.map.model.get_tile(self.map.tile_box_position)
     if tile.building.is_present():
-        self.toggle_radial_menu(tile.building.tile)
+        self.toggle_radial_menu(tile.building.get_map_object())
 
 func toggle_unit_ai_pause() -> void:
     var tile: MapTile = self.map.model.get_tile(self.map.tile_box_position)

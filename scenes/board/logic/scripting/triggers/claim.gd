@@ -45,7 +45,7 @@ func ingest_details(details: Dictionary[String, Variant]) -> void:
 
 func _is_watched_building(building: BaseBuilding) -> bool:
     for position: Array in self.list:
-        if building == self.board.map.model.get_tile2(position[0], position[1]).building.tile:
+        if building == self.board.map.model.get_tile2(position[0], position[1]).building.get_map_object():
             return true
     return false
 
@@ -58,7 +58,7 @@ func _count_buildings_for_side(side: Variant) -> int:
         side = [side]
 
     for position: Array in self.list:
-        building = self.board.map.model.get_tile2(position[0], position[1]).building.tile
+        building = self.board.map.model.get_tile2(position[0], position[1]).building.get_map_object()
         if building != null:
             for s: Variant in side:
                 if building.side == s:

@@ -44,12 +44,12 @@ func _get_outcome_metadata(_event: BaseEvent) -> Dictionary[String, Variant]:
 
 func set_vip(x: int, y: int) -> void:
     self.unit_tag = "move_" + str(x) + "_" + str(y)
-    self.board.map.model.get_tile2(x, y).unit.tile.add_script_tag(self.unit_tag)
+    self.board.map.model.get_tile2(x, y).unit.get_map_object().add_script_tag(self.unit_tag)
 
 func exclude_vip(x: int, y: int) -> void:
     var new_tag: String = "exclude_move_" + str(x) + "_" + str(y)
     self.exclude_tags.append(new_tag)
-    self.board.map.model.get_tile2(x, y).unit.tile.add_script_tag(new_tag)
+    self.board.map.model.get_tile2(x, y).unit.get_map_object().add_script_tag(new_tag)
 
 func is_excluded_vip(unit: BaseUnit) -> bool:
     if self.exclude_tags.size() < 1:

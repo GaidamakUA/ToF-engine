@@ -50,7 +50,7 @@ func _gather_building_actions(buildings: Array[MapTile],
     var brain: AbstractBrain
 
     for building_tile: MapTile in buildings:
-        brain = self.brains.get_brain_for_template(building_tile.building.tile.template_name)
+        brain = self.brains.get_brain_for_template(building_tile.building.get_map_object().template_name)
         if brain == null:
             continue
         var brain_context: BrainContext = BrainContext.new(building_tile, enemy_buildings, enemy_units, own_buildings, own_units, ap, self.board)

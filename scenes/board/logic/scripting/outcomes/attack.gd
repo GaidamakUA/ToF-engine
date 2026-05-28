@@ -8,8 +8,8 @@ var damage: int = 0
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
     var attacker_tile: MapTile = self.board.map.model.get_tile(self.who)
     var defender_tile: MapTile = self.board.map.model.get_tile(self.whom)
-    var attacker: BaseUnit = attacker_tile.unit.tile
-    var defender: BaseUnit = defender_tile.unit.tile
+    var attacker: BaseUnit = attacker_tile.unit.get_map_object()
+    var defender: BaseUnit = defender_tile.unit.get_map_object()
 
     attacker.rotate_unit_to_direction(attacker_tile.get_direction_to_neighbour(defender_tile))
 

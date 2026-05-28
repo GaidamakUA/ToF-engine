@@ -25,7 +25,7 @@ func _get_outcome_metadata(_event: BaseEvent) -> Dictionary[String, Variant]:
     }
 
 func set_vip(x: int, y: int) -> void:
-    self.vip = self.board.map.model.get_tile2(x, y).unit.tile
+    self.vip = self.board.map.model.get_tile2(x, y).unit.get_map_object()
     self.vip_id = self.vip.get_instance_id()
 
 func ingest_details(details: Dictionary[String, Variant]) -> void:

@@ -36,7 +36,7 @@ func _calculate_building_points(side: String, board: Board) -> void:
     _building_points = 0
     for tile: MapTile in board.map.model.tiles.values():
         if tile.building.is_present():
-            var building: BaseBuilding = tile.building.tile as BaseBuilding
+            var building: BaseBuilding = tile.building.get_map_object() as BaseBuilding
             assert(building != null)
             if building.side == side:
                 _building_points += building.capture_value
@@ -47,7 +47,7 @@ func _calculate_unit_points(side: String, board: Board) -> void:
     _unit_points = 0
     for tile: MapTile in board.map.model.tiles.values():
         if tile.unit.is_present():
-            var unit: BaseUnit = tile.unit.tile as BaseUnit
+            var unit: BaseUnit = tile.unit.get_map_object() as BaseUnit
             assert(unit != null)
             if unit.side == side:
                 _unit_points += unit.get_value()

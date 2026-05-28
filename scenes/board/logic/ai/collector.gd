@@ -70,7 +70,7 @@ func _gather_unit_actions(units: Array[MapTile],
     var brain: AbstractBrain
 
     for unit_tile: MapTile in units:
-        var unit: BaseUnit = unit_tile._get_unit()
+        var unit: BaseUnit = unit_tile.unit.get_unit()
         if unit.ai_paused:
             continue
 

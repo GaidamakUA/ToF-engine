@@ -14,7 +14,7 @@ func _execute(board: Board, position: Vector2i) -> void:
     await self.get_tree().create_timer(self.TWEEN_TIME).timeout
     
     if tile.unit.is_present():
-        var target_unit: BaseUnit = tile._get_unit()
+        var target_unit: BaseUnit = tile.unit.get_unit()
         target_unit.sfx_effect("damage")
         if not target_unit.is_alive():
             var unit_id: int = target_unit.get_instance_id()
@@ -27,4 +27,4 @@ func _execute(board: Board, position: Vector2i) -> void:
     board.refresh_tile_selection()
 
 func is_tile_applicable(tile: MapTile, source_tile: MapTile) -> bool:
-    return tile.has_enemy_unit(self.source.side, self.source.team) and self.source.can_attack(tile._get_unit()) and (tile.position.x == source_tile.position.x or tile.position.y == source_tile.position.y)
+    return tile.has_enemy_unit(self.source.side, self.source.team) and self.source.can_attack(tile.unit.get_unit()) and (tile.position.x == source_tile.position.x or tile.position.y == source_tile.position.y)

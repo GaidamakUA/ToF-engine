@@ -8,15 +8,15 @@ const SOUTH := "s"
 
 var position := Vector2i(0, 0)
 
-var ground := TileSlot.new()
-var frame := TileSlot.new()
-var decoration := TileSlot.new()
-var terrain := TileSlot.new()
-var building := TileSlot.new()
-var unit := TileSlot.new()
-var damage := TileSlot.new()
+var ground := MapObjectSlot.new()
+var frame := MapObjectSlot.new()
+var decoration := MapObjectSlot.new()
+var terrain := MapObjectSlot.new()
+var building := BuildingSlot.new()
+var unit := UnitSlot.new()
+var damage := MapObjectSlot.new()
 
-var fragments: Array[TileSlot] = []
+var fragments: Array[MapObjectSlot] = []
 
 var neighbours: Dictionary[String, MapTile] = {}
 
@@ -37,7 +37,7 @@ func _init(x: int, y: int) -> void:
     ]
 
 func has_content() -> bool:
-    return fragments.any(func(f: TileSlot) -> bool: return f.is_present())
+    return fragments.any(func(f: MapObjectSlot) -> bool: return f.is_present())
 
 func get_dict() -> Dictionary[String, Variant]:
     return {
@@ -51,25 +51,15 @@ func get_dict() -> Dictionary[String, Variant]:
     }
 
 func wipe() -> void:
-    self.fragments.map(func(f: TileSlot) -> void: f.clear())
+    self.fragments.map(func(f: MapObjectSlot) -> void: f.clear())
 
 func is_selectable(side: String) -> bool:
     if self.unit.is_present():
-        return self._get_unit().side == side
+        return self.unit.get_unit().side == side
     elif self.building.is_present():
-        return self._get_building().side == side
+        return self.building.get_building().side == side
 
     return false
-
-func _get_unit() -> BaseUnit:
-    var typed_unit: BaseUnit = self.unit.get_map_object() as BaseUnit
-    assert(typed_unit != null)
-    return typed_unit
-
-func _get_building() -> BaseBuilding:
-    var typed_building: BaseBuilding = self.building.get_map_object() as BaseBuilding
-    assert(typed_building != null)
-    return typed_building
 
 func add_neighbour(direction: String, tile: MapTile) -> void:
     self.neighbours[direction] = tile
@@ -117,7 +107,7 @@ func can_pass_through(moving_unit: BaseUnit) -> bool:
 
 func has_enemy_unit(side: String, team: Variant = null) -> bool:
     if self.unit.is_present():
-        var typed_unit: BaseUnit = self._get_unit()
+        var typed_unit: BaseUnit = self.unit.get_unit()
         if typed_unit.side != side:
             if team != null:
                 return typed_unit.team != team
@@ -127,17 +117,17 @@ func has_enemy_unit(side: String, team: Variant = null) -> bool:
 func has_allied_unit(team: Variant) -> bool:
     if self.unit.is_present():
         if team != null:
-            return self._get_unit().team == team
+            return self.unit.get_unit().team == team
     return false
 
 func has_friendly_unit(side: String) -> bool:
-    if self.unit.is_present() && self._get_unit().side == side:
+    if self.unit.is_present() && self.unit.get_unit().side == side:
         return true
     return false
 
 func has_enemy_building(side: String, team: Variant = null) -> bool:
     if self.building.is_present():
-        var typed_building: BaseBuilding = self._get_building()
+        var typed_building: BaseBuilding = self.building.get_building()
         if typed_building.side != side:
             if team != null:
                 return typed_building.team != team
@@ -147,11 +137,11 @@ func has_enemy_building(side: String, team: Variant = null) -> bool:
 func has_allied_building(team: Variant) -> bool:
     if self.building.is_present():
         if team != null:
-            return self._get_building().team == team
+            return self.building.get_building().team == team
     return false
 
 func has_friendly_building(side: String) -> bool:
-    if self.building.is_present() && self._get_building().side == side:
+    if self.building.is_present() && self.building.get_building().side == side:
         return true
     return false
 
@@ -164,7 +154,7 @@ func neighbours_enemy_unit(side: String, team: Variant = null) -> bool:
 func can_attack_neightbour_enemy_unit(attacking_unit: BaseUnit) -> bool:
     for direction: String in self.neighbours.keys():
         if self.neighbours[direction].has_enemy_unit(attacking_unit.side, attacking_unit.team):
-            if attacking_unit.can_attack(self.neighbours[direction]._get_unit()):
+            if attacking_unit.can_attack(self.neighbours[direction].unit.get_unit()):
                 return true
     return false
 
@@ -184,7 +174,7 @@ func can_unit_interact(interacting_unit: BaseUnit) -> bool:
     if not interacting_unit.has_moves():
         return false
 
-    if self.has_enemy_unit(interacting_unit.side, interacting_unit.team) && interacting_unit.can_attack(self._get_unit()) && interacting_unit.has_attacks():
+    if self.has_enemy_unit(interacting_unit.side, interacting_unit.team) && interacting_unit.can_attack(self.unit.get_unit()) && interacting_unit.has_attacks():
         return true
 
     if self.has_enemy_building(interacting_unit.side, interacting_unit.team) && interacting_unit.can_capture:
@@ -194,13 +184,13 @@ func can_unit_interact(interacting_unit: BaseUnit) -> bool:
 
 func has_friendly_hq(side: String) -> bool:
     if self.building.is_present():
-        var typed_building: BaseBuilding = self._get_building()
+        var typed_building: BaseBuilding = self.building.get_building()
         if typed_building.side == side && typed_building.template_name in ["modern_hq", "steampunk_hq", "futuristic_hq", "feudal_hq"]:
             return true
     return false
 
 func has_friendly_hero(side: String) -> bool:
-    if self.has_friendly_unit(side) && self._get_unit().unit_class == "hero":
+    if self.has_friendly_unit(side) && self.unit.get_unit().unit_class == "hero":
         return true
     return false
 
@@ -225,7 +215,7 @@ func is_damageable() -> bool:
     return self.is_ground_damage_possible() or self.is_object_damage_possible()
 
 func apply_invisibility() -> void:
-    for fragment: TileSlot in self.fragments:
+    for fragment: MapObjectSlot in self.fragments:
         if fragment.is_present() and fragment.get_map_object().is_invisible:
             fragment.get_map_object().hide_mesh()
 

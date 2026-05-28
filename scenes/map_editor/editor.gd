@@ -474,7 +474,7 @@ func next_alternative() -> void:
     var old_side: String
 
     if tile.building.is_present():
-        var building: BaseBuilding = tile._get_building()
+        var building: BaseBuilding = tile.building.get_building()
         old_side = building.side
         self.next_building_side(building)
         self.write_action_history({
@@ -486,7 +486,7 @@ func next_alternative() -> void:
         })
 
     if tile.unit.is_present():
-        var unit: BaseUnit = tile._get_unit()
+        var unit: BaseUnit = tile.unit.get_unit()
         old_side = unit.side
         self.next_unit_side(unit)
         self.write_action_history({
@@ -539,7 +539,7 @@ func _open_ability_ban_menu() -> void:
 func toggle_unit_ai_pause() -> void:
     var tile: MapTile = self.map.model.get_tile(self.map.tile_box_position)
     if tile.unit.is_present():
-        var unit: BaseUnit = tile._get_unit()
+        var unit: BaseUnit = tile.unit.get_unit()
         unit.ai_paused = not unit.ai_paused
 
         if unit.ai_paused:

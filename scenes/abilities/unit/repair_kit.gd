@@ -11,7 +11,7 @@ const REPAIR_UNITS: Array[String] = [
 
 func _execute(board: Board, position: Vector2i) -> void:
     var tile := board.map.model.get_tile(position)
-    var target_unit: BaseUnit = tile._get_unit()
+    var target_unit: BaseUnit = tile.unit.get_unit()
     target_unit.sfx_effect("spawn")
 
     target_unit.heal(self.heal)
@@ -22,7 +22,7 @@ func is_tile_applicable(tile: MapTile, source_tile: MapTile) -> bool:
     if not tile.has_friendly_unit(self.source.side) or tile == source_tile:
         return false
 
-    var target_unit: BaseUnit = tile._get_unit()
+    var target_unit: BaseUnit = tile.unit.get_unit()
     return target_unit.unit_class in self.REPAIR_UNITS and target_unit.is_damaged()
 
 func _is_visible(_board: Board) -> bool:

@@ -15,3 +15,5 @@ dest_files=["res://assets/translations/core.pl.pl.translation"]
 
 compress=true
 delimiter=0
+unescape_keys=false
+unescape_translations=true

@@ -1,4 +1,4 @@
-[gd_resource type="TileSet" load_steps=31 format=3 uid="uid://1miyvu0etwgl"]
+[gd_resource type="TileSet" format=3 uid="uid://1miyvu0etwgl"]
 
 [ext_resource type="Texture2D" uid="uid://bid1yvphxej3v" path="res://assets/gui/picker/minimap_tile_building.png" id="1"]
 [ext_resource type="Texture2D" uid="uid://djuxlio7jsu2d" path="res://assets/gui/picker/minimap_tile_city.png" id="2"]

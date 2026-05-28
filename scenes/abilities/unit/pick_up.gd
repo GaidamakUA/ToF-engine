@@ -4,10 +4,10 @@ func _execute(board: Board, position: Vector2i) -> void:
     var tile := board.map.model.get_tile(position)
     var target_unit: BaseUnit = tile._get_unit()
     target_unit.sfx_effect("move")
-    
+
     self.source.passenger = target_unit
     tile.unit.release()
-    board.map.detach_unit(self.source.passenger)
+    board.map.detach_unit(target_unit)
 
     board.smoke_a_tile(tile)
     self.source.use_all_moves()

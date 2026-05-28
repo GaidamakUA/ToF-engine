@@ -1,4 +1,4 @@
-class_name TileFragment
+class_name TileSlot
 var tile: MapObject = null
 
 func set_tile(new_tile: MapObject) -> void:

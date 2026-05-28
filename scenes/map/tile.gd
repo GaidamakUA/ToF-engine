@@ -8,15 +8,15 @@ const SOUTH := "s"
 
 var position := Vector2i(0, 0)
 
-var ground := TileFragment.new()
-var frame := TileFragment.new()
-var decoration := TileFragment.new()
-var terrain := TileFragment.new()
-var building := TileFragment.new()
-var unit := TileFragment.new()
-var damage := TileFragment.new()
+var ground := TileSlot.new()
+var frame := TileSlot.new()
+var decoration := TileSlot.new()
+var terrain := TileSlot.new()
+var building := TileSlot.new()
+var unit := TileSlot.new()
+var damage := TileSlot.new()
 
-var fragments: Array[TileFragment] = []
+var fragments: Array[TileSlot] = []
 
 var neighbours: Dictionary[String, MapTile] = {}
 
@@ -37,10 +37,7 @@ func _init(x: int, y: int) -> void:
     ]
 
 func has_content() -> bool:
-    for fragment: TileFragment in self.fragments:
-        if fragment.is_present():
-            return true
-    return false
+    return fragments.any(func(f: TileSlot) -> bool: return f.is_present())
 
 func get_dict() -> Dictionary[String, Variant]:
     return {
@@ -54,13 +51,7 @@ func get_dict() -> Dictionary[String, Variant]:
     }
 
 func wipe() -> void:
-    self.unit.clear()
-    self.building.clear()
-    self.terrain.clear()
-    self.decoration.clear()
-    self.frame.clear()
-    self.ground.clear()
-    self.damage.clear()
+    self.fragments.map(func(f: TileSlot) -> void: f.clear())
 
 func is_selectable(side: String) -> bool:
     if self.unit.is_present():
@@ -234,7 +225,7 @@ func is_damageable() -> bool:
     return self.is_ground_damage_possible() or self.is_object_damage_possible()
 
 func apply_invisibility() -> void:
-    for fragment: TileFragment in self.fragments:
+    for fragment: TileSlot in self.fragments:
         if fragment.is_present() and fragment.tile.is_invisible:
             fragment.tile.hide_mesh()
 

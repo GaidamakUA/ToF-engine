@@ -211,7 +211,7 @@ func force_place_unit(position: Vector2i, name: String, rotation: int, side: Var
     return new_unit
 
 
-func place_element(position: Vector2i, name: String, rotation: int, vertical_offset: float, anchor: Node3D, tile_fragment: TileFragment) -> MapObject:
+func place_element(position: Vector2i, name: String, rotation: int, vertical_offset: float, anchor: Node3D, tile_fragment: TileSlot) -> MapObject:
     var new_tile: MapObject = self.map.templates.get_template(name)
     var world_position: Vector3 = Map.map_to_local(position)
 
@@ -375,7 +375,7 @@ func _set_unit_side(unit: BaseUnit, new_side: String) -> void:
     unit.set_side(new_side)
     unit.set_side_materials(self.map.templates.get_side_material(new_side, material_type), self.map.templates.get_side_material_desat(new_side, material_type))
 
-func _notify_removal(tile_fragment: TileFragment, position: Vector2i, tile_class: String, side: Variant = null, modifiers: Dictionary = {}, double: bool = true) -> void:
+func _notify_removal(tile_fragment: TileSlot, position: Vector2i, tile_class: String, side: Variant = null, modifiers: Dictionary = {}, double: bool = true) -> void:
     if self.editor != null:
         var removal_data: Dictionary[String, Variant] = {
             "type" : "remove",

@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://kxsoppflnua2"]
+[gd_scene format=3 uid="uid://kxsoppflnua2"]
 
 [ext_resource type="Material" uid="uid://dsu36bregabs6" path="res://assets/materials/arne32.tres" id="1"]
 [ext_resource type="Material" uid="uid://cvv3sh0uq5ynp" path="res://assets/water/water_material.tres" id="2"]
@@ -39,31 +39,31 @@ albedo_texture = SubResource("7")
 material = SubResource("4")
 size = Vector2(1000, 1000)
 
-[node name="map" type="Node3D"]
+[node name="map" type="Node3D" unique_id=95904934]
 script = ExtResource("4")
 
-[node name="frame" type="MeshInstance3D" parent="."]
+[node name="frame" type="MeshInstance3D" parent="." unique_id=748242582]
 transform = Transform3D(20, 0, 0, 0, 20, 0, 0, 0, 20, 160, -4, 160)
 mesh = ExtResource("5")
 surface_material_override/0 = ExtResource("1")
 
-[node name="tiles" type="Node3D" parent="."]
+[node name="tiles" type="Node3D" parent="." unique_id=561794562]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 4)
 
-[node name="ground" type="Node3D" parent="tiles"]
+[node name="ground" type="Node3D" parent="tiles" unique_id=634310929]
 
-[node name="frames" type="Node3D" parent="tiles"]
+[node name="frames" type="Node3D" parent="tiles" unique_id=424836868]
 
-[node name="terrain" type="Node3D" parent="tiles"]
+[node name="terrain" type="Node3D" parent="tiles" unique_id=1842552519]
 
-[node name="buildings" type="Node3D" parent="tiles"]
+[node name="buildings" type="Node3D" parent="tiles" unique_id=890670642]
 
-[node name="tile_box" parent="tiles" instance=ExtResource("3")]
+[node name="tile_box" parent="tiles" unique_id=1090504369 instance=ExtResource("3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
 
-[node name="units" type="Node3D" parent="tiles"]
+[node name="units" type="Node3D" parent="tiles" unique_id=773994552]
 
-[node name="camera" parent="." instance=ExtResource("11")]
+[node name="camera" parent="." unique_id=659550158 instance=ExtResource("11")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 164, 4.05, 164)
 zoom_speed = 60
 move_speed = 40
@@ -73,11 +73,11 @@ tof_camera_distance_max = 110
 aw_camera_distance_max = 110
 camera_space_size = 320
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=161696235]
 environment = ExtResource("12")
 camera_attributes = ExtResource("7_llrhv")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1860566892]
 transform = Transform3D(0.707107, 0.5, -0.5, 0, 0.707107, 0.707107, 0.707107, -0.5, 0.5, 24.8979, 28.6066, 1.54649)
 light_energy = 1.5
 shadow_enabled = true
@@ -85,36 +85,36 @@ shadow_bias = 0.0
 directional_shadow_mode = 0
 directional_shadow_blend_splits = true
 
-[node name="water" type="MeshInstance3D" parent="."]
+[node name="water" type="MeshInstance3D" parent="." unique_id=876284538]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160, 2, 160)
 cast_shadow = 0
 gi_mode = 0
 mesh = SubResource("1")
 
-[node name="void" type="MeshInstance3D" parent="."]
+[node name="void" type="MeshInstance3D" parent="." unique_id=1534990617]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 160, -4, 160)
 cast_shadow = 0
 mesh = SubResource("3")
 
-[node name="plane1" type="MeshInstance3D" parent="."]
+[node name="plane1" type="MeshInstance3D" parent="." unique_id=1898570469]
 transform = Transform3D(1.91069e-15, 4.37114e-08, 1, 1, -4.37114e-08, 0, 4.37114e-08, 1, -4.37114e-08, 0, 0, -30)
 cast_shadow = 0
 gi_mode = 0
 mesh = SubResource("5")
 
-[node name="plane2" type="MeshInstance3D" parent="."]
+[node name="plane2" type="MeshInstance3D" parent="." unique_id=481454453]
 transform = Transform3D(4.37114e-08, 1, -8.74228e-08, 1, -4.37114e-08, 0, -3.82137e-15, -8.74228e-08, -1, -30, 0, -30)
 cast_shadow = 0
 gi_mode = 0
 mesh = SubResource("5")
 
-[node name="plane3" type="MeshInstance3D" parent="."]
+[node name="plane3" type="MeshInstance3D" parent="." unique_id=1108912648]
 transform = Transform3D(-5.21253e-16, -1.19249e-08, -1, 1, -4.37114e-08, 0, -4.37114e-08, -1, 1.19249e-08, -30, 0, 350)
 cast_shadow = 0
 gi_mode = 0
 mesh = SubResource("5")
 
-[node name="plane4" type="MeshInstance3D" parent="."]
+[node name="plane4" type="MeshInstance3D" parent="." unique_id=2091730765]
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 350, 0, 0)
 cast_shadow = 0
 gi_mode = 0

@@ -73,7 +73,7 @@ func mark_tile_for_attack(tile: MapTile) -> void:
 
 func place_marker(new_marker: Node3D, tile: MapTile) -> void:
     self.add_child(new_marker)
-    var placement: Vector3 = self.map_obj.map_to_local(tile.position)
+    var placement: Vector3 = Map.map_to_local(tile.position)
     new_marker.set_position(placement)
 
     self.created_markers[str(tile.position.x) + "_" + str(tile.position.y)] = new_marker

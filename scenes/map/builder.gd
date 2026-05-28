@@ -213,7 +213,7 @@ func force_place_unit(position: Vector2i, name: String, rotation: int, side: Var
 
 func place_element(position: Vector2i, name: String, rotation: int, vertical_offset: float, anchor: Node3D, tile_fragment: TileFragment) -> MapObject:
     var new_tile: MapObject = self.map.templates.get_template(name)
-    var world_position: Vector3 = self.map.map_to_local(position)
+    var world_position: Vector3 = Map.map_to_local(position)
 
     anchor.add_child(new_tile)
     world_position.y = vertical_offset

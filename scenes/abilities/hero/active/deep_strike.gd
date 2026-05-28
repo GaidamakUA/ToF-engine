@@ -9,7 +9,7 @@ func _execute(board: Board, position: Vector2i) -> void:
 
     executor.set_up(board, position, self.source, self.unit_template)
     board.ability_markers.add_child(executor)
-    executor.set_position(board.map.map_to_local(position))
+    executor.set_position(Map.map_to_local(position))
 
 func is_tile_applicable(tile: MapTile, _source_tile: MapTile) -> bool:
     return tile.can_acommodate_unit()

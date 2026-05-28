@@ -462,7 +462,7 @@ func _setup_radial_menu_with_abilities(context_object: Variant) -> void:
 func place_selection_marker() -> void:
     self.selected_tile_marker.show()
     var new_position: Vector3 = self.selected_tile_marker.get_position()
-    var placement: Vector3 = self.map.map_to_local(self.selected_tile.position)
+    var placement: Vector3 = Map.map_to_local(self.selected_tile.position)
     placement.y = new_position.y
     self.selected_tile_marker.set_position(placement)
 
@@ -529,7 +529,7 @@ func update_unit_position(tile: MapTile) -> void:
 
 func reset_unit_position(tile: MapTile, unit: BaseUnit) -> void:
     unit.stop_animations()
-    var world_position: Vector3 = self.map.map_to_local(tile.position)
+    var world_position: Vector3 = Map.map_to_local(tile.position)
     var old_position: Vector3 = unit.get_position()
     world_position.y = old_position.y
     unit.set_position(world_position)
@@ -663,7 +663,7 @@ func heal_a_tile(tile: MapTile) -> void:
 
 
 func _spawn_temporary_explosion_instance_on_tile(tile: MapTile, free_delay: float = 1.5) -> ExplosionFx:
-    var explosion_position: Vector3 = self.map.map_to_local(tile.position)
+    var explosion_position: Vector3 = Map.map_to_local(tile.position)
     var new_explosion: ExplosionFx = self.explosion_template.instantiate() as ExplosionFx
     assert(new_explosion != null)
     self.explosion_anchor.add_child(new_explosion)
@@ -994,18 +994,18 @@ func _signal_winner(winning_side: Variant) -> void:
 
 func shoot_projectile(source_tile: MapTile, destination_tile: MapTile, tween_time: float = 0.5) -> void:
     var new_projectile: ProjectileFx = self._spawn_temporary_projectile_instance_on_tile(source_tile)
-    var tile_position: Vector3 = self.map.map_to_local(destination_tile.position)
+    var tile_position: Vector3 = Map.map_to_local(destination_tile.position)
     new_projectile.shoot_at_position(Vector3(tile_position.x, 0, tile_position.z), tween_time)
 
 
 func lob_projectile(source_tile: MapTile, destination_tile: MapTile, tween_time: float = 0.5) -> void:
     var new_projectile: ProjectileFx = self._spawn_temporary_projectile_instance_on_tile(source_tile)
-    var tile_position: Vector3 = self.map.map_to_local(destination_tile.position)
+    var tile_position: Vector3 = Map.map_to_local(destination_tile.position)
     new_projectile.lob_at_position(Vector3(tile_position.x, 0, tile_position.z), tween_time)
 
 
 func _spawn_temporary_projectile_instance_on_tile(tile: MapTile) -> ProjectileFx:
-    var tile_position: Vector3 = self.map.map_to_local(tile.position)
+    var tile_position: Vector3 = Map.map_to_local(tile.position)
     var new_projectile: ProjectileFx = self.projectile_template.instantiate() as ProjectileFx
     assert(new_projectile != null)
     self.explosion_anchor.add_child(new_projectile)

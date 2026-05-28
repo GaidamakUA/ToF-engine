@@ -79,7 +79,7 @@ func marker_exists(marker_position: Vector2i) -> bool:
 func place_movement_marker(marker_position: Vector2i) -> void:
     var new_marker: MovementMarker = self.marker_template.instantiate() as MovementMarker
     self.add_child(new_marker)
-    var placement: Vector3 = self.map_obj.map_to_local(marker_position)
+    var placement: Vector3 = Map.map_to_local(marker_position)
     new_marker.set_position(placement)
 
     self.created_markers[str(marker_position.x) + "_" + str(marker_position.y)] = new_marker

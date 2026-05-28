@@ -14,7 +14,7 @@ func _execute(_metadata: Dictionary[String, Variant]) -> void:
     source_tile.unit.release()
 
     unit.stop_animations()
-    var world_position: Vector3 = self.board.map.map_to_local(source_tile.position)
+    var world_position: Vector3 = Map.map_to_local(source_tile.position)
     var old_position: Vector3 = unit.get_position()
     world_position.y = old_position.y
     unit.set_position(world_position)

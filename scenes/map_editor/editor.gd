@@ -27,8 +27,8 @@ var actions_history: Array[Dictionary] = []
 var picker_context: Variant = null
 
 func _ready() -> void:
-    self.rotations.build_rotations(self.map.templates, self.map.builder)
-    self.select_tile(self.map.templates.GROUND_GRASS, self.map.builder.CLASS_GROUND)
+    self.rotations.build_rotations(self.map.builder)
+    self.select_tile(MapTemplates.GROUND_GRASS, self.map.builder.CLASS_GROUND)
     self.map.loader.load_map_file(self.AUTOSAVE_FILE)
     self.ui.load_minimap(self.AUTOSAVE_FILE)
     _load_map_settings()
@@ -298,14 +298,14 @@ func select_tile(tile_name: String, type: String) -> void:
 
     self.rotations.store_state(type, tile_name)
 
-    self.ui.set_tile_prev(self.map.templates.get_template(rotation_map["prev"]), self.tile_rotation)
-    self.ui.set_tile_current(self.map.templates.get_template(tile_name), self.tile_rotation)
-    self.ui.set_tile_next(self.map.templates.get_template(rotation_map["next"]), self.tile_rotation)
+    self.ui.set_tile_prev(MapTemplates.get_template(rotation_map["prev"]), self.tile_rotation)
+    self.ui.set_tile_current(MapTemplates.get_template(tile_name), self.tile_rotation)
+    self.ui.set_tile_next(MapTemplates.get_template(rotation_map["next"]), self.tile_rotation)
 
     first_tile = self.rotations.get_first_tile(type_map["prev"])
-    self.ui.set_type_prev(self.map.templates.get_template(first_tile), self.tile_rotation)
+    self.ui.set_type_prev(MapTemplates.get_template(first_tile), self.tile_rotation)
     first_tile = self.rotations.get_first_tile(type_map["next"])
-    self.ui.set_type_next(self.map.templates.get_template(first_tile), self.tile_rotation)
+    self.ui.set_type_next(MapTemplates.get_template(first_tile), self.tile_rotation)
 
 
 func switch_to_prev_tile() -> void:

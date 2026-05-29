@@ -22,7 +22,7 @@ func set_up(_board: Board, _position: Vector2i, _source: BaseUnit) -> void:
 
 func set_side_material() -> void:
     heli.set_side(self.source.side)
-    heli.set_side_material(self.board.map.templates.get_side_material(self.source.side, self.board.map.templates.MATERIAL_METALLIC))
+    heli.set_side_material(MapTemplates.get_side_material(self.source.side, MapTemplates.MATERIAL_METALLIC))
 
 func _drop_the_bombu_man() -> void:
     var tile := self.board.map.model.get_tile(self.strike_position)

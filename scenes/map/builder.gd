@@ -212,7 +212,7 @@ func force_place_unit(position: Vector2i, name: String, rotation: int, side: Var
 
 
 func place_element(position: Vector2i, name: String, rotation: int, vertical_offset: float, anchor: Node3D, tile_fragment: MapObjectSlot) -> MapObject:
-    var new_tile: MapObject = self.map.templates.get_template(name)
+    var new_tile: MapObject = MapTemplates.get_template(name)
     var world_position: Vector3 = Map.map_to_local(position)
 
     anchor.add_child(new_tile)
@@ -359,7 +359,7 @@ func set_building_side(position: Vector2i, new_side: String, new_team: Variant =
         assert(building != null)
         building.set_side(new_side)
         building.set_team(new_team)
-        building.set_side_material(self.map.templates.get_side_material(new_side))
+        building.set_side_material(MapTemplates.get_side_material(new_side))
 
 func set_unit_side(position: Vector2i, new_side: String) -> void:
     var tile: MapTile = self.map.model.get_tile(position)
@@ -369,11 +369,11 @@ func set_unit_side(position: Vector2i, new_side: String) -> void:
         self._set_unit_side(unit, new_side)
 
 func _set_unit_side(unit: BaseUnit, new_side: String) -> void:
-    var material_type: String = self.map.templates.MATERIAL_NORMAL
+    var material_type: String = MapTemplates.MATERIAL_NORMAL
     if unit.uses_metallic_material:
-        material_type = self.map.templates.MATERIAL_METALLIC
+        material_type = MapTemplates.MATERIAL_METALLIC
     unit.set_side(new_side)
-    unit.set_side_materials(self.map.templates.get_side_material(new_side, material_type), self.map.templates.get_side_material_desat(new_side, material_type))
+    unit.set_side_materials(MapTemplates.get_side_material(new_side, material_type), MapTemplates.get_side_material_desat(new_side, material_type))
 
 func _notify_removal(tile_fragment: MapObjectSlot, position: Vector2i, tile_class: String, side: Variant = null, modifiers: Dictionary = {}, double: bool = true) -> void:
     if self.editor != null:
@@ -409,7 +409,7 @@ func rebuild_tile(tile_id: String, tile_data: Dictionary) -> void:
         if unit_data.has("passenger"):
             var passenger_data: Dictionary[String, Variant]
             passenger_data.assign(unit_data["passenger"])
-            var passenger: BaseUnit = self.map.templates.get_template(str(passenger_data["tile"])) as BaseUnit
+            var passenger: BaseUnit = MapTemplates.get_template(str(passenger_data["tile"])) as BaseUnit
             assert(passenger != null)
             passenger.set_rotation(Vector3(0, deg_to_rad(int(passenger_data["rotation"])), 0))
             passenger.current_rotation = int(passenger_data["rotation"])

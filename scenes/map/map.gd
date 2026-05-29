@@ -14,7 +14,6 @@ var tile_box_space_size: int
 var tile_box_position := Vector2i(0, 0)
 var tile_box_mouse := false
 
-var templates := MapTemplates.new()
 var model := MapModel.new()
 var builder := MapBuilder.new(self)
 var loader: MapLoader = MapLoader.new(self)
@@ -100,7 +99,7 @@ func local_to_map(queried_position: Vector3) -> Vector2i:
 
 
 func set_tile_box_side(side: String) -> void:
-    self.tile_box.set_mesh_material(self.templates.get_side_material(side))
+    self.tile_box.set_mesh_material(MapTemplates.get_side_material(side))
 
 func show_tile_box() -> void:
     self.tile_box.show()

@@ -201,7 +201,7 @@ func set_up_board() -> void:
         var typed_player_setup: Dictionary[String, Variant]
         typed_player_setup.assign(player_setup)
         var side: String = String(typed_player_setup["side"])
-        if side != self.map.templates.PLAYER_NEUTRAL:
+        if side != MapTemplates.PLAYER_NEUTRAL:
             _add_player_to_state(typed_player_setup)
             self.state.add_player_ap(index, int(typed_player_setup["ap"]))
 
@@ -855,7 +855,7 @@ func update_tile_highlight(tile: MapTile) -> void:
 
     var template_name: String
     var new_side: String
-    var material_type: String = self.map.templates.MATERIAL_NORMAL
+    var material_type: String = MapTemplates.MATERIAL_NORMAL
     var building: BaseBuilding = null
     var unit: BaseUnit = null
 
@@ -868,12 +868,12 @@ func update_tile_highlight(tile: MapTile) -> void:
         unit = tile.unit.get_map_object() as BaseUnit
         assert(unit != null)
         if unit.uses_metallic_material:
-            material_type = self.map.templates.MATERIAL_METALLIC
+            material_type = MapTemplates.MATERIAL_METALLIC
         template_name = unit.template_name
         new_side = unit.side
 
-    var new_tile: MapObject = self.map.templates.get_template(template_name)
-    new_tile.set_side_material(self.map.templates.get_side_material(new_side, material_type))
+    var new_tile: MapObject = MapTemplates.get_template(template_name)
+    new_tile.set_side_material(MapTemplates.get_side_material(new_side, material_type))
 
     self.ui.update_tile_highlight(new_tile)
 
@@ -897,17 +897,17 @@ func _open_context_panel_for_tile(tile: MapTile) -> void:
 
         var template_name: String
         var new_side: String
-        var material_type: String = self.map.templates.MATERIAL_NORMAL
+        var material_type: String = MapTemplates.MATERIAL_NORMAL
         var unit: BaseUnit = tile.unit.get_map_object() as BaseUnit
         assert(unit != null)
 
         if unit.uses_metallic_material:
-            material_type = self.map.templates.MATERIAL_METALLIC
+            material_type = MapTemplates.MATERIAL_METALLIC
         template_name = unit.template_name
         new_side = unit.side
 
-        var tile_preview: MapObject = self.map.templates.get_template(template_name)
-        tile_preview.set_side_material(self.map.templates.get_side_material(new_side, material_type))
+        var tile_preview: MapObject = MapTemplates.get_template(template_name)
+        tile_preview.set_side_material(MapTemplates.get_side_material(new_side, material_type))
 
         self.ui.show_unit_stats(unit, tile_preview, self)
         self.map.camera.paused = true

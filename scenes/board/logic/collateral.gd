@@ -13,10 +13,10 @@ func damage_tile(tile: MapTile) -> Variant:
 
     var angles: Array[int] = [0, 90, 180, 270]
     var damage_templates: Array[String] = [
-        self.board.map.templates.DECO_GROUND_DMG_1,
-        self.board.map.templates.DECO_GROUND_DMG_2,
-        self.board.map.templates.DECO_GROUND_DMG_5,
-        self.board.map.templates.DECO_GROUND_DMG_6,
+        MapTemplates.DECO_GROUND_DMG_1,
+        MapTemplates.DECO_GROUND_DMG_2,
+        MapTemplates.DECO_GROUND_DMG_5,
+        MapTemplates.DECO_GROUND_DMG_6,
     ]
 
     if tile.decoration.is_present():

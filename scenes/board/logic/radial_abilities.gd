@@ -39,12 +39,12 @@ func fill_radial_with_building_abilities(board: Board, radial: Radial, building:
 
     for ability: Variant in building.abilities:
         if ability.TYPE == "production" and ability.is_visible(board):
-            var icon_model: MapObject = board.map.templates.get_template(ability.template_name)
+            var icon_model: MapObject = MapTemplates.get_template(ability.template_name)
             var ap_cost: int = ability.get_cost()
 
             ap_cost = board.abilities.get_modified_cost(ap_cost, ability.template_name, building)
 
-            icon_model.set_side_material(board.map.templates.get_side_material(building.side))
+            icon_model.set_side_material(MapTemplates.get_side_material(building.side))
             icon = tile_view_template.instantiate()
             icon.hide_background()
             icon.is_side_tile = false
@@ -87,9 +87,9 @@ func fill_radial_with_building_abilities_bans(editor: Variant, radial: Radial, b
 
     for ability: Variant in building.abilities:
         if ability.TYPE == "production":
-            var icon_model: MapObject = editor.map.templates.get_template(ability.template_name)
+            var icon_model: MapObject = MapTemplates.get_template(ability.template_name)
 
-            icon_model.set_side_material(editor.map.templates.get_side_material(building.side))
+            icon_model.set_side_material(MapTemplates.get_side_material(building.side))
             icon = tile_view_template.instantiate()
             icon.hide_background()
             icon.is_side_tile = false

@@ -87,71 +87,71 @@ func _on_picker_requested(context: Dictionary) -> void:
             self.picker_panel.load_list(self.stories_panel._get_sorted_stories_names(), context)
         if context["type"] == "unit_type":
             self.picker_panel.load_list(
-                self.editor.map.templates._unit_templates.keys() + self.editor.map.templates._hero_templates.keys(), 
+                MapTemplates._unit_templates.keys() + MapTemplates._hero_templates.keys(),
                 context
             )
         if context["type"] == "side":
             self.picker_panel.load_list(
-                self.editor.map.templates.side_materials.keys(), 
+                MapTemplates.side_materials.keys(),
                 context
             )
         if context["type"] == "portrait":
             self.picker_panel.load_list(
-                self.editor.map.templates._unit_templates.keys() + self.editor.map.templates._hero_templates.keys() + self.editor.map.templates._building_templates.keys(), 
+                MapTemplates._unit_templates.keys() + MapTemplates._hero_templates.keys() + MapTemplates._building_templates.keys(),
                 context
             )
         if context["type"] == "sound":
             self.picker_panel.load_list(
-                self.editor.audio.samples.keys(), 
+                self.editor.audio.samples.keys(),
                 context
             )
         if context["type"] == "tile_type":
             self.picker_panel.load_list(
-                ["decoration","damage","frame","terrain","ground","building"], 
+                ["decoration","damage","frame","terrain","ground","building"],
                 context
             )
         if context["type"] == "template":
             if context["tile_type"] == "decoration":
                 self.picker_panel.load_list(
-                    self.editor.map.templates._decoration_templates.keys() + self.editor.map.templates._special_templates.keys(), 
+                    MapTemplates._decoration_templates.keys() + MapTemplates._special_templates.keys(),
                     context
                 )
             if context["tile_type"] == "damage":
                 self.picker_panel.load_list(
-                    self.editor.map.templates._damage_templates.keys(), 
+                    MapTemplates._damage_templates.keys(),
                     context
                 )
             if context["tile_type"] == "frame":
                 self.picker_panel.load_list(
-                    self.editor.map.templates._frame_templates.keys(), 
+                    MapTemplates._frame_templates.keys(),
                     context
                 )
             if context["tile_type"] == "terrain":
                 self.picker_panel.load_list(
-                    self.editor.map.templates._city_templates.keys() + self.editor.map.templates._city_decoration_templates.keys() + self.editor.map.templates._wall_templates.keys() + self.editor.map.templates._railway_templates.keys() + self.editor.map.templates._nature_templates.keys(), 
+                    MapTemplates._city_templates.keys() + MapTemplates._city_decoration_templates.keys() + MapTemplates._wall_templates.keys() + MapTemplates._railway_templates.keys() + MapTemplates._nature_templates.keys(),
                     context
                 )
             if context["tile_type"] == "ground":
                 self.picker_panel.load_list(
-                    self.editor.map.templates._ground_templates.keys(), 
+                    MapTemplates._ground_templates.keys(),
                     context
                 )
             if context["tile_type"] == "building":
                 self.picker_panel.load_list(
-                    self.editor.map.templates._building_templates.keys(), 
+                    MapTemplates._building_templates.keys(),
                     context
                 )
             if context["tile_type"] not in ["decoration","damage","frame","terrain","ground","building"]:
                 self.picker_panel.load_list(
-                    self.editor.map.templates._ground_templates.keys() + self.editor.map.templates._damage_templates.keys() + self.editor.map.templates._frame_templates.keys() + self.editor.map.templates._decoration_templates.keys() + self.editor.map.templates._railway_templates.keys() + self.editor.map.templates._city_decoration_templates.keys() + self.editor.map.templates._city_templates.keys() + self.editor.map.templates._damaged_city_templates.keys() + self.editor.map.templates._wall_templates.keys() + self.editor.map.templates._nature_templates.keys() + self.editor.map.templates._special_templates.keys(), 
+                    MapTemplates._ground_templates.keys() + MapTemplates._damage_templates.keys() + MapTemplates._frame_templates.keys() + MapTemplates._decoration_templates.keys() + MapTemplates._railway_templates.keys() + MapTemplates._city_decoration_templates.keys() + MapTemplates._city_templates.keys() + MapTemplates._damaged_city_templates.keys() + MapTemplates._wall_templates.keys() + MapTemplates._nature_templates.keys() + MapTemplates._special_templates.keys(),
                     context
                 )
-        _switch_to_panel(self.picker_panel)    
+        _switch_to_panel(self.picker_panel)
 
 func _handle_picker_response(response: Variant, context: Dictionary) -> void:
     if context["tab"] == "settings":
         self.map_settings_panel._handle_picker_response(response, context)
-        _switch_to_panel(self.map_settings_panel)    
+        _switch_to_panel(self.map_settings_panel)
     if context["tab"] == "triggers":
         self.triggers_panel._handle_picker_response(response, context)
         _switch_to_panel(self.triggers_panel)

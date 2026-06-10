@@ -10,7 +10,7 @@ func _execute(_metadata: Dictionary[String, Variant]) -> void:
     if not tile.unit.is_present():
         return
 
-    var unit: BaseUnit = tile.unit.tile as BaseUnit
+    var unit: BaseUnit = tile.unit.get_map_object() as BaseUnit
     assert(unit != null)
     unit.tether_point.x = self.who.x
     unit.tether_point.y = self.who.y

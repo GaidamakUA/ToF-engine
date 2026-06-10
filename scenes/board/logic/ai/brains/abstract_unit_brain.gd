@@ -19,12 +19,12 @@ func get_actions(context: BrainContext) -> Array[AbstractAction]:
     return actions
 
 func _get_unit(tile: MapTile) -> BaseUnit:
-    var unit: BaseUnit = tile.unit.tile as BaseUnit
+    var unit: BaseUnit = tile.unit.get_map_object() as BaseUnit
     assert(unit != null)
     return unit
 
 func _get_building(tile: MapTile) -> BaseBuilding:
-    var building: BaseBuilding = tile.building.tile as BaseBuilding
+    var building: BaseBuilding = tile.building.get_map_object() as BaseBuilding
     assert(building != null)
     return building
 

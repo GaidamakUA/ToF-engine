@@ -8,7 +8,7 @@ var cooldown: bool = false
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
     var unit_tile: MapTile = self.board.map.model.get_tile(self.who)
-    var ability: Ability = unit_tile.unit.tile.get_node(self.which)
+    var ability: Ability = unit_tile.unit.get_map_object().get_node(self.which)
 
     self.board.selected_tile = unit_tile
     ability.active_source_tile = unit_tile

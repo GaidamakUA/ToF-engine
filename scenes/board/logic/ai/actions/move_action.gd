@@ -12,7 +12,7 @@ func _init(unit_tile: MapTile, target_tile: MapTile, path_length_val: int) -> vo
 
 
 func perform(board: Board) -> void:
-    var unit_object: BaseUnit = self.unit.unit.tile
+    var unit_object: BaseUnit = self.unit.unit.get_map_object()
 
     board.select_tile(self.unit.position)
     board.select_tile(self.target.position)

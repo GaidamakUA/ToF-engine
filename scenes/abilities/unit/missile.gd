@@ -10,7 +10,7 @@ func _execute(board: Board, position: Vector2i) -> void:
     var tile := board.map.model.get_tile(position)
 
     if tile.unit.is_present():
-        tile.unit.tile.receive_damage(self.damage)
+        tile.unit.get_map_object().receive_damage(self.damage)
     self.source.sfx_effect("attack")
 
     board.smoke_a_tile(self.active_source_tile)
@@ -19,7 +19,7 @@ func _execute(board: Board, position: Vector2i) -> void:
     
     self.source.sfx_effect("hit")
     if tile.unit.is_present():
-        var target_unit: BaseUnit = tile._get_unit()
+        var target_unit: BaseUnit = tile.unit.get_unit()
         if not target_unit.is_alive():
             var unit_id: int = target_unit.get_instance_id()
             var unit_type: String = target_unit.template_name

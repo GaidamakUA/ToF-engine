@@ -26,10 +26,10 @@ func ingest_scripts(board_object: Board, incoming_scripts: Variant) -> void:
                 print("Invalid trigger: ", trigger_name)
 
 func _setup_basic_win_condition() -> void:
-    self._build_hq_lost_event(self.board.map.templates.MODERN_HQ)
-    self._build_hq_lost_event(self.board.map.templates.STEAMPUNK_HQ)
-    self._build_hq_lost_event(self.board.map.templates.FUTURISTIC_HQ)
-    self._build_hq_lost_event(self.board.map.templates.FEUDAL_HQ)
+    self._build_hq_lost_event(MapTemplates.MODERN_HQ)
+    self._build_hq_lost_event(MapTemplates.STEAMPUNK_HQ)
+    self._build_hq_lost_event(MapTemplates.FUTURISTIC_HQ)
+    self._build_hq_lost_event(MapTemplates.FEUDAL_HQ)
     self.board.ui.objectives.set_objective_slot(0, "Capture enemy HQ")
 
 func _build_hq_lost_event(hq_type: String) -> void:

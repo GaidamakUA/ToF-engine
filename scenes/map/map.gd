@@ -14,7 +14,6 @@ var tile_box_space_size: int
 var tile_box_position := Vector2i(0, 0)
 var tile_box_mouse := false
 
-var templates := MapTemplates.new()
 var model := MapModel.new()
 var builder := MapBuilder.new(self)
 var loader: MapLoader = MapLoader.new(self)
@@ -71,14 +70,14 @@ func set_mouse_box_position(box_position: Vector2i) -> void:
 
 func snap_tile_box() -> void:
     var box_position: Vector3 = self.tile_box.get_position()
-    var placement: Vector3 = self.map_to_local(self.tile_box_position)
+    var placement: Vector3 = Map.map_to_local(self.tile_box_position)
 
     placement.y = box_position.y
 
     self.tile_box.set_position(placement)
 
-func map_to_local(queried_position: Vector2i) -> Vector3:
-    return Vector3(queried_position.x * self.TILE_SIZE, 0, queried_position.y * self.TILE_SIZE)
+static func map_to_local(queried_position: Vector2i) -> Vector3:
+    return Vector3(queried_position.x * TILE_SIZE, 0, queried_position.y * TILE_SIZE)
 
 func local_to_map(queried_position: Vector3) -> Vector2i:
     var tile_position := Vector2i(0, 0)
@@ -100,7 +99,7 @@ func local_to_map(queried_position: Vector3) -> Vector2i:
 
 
 func set_tile_box_side(side: String) -> void:
-    self.tile_box.set_mesh_material(self.templates.get_side_material(side))
+    self.tile_box.set_mesh_material(MapTemplates.get_side_material(side))
 
 func show_tile_box() -> void:
     self.tile_box.show()
@@ -135,7 +134,7 @@ func snap_camera_to_position(destination: Vector2i) -> void:
     self.camera.set_camera_position(Vector2(destination) * self.TILE_SIZE + Vector2(0.5, 0.5) * self.TILE_SIZE)
 
 func anchor_unit(unit: BaseUnit, unit_position: Vector2i) -> void:
-    var world_position: Vector3 = self.map_to_local(unit_position)
+    var world_position: Vector3 = Map.map_to_local(unit_position)
     world_position.y = self.GROUND_HEIGHT
     self.tiles_units_anchor.add_child(unit)
     unit.set_position(world_position)

@@ -6,24 +6,24 @@ var types: Dictionary[String, Dictionary] = {}
 var players: Dictionary[String, Dictionary] = {}
 var stored_state: Dictionary[String, String] = {}
 
-func build_rotations(templates: MapTemplates, builder: MapBuilder) -> void:
-    self.rotations[builder.CLASS_GROUND] = self.build_from_array(templates._ground_templates.keys())
+func build_rotations(builder: MapBuilder) -> void:
+    self.rotations[builder.CLASS_GROUND] = self.build_from_array(MapTemplates._ground_templates.keys())
 
-    self.rotations[builder.CLASS_FRAME] = self.build_from_array(templates._frame_templates.keys())
+    self.rotations[builder.CLASS_FRAME] = self.build_from_array(MapTemplates._frame_templates.keys())
 
-    self.rotations[builder.CLASS_DECORATION] = self.build_from_array(templates._decoration_templates.keys() + templates._special_templates.keys())
+    self.rotations[builder.CLASS_DECORATION] = self.build_from_array(MapTemplates._decoration_templates.keys() + MapTemplates._special_templates.keys())
 
-    self.rotations[builder.CLASS_DAMAGE] = self.build_from_array(templates._damage_templates.keys())
+    self.rotations[builder.CLASS_DAMAGE] = self.build_from_array(MapTemplates._damage_templates.keys())
 
-    self.rotations[builder.SUB_CLASS_CONSTRUCTION] = self.build_from_array(templates._city_templates.keys() + templates._city_decoration_templates.keys() + templates._wall_templates.keys() + templates._railway_templates.keys())
+    self.rotations[builder.SUB_CLASS_CONSTRUCTION] = self.build_from_array(MapTemplates._city_templates.keys() + MapTemplates._city_decoration_templates.keys() + MapTemplates._wall_templates.keys() + MapTemplates._railway_templates.keys())
 
-    self.rotations[builder.CLASS_TERRAIN] = self.build_from_array(templates._nature_templates.keys())
+    self.rotations[builder.CLASS_TERRAIN] = self.build_from_array(MapTemplates._nature_templates.keys())
 
-    self.rotations[builder.CLASS_BUILDING] = self.build_from_array(templates._building_templates.keys())
+    self.rotations[builder.CLASS_BUILDING] = self.build_from_array(MapTemplates._building_templates.keys())
 
-    self.rotations[builder.CLASS_UNIT] = self.build_from_array(templates._unit_templates.keys())
+    self.rotations[builder.CLASS_UNIT] = self.build_from_array(MapTemplates._unit_templates.keys())
 
-    self.rotations[builder.CLASS_HERO] = self.build_from_array(templates._hero_templates.keys())
+    self.rotations[builder.CLASS_HERO] = self.build_from_array(MapTemplates._hero_templates.keys())
 
     self.types = self.build_from_array([
         builder.CLASS_GROUND,
@@ -37,7 +37,7 @@ func build_rotations(templates: MapTemplates, builder: MapBuilder) -> void:
         builder.CLASS_HERO,
     ])
 
-    self.players = self.build_from_array(templates.side_materials.keys())
+    self.players = self.build_from_array(MapTemplates.side_materials.keys())
 
 
 func get_map(name: String, type: String) -> Dictionary[String, String]:

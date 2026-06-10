@@ -107,7 +107,7 @@ func marker_exists(marker_position: Vector2i) -> bool:
 func place_marker(marker_position: Vector2i, colour: String = "green") -> void:
     var new_marker: MovementMarker = self.marker_template.instantiate() as MovementMarker
     self.add_child(new_marker)
-    var placement: Vector3 = self.map_obj.map_to_local(marker_position)
+    var placement: Vector3 = Map.map_to_local(marker_position)
     new_marker.set_position(placement)
 
     self.created_markers[str(marker_position.x) + "_" + str(marker_position.y)] = new_marker
@@ -159,7 +159,7 @@ func _draw_ability_range(source_tile: MapTile, ability_range: int, in_line: bool
 func _place_extra_marker(marker_position: Vector2i, marker_rotation: int) -> void:
     var new_marker: Node3D = self.range_template.instantiate() as Node3D
     self.add_child(new_marker)
-    var placement: Vector3 = self.map_obj.map_to_local(marker_position)
+    var placement: Vector3 = Map.map_to_local(marker_position)
     new_marker.set_position(placement)
     new_marker.set_rotation(Vector3(0, deg_to_rad(marker_rotation), 0))
 

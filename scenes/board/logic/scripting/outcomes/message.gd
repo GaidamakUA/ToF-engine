@@ -10,7 +10,7 @@ var font_size: int = 16
 var sound: Variant = null
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
-    var portrait_tile: MapObject = self.board.map.templates.get_template(self.portrait)
+    var portrait_tile: MapObject = MapTemplates.get_template(self.portrait)
     var actor: Dictionary[String, Variant] = {
         'portrait' : self.portrait,
         'portrait_tile' : portrait_tile,
@@ -21,15 +21,15 @@ func _execute(_metadata: Dictionary[String, Variant]) -> void:
     portrait_tile.tile_view_height_cam_modifier = -0.2
 
     if self.colour != null:
-        var material_type: String = self.board.map.templates.MATERIAL_NORMAL
+        var material_type: String = MapTemplates.MATERIAL_NORMAL
         var portrait_unit: BaseUnit = portrait_tile as BaseUnit
         if portrait_unit != null and portrait_unit.uses_metallic_material:
-            material_type = self.board.map.templates.MATERIAL_METALLIC
+            material_type = MapTemplates.MATERIAL_METALLIC
         var portrait_building: BaseBuilding = portrait_tile as BaseBuilding
         if portrait_building != null and portrait_building.uses_metallic_material:
-            material_type = self.board.map.templates.MATERIAL_METALLIC
+            material_type = MapTemplates.MATERIAL_METALLIC
 
-        portrait_tile.set_side_materials(self.board.map.templates.get_side_material(self.colour, material_type), self.board.map.templates.get_side_material(self.colour, material_type))
+        portrait_tile.set_side_materials(MapTemplates.get_side_material(self.colour, material_type), MapTemplates.get_side_material(self.colour, material_type))
 
     self.board.ui.show_story_dialog(text, actor, self.font_size)
 

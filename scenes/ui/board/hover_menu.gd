@@ -52,7 +52,7 @@ func _physics_process(delta: float) -> void:
 
         if self.board.selected_tile.unit.is_present():
             $"stats_button".show()
-            var unit: BaseUnit = self.board.selected_tile.unit.tile as BaseUnit
+            var unit: BaseUnit = self.board.selected_tile.unit.get_map_object() as BaseUnit
             assert(unit != null)
             if unit.has_active_ability():
                 $"skills_button".show()

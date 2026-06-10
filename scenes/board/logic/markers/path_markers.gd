@@ -44,7 +44,7 @@ func place_marker(tile_key: String) -> void:
     var tile: MapTile = self.map_obj.model.tiles[tile_key]
     var new_marker: Node3D = self.marker_template.instantiate() as Node3D
     self.add_child(new_marker)
-    var placement: Vector3 = self.map_obj.map_to_local(tile.position)
+    var placement: Vector3 = Map.map_to_local(tile.position)
     new_marker.set_position(placement)
 
     self.created_markers[tile_key] = new_marker

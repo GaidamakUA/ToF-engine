@@ -27,7 +27,7 @@ func reset() -> void:
 func explore(source_tile: MapTile, distance: int) -> void:
     self.reset()
     self._add_path_root(source_tile)
-    self.expand_from_tile(source_tile, distance, 0, source_tile.unit.tile)
+    self.expand_from_tile(source_tile, distance, 0, source_tile.unit.get_map_object())
 
 func mark_tile_cost(tile: MapTile, cost: int) -> void:
     self.visited_tiles[self._get_key(tile)] = tile

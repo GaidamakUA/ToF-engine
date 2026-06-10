@@ -8,7 +8,7 @@ func _execute(_metadata: Dictionary[String, Variant]) -> void:
     var tile: MapTile = self.board.map.model.get_tile(self.who)
 
     if tile.unit.is_present():
-        var unit: BaseUnit = tile.unit.tile as BaseUnit
+        var unit: BaseUnit = tile.unit.get_map_object() as BaseUnit
         assert(unit != null)
         if unit.is_hero():
             var hero: HeroUnit = unit as HeroUnit

@@ -9,7 +9,7 @@ func _execute(_metadata: Dictionary[String, Variant]) -> void:
     if self.who != null:
         tile = self.board.map.model.get_tile(self.who)
         if tile.unit.is_present():
-            var unit: BaseUnit = tile.unit.tile as BaseUnit
+            var unit: BaseUnit = tile.unit.get_map_object() as BaseUnit
             assert(unit != null)
             if unit.unit_class == "hero":
                 var hero: HeroUnit = unit as HeroUnit
@@ -28,7 +28,7 @@ func _execute(_metadata: Dictionary[String, Variant]) -> void:
                 while y_index <= rectangle["y2"]:
                     tile = self.board.map.model.get_tile(Vector2i(x_index, y_index))
                     if tile.unit.is_present():
-                        var unit: BaseUnit = tile.unit.tile as BaseUnit
+                        var unit: BaseUnit = tile.unit.get_map_object() as BaseUnit
                         assert(unit != null)
                         if unit.unit_class == "hero":
                             var hero: HeroUnit = unit as HeroUnit

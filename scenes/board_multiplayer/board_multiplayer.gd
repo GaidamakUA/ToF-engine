@@ -185,7 +185,7 @@ func _activate_production_ability(ability: Ability) -> void:
 
 @rpc("any_peer", "call_remote", "reliable")
 func _notify_activate_production_ability(tile_position: Vector2i, ability_index: int) -> void:
-    for ability: Ability in self.map.model.get_tile(tile_position).building.tile.abilities:
+    for ability: Ability in self.map.model.get_tile(tile_position).building.get_map_object().abilities:
         if ability.index == ability_index:
             _activate_production_ability(ability)
             return
@@ -200,7 +200,7 @@ func _activate_ability(ability: Ability) -> void:
 @rpc("any_peer", "call_remote", "reliable")
 func _notify_activate_ability(tile_position: Vector2i, ability_index: int) -> void:
     var unit_tile: MapTile = self.map.model.get_tile(tile_position)
-    for ability: Ability in unit_tile.unit.tile.active_abilities:
+    for ability: Ability in unit_tile.unit.get_map_object().active_abilities:
         if ability.index == ability_index:
             ability.active_source_tile = unit_tile
             _activate_ability(ability)

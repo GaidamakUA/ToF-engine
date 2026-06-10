@@ -27,8 +27,8 @@ var actions_history: Array[Dictionary] = []
 var picker_context: Variant = null
 
 func _ready() -> void:
-    self.rotations.build_rotations(self.map.templates, self.map.builder)
-    self.select_tile(self.map.templates.GROUND_GRASS, self.map.builder.CLASS_GROUND)
+    self.rotations.build_rotations(self.map.builder)
+    self.select_tile(MapTemplates.GROUND_GRASS, self.map.builder.CLASS_GROUND)
     self.map.loader.load_map_file(self.AUTOSAVE_FILE)
     self.ui.load_minimap(self.AUTOSAVE_FILE)
     _load_map_settings()
@@ -272,7 +272,7 @@ func undo_action() -> void:
             match recent_action["class"]:
                 "building":
                     self.map.builder.set_building_side(recent_action["position"] as Vector2i, str(recent_action["side"]))
-                    tile.building.tile.restore_abilities_status(recent_action["modifiers"])
+                    tile.building.get_map_object().restore_abilities_status(recent_action["modifiers"])
                 "unit":
                     self.map.builder.set_unit_side(recent_action["position"] as Vector2i, str(recent_action["side"]))
                 "hero":
@@ -298,14 +298,14 @@ func select_tile(tile_name: String, type: String) -> void:
 
     self.rotations.store_state(type, tile_name)
 
-    self.ui.set_tile_prev(self.map.templates.get_template(rotation_map["prev"]), self.tile_rotation)
-    self.ui.set_tile_current(self.map.templates.get_template(tile_name), self.tile_rotation)
-    self.ui.set_tile_next(self.map.templates.get_template(rotation_map["next"]), self.tile_rotation)
+    self.ui.set_tile_prev(MapTemplates.get_template(rotation_map["prev"]), self.tile_rotation)
+    self.ui.set_tile_current(MapTemplates.get_template(tile_name), self.tile_rotation)
+    self.ui.set_tile_next(MapTemplates.get_template(rotation_map["next"]), self.tile_rotation)
 
     first_tile = self.rotations.get_first_tile(type_map["prev"])
-    self.ui.set_type_prev(self.map.templates.get_template(first_tile), self.tile_rotation)
+    self.ui.set_type_prev(MapTemplates.get_template(first_tile), self.tile_rotation)
     first_tile = self.rotations.get_first_tile(type_map["next"])
-    self.ui.set_type_next(self.map.templates.get_template(first_tile), self.tile_rotation)
+    self.ui.set_type_next(MapTemplates.get_template(first_tile), self.tile_rotation)
 
 
 func switch_to_prev_tile() -> void:
@@ -474,7 +474,7 @@ func next_alternative() -> void:
     var old_side: String
 
     if tile.building.is_present():
-        var building: BaseBuilding = tile._get_building()
+        var building: BaseBuilding = tile.building.get_building()
         old_side = building.side
         self.next_building_side(building)
         self.write_action_history({
@@ -486,7 +486,7 @@ func next_alternative() -> void:
         })
 
     if tile.unit.is_present():
-        var unit: BaseUnit = tile._get_unit()
+        var unit: BaseUnit = tile.unit.get_unit()
         old_side = unit.side
         self.next_unit_side(unit)
         self.write_action_history({
@@ -497,9 +497,9 @@ func next_alternative() -> void:
             "new_side" : unit.side,
         })
 
-    if tile.terrain.is_present() and tile.terrain.tile.is_damageable():
+    if tile.terrain.is_present() and tile.terrain.get_map_object().is_damageable():
         self.next_damage_stage(tile)
-    elif tile.terrain.is_present() and tile.terrain.tile.is_restoreable():
+    elif tile.terrain.is_present() and tile.terrain.get_map_object().is_restoreable():
         self.restore_damage_stage(tile)
 
     self.autosave()
@@ -517,13 +517,13 @@ func next_unit_side(unit_object: BaseUnit) -> void:
     self.map.builder.set_unit_side(self.map.tile_box_position, side_map["next"])
 
 func next_damage_stage(tile: MapTile) -> void:
-    self.replace_terrain(tile, tile.terrain.tile.next_damage_stage_template)
+    self.replace_terrain(tile, tile.terrain.get_map_object().next_damage_stage_template)
 
 func restore_damage_stage(tile: MapTile) -> void:
-    self.replace_terrain(tile, tile.terrain.tile.base_stage_template)
+    self.replace_terrain(tile, tile.terrain.get_map_object().base_stage_template)
 
 func replace_terrain(tile: MapTile, template_name: String) -> void:
-    var t_rotation: Vector3 = tile.terrain.tile.get_rotation_degrees()
+    var t_rotation: Vector3 = tile.terrain.get_map_object().get_rotation_degrees()
 
     tile.terrain.clear()
     self.map.builder.place_terrain(tile.position, template_name, int(t_rotation.y))
@@ -534,12 +534,12 @@ func notify_about_removal(action_details: Dictionary[String, Variant]) -> void:
 func _open_ability_ban_menu() -> void:
     var tile: MapTile = self.map.model.get_tile(self.map.tile_box_position)
     if tile.building.is_present():
-        self.toggle_radial_menu(tile.building.tile)
+        self.toggle_radial_menu(tile.building.get_map_object())
 
 func toggle_unit_ai_pause() -> void:
     var tile: MapTile = self.map.model.get_tile(self.map.tile_box_position)
     if tile.unit.is_present():
-        var unit: BaseUnit = tile._get_unit()
+        var unit: BaseUnit = tile.unit.get_unit()
         unit.ai_paused = not unit.ai_paused
 
         if unit.ai_paused:

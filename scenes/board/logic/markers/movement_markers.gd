@@ -36,7 +36,7 @@ func destroy_markers() -> void:
 func show_unit_movement_markers_for_tile(tile: MapTile, ap_limit: int) -> void:
     self.reset()
     self.add_path_root(tile)
-    var unit: BaseUnit = tile.unit.tile as BaseUnit
+    var unit: BaseUnit = tile.unit.get_map_object() as BaseUnit
     self.expand_from_tile(tile, unit.get_move(), 0, unit, ap_limit)
 
 func mark_tile_cost(tile: MapTile, cost: int) -> void:
@@ -79,7 +79,7 @@ func marker_exists(marker_position: Vector2i) -> bool:
 func place_movement_marker(marker_position: Vector2i) -> void:
     var new_marker: MovementMarker = self.marker_template.instantiate() as MovementMarker
     self.add_child(new_marker)
-    var placement: Vector3 = self.map_obj.map_to_local(marker_position)
+    var placement: Vector3 = Map.map_to_local(marker_position)
     new_marker.set_position(placement)
 
     self.created_markers[str(marker_position.x) + "_" + str(marker_position.y)] = new_marker

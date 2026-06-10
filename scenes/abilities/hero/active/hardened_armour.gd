@@ -15,7 +15,7 @@ func _execute(board: Board, position: Vector2i) -> void:
     self._get_units_in_range(source_tile, self.source.side)
 
     for unit_tile in self.units_in_range:
-        unit_tile.unit.tile.apply_modifier("armor", 1)
+        unit_tile.unit.get_map_object().apply_modifier("armor", 1)
         board.bless_a_tile(unit_tile)
 
 func _get_units_in_range(tile: MapTile, side: String) -> void:
@@ -37,7 +37,7 @@ func _expand_from_tile(tile: MapTile, depth: int, side: String) -> void:
         if not self.tiles_in_range.has(key):
             self.tiles_in_range[key] = neighbour
 
-            if neighbour.has_friendly_unit(side) and neighbour.unit.tile != self.source:
+            if neighbour.has_friendly_unit(side) and neighbour.unit.get_map_object() != self.source:
                 self.units_in_range.append(neighbour)
 
             self._expand_from_tile(neighbour, depth - 1, side)

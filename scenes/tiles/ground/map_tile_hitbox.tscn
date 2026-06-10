@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://besqifsd1pqmm"]
+
+[ext_resource type="PackedScene" uid="uid://2tj73ejmcn0s" path="res://scenes/tiles/ground/map_tile_mouse_area.tscn" id="2"]
+[ext_resource type="Script" uid="uid://bs8pr03s1wxtc" path="res://scenes/tiles/ground/map_tile_hitbox.gd" id="3"]
+
+[node name="map_tile_hitbox" type="Node3D"]
+script = ExtResource("3")
+
+[node name="mouse_area" parent="." instance=ExtResource("2")]

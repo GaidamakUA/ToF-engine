@@ -22,7 +22,7 @@ func set_up(_board: Board, _position: Vector2i, _source: BaseUnit) -> void:
 
 func set_side_material() -> void:
     heli.set_side(self.source.side)
-    heli.set_side_material(self.board.map.templates.get_side_material(self.source.side, self.board.map.templates.MATERIAL_METALLIC))
+    heli.set_side_material(MapTemplates.get_side_material(self.source.side, MapTemplates.MATERIAL_METALLIC))
 
 func _drop_the_bombu_man() -> void:
     var tile := self.board.map.model.get_tile(self.strike_position)
@@ -36,8 +36,8 @@ func _bomb_tile(tile: MapTile) -> void:
     heli.sfx_effect("attack")
 
     if tile.unit.is_present():
-        tile.unit.tile.receive_direct_damage(self.DAMAGE)
-        if not tile.unit.tile.is_alive():
+        tile.unit.get_map_object().receive_direct_damage(self.DAMAGE)
+        if not tile.unit.get_map_object().is_alive():
             self.board.destroy_unit_on_tile(tile)
 
     self.board.explode_a_tile(tile)

@@ -800,7 +800,7 @@ func execute_active_ability(target_tile: MapTile) -> void:
     elif self.active_ability_origin_tile.unit.is_present():
         source = self.active_ability_origin_tile.unit.tile
 
-    var ability: ActiveUnitAbility = self.active_ability
+    var ability: Ability = self.active_ability
     ability.execute(self, source, self.active_ability_origin_tile, target_tile.position)
     source.activate_ability_cooldown(ability, self)
     self.cancel_ability()

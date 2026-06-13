@@ -51,6 +51,7 @@ var tether_length: int = 0
 # AI modifiers end
 
 var modifiers: Dictionary[String, Variant] = {}
+var scripting_tags: Dictionary[String, Variant] = {}
 @export var passive_ability: Resource = null
 @export var active_abilities: Array = []
 var ability_states: Dictionary = {}
@@ -98,8 +99,16 @@ func get_dict() -> Dictionary[String, Variant]:
     new_dict["stats"] = self.get_stats_with_modifiers()
     new_dict["abilities"] = self._get_abilities_status()
     new_dict["team"] = self.team
+    if self.scripting_tags.size() > 0:
+        new_dict["tags"] = self.scripting_tags
 
     return new_dict
+
+func add_script_tag(tag: String) -> void:
+    self.scripting_tags[tag] = true
+
+func has_script_tag(tag: String) -> bool:
+    return self.scripting_tags.has(tag)
 
 func set_side(new_side: String) -> void:
     self.side = new_side
@@ -448,21 +457,22 @@ func get_value() -> int:
 
 
 func disable_shadow() -> void:
-    super.disable_shadow()
+    self._set_shadow(GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
 
-    var mesh: MeshInstance3D = $"mesh_anchor/mesh" as MeshInstance3D
-    assert(mesh != null)
-    mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+func enable_shadow() -> void:
+    self._set_shadow(GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
 
-    var additional_mesh: MeshInstance3D
+func _set_shadow(shadow_value: GeometryInstance3D.ShadowCastingSetting) -> void:
+    var mesh_anchor: Node = $"mesh_anchor"
+    self._set_shadow_recursive(mesh_anchor, shadow_value)
 
-    additional_mesh = self.get_node_or_null("mesh_anchor/mesh2") as MeshInstance3D
-    if additional_mesh != null:
-        additional_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+func _set_shadow_recursive(node: Node, shadow_value: GeometryInstance3D.ShadowCastingSetting) -> void:
+    var mesh: MeshInstance3D = node as MeshInstance3D
+    if mesh != null:
+        mesh.cast_shadow = shadow_value
 
-    additional_mesh = self.get_node_or_null("mesh_anchor/mesh3") as MeshInstance3D
-    if additional_mesh != null:
-        additional_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+    for child: Node in node.get_children():
+        self._set_shadow_recursive(child, shadow_value)
 
 func _get_abilities_status() -> Dictionary[String, Array]:
     var status: Dictionary[String, Array] = {}

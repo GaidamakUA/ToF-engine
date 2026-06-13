@@ -8,15 +8,16 @@ const SOUTH := "s"
 
 var position := Vector2i(0, 0)
 
-var ground := TileFragment.new()
-var frame := TileFragment.new()
-var decoration := TileFragment.new()
-var terrain := TileFragment.new()
-var building := TileFragment.new()
-var unit := TileFragment.new()
-var damage := TileFragment.new()
+var ground: BaseTileFragment = BaseTileFragment.new()
+var frame: BaseTileFragment = BaseTileFragment.new()
+var decoration: BaseTileFragment = BaseTileFragment.new()
+var terrain: BaseTileFragment = BaseTileFragment.new()
+var building: BuildingFragment = BuildingFragment.new()
+var unit: UnitFragment = UnitFragment.new()
+var damage: BaseTileFragment = BaseTileFragment.new()
 
-var fragments: Array[TileFragment] = []
+var fragments: Array[Variant] = []
+var tile_fragments: Array[BaseTileFragment] = []
 
 var neighbours: Dictionary[String, MapTile] = {}
 
@@ -35,9 +36,16 @@ func _init(x: int, y: int) -> void:
         self.unit,
         self.damage,
     ]
+    self.tile_fragments = [
+        self.ground,
+        self.frame,
+        self.decoration,
+        self.terrain,
+        self.damage,
+    ]
 
 func has_content() -> bool:
-    for fragment: TileFragment in self.fragments:
+    for fragment: Variant in self.fragments:
         if fragment.is_present():
             return true
     return false
@@ -71,14 +79,10 @@ func is_selectable(side: String) -> bool:
     return false
 
 func _get_unit() -> BaseUnit:
-    var typed_unit: BaseUnit = self.unit.tile as BaseUnit
-    assert(typed_unit != null)
-    return typed_unit
+    return self.unit.tile
 
 func _get_building() -> BaseBuilding:
-    var typed_building: BaseBuilding = self.building.tile as BaseBuilding
-    assert(typed_building != null)
-    return typed_building
+    return self.building.tile
 
 func add_neighbour(direction: String, tile: MapTile) -> void:
     self.neighbours[direction] = tile
@@ -99,28 +103,32 @@ func is_neighbour(tile: MapTile) -> bool:
 func can_acommodate_unit(moving_unit: BaseUnit = null) -> bool:
     if not self.ground.is_present():
         return false
-    if self.ground.tile.unit_can_fly and (moving_unit == null or not moving_unit.can_fly):
+    var ground: BaseTile = self.ground.tile
+    if ground.unit_can_fly and (moving_unit == null or not moving_unit.can_fly):
         return false
     if self.unit.is_present():
         return false
     if self.building.is_present():
         return false
     if self.terrain.is_present():
-        return self.terrain.tile.unit_can_stand
+        var terrain: BaseTile = self.terrain.tile
+        return terrain.unit_can_stand
 
     return true
 
 func can_pass_through(moving_unit: BaseUnit) -> bool:
     if not self.ground.is_present():
         return false
-    if self.ground.tile.unit_can_fly and not moving_unit.can_fly:
+    var ground: BaseTile = self.ground.tile
+    if ground.unit_can_fly and not moving_unit.can_fly:
         return false
     if self.building.is_present() and not moving_unit.can_fly:
         return false
     if self.has_enemy_unit(moving_unit.side, moving_unit.team):
         return false
     if self.terrain.is_present() and not moving_unit.can_fly:
-        return self.terrain.tile.unit_can_stand
+        var terrain: BaseTile = self.terrain.tile
+        return terrain.unit_can_stand
 
     return true
 
@@ -228,15 +236,23 @@ func is_ground_damage_possible() -> bool:
     return true
 
 func is_object_damage_possible() -> bool:
-    return self.terrain.is_present() and self.terrain.tile.is_damageable()
+    if not self.terrain.is_present():
+        return false
+
+    var terrain: BaseTile = self.terrain.tile
+    return terrain.is_damageable()
 
 func is_damageable() -> bool:
     return self.is_ground_damage_possible() or self.is_object_damage_possible()
 
 func apply_invisibility() -> void:
-    for fragment: TileFragment in self.fragments:
-        if fragment.is_present() and fragment.tile.is_invisible:
-            fragment.tile.hide_mesh()
+    for fragment: BaseTileFragment in self.tile_fragments:
+        if not fragment.is_present():
+            continue
+
+        var tile: BaseTile = fragment.tile
+        if tile.is_invisible:
+            tile.hide_mesh()
 
 
 func _settings_changed(key: String, _new_value: Variant) -> void:
@@ -289,7 +305,8 @@ func _settings_changed(key: String, _new_value: Variant) -> void:
                 self.unit.tile.hide_health()
 
 func _disable_shadow(tile: MapObject, shadow_setting: bool) -> void:
-    if tile.shadow_override and shadow_setting:
+    var base_tile: BaseTile = tile as BaseTile
+    if base_tile != null and base_tile.shadow_override and shadow_setting:
         return
 
     tile.disable_shadow()

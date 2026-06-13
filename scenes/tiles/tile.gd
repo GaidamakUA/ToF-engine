@@ -1,16 +1,11 @@
-extends Node3D
+extends MapObject
 
-class_name MapObject
+class_name BaseTile
 
-@export var template_name: String = ""
 @export var unit_can_stand: bool = false
 @export var unit_can_fly: bool = false
 @export var is_invisible: bool = false
 @export var can_share_space: bool = false
-
-@export var main_tile_view_cam_modifier: int = 0
-@export var side_tile_view_cam_modifier: int = 0
-@export var tile_view_height_cam_modifier: float = 0.0
 
 @export var unit_vertical_offset: int = 0
 
@@ -19,31 +14,11 @@ class_name MapObject
 
 @export var shadow_override: bool = false
 
-var scripting_tags: Dictionary[String, Variant] = {}
-var current_rotation: int = 0
-
-func get_dict() -> Dictionary[String, Variant]:
-    var tile_rotation: Vector3 = self.get_rotation_degrees()
-
-    var tile_dict: Dictionary[String, Variant] = {
-        "tile" : self.template_name,
-        "rotation" : tile_rotation.y
-    }
-    if self.scripting_tags.size() > 0:
-        tile_dict["tags"] = self.scripting_tags
-    return tile_dict
-
 func reset_position_for_tile_view() -> void:
     var mesh_position: Vector3 = $"mesh".get_position()
     mesh_position.y = 0
 
     $"mesh".set_position(mesh_position)
-
-func add_script_tag(tag: String) -> void:
-    self.scripting_tags[tag] = true
-
-func has_script_tag(tag: String) -> bool:
-    return self.scripting_tags.has(tag)
 
 func is_damageable() -> bool:
     return not self.next_damage_stage_template == ""
@@ -56,7 +31,6 @@ func hide_mesh() -> void:
 
 func disable_shadow() -> void:
     self._set_shadow(GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
-
 
 func enable_shadow() -> void:
     self._set_shadow(GeometryInstance3D.SHADOW_CASTING_SETTING_ON)

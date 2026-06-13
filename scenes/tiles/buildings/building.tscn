@@ -1,6 +1,5 @@
-[gd_scene load_steps=7 format=3 uid="uid://bif4f4faebcoj"]
+[gd_scene load_steps=6 format=3 uid="uid://bif4f4faebcoj"]
 
-[ext_resource type="PackedScene" uid="uid://cx8fo1iuv1i0n" path="res://scenes/tiles/tile.tscn" id="1"]
 [ext_resource type="Script" uid="uid://dqfarprdf1xkg" path="res://scenes/tiles/buildings/building.gd" id="2"]
 [ext_resource type="PackedScene" uid="uid://cx4np0wc87mdy" path="res://scenes/ui/board/voxel_coin.tscn" id="3"]
 [ext_resource type="AudioStream" uid="uid://cgo6bkybeamd4" path="res://assets/audio/building_capture_drum_2.wav" id="4_p2fsm"]
@@ -38,13 +37,16 @@ _data = {
 &"ap_gain": SubResource("1")
 }
 
-[node name="tile" instance=ExtResource("1")]
+[node name="tile" type="Node3D"]
 script = ExtResource("2")
 side = "neutral"
 require_crew = true
 ap_gain = 5
 capture_value = 70
 uses_metallic_material = false
+
+[node name="mesh" type="MeshInstance3D" parent="." index="0"]
+gi_mode = 0
 
 [node name="voxel_coin" parent="." index="1" instance=ExtResource("3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, 0)

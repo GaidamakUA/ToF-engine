@@ -27,7 +27,7 @@ func show_interaction_markers_for_tile(tile: MapTile, ap_limit: int) -> void:
     if not tile.unit.is_present() || ap_limit < 1:
         return
 
-    var unit: BaseUnit = tile.unit.tile as BaseUnit
+    var unit: BaseUnit = tile.unit.tile
     var neighbour: MapTile
     for key: String in tile.neighbours.keys():
         neighbour = tile.get_neighbour(key)

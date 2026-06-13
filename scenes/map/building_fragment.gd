@@ -1,7 +1,9 @@
-class_name TileFragment
-var tile: MapObject = null
+class_name BuildingFragment
+extends RefCounted
 
-func set_tile(new_tile: MapObject) -> void:
+var tile: BaseBuilding = null
+
+func set_tile(new_tile: BaseBuilding) -> void:
     if self.tile != null:
         self.clear()
 
@@ -27,5 +29,5 @@ func get_dict() -> Dictionary[String, Variant]:
             "tile" : null,
             "rotation" : 0,
         }
-    else:
-        return self.tile.get_dict()
+
+    return self.tile.get_dict()

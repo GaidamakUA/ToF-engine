@@ -26,7 +26,7 @@ func place_ground(position: Vector2i, name: String, rotation: int) -> void:
         self._notify_removal(tile.ground, position, self.map.builder.CLASS_GROUND)
         tile.ground.clear()
 
-    var new_element: MapObject = self.place_element(position, name, rotation, 0, self.map.tiles_ground_anchor, tile.ground)
+    var new_element: BaseTile = self.place_tile_element(position, name, rotation, 0, self.map.tiles_ground_anchor, tile.ground)
     if not self.map.settings.get_option("shadows"):
         self._disable_shadow(new_element)
 
@@ -41,7 +41,7 @@ func place_frame(position: Vector2i, name: String, rotation: int) -> void:
         self._notify_removal(tile.frame, position, self.map.builder.CLASS_FRAME)
         tile.frame.clear()
 
-    var new_element: MapObject = self.place_element(position, name, rotation, self.map.GROUND_HEIGHT, self.map.tiles_frames_anchor, tile.frame)
+    var new_element: BaseTile = self.place_tile_element(position, name, rotation, self.map.GROUND_HEIGHT, self.map.tiles_frames_anchor, tile.frame)
     if not self.map.settings.get_option("shadows") or not self.map.settings.get_option("dec_shadows"):
         self._disable_shadow(new_element)
 
@@ -57,19 +57,20 @@ func place_decoration(position: Vector2i, name: String, rotation: int) -> void:
         self._notify_removal(tile.damage, position, self.map.builder.CLASS_DAMAGE)
         tile.damage.clear()
     if tile.building.is_present():
-        var building: BaseBuilding = tile.building.tile as BaseBuilding
-        assert(building != null)
+        var building: BaseBuilding = tile.building.tile
         self._notify_removal(tile.building, position, self.map.builder.CLASS_BUILDING, building.side, building._get_abilities_status())
         tile.building.clear()
 
-    var new_element: MapObject = self.place_element(position, name, rotation, self.map.GROUND_HEIGHT, self.map.tiles_frames_anchor, tile.decoration)
+    var new_tile: BaseTile = self.place_tile_element(position, name, rotation, self.map.GROUND_HEIGHT, self.map.tiles_frames_anchor, tile.decoration)
 
-    if tile.terrain.is_present() and (not new_element.can_share_space or not tile.terrain.tile.can_share_space):
-        self._notify_removal(tile.terrain, position, self.map.builder.CLASS_TERRAIN)
-        tile.terrain.clear()
+    if tile.terrain.is_present():
+        var terrain: BaseTile = tile.terrain.tile
+        if not new_tile.can_share_space or not terrain.can_share_space:
+            self._notify_removal(tile.terrain, position, self.map.builder.CLASS_TERRAIN)
+            tile.terrain.clear()
 
     if not self.map.settings.get_option("shadows") or not self.map.settings.get_option("dec_shadows"):
-        self._disable_shadow(new_element)
+        self._disable_shadow(new_tile)
 
 func place_damage(position: Vector2i, name: String, rotation: int) -> void:
     var tile: MapTile = self.map.model.get_tile(position)
@@ -83,15 +84,14 @@ func place_damage(position: Vector2i, name: String, rotation: int) -> void:
         self._notify_removal(tile.terrain, position, self.map.builder.CLASS_TERRAIN)
         tile.terrain.clear()
     if tile.building.is_present():
-        var building: BaseBuilding = tile.building.tile as BaseBuilding
-        assert(building != null)
+        var building: BaseBuilding = tile.building.tile
         self._notify_removal(tile.building, position, self.map.builder.CLASS_BUILDING, building.side, building._get_abilities_status())
         tile.building.clear()
     if tile.damage.is_present():
         self._notify_removal(tile.damage, position, self.map.builder.CLASS_DAMAGE)
         tile.damage.clear()
 
-    var new_element: MapObject = self.place_element(position, name, rotation, self.map.GROUND_HEIGHT - 0.05, self.map.tiles_frames_anchor, tile.damage)
+    var new_element: BaseTile = self.place_tile_element(position, name, rotation, self.map.GROUND_HEIGHT - 0.05, self.map.tiles_frames_anchor, tile.damage)
     self._disable_shadow(new_element)
 
 func place_terrain(position: Vector2i, name: String, rotation: int) -> void:
@@ -100,30 +100,30 @@ func place_terrain(position: Vector2i, name: String, rotation: int) -> void:
     if not tile.ground.is_present():
         return
     if tile.unit.is_present():
-        var unit: BaseUnit = tile.unit.tile as BaseUnit
-        assert(unit != null)
+        var unit: BaseUnit = tile.unit.tile
         self._notify_removal(tile.unit, position, self.map.builder.CLASS_UNIT, unit.side)
         tile.unit.clear()
     if tile.terrain.is_present():
         self._notify_removal(tile.terrain, position, self.map.builder.CLASS_TERRAIN)
         tile.terrain.clear()
     if tile.building.is_present():
-        var building: BaseBuilding = tile.building.tile as BaseBuilding
-        assert(building != null)
+        var building: BaseBuilding = tile.building.tile
         self._notify_removal(tile.building, position, self.map.builder.CLASS_BUILDING, building.side, building._get_abilities_status())
         tile.building.clear()
     if tile.damage.is_present():
         self._notify_removal(tile.damage, position, self.map.builder.CLASS_DAMAGE)
         tile.damage.clear()
 
-    var new_element: MapObject = self.place_element(position, name, rotation, self.map.GROUND_HEIGHT, self.map.tiles_terrain_anchor, tile.terrain)
+    var new_tile: BaseTile = self.place_tile_element(position, name, rotation, self.map.GROUND_HEIGHT, self.map.tiles_terrain_anchor, tile.terrain)
 
-    if tile.decoration.is_present() and (not new_element.can_share_space or not tile.decoration.tile.can_share_space):
-        self._notify_removal(tile.decoration, position, self.map.builder.CLASS_DECORATION)
-        tile.decoration.clear()
+    if tile.decoration.is_present():
+        var decoration: BaseTile = tile.decoration.tile
+        if not new_tile.can_share_space or not decoration.can_share_space:
+            self._notify_removal(tile.decoration, position, self.map.builder.CLASS_DECORATION)
+            tile.decoration.clear()
 
     if not self.map.settings.get_option("shadows"):
-        self._disable_shadow(new_element)
+        self._disable_shadow(new_tile)
 
 func place_building(position: Vector2i, name: String, rotation: int, side: Variant = null) -> void:
     var tile: MapTile = self.map.model.get_tile(position)
@@ -134,24 +134,21 @@ func place_building(position: Vector2i, name: String, rotation: int, side: Varia
         self._notify_removal(tile.decoration, position, self.map.builder.CLASS_DECORATION)
         tile.decoration.clear()
     if tile.unit.is_present():
-        var unit: BaseUnit = tile.unit.tile as BaseUnit
-        assert(unit != null)
+        var unit: BaseUnit = tile.unit.tile
         self._notify_removal(tile.unit, position, self.map.builder.CLASS_UNIT, unit.side)
         tile.unit.clear()
     if tile.terrain.is_present():
         self._notify_removal(tile.terrain, position, self.map.builder.CLASS_TERRAIN)
         tile.terrain.clear()
     if tile.building.is_present():
-        var building: BaseBuilding = tile.building.tile as BaseBuilding
-        assert(building != null)
+        var building: BaseBuilding = tile.building.tile
         self._notify_removal(tile.building, position, self.map.builder.CLASS_BUILDING, building.side, building._get_abilities_status())
         tile.building.clear()
     if tile.damage.is_present():
         self._notify_removal(tile.damage, position, self.map.builder.CLASS_DAMAGE)
         tile.damage.clear()
 
-    var new_element: BaseBuilding = self.place_element(position, name, rotation, self.map.GROUND_HEIGHT, self.map.tiles_buildings_anchor, tile.building) as BaseBuilding
-    assert(new_element != null)
+    var new_element: BaseBuilding = self.place_building_element(position, name, rotation, self.map.GROUND_HEIGHT, self.map.tiles_buildings_anchor, tile.building)
     if not self.map.settings.get_option("shadows"):
         self._disable_shadow(new_element)
 
@@ -172,13 +169,11 @@ func force_place_unit(position: Vector2i, name: String, rotation: int, side: Var
     var tile: MapTile = self.map.model.get_tile(position)
 
     if tile.unit.is_present():
-        var old_unit: BaseUnit = tile.unit.tile as BaseUnit
-        assert(old_unit != null)
+        var old_unit: BaseUnit = tile.unit.tile
         self._notify_removal(tile.unit, position, self.map.builder.CLASS_UNIT, old_unit.side)
         tile.unit.clear()
     if tile.building.is_present():
-        var building: BaseBuilding = tile.building.tile as BaseBuilding
-        assert(building != null)
+        var building: BaseBuilding = tile.building.tile
         self._notify_removal(tile.building, position, self.map.builder.CLASS_BUILDING, building.side, building._get_abilities_status())
         tile.building.clear()
     if tile.terrain.is_present() and not tile.can_acommodate_unit():
@@ -186,8 +181,7 @@ func force_place_unit(position: Vector2i, name: String, rotation: int, side: Var
         tile.terrain.clear()
 
 
-    var new_unit: BaseUnit = self.place_element(position, name, rotation, self.map.GROUND_HEIGHT, self.map.tiles_units_anchor, tile.unit) as BaseUnit
-    assert(new_unit != null)
+    var new_unit: BaseUnit = self.place_unit_element(position, name, rotation, self.map.GROUND_HEIGHT, self.map.tiles_units_anchor, tile.unit)
     if not self.map.settings.get_option("shadows"):
         self._disable_shadow(new_unit)
 
@@ -211,7 +205,25 @@ func force_place_unit(position: Vector2i, name: String, rotation: int, side: Var
     return new_unit
 
 
-func place_element(position: Vector2i, name: String, rotation: int, vertical_offset: float, anchor: Node3D, tile_fragment: TileFragment) -> MapObject:
+func place_tile_element(position: Vector2i, name: String, rotation: int, vertical_offset: float, anchor: Node3D, tile_fragment: BaseTileFragment) -> BaseTile:
+    var new_tile: BaseTile = self._spawn_element(position, name, rotation, vertical_offset, anchor) as BaseTile
+    assert(new_tile != null)
+    tile_fragment.set_tile(new_tile)
+    return new_tile
+
+func place_building_element(position: Vector2i, name: String, rotation: int, vertical_offset: float, anchor: Node3D, tile_fragment: BuildingFragment) -> BaseBuilding:
+    var new_building: BaseBuilding = self._spawn_element(position, name, rotation, vertical_offset, anchor) as BaseBuilding
+    assert(new_building != null)
+    tile_fragment.set_tile(new_building)
+    return new_building
+
+func place_unit_element(position: Vector2i, name: String, rotation: int, vertical_offset: float, anchor: Node3D, tile_fragment: UnitFragment) -> BaseUnit:
+    var new_unit: BaseUnit = self._spawn_element(position, name, rotation, vertical_offset, anchor) as BaseUnit
+    assert(new_unit != null)
+    tile_fragment.set_tile(new_unit)
+    return new_unit
+
+func _spawn_element(position: Vector2i, name: String, rotation: int, vertical_offset: float, anchor: Node3D) -> MapObject:
     var new_tile: MapObject = self.map.templates.get_template(name)
     var world_position: Vector3 = self.map.map_to_local(position)
 
@@ -221,21 +233,17 @@ func place_element(position: Vector2i, name: String, rotation: int, vertical_off
     new_tile.set_rotation(Vector3(0, deg_to_rad(rotation), 0))
     new_tile.current_rotation = rotation
 
-    tile_fragment.set_tile(new_tile)
-
     return new_tile
 
 func clear_tile_layer(position: Vector2i) -> void:
     var tile: MapTile = self.map.model.get_tile(position)
 
     if tile.unit.is_present():
-        var unit: BaseUnit = tile.unit.tile as BaseUnit
-        assert(unit != null)
+        var unit: BaseUnit = tile.unit.tile
         self._notify_removal(tile.unit, position, self.map.builder.CLASS_UNIT, unit.side, {}, false)
         tile.unit.clear()
     elif tile.building.is_present():
-        var building: BaseBuilding = tile.building.tile as BaseBuilding
-        assert(building != null)
+        var building: BaseBuilding = tile.building.tile
         self._notify_removal(tile.building, position, self.map.builder.CLASS_BUILDING, building.side, building._get_abilities_status(), false)
         tile.building.clear()
     elif tile.terrain.is_present():
@@ -331,8 +339,7 @@ func place_tile(tile_id: String, tile_data: Dictionary) -> void:
     if building_data["tile"] != null:
         self.place_building(tile.position, str(building_data["tile"]), int(building_data["rotation"]), building_data["side"])
         if building_data.has("abilities"):
-            var building: BaseBuilding = tile.building.tile as BaseBuilding
-            assert(building != null)
+            var building: BaseBuilding = tile.building.tile
             var abilities_status: Dictionary
             abilities_status.assign(building_data["abilities"])
             building.restore_abilities_status(abilities_status)
@@ -355,8 +362,7 @@ func set_building_side(position: Vector2i, new_side: String, new_team: Variant =
     var tile: MapTile = self.map.model.get_tile(position)
 
     if tile.building.is_present():
-        var building: BaseBuilding = tile.building.tile as BaseBuilding
-        assert(building != null)
+        var building: BaseBuilding = tile.building.tile
         building.set_side(new_side)
         building.set_team(new_team)
         building.set_side_material(self.map.templates.get_side_material(new_side))
@@ -364,8 +370,7 @@ func set_building_side(position: Vector2i, new_side: String, new_team: Variant =
 func set_unit_side(position: Vector2i, new_side: String) -> void:
     var tile: MapTile = self.map.model.get_tile(position)
     if tile.unit.is_present():
-        var unit: BaseUnit = tile.unit.tile as BaseUnit
-        assert(unit != null)
+        var unit: BaseUnit = tile.unit.tile
         self._set_unit_side(unit, new_side)
 
 func _set_unit_side(unit: BaseUnit, new_side: String) -> void:
@@ -375,7 +380,7 @@ func _set_unit_side(unit: BaseUnit, new_side: String) -> void:
     unit.set_side(new_side)
     unit.set_side_materials(self.map.templates.get_side_material(new_side, material_type), self.map.templates.get_side_material_desat(new_side, material_type))
 
-func _notify_removal(tile_fragment: TileFragment, position: Vector2i, tile_class: String, side: Variant = null, modifiers: Dictionary = {}, double: bool = true) -> void:
+func _notify_removal(tile_fragment: Variant, position: Vector2i, tile_class: String, side: Variant = null, modifiers: Dictionary = {}, double: bool = true) -> void:
     if self.editor != null:
         var removal_data: Dictionary[String, Variant] = {
             "type" : "remove",
@@ -390,7 +395,8 @@ func _notify_removal(tile_fragment: TileFragment, position: Vector2i, tile_class
         self.editor.notify_about_removal(removal_data)
 
 func _disable_shadow(tile: MapObject) -> void:
-    if tile.shadow_override and self.map.settings.get_option("shadows"):
+    var base_tile: BaseTile = tile as BaseTile
+    if base_tile != null and base_tile.shadow_override and self.map.settings.get_option("shadows"):
         return
 
     tile.disable_shadow()
@@ -403,8 +409,7 @@ func rebuild_tile(tile_id: String, tile_data: Dictionary) -> void:
     tile.is_state_modified = true
     if tile.unit.is_present():
         var unit_data: Dictionary[String, Variant] = self._get_layer_data(tile_data, "unit")
-        var unit: BaseUnit = tile.unit.tile as BaseUnit
-        assert(unit != null)
+        var unit: BaseUnit = tile.unit.tile
         unit.restore_from_state(unit_data)
         if unit_data.has("passenger"):
             var passenger_data: Dictionary[String, Variant]

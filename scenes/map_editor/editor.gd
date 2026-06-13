@@ -497,10 +497,12 @@ func next_alternative() -> void:
             "new_side" : unit.side,
         })
 
-    if tile.terrain.is_present() and tile.terrain.tile.is_damageable():
-        self.next_damage_stage(tile)
-    elif tile.terrain.is_present() and tile.terrain.tile.is_restoreable():
-        self.restore_damage_stage(tile)
+    if tile.terrain.is_present():
+        var terrain: BaseTile = tile.terrain.tile
+        if terrain.is_damageable():
+            self.next_damage_stage(tile)
+        elif terrain.is_restoreable():
+            self.restore_damage_stage(tile)
 
     self.autosave()
 
@@ -517,10 +519,12 @@ func next_unit_side(unit_object: BaseUnit) -> void:
     self.map.builder.set_unit_side(self.map.tile_box_position, side_map["next"])
 
 func next_damage_stage(tile: MapTile) -> void:
-    self.replace_terrain(tile, tile.terrain.tile.next_damage_stage_template)
+    var terrain: BaseTile = tile.terrain.tile
+    self.replace_terrain(tile, terrain.next_damage_stage_template)
 
 func restore_damage_stage(tile: MapTile) -> void:
-    self.replace_terrain(tile, tile.terrain.tile.base_stage_template)
+    var terrain: BaseTile = tile.terrain.tile
+    self.replace_terrain(tile, terrain.base_stage_template)
 
 func replace_terrain(tile: MapTile, template_name: String) -> void:
     var t_rotation: Vector3 = tile.terrain.tile.get_rotation_degrees()

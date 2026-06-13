@@ -1,4 +1,4 @@
-extends MapObject
+extends BaseTile
 
 @onready var explosion: Variant = $"explosion"
 @onready var smoke: GPUParticles3D = $"smoke"

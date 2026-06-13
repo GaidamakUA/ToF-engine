@@ -523,7 +523,7 @@ func move_unit(source_tile: MapTile, destination_tile: MapTile) -> void:
 func update_unit_position(tile: MapTile) -> void:
     var path: Array[String] = self.movement_markers.get_path_to_tile(tile)
     var movement_path: Array[String] = self.path_markers.convert_path_to_directions(path)
-    var unit: BaseUnit = tile.unit.tile as BaseUnit
+    var unit: BaseUnit = tile.unit.tile
     assert(unit != null)
 
     unit.animate_path(movement_path)
@@ -568,8 +568,8 @@ func handle_interaction(tile: MapTile) -> void:
 
 
 func battle(attacker_tile: MapTile, defender_tile: MapTile) -> void:
-    var attacker: BaseUnit = attacker_tile.unit.tile as BaseUnit
-    var defender: BaseUnit = defender_tile.unit.tile as BaseUnit
+    var attacker: BaseUnit = attacker_tile.unit.tile
+    var defender: BaseUnit = defender_tile.unit.tile
     assert(attacker != null)
     assert(defender != null)
 
@@ -619,7 +619,7 @@ func battle(attacker_tile: MapTile, defender_tile: MapTile) -> void:
 
 
 func destroy_unit_on_tile(tile: MapTile, skip_explosion: bool = false) -> void:
-    var unit: BaseUnit = tile.unit.tile as BaseUnit
+    var unit: BaseUnit = tile.unit.tile
     assert(unit != null)
 
     if unit.unit_class == "hero":
@@ -676,8 +676,8 @@ func _spawn_temporary_explosion_instance_on_tile(tile: MapTile, free_delay: floa
 
 
 func capture(attacker_tile: MapTile, building_tile: MapTile) -> void:
-    var attacker: BaseUnit = attacker_tile.unit.tile as BaseUnit
-    var building: BaseBuilding = building_tile.building.tile as BaseBuilding
+    var attacker: BaseUnit = attacker_tile.unit.tile
+    var building: BaseBuilding = building_tile.building.tile
     assert(attacker != null)
     assert(building != null)
 
@@ -708,7 +708,7 @@ func cheat_capture() -> void:
         print("No building found")
         return
 
-    var building: BaseBuilding = tile.building.tile as BaseBuilding
+    var building: BaseBuilding = tile.building.tile
     assert(building != null)
     var old_side: String = building.side
 
@@ -729,7 +729,7 @@ func cheat_kill() -> void:
         print("No unit found")
         return
 
-    var unit: BaseUnit = tile.unit.tile as BaseUnit
+    var unit: BaseUnit = tile.unit.tile
     assert(unit != null)
     var unit_id: int = unit.get_instance_id()
     var unit_type: String = unit.template_name
@@ -750,7 +750,7 @@ func cheat_level_up() -> void:
         print("No unit found")
         return
 
-    var unit: BaseUnit = tile.unit.tile as BaseUnit
+    var unit: BaseUnit = tile.unit.tile
     assert(unit != null)
     unit.level_up()
 
@@ -874,12 +874,12 @@ func update_tile_highlight(tile: MapTile) -> void:
     var unit: BaseUnit = null
 
     if tile.building.is_present():
-        building = tile.building.tile as BaseBuilding
+        building = tile.building.tile
         assert(building != null)
         template_name = building.template_name
         new_side = building.side
     if tile.unit.is_present():
-        unit = tile.unit.tile as BaseUnit
+        unit = tile.unit.tile
         assert(unit != null)
         if unit.uses_metallic_material:
             material_type = self.map.templates.MATERIAL_METALLIC
@@ -912,7 +912,7 @@ func _open_context_panel_for_tile(tile: MapTile) -> void:
         var template_name: String
         var new_side: String
         var material_type: String = self.map.templates.MATERIAL_NORMAL
-        var unit: BaseUnit = tile.unit.tile as BaseUnit
+        var unit: BaseUnit = tile.unit.tile
         assert(unit != null)
 
         if unit.uses_metallic_material:

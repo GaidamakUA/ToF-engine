@@ -1,4 +1,4 @@
-extends MapObject
+extends BaseTile
 class_name BaseGround
 
 var mouse_collision: GroundMouseCollision = null

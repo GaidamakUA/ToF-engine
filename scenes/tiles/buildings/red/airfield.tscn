@@ -3,8 +3,8 @@
 [ext_resource type="PackedScene" uid="uid://bif4f4faebcoj" path="res://scenes/tiles/buildings/building.tscn" id="1"]
 [ext_resource type="Material" uid="uid://j71bn7wbij01" path="res://assets/materials/arne32_red.tres" id="2"]
 [ext_resource type="ArrayMesh" uid="uid://eb6ho08dmuym" path="res://assets/buildings/red/airfield.obj" id="3"]
-[ext_resource type="PackedScene" uid="uid://r7pmf7atvtlv" path="res://scenes/abilities/production/red/scout.tscn" id="4"]
-[ext_resource type="PackedScene" uid="uid://blqiixkqo1kea" path="res://scenes/abilities/production/red/heli.tscn" id="5"]
+[ext_resource type="Resource" path="res://scenes/abilities/production/red/scout.tres" id="4"]
+[ext_resource type="Resource" path="res://scenes/abilities/production/red/heli.tres" id="5"]
 
 [sub_resource type="Animation" id="1"]
 resource_name = "ap_gain"
@@ -46,14 +46,10 @@ ap_gain = 5
 capture_value = 70
 uses_metallic_material = false
 
+abilities = [ExtResource("5"), ExtResource("4")]
 [node name="mesh" parent="." index="0"]
 mesh = ExtResource("3")
 surface_material_override/0 = ExtResource("2")
-
-[node name="heli" parent="." index="1" instance=ExtResource("5")]
-index = 2
-
-[node name="scout" parent="." index="2" instance=ExtResource("4")]
 
 [node name="animations" parent="." index="4"]
 libraries = {

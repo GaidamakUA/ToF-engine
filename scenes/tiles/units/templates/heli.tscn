@@ -6,8 +6,8 @@
 [ext_resource type="AudioStream" uid="uid://blrcs175mat68" path="res://assets/units/audio/helicopter_damage.wav" id="4"]
 [ext_resource type="AudioStream" uid="uid://44w75p62dvdw" path="res://assets/units/audio/helicopter_die.wav" id="6"]
 [ext_resource type="AudioStream" uid="uid://sd73vscxvto2" path="res://assets/units/audio/missile_attack.wav" id="7_4xwxc"]
-[ext_resource type="PackedScene" uid="uid://b5nul8njrox76" path="res://scenes/abilities/unit/pick_up.tscn" id="8"]
-[ext_resource type="PackedScene" uid="uid://b37tcqfoip0k5" path="res://scenes/abilities/unit/drop_off.tscn" id="9"]
+[ext_resource type="Resource" path="res://scenes/abilities/unit/pick_up.tres" id="8"]
+[ext_resource type="Resource" path="res://scenes/abilities/unit/drop_off.tres" id="9"]
 
 [node name="heli" instance=ExtResource("2")]
 script = ExtResource("1")
@@ -23,6 +23,7 @@ unit_class = "heli"
 main_tile_view_cam_modifier = -10
 side_tile_view_cam_modifier = -25
 
+active_abilities = [ExtResource("8"), ExtResource("9")]
 [node name="mesh" parent="mesh_anchor" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 
@@ -34,12 +35,6 @@ offset = Vector2(0, 450)
 
 [node name="explosion" parent="." index="3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
-
-[node name="pick_up" parent="." index="4" instance=ExtResource("8")]
-index = 2
-
-[node name="drop_off" parent="." index="5" instance=ExtResource("9")]
-index = 2
 
 [node name="spawn" parent="audio" index="0"]
 stream = ExtResource("3")

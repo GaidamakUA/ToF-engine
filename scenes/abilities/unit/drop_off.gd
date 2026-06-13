@@ -1,24 +1,24 @@
 extends ActiveUnitAbility
 
-func _execute(board: Board, position: Vector2i) -> void:
+func _execute(board: Board, source: Variant, _origin_tile: MapTile, position: Vector2i) -> void:
     var tile := board.map.model.get_tile(position)
-    tile.unit.set_tile(self.source.passenger)
-    board.map.anchor_unit(self.source.passenger, position)
+    tile.unit.set_tile(source.passenger)
+    board.map.anchor_unit(source.passenger, position)
     tile._get_unit().sfx_effect("move")
     
-    self.source.passenger.remove_moves()
-    self.source.passenger = null
+    source.passenger.remove_moves()
+    source.passenger = null
 
     board.smoke_a_tile(tile)
 
-func _is_visible(_board: Board) -> bool:
-    if self.source == null:
+func _is_visible(_board: Board, source: Variant = null) -> bool:
+    if source == null:
         return false
 
-    if self.source.passenger == null:
+    if source.passenger == null:
         return false
 
     return true
 
-func is_tile_applicable(tile: MapTile, _source_tile: MapTile) -> bool:
+func is_tile_applicable(tile: MapTile, _origin_tile: MapTile, _source: Variant) -> bool:
     return tile.can_acommodate_unit()

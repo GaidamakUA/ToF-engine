@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/abilities/unit/rapid_response.gd" id="1"]
+
+[resource]
+resource_name = "rapid_response"
+script = ExtResource("1")
+label = "TR_RAPID_RESP"
+description = "TR_RAPID_RESP_DESC"
+cooldown = 3
+named_icon = "rapid_response"
+marker_colour = "blue"
+index = 2

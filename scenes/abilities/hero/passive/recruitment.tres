@@ -1,0 +1,10 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/abilities/hero/passive/recruitment.gd" id="1"]
+
+[resource]
+resource_name = "recruitment"
+script = ExtResource("1")
+label = "TR_PASS_RECRUIT"
+description = "TR_PASS_RECRUIT_DESC"
+index = 0

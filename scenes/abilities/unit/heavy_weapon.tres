@@ -1,0 +1,16 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/abilities/unit/heavy_weapon.gd" id="1"]
+
+[resource]
+resource_name = "heavy_weapon"
+script = ExtResource("1")
+label = "TR_HEAVY_WEAP"
+description = "TR_HEAVY_WEAP_DESC"
+cooldown = 3
+ability_range = 1
+draw_range = 1
+named_icon = "heavy_weapon"
+marker_colour = "red"
+damage = 8
+index = 2

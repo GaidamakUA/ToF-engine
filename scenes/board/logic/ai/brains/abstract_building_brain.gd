@@ -26,14 +26,13 @@ func get_actions(context: BrainContext) -> Array[AbstractAction]:
     var bonus: int = self._calculate_proximity_value_bonus(context.entity_tile, context.enemy_units, context.enemy_buildings)
 
     for ability: SpawnUnit in building.abilities:
-        if not ability.is_visible(context.board):
+        if not building.is_ability_visible(ability, context.board):
             continue
 
         action = null
-        ability_cost = context.board.abilities.get_modified_cost(ability.get_cost(), ability.template_name, building)
+        ability_cost = context.board.abilities.get_modified_cost(ability.get_cost(building), ability.template_name, building)
         if ability_cost <= context.ap:
-            action = self._create_ability_action(ability, self._select_random_spawn_point(spawn_points))
-            ability.active_source_tile = context.entity_tile
+            action = self._create_ability_action(ability, context.entity_tile, self._select_random_spawn_point(spawn_points))
         elif ability_cost * 0.75 <= context.ap:
             @warning_ignore('integer_division')
             action = self._create_reserve_ap_action(ability_cost/2)
@@ -53,8 +52,8 @@ func _get_spawn_points(entity_tile: MapTile) -> Array[MapTile]:
 
     return spawn_points
 
-func _create_ability_action(ability: Ability, target: MapTile) -> UseAbilityAction:
-    return UseAbilityAction.new(ability, target)
+func _create_ability_action(ability: Ability, origin_tile: MapTile, target: MapTile) -> UseAbilityAction:
+    return UseAbilityAction.new(ability, origin_tile, target)
 
 func _create_reserve_ap_action(ap_amount: int) -> ReserveApAction:
     return ReserveApAction.new(ap_amount)

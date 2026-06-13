@@ -64,23 +64,25 @@ func get_all_tiles_in_ability_range(ability: Ability, tile: MapTile) -> Array[Ma
     tiles.assign(self.tiles_in_range.values())
     return tiles
 
-func show_active_markers_for_tile(source_tile: MapTile, ability: Ability) -> void:
-    self.get_all_tiles_in_ability_range(ability, source_tile)
-    self._draw_ability_range(source_tile, ability.draw_range, ability.in_line)
+func show_active_markers_for_tile(origin_tile: MapTile, ability: Ability) -> void:
+    self.get_all_tiles_in_ability_range(ability, origin_tile)
+    self._draw_ability_range(origin_tile, ability.draw_range, ability.in_line)
 
     if ability is ActiveUnitAbility:
-        self._show_active_unit_markers(source_tile, ability)
+        self._show_active_unit_markers(origin_tile, ability)
     elif ability is ActiveHeroAbility:
-        self._show_active_hero_markers(source_tile, ability)
+        self._show_active_hero_markers(origin_tile, ability)
 
-func _show_active_unit_markers(source_tile: MapTile, ability: ActiveUnitAbility) -> void:
+func _show_active_unit_markers(origin_tile: MapTile, ability: ActiveUnitAbility) -> void:
+    var source: BaseUnit = origin_tile.unit.tile
     for tile: MapTile in self.tiles_in_range.values():
-        if ability.is_tile_applicable(tile, source_tile):
+        if ability.is_tile_applicable(tile, origin_tile, source):
             self.place_marker(tile.position, ability.marker_colour)
 
-func _show_active_hero_markers(source_tile: MapTile, ability: ActiveHeroAbility) -> void:
+func _show_active_hero_markers(origin_tile: MapTile, ability: ActiveHeroAbility) -> void:
+    var source: BaseUnit = origin_tile.unit.tile
     for tile: MapTile in self.tiles_in_range.values():
-        if ability.is_tile_applicable(tile, source_tile):
+        if ability.is_tile_applicable(tile, origin_tile, source):
             self.place_marker(tile.position, ability.marker_colour)
 
 func expand_from_tile(tile: MapTile, depth: int, distance: int) -> void:
@@ -116,14 +118,14 @@ func place_marker(marker_position: Vector2i, colour: String = "green") -> void:
 func _get_key(tile: MapTile) -> String:
     return str(tile.position.x) + "_" + str(tile.position.y)
 
-func _draw_ability_range(source_tile: MapTile, ability_range: int, in_line: bool) -> void:
+func _draw_ability_range(origin_tile: MapTile, ability_range: int, in_line: bool) -> void:
     if ability_range < 1:
         return
 
     for x_index: int in range(-ability_range, ability_range + 1):
         for y_index: int in range(-ability_range, ability_range + 1):
-            var x: int = source_tile.position.x + x_index
-            var y: int = source_tile.position.y + y_index
+            var x: int = origin_tile.position.x + x_index
+            var y: int = origin_tile.position.y + y_index
 
             if x < 0 or x >= self.map_obj.model.SIZE or y < 0 or y >= self.map_obj.model.SIZE:
                 continue

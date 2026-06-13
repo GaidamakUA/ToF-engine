@@ -1,4 +1,4 @@
-extends Node
+extends Resource
 class_name Ability
 
 var TYPE: String = "undefined"
@@ -12,61 +12,34 @@ var TYPE: String = "undefined"
 @export var ability_range: int = 0
 @export var draw_range: int = 0
 @export var in_line: bool = false
-var source: Variant = null
-var active_source_tile: MapTile = null
-var cd_turns_left: int = 0
-var disabled: bool = false
 
-func _ready() -> void:
-    self.signal_to_parent()
-
-func signal_to_parent() -> void:
-    self.receive_signal(self.get_parent())
-
-func receive_signal(receiver: Variant) -> void:
-    receiver.register_ability(self)
-    self.source = receiver
-
-func execute(board: Board, position: Vector2i) -> void:
-    self._execute(board, position)
+func execute(board: Board, source: Variant, origin_tile: MapTile, position: Vector2i) -> void:
+    self._execute(board, source, origin_tile, position)
     board.events.emit_ability_used(self, position)
-    self.activate_cooldown(board)
 
-func _execute(_board: Board, _position: Vector2i) -> void:
+func _execute(_board: Board, _source: Variant, _origin_tile: MapTile, _position: Vector2i) -> void:
     return
 
-func is_visible(_board: Board = null) -> bool:
-    if self.disabled:
+func is_visible(state: AbilityState = null, _board: Board = null, source: Variant = null) -> bool:
+    if state != null and state.disabled:
         return false
 
-    return self._is_visible(_board)
+    return self._is_visible(_board, source)
 
-func _is_visible(_board: Board) -> bool:
+func _is_visible(_board: Board, _source: Variant = null) -> bool:
     return true
 
 func is_available(_board: Board = null) -> bool:
     return true
 
-func is_on_cooldown() -> bool:
-    return self.cd_turns_left > 0
-
-func activate_cooldown(board: Board) -> void:
-    var modified_cooldown := board.abilities.get_modified_cooldown(self.get_cooldown(), self.source)
-
-    self.cd_turns_left = modified_cooldown
-
-func reset_cooldown() -> void:
-    self.cd_turns_left = 0
-
-func cd_tick_down() -> void:
-    if self.cd_turns_left > 0:
-        self.cd_turns_left -= 1
-
-func get_cost() -> int:
+func get_cost(_source: Variant = null) -> int:
     return self.ap_cost
 
-func get_cooldown() -> int:
+func get_cooldown(_source: Variant = null) -> int:
     return self.cooldown
 
 func get_named_icon() -> String:
     return ""
+
+func is_tile_applicable(_tile: MapTile, _origin_tile: MapTile, _source: Variant) -> bool:
+    return true

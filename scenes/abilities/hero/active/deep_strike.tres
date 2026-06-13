@@ -1,0 +1,16 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/abilities/hero/active/deep_strike.gd" id="1"]
+
+[resource]
+resource_name = "deep_strike"
+script = ExtResource("1")
+cooldown = 4
+unit_template = "blue_infantry"
+named_icon = "deep_strike"
+marker_colour = "blue"
+label = "TR_DEEP_STRIKE"
+description = "TR_DEEP_STRIKE_DESC"
+ability_range = 2
+draw_range = 2
+index = 2

@@ -12,7 +12,7 @@ func _execute(_metadata: Dictionary[String, Variant]) -> void:
 
     for ability: Ability in building.abilities:
         if ability.index == self.ability_id:
-            ability.disabled = self.ban
+            building.set_ability_disabled(ability, self.ban)
 
 func _ingest_details(details: Dictionary[String, Variant]) -> void:
     self.ability_id = int(details['ability_id'])

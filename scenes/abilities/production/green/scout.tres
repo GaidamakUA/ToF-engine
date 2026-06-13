@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/abilities/production/spawn_unit.gd" id="1"]
+
+[resource]
+resource_name = "scout"
+script = ExtResource("1")
+template_name = "green_scout"
+label = "TR_SCOUT_HELI"
+ap_cost = 50
+index = 0

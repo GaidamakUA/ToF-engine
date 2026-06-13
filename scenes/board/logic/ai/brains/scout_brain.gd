@@ -19,9 +19,8 @@ func _gather_ability_actions(entity_tile: MapTile, _ap: int, _board: Board) -> A
     var actions: Array[AbstractAction] = []
 
     for ability: ActiveUnitAbility in unit.active_abilities:
-        if ability.is_visible() and not ability.is_on_cooldown():
-            var action: UseAbilityAction = self._ability_action(ability, entity_tile)
-            ability.active_source_tile = entity_tile
+        if unit.is_ability_visible(ability) and not unit.is_ability_on_cooldown(ability):
+            var action: UseAbilityAction = self._ability_action(ability, entity_tile, entity_tile)
             action.delay = 0.5
             action.value = 50
             actions.append(action)

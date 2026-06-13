@@ -3,21 +3,18 @@
 [ext_resource type="Material" uid="uid://cmuoryv8gy5rs" path="res://assets/materials/arne32_yellow.tres" id="1"]
 [ext_resource type="PackedScene" uid="uid://pbf2ydgtfdt4" path="res://scenes/tiles/units/heroes/hero.tscn" id="2"]
 [ext_resource type="ArrayMesh" uid="uid://d0qn6xvmqn3s2" path="res://assets/units/heroes/warlord.obj" id="3"]
-[ext_resource type="PackedScene" uid="uid://ccjre2of34oek" path="res://scenes/abilities/hero/passive/intimidate.tscn" id="4"]
-[ext_resource type="PackedScene" uid="uid://3lu50pp0ey7o" path="res://scenes/abilities/hero/active/promote.tscn" id="5"]
+[ext_resource type="Resource" path="res://scenes/abilities/hero/passive/intimidate.tres" id="4"]
+[ext_resource type="Resource" path="res://scenes/abilities/hero/active/promote.tres" id="5"]
 
 [node name="warlord" instance=ExtResource("2")]
 unit_name = "TR_WARLORD"
 side = "yellow"
 
+passive_ability = ExtResource("4")
+active_abilities = [ExtResource("5")]
 [node name="mesh" parent="mesh_anchor" index="0"]
 mesh = ExtResource("3")
 surface_material_override/0 = ExtResource("1")
 
 [node name="standard" parent="mesh_anchor" index="1"]
 surface_material_override/0 = ExtResource("1")
-
-[node name="intimidate" parent="." index="3" instance=ExtResource("4")]
-
-[node name="promote" parent="." index="4" instance=ExtResource("5")]
-index = 2

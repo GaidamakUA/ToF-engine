@@ -5,7 +5,6 @@ signal move_finished
 
 const MAX_LEVEL: int = 3
 const EXP_PER_LEVEL: int = 2
-
 @onready var audio: AudioService = SimpleAudioLibrary as AudioService
 
 @onready var animations: AnimationPlayer = $"animations"
@@ -52,8 +51,9 @@ var tether_length: int = 0
 # AI modifiers end
 
 var modifiers: Dictionary[String, Variant] = {}
-var passive_ability: PassiveAbility = null
-var active_abilities: Array = []
+@export var passive_ability: Resource = null
+@export var active_abilities: Array = []
+var ability_states: Dictionary = {}
 var allow_level_up: bool = true
 
 var unit_rotations: Dictionary[String, int] = {
@@ -78,6 +78,7 @@ var desaturated_material: Resource = null
 func _ready() -> void:
     self.animations.animation_finished.connect(_on_animation_finished)
     self.healthbar_sprite.texture = $"mesh_anchor/healthbar/SubViewport".get_texture()
+    self._setup_abilities()
 
 func reset() -> void:
     var stats: Dictionary[String, int] = self.get_stats_with_modifiers()
@@ -352,21 +353,60 @@ func give_sfx_effect(sfx_name: String) -> Variant:
 func register_ability(ability: Ability) -> void:
     if ability.TYPE == "active":
         self.active_abilities.append(ability)
+    self.get_ability_state(ability)
+
+func _setup_abilities() -> void:
+    for ability: Ability in self.active_abilities:
+        self.get_ability_state(ability)
+
+func get_ability_state(ability: Ability) -> AbilityState:
+    if not self.ability_states.has(ability):
+        self.ability_states[ability] = AbilityState.new()
+
+    return self.ability_states[ability]
+
+func is_ability_visible(ability: Ability, board: Board = null) -> bool:
+    return ability.is_visible(self.get_ability_state(ability), board, self)
+
+func is_ability_on_cooldown(ability: Ability) -> bool:
+    return self.get_ability_state(ability).is_on_cooldown()
+
+func get_ability_cooldown(ability: Ability) -> int:
+    return self.get_ability_state(ability).cd_turns_left
+
+func set_ability_disabled(ability: Ability, disabled: bool) -> void:
+    self.get_ability_state(ability).disabled = disabled
+
+func is_ability_disabled(ability: Ability) -> bool:
+    return self.get_ability_state(ability).disabled
+
+func activate_ability_cooldown(ability: Ability, board: Board) -> void:
+    self.get_ability_state(ability).activate_cooldown(ability, board, self)
+
+func get_ability_by_id(id: String) -> Ability:
+    for ability: Ability in self.active_abilities:
+        if ability.resource_path.get_file().get_basename() == id:
+            return ability
+
+    if self.passive_ability != null and self.passive_ability.resource_path.get_file().get_basename() == id:
+        return self.passive_ability
+
+    return null
 
 func has_active_ability() -> bool:
     return self.active_abilities.size() > 0 and self.level > 0
 
 func ability_cd_tick_down() -> void:
     for ability: Ability in self.active_abilities:
-        ability.cd_tick_down()
+        self.get_ability_state(ability).tick_cooldown()
 
 func reset_cooldown() -> void:
     for ability: Ability in self.active_abilities:
-        ability.reset_cooldown()
+        self.get_ability_state(ability).reset_cooldown()
 
 func activate_all_cooldowns(board: Board) -> void:
     for ability: Ability in self.active_abilities:
-        ability.activate_cooldown(board)
+        self.activate_ability_cooldown(ability, board)
 
 func apply_modifier(modifier_name: String, value: Variant) -> void:
     self.modifiers[modifier_name] = value
@@ -428,7 +468,8 @@ func _get_abilities_status() -> Dictionary[String, Array]:
     var status: Dictionary[String, Array] = {}
 
     for ability: Ability in self.active_abilities:
-        status["ability" + str(ability.index)] = [ability.disabled, ability.cd_turns_left]
+        var state: AbilityState = self.get_ability_state(ability)
+        status["ability" + str(ability.index)] = [state.disabled, state.cd_turns_left]
 
     return status
 
@@ -462,13 +503,14 @@ func restore_from_state(state: Dictionary) -> void:
     for ability: Ability in self.active_abilities:
         key = "ability" + str(ability.index)
         if abilities_status.has(key):
-            ability.disabled = bool(abilities_status[key][0])
-            ability.cd_turns_left = int(abilities_status[key][1])
+            var ability_state: AbilityState = self.get_ability_state(ability)
+            ability_state.disabled = bool(abilities_status[key][0])
+            ability_state.cd_turns_left = int(abilities_status[key][1])
 
 func disable_dlc_abilities(editor_version: int) -> void:
     for ability: Ability in self.active_abilities:
         if ability.dlc_version > editor_version:
-            ability.disabled = true
+            self.set_ability_disabled(ability, true)
 
 func is_hero() -> bool:
     return false

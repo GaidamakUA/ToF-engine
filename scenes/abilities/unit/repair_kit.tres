@@ -1,0 +1,17 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/abilities/unit/repair_kit.gd" id="1"]
+
+[resource]
+resource_name = "repair_kit"
+script = ExtResource("1")
+label = "TR_REPAIR_KIT"
+description = "TR_REPAIR_KIT_DESC"
+ap_cost = 15
+cooldown = 3
+ability_range = 1
+draw_range = 1
+named_icon = "repair_kit"
+marker_colour = "green"
+heal = 5
+index = 3

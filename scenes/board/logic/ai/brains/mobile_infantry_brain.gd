@@ -22,20 +22,19 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, _board: Board) -> Ar
         unit_range = ap
 
     for ability: ActiveUnitAbility in unit.active_abilities:
-        if ability.is_visible() and ability.get_cost() <= ap and not ability.is_on_cooldown():
+        if unit.is_ability_visible(ability) and ability.get_cost(unit) <= ap and not unit.is_ability_on_cooldown(ability):
             for friendly_unit_tile: String in self.pathfinder.own_units:
                 target_tile = self.pathfinder.own_units[friendly_unit_tile]
                 var target_unit: BaseUnit = self._get_unit(target_tile)
 
                 if target_unit.max_hp - target_unit.hp < 5:
                     continue
-                if not ability.is_tile_applicable(target_tile, entity_tile):
+                if not ability.is_tile_applicable(target_tile, entity_tile, unit):
                     continue
 
                 if entity_tile.is_neighbour(target_tile):
-                    var ability_action: UseAbilityAction = self._ability_action(ability, target_tile)
+                    var ability_action: UseAbilityAction = self._ability_action(ability, entity_tile, target_tile)
                     ability_action.delay = 0.5
-                    ability.active_source_tile = entity_tile
                     ability_action.value += target_unit.get_value()
                     actions.append(ability_action)
                     continue

@@ -3,8 +3,8 @@
 [ext_resource type="PackedScene" uid="uid://bif4f4faebcoj" path="res://scenes/tiles/buildings/building.tscn" id="1"]
 [ext_resource type="Material" uid="uid://j71bn7wbij01" path="res://assets/materials/arne32_red.tres" id="2"]
 [ext_resource type="ArrayMesh" uid="uid://c70hdddepj4aj" path="res://assets/buildings/red/factory.obj" id="3"]
-[ext_resource type="PackedScene" uid="uid://cp5m6i4m3sut4" path="res://scenes/abilities/production/red/tank.tscn" id="4"]
-[ext_resource type="PackedScene" uid="uid://cdd88kj8enb1l" path="res://scenes/abilities/production/red/rocket_artillery.tscn" id="5"]
+[ext_resource type="Resource" path="res://scenes/abilities/production/red/tank.tres" id="4"]
+[ext_resource type="Resource" path="res://scenes/abilities/production/red/rocket_artillery.tres" id="5"]
 
 [sub_resource type="Animation" id="1"]
 resource_name = "ap_gain"
@@ -46,14 +46,10 @@ ap_gain = 5
 capture_value = 70
 uses_metallic_material = false
 
+abilities = [ExtResource("4"), ExtResource("5")]
 [node name="mesh" parent="." index="0"]
 mesh = ExtResource("3")
 surface_material_override/0 = ExtResource("2")
-
-[node name="tank" parent="." index="1" instance=ExtResource("4")]
-index = 2
-
-[node name="rocket_artillery" parent="." index="2" instance=ExtResource("5")]
 
 [node name="animations" parent="." index="4"]
 libraries = {

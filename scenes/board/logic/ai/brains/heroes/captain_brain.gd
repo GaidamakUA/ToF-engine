@@ -7,7 +7,7 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, _board: Board) -> Ar
 
     if not unit.has_moves():
         return []
-    if ability.ap_cost > ap or ability.is_on_cooldown():
+    if ability.ap_cost > ap or unit.is_ability_on_cooldown(ability):
         return []
 
     var path: Array[String]
@@ -45,8 +45,7 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, _board: Board) -> Ar
 
     action_value = _calculate_supply_value(unit, entity_tile)
     if action_value >= 100:
-        var ability_action: UseAbilityAction = self._ability_action(ability, entity_tile)
-        ability.active_source_tile = entity_tile
+        var ability_action: UseAbilityAction = self._ability_action(ability, entity_tile, entity_tile)
         ability_action.delay = 0.5
         ability_action.value = action_value
         actions.append(ability_action)

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/abilities/production/spawn_unit.gd" id="1"]
+
+[resource]
+resource_name = "mobile_infantry"
+script = ExtResource("1")
+template_name = "red_m_inf"
+label = "TR_M_INF"
+ap_cost = 35
+index = 0

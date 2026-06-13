@@ -183,8 +183,8 @@ func _capture_action(entity_tile: MapTile, interaction_tile: MapTile, target_til
 
     return CaptureAction.new(entity_tile, interaction_tile, target_tile, path.size())
 
-func _ability_action(ability: Ability, target: MapTile) -> UseAbilityAction:
-    return UseAbilityAction.new(ability, target)
+func _ability_action(ability: Ability, origin_tile: MapTile, target: MapTile) -> UseAbilityAction:
+    return UseAbilityAction.new(ability, origin_tile, target)
 
 func _can_approach(entity_tile: MapTile, path: Array[String], unit_range: int) -> bool:
     if unit_range < 1:

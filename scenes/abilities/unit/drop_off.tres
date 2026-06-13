@@ -1,0 +1,14 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/abilities/unit/drop_off.gd" id="1"]
+
+[resource]
+resource_name = "drop_off"
+script = ExtResource("1")
+label = "TR_DROP_OFF"
+description = "TR_DROP_OFF_DESC"
+ability_range = 1
+draw_range = 1
+named_icon = "drop_off"
+marker_colour = "blue"
+index = 2

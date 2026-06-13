@@ -5,9 +5,9 @@ func _init() -> void:
     self.TYPE = "hero"
 
 
-func get_cooldown() -> int:
+func get_cooldown(source: Variant = null) -> int:
     var modified_cooldown := self.cooldown
-    if self.source != null and self.source.level == 3:
+    if source != null and source.level == 3:
         modified_cooldown = max(modified_cooldown - 1, 1)
 
     return modified_cooldown

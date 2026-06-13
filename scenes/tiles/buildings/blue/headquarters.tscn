@@ -3,9 +3,9 @@
 [ext_resource type="ArrayMesh" uid="uid://vdvsrf4yxhih" path="res://assets/buildings/blue/headquarters.obj" id="1"]
 [ext_resource type="Material" uid="uid://bd7bg72rx00b2" path="res://assets/materials/arne32_blue.tres" id="2"]
 [ext_resource type="PackedScene" uid="uid://bif4f4faebcoj" path="res://scenes/tiles/buildings/building.tscn" id="3"]
-[ext_resource type="PackedScene" uid="uid://bhqnytwquafj4" path="res://scenes/abilities/production/blue/infantry.tscn" id="4"]
-[ext_resource type="PackedScene" uid="uid://b0rr8trun1lp1" path="res://scenes/abilities/production/heroes/general.tscn" id="5"]
-[ext_resource type="PackedScene" uid="uid://crkmprobm3a5g" path="res://scenes/abilities/production/heroes/commando.tscn" id="6"]
+[ext_resource type="Resource" path="res://scenes/abilities/production/blue/infantry.tres" id="4"]
+[ext_resource type="Resource" path="res://scenes/abilities/production/heroes/general.tres" id="5"]
+[ext_resource type="Resource" path="res://scenes/abilities/production/heroes/commando.tres" id="6"]
 [ext_resource type="Script" uid="uid://bxx4ywgvv1d2n" path="res://scenes/tiles/buildings/blue/headquarters.gd" id="7"]
 
 [sub_resource type="Animation" id="1"]
@@ -49,18 +49,10 @@ ap_gain = 20
 capture_value = 1000
 uses_metallic_material = false
 
+abilities = [ExtResource("4"), ExtResource("5"), ExtResource("6")]
 [node name="mesh" parent="." index="0"]
 mesh = ExtResource("1")
 surface_material_override/0 = ExtResource("2")
-
-[node name="infantry" parent="." index="1" instance=ExtResource("4")]
-index = 2
-ap_cost = 40
-
-[node name="general" parent="." index="2" instance=ExtResource("5")]
-
-[node name="commando" parent="." index="3" instance=ExtResource("6")]
-index = 4
 
 [node name="animations" parent="." index="5"]
 libraries = {

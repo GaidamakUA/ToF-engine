@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/abilities/unit/missile.gd" id="1"]
+
+[resource]
+resource_name = "heavy_missile"
+script = ExtResource("1")
+label = "TR_HEAVY_MISS"
+description = "TR_HEAVY_MISS_DESC"
+cooldown = 2
+ability_range = 4
+draw_range = 4
+named_icon = "heavy_missile"
+marker_colour = "red"
+damage = 11
+min_level = 1
+max_level = 3
+index = 2

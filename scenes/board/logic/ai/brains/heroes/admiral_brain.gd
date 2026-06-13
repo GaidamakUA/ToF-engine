@@ -7,7 +7,7 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, board: Board) -> Arr
 
     if not unit.has_moves():
         return []
-    if ability.ap_cost > ap or ability.is_on_cooldown():
+    if ability.ap_cost > ap or unit.is_ability_on_cooldown(ability):
         return []
 
     var approach_target_tile: MapTile
@@ -46,12 +46,11 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, board: Board) -> Arr
     var targets_in_range: Array[MapTile] = []
 
     for tile: MapTile in board.ability_markers.get_all_tiles_in_ability_range(ability, entity_tile):
-        if ability.is_tile_applicable(tile, entity_tile):
+        if ability.is_tile_applicable(tile, entity_tile, unit):
             targets_in_range.append(tile)
 
     for target_tile: MapTile in targets_in_range:
-        var ability_action: UseAbilityAction = self._ability_action(ability, target_tile)
-        ability.active_source_tile = entity_tile
+        var ability_action: UseAbilityAction = self._ability_action(ability, entity_tile, target_tile)
         ability_action.delay = 0.5
         ability_action.value = _calculate_blast_value(unit, target_tile)
         if ability_action.value >= 40:

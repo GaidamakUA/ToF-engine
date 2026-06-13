@@ -3,13 +3,15 @@ class_name UseAbilityAction
 
 var ability: Ability
 var delay: float = 0.0
+var origin_tile: MapTile
 
-func _init(ability_object: Ability, target_object: MapTile) -> void:
+func _init(ability_object: Ability, origin_tile_object: MapTile, target_object: MapTile) -> void:
     self.ability = ability_object
+    self.origin_tile = origin_tile_object
     self.target = target_object
 
 func perform(board: Board) -> void:
-    board.selected_tile = self.ability.active_source_tile
+    board.selected_tile = self.origin_tile
     if board.selected_tile.building.is_present():
         board._activate_production_ability(self.ability)
     else:
@@ -22,4 +24,4 @@ func perform(board: Board) -> void:
 
 
 func _to_string() -> String:
-    return str(self.ability.active_source_tile.position) + " uses ability on " + str(self.target.position)
+    return str(self.origin_tile.position) + " uses ability on " + str(self.target.position)

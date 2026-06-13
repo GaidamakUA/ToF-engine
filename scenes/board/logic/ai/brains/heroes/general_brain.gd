@@ -7,15 +7,14 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, board: Board) -> Arr
 
     if not unit.has_moves():
         return []
-    if ability.ap_cost > ap or ability.is_on_cooldown():
+    if ability.ap_cost > ap or unit.is_ability_on_cooldown(ability):
         return []
 
     var actions: Array[AbstractAction] = []
 
     for tile: MapTile in board.ability_markers.get_all_tiles_in_ability_range(ability, entity_tile):
-        if ability.is_tile_applicable(tile, entity_tile):
-            var action: UseAbilityAction = self._ability_action(ability, tile)
-            ability.active_source_tile = entity_tile
+        if ability.is_tile_applicable(tile, entity_tile, unit):
+            var action: UseAbilityAction = self._ability_action(ability, entity_tile, tile)
             action.delay = 0.5
             action.value = _calculate_drop_value(unit, tile)
             actions.append(action)

@@ -98,7 +98,7 @@ func show_active_abilities(unit: BaseUnit, board_object: Board) -> void:
     var index: int = 0
 
     for ability: Ability in unit.active_abilities:
-        if ability.is_visible(board_object):
+        if unit.is_ability_visible(ability, board_object):
             if index > 2:
                 return
             self.bind_ability(index, ability, board_object)

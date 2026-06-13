@@ -11,6 +11,12 @@ func register_ability(ability: Ability) -> void:
 
     super.register_ability(ability)
 
+func _setup_abilities() -> void:
+    if self.passive_ability != null:
+        self.get_ability_state(self.passive_ability)
+
+    for ability: Ability in self.active_abilities:
+        self.get_ability_state(ability)
 
 func has_active_ability() -> bool:
     if self.disable_active_abilities:

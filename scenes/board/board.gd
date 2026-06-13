@@ -25,6 +25,7 @@ var collateral: Collateral = Collateral.new(self)
 
 var selected_tile: MapTile = null
 var active_ability: Ability = null
+var active_ability_origin_tile: MapTile = null
 var last_hover_tile: MapTile = null
 @onready var selected_tile_marker: Node3D = $"marker_anchor/tile_marker"
 @onready var movement_markers: MovementMarkers = $"marker_anchor/movement_markers"
@@ -388,6 +389,7 @@ func reset_unit_markers() -> void:
 
 func cancel_ability() -> void:
     self.active_ability = null
+    self.active_ability_origin_tile = null
     self.ability_markers.reset()
     self.refresh_tile_selection()
 
@@ -761,19 +763,22 @@ func activate_production_ability(args: Array) -> void:
 
 
 func _activate_production_ability(ability: SpawnUnit) -> void:
-    var cost: int = ability.get_cost()
-    cost = self.abilities.get_modified_cost(cost, ability.template_name, ability.source)
+    var building: BaseBuilding = self.selected_tile.building.tile
+    var cost: int = ability.get_cost(building)
+    cost = self.abilities.get_modified_cost(cost, ability.template_name, building)
 
     if self.state.can_current_player_afford(cost):
         self.active_ability = ability
+        self.active_ability_origin_tile = self.selected_tile
         if self.selected_tile != null:
             self.ability_markers.show_ability_markers_for_tile(ability, self.selected_tile)
 
 
 func activate_ability(args: Array) -> void:
     var ability: Ability = args[0] as Ability
+    var unit: BaseUnit = self.selected_tile.unit.tile
     assert(ability != null)
-    if self.state.can_current_player_afford(ability.get_cost()) and not ability.is_on_cooldown():
+    if self.state.can_current_player_afford(ability.get_cost(unit)) and not unit.is_ability_on_cooldown(ability):
         self.toggle_radial_menu()
         _activate_ability(ability)
 
@@ -781,14 +786,23 @@ func activate_ability(args: Array) -> void:
 func _activate_ability(ability: Ability) -> void:
     self.reset_unit_markers()
     self.active_ability = ability
+    self.active_ability_origin_tile = self.selected_tile
     if self.selected_tile != null:
         self.ability_markers.show_ability_markers_for_tile(ability, self.selected_tile)
-        ability.active_source_tile = self.selected_tile
 
 
-func execute_active_ability(tile: MapTile) -> void:
+func execute_active_ability(target_tile: MapTile) -> void:
     assert(self.active_ability != null)
-    self.abilities.execute_ability(self.active_ability, tile)
+    var source: Variant = null
+
+    if self.active_ability_origin_tile.building.is_present():
+        source = self.active_ability_origin_tile.building.tile
+    elif self.active_ability_origin_tile.unit.is_present():
+        source = self.active_ability_origin_tile.unit.tile
+
+    var ability: ActiveUnitAbility = self.active_ability
+    ability.execute(self, source, self.active_ability_origin_tile, target_tile.position)
+    source.activate_ability_cooldown(ability, self)
     self.cancel_ability()
 
 

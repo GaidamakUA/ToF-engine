@@ -1,0 +1,17 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/abilities/unit/medkit.gd" id="1"]
+
+[resource]
+resource_name = "medkit"
+script = ExtResource("1")
+label = "TR_MEDKIT"
+description = "TR_MEDKIT_DESC"
+ap_cost = 5
+cooldown = 3
+ability_range = 1
+draw_range = 1
+named_icon = "medkit"
+marker_colour = "green"
+heal = 5
+index = 1

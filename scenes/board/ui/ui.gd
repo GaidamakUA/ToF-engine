@@ -143,13 +143,13 @@ func _show_active_abilities(unit: BaseUnit, board: Board) -> void:
     var index: int = 0
 
     for ability: Ability in unit.active_abilities:
-        if ability.is_visible(board):
+        if unit.is_ability_visible(ability, board):
             if index > 2:
                 return
-            self._bind_ability(index, ability)
+            self._bind_ability(index, unit, ability)
             index += 1
 
-func _bind_ability(index: int, ability: Ability) -> void:
+func _bind_ability(index: int, unit: BaseUnit, ability: Ability) -> void:
     var boxes: Array[Node2D] = [
         self.ab1,
         self.ab2,
@@ -183,9 +183,10 @@ func _bind_ability(index: int, ability: Ability) -> void:
     self.ability_icons[index] = icon
     labels[index].set_text(ability.label)
 
-    if ability.cd_turns_left > 0:
+    var cd_turns_left: int = unit.get_ability_cooldown(ability)
+    if cd_turns_left > 0:
         disabled[index].show()
-        cooldowns[index].set_text(str(ability.cd_turns_left))
+        cooldowns[index].set_text(str(cd_turns_left))
     else:
         disabled[index].hide()
 

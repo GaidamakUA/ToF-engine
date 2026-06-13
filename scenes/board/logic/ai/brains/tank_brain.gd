@@ -21,17 +21,16 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, board: Board) -> Arr
         unit_range = ap
 
     for ability: ActiveUnitAbility in unit.active_abilities:
-        if ability.is_visible() and ability.get_cost() <= ap and not ability.is_on_cooldown():
+        if unit.is_ability_visible(ability) and ability.get_cost(unit) <= ap and not unit.is_ability_on_cooldown(ability):
             var targets_in_range: Array[MapTile] = []
 
             for tile: MapTile in board.ability_markers.get_all_tiles_in_ability_range(ability, entity_tile):
-                if ability.is_tile_applicable(tile, entity_tile):
+                if ability.is_tile_applicable(tile, entity_tile, unit):
                     targets_in_range.append(tile)
 
             for target: MapTile in targets_in_range:
                 var target_unit: BaseUnit = self._get_unit(target)
-                var ability_action: UseAbilityAction = self._ability_action(ability, target)
-                ability.active_source_tile = entity_tile
+                var ability_action: UseAbilityAction = self._ability_action(ability, entity_tile, target)
                 ability_action.delay = 0.5
                 ability_action.value = target_unit.unit_value + 50
                 actions.append(ability_action)

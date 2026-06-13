@@ -6,8 +6,8 @@
 [ext_resource type="AudioStream" uid="uid://c8x4wd0406myw" path="res://assets/units/audio/tank_move.wav" id="5"]
 [ext_resource type="AudioStream" uid="uid://di5y7cgurfgrm" path="res://assets/units/audio/tank_damage.wav" id="6"]
 [ext_resource type="Script" uid="uid://bub6r1obtavy8" path="res://scenes/tiles/units/templates/rocket_artillery.gd" id="7"]
-[ext_resource type="PackedScene" uid="uid://c38hykksjarm1" path="res://scenes/abilities/unit/missile.tscn" id="8"]
-[ext_resource type="PackedScene" uid="uid://bbpe3xq6hh045" path="res://scenes/abilities/unit/heavy_missile.tscn" id="9"]
+[ext_resource type="Resource" path="res://scenes/abilities/unit/missile.tres" id="8"]
+[ext_resource type="Resource" path="res://scenes/abilities/unit/heavy_missile.tres" id="9"]
 [ext_resource type="AudioStream" uid="uid://sd73vscxvto2" path="res://assets/units/audio/missile_attack.wav" id="10"]
 
 [node name="rocket_artillery" instance=ExtResource("1")]
@@ -23,12 +23,7 @@ unit_class = "rocket_artillery"
 main_tile_view_cam_modifier = -10
 side_tile_view_cam_modifier = -25
 
-[node name="missile" parent="." index="4" instance=ExtResource("8")]
-index = 2
-
-[node name="heavy_missile" parent="." index="5" instance=ExtResource("9")]
-index = 2
-
+active_abilities = [ExtResource("8"), ExtResource("9")]
 [node name="spawn" parent="audio" index="0"]
 stream = ExtResource("5")
 

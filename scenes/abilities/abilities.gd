@@ -4,9 +4,6 @@ var board: Board
 func _init(_board: Board) -> void:
     self.board = _board
 
-func execute_ability(ability: Ability, context_object: MapTile) -> void:
-    ability.execute(self.board, context_object.position)
-
 func get_modified_cost(cost: int, template_name: String, source: Variant) -> int:
     var passive_abilities: Array[PassiveAbility] = self._get_passives_for_source(source)
     var modified_cost := cost

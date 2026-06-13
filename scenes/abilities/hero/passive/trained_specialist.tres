@@ -1,0 +1,10 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/abilities/hero/passive/trained_specialist.gd" id="1"]
+
+[resource]
+resource_name = "trained_specialist"
+script = ExtResource("1")
+label = "TR_PASS_TR_SPEC"
+description = "TR_PASS_TR_SPEC_DESC"
+index = 0

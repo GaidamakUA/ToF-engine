@@ -1,0 +1,14 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/abilities/hero/active/targeting_automaton.gd" id="1"]
+
+[resource]
+resource_name = "targeting_automaton"
+script = ExtResource("1")
+cooldown = 4
+label = "TR_TARG_AUT"
+description = "TR_TARG_AUT_DESC"
+draw_range = 1
+named_icon = "targeting_automaton"
+marker_colour = "blue"
+index = 2

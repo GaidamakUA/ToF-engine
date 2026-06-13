@@ -11,7 +11,7 @@ func is_object_without_abilities(_board: Variant, context_object: Variant, inclu
         if include_disabled:
             return context_object.abilities.size() == 0
         for ability: Ability in context_object.abilities:
-            if not ability.disabled:
+            if not context_object.is_ability_disabled(ability):
                 return false
         return true
 
@@ -38,9 +38,9 @@ func fill_radial_with_building_abilities(board: Board, radial: Radial, building:
     var label: String
 
     for ability: Variant in building.abilities:
-        if ability.TYPE == "production" and ability.is_visible(board):
+        if ability.TYPE == "production" and building.is_ability_visible(ability, board):
             var icon_model: MapObject = board.map.templates.get_template(ability.template_name)
-            var ap_cost: int = ability.get_cost()
+            var ap_cost: int = ability.get_cost(building)
 
             ap_cost = board.abilities.get_modified_cost(ap_cost, ability.template_name, building)
 
@@ -63,17 +63,18 @@ func fill_radial_with_unit_abilities(board: Board, radial: Radial, unit: BaseUni
     var label: String
 
     for ability: Variant in unit.active_abilities:
-        if ability.is_visible(board):
+        if unit.is_ability_visible(ability, board):
             label = tr(ability.label)
-            if ability.get_cost() > 0:
-                label += "\n" + str(ability.get_cost()) + " " + tr("TR_AP")
-                if not board.state.can_current_player_afford(ability.get_cost()):
+            var cost: int = ability.get_cost(unit)
+            if cost > 0:
+                label += "\n" + str(cost) + " " + tr("TR_AP")
+                if not board.state.can_current_player_afford(cost):
                     label += "\n" + tr("TR_NOT_ENOUGH_AP")
                     radial.set_field_disabled(ability.index, "")
             radial.set_field(board.ui.icons.get_named_icon(ability.get_named_icon()), label, ability.index, board, "activate_ability", [ability])
 
-            if ability.is_on_cooldown():
-                radial.set_field_disabled(ability.index, ability.cd_turns_left)
+            if unit.is_ability_on_cooldown(ability):
+                radial.set_field_disabled(ability.index, unit.get_ability_cooldown(ability))
 
 func fill_radial_with_ability_bans(editor: Variant, radial: Radial, context_object: Variant) -> void:
     if context_object is BaseBuilding:
@@ -96,18 +97,19 @@ func fill_radial_with_building_abilities_bans(editor: Variant, radial: Radial, b
             icon.viewport_size = 20
             icon.set_tile(icon_model, 0)
             label = tr(ability.label)
-            label += "\n" + str(ability.get_cost()) + " " + tr("TR_AP")
-            radial.set_field(icon, label, ability.index, self, "_ban_ability", [ability, radial])
-            if ability.disabled:
+            label += "\n" + str(ability.get_cost(building)) + " " + tr("TR_AP")
+            radial.set_field(icon, label, ability.index, self, "_ban_ability", [building, ability, radial])
+            if building.is_ability_disabled(ability):
                 radial.set_field_disabled(ability.index, "X", true)
 
 func _ban_ability(args: Array) -> void:
-    var ability: Variant = args[0]
-    var radial: Variant = args[1]
+    var building: BaseBuilding = args[0]
+    var ability: Variant = args[1]
+    var radial: Variant = args[2]
 
-    ability.disabled = not ability.disabled
+    building.set_ability_disabled(ability, not building.is_ability_disabled(ability))
 
-    if ability.disabled:
+    if building.is_ability_disabled(ability):
         radial.set_field_disabled(ability.index, "X", true)
     else:
         radial.clear_field_disabled(ability.index)

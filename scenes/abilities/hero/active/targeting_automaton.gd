@@ -1,17 +1,14 @@
 extends ActiveHeroAbility
 
 
-func _execute(board: Board, position: Vector2i) -> void:
-    var source_tile: MapTile
+func _execute(board: Board, source: Variant, origin_tile: MapTile, position: Vector2i) -> void:
     var unit: BaseUnit
 
-    if board.selected_tile == null:
-        source_tile = board.map.model.get_tile(position)
-    else:
-        source_tile = board.selected_tile
+    if origin_tile == null:
+        origin_tile = board.map.model.get_tile(position)
 
-    for neighbour: MapTile in source_tile.neighbours.values():
-        if neighbour.has_friendly_unit(self.source.side):
+    for neighbour: MapTile in origin_tile.neighbours.values():
+        if neighbour.has_friendly_unit(source.side):
             unit = neighbour.unit.tile
             if unit.unit_class in ["tank", "mobile_infantry"]:
                 unit.apply_modifier("attack_air", true)

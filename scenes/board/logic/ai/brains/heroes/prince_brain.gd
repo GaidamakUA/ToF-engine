@@ -7,7 +7,7 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, _board: Board) -> Ar
 
     if not unit.has_moves():
         return []
-    if ability.ap_cost > ap or ability.is_on_cooldown():
+    if ability.ap_cost > ap or unit.is_ability_on_cooldown(ability):
         return []
 
     var actions: Array[AbstractAction] = []
@@ -24,7 +24,7 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, _board: Board) -> Ar
         target_tile = self.pathfinder.own_units[friendly_unit_tile]
         var target_unit: BaseUnit = self._get_unit(target_tile)
 
-        if not ability.is_tile_applicable(target_tile, entity_tile):
+        if not ability.is_tile_applicable(target_tile, entity_tile, unit):
             continue
 
         if not target_tile.neighbours_enemy_unit(unit.side, unit.team):
@@ -34,9 +34,8 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, _board: Board) -> Ar
             continue
 
         if entity_tile.is_neighbour(target_tile):
-            var ability_action: UseAbilityAction = self._ability_action(ability, target_tile)
+            var ability_action: UseAbilityAction = self._ability_action(ability, entity_tile, target_tile)
             ability_action.delay = 0.5
-            ability.active_source_tile = entity_tile
             ability_action.value = target_unit.get_value()
             actions.append(ability_action)
             continue

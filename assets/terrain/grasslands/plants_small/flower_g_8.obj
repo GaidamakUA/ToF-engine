@@ -4,7 +4,7 @@
 o 
 
 # material
-mtllib flower_g_8.mtl
+mtllib ../../../materials/vox_grass.mtl
 usemtl palette
 
 # normals

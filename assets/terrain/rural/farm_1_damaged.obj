@@ -4,7 +4,7 @@
 o 
 
 # material
-mtllib farm_1_damaged.mtl
+mtllib ../../materials/vox_grass.mtl
 usemtl palette
 
 # normals

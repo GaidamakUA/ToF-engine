@@ -4,7 +4,7 @@
 o 
 
 # material
-mtllib pointer.mtl
+mtllib ../../materials/vox_grass.mtl
 usemtl palette
 
 # normals

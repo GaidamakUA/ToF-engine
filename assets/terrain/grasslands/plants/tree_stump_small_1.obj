@@ -4,7 +4,7 @@
 o 
 
 # material
-mtllib tree_stump_small_1.mtl
+mtllib ../../../materials/vox_grass.mtl
 usemtl palette
 
 # normals

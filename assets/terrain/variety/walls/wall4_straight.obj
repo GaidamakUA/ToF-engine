@@ -4,7 +4,7 @@
 o 
 
 # material
-mtllib wall4_straight.mtl
+mtllib ../../../materials/vox_grass.mtl
 usemtl palette
 
 # normals

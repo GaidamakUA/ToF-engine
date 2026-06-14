@@ -4,7 +4,7 @@
 o 
 
 # material
-mtllib building_small_11_damaged.mtl
+mtllib ../../materials/vox_grass.mtl
 usemtl palette
 
 # normals

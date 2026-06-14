@@ -4,7 +4,7 @@
 o 
 
 # material
-mtllib lord.mtl
+mtllib ../../materials/vox_building.mtl
 usemtl palette
 
 # normals

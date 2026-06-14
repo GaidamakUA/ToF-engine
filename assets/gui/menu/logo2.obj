@@ -4,7 +4,7 @@
 o tof2_logo
 
 # material
-mtllib logo2.mtl
+mtllib ../../materials/vox_arne32.mtl
 usemtl palette
 
 # normals

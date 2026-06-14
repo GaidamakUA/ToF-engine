@@ -4,7 +4,7 @@
 o 
 
 # material
-mtllib logo.mtl
+mtllib ../../materials/vox_arne32.mtl
 usemtl palette
 
 # normals

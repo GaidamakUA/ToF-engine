@@ -4,7 +4,7 @@
 o 
 
 # material
-mtllib tree_big_autumn_2.mtl
+mtllib ../../../materials/vox_grass.mtl
 usemtl palette
 
 # normals

@@ -4,7 +4,7 @@
 o 
 
 # material
-mtllib bridge2_legs.mtl
+mtllib ../../materials/vox_grass.mtl
 usemtl palette
 
 # normals

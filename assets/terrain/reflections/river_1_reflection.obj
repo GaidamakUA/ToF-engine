@@ -4,7 +4,7 @@
 o 
 
 # material
-mtllib river_1_reflection.mtl
+mtllib ../../materials/vox_grass.mtl
 usemtl palette
 
 # normals

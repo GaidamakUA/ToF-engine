@@ -4,7 +4,7 @@
 o 
 
 # material
-mtllib tank_modern.mtl
+mtllib ../../materials/vox_building.mtl
 usemtl palette
 
 # normals

@@ -4,7 +4,7 @@
 o 
 
 # material
-mtllib building_small_10_overtile.mtl
+mtllib ../../materials/vox_grass.mtl
 usemtl palette
 
 # normals

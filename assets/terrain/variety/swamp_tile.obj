@@ -4,7 +4,7 @@
 o 
 
 # material
-mtllib swamp_tile.mtl
+mtllib ../../materials/vox_grass.mtl
 usemtl palette
 
 # normals

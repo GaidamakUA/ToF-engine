@@ -4,7 +4,7 @@
 o 
 
 # material
-mtllib sand_road_transition_2_tile.mtl
+mtllib ../../materials/vox_grass.mtl
 usemtl palette
 
 # normals

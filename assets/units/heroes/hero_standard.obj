@@ -4,7 +4,7 @@
 o 
 
 # material
-mtllib hero_standard.mtl
+mtllib ../../materials/vox_building.mtl
 usemtl palette
 
 # normals

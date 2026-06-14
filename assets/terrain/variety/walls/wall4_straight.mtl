@@ -5,4 +5,4 @@ illum 1
 Ka 0.000 0.000 0.000
 Kd 1.000 1.000 1.000
 Ks 0.000 0.000 0.000
-map_Kd wall4_straight.png
+map_Kd ../../grasslands/grass_tile.png

@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://besqifsd1pqmm"]
+
+[ext_resource type="Script" uid="uid://bs8pr03s1wxtc" path="res://scenes/tiles/ground/mouse_listener_tile.gd" id="3"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vkop1"]
+size = Vector3(7, 0.5, 7)
+
+[node name="base_ground" type="Node3D" unique_id=1587951936]
+script = ExtResource("3")
+
+[node name="mouse_collision" type="Area3D" parent="." unique_id=675381929]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)
+
+[node name="collision_shape" type="CollisionShape3D" parent="mouse_collision" unique_id=2069755722]
+shape = SubResource("BoxShape3D_vkop1")
+
+[connection signal="mouse_entered" from="mouse_collision" to="." method="_on_mouse_collision_mouse_entered"]

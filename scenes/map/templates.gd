@@ -1,7 +1,5 @@
 class_name MapTemplates
 
-const DUMMY_GROUND := "dummy_ground"
-
 const GROUND_GRASS := "ground_grass"
 const GROUND_CONCRETE := "ground_concrete"
 const GROUND_RIVER1 := "ground_river1"
@@ -769,10 +767,6 @@ var _hero_templates: Dictionary[String, PackedScene] = {
     self.NPC_KING : preload("res://scenes/tiles/units/npc/king.tscn"),
     self.HERO_PRINCE : preload("res://scenes/tiles/units/heroes/prince.tscn"),
     self.HERO_WARLORD : preload("res://scenes/tiles/units/heroes/warlord.tscn"),
-}
-
-var _other_templates: Dictionary[String, PackedScene] = {
-    self.DUMMY_GROUND : preload("res://scenes/tiles/ground/base_ground.tscn"),
 }
 
 var templates: Dictionary[String, PackedScene] = {}

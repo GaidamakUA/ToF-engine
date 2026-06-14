@@ -304,9 +304,9 @@ func attach_mouse_layer() -> void:
     if self.map.mouse_layer.mouse_layer.get_parent():
         self.map.mouse_layer.mouse_layer.get_parent().remove_child(self.map.mouse_layer.mouse_layer)
     self.map.tiles_ground_anchor.add_child(self.map.mouse_layer.mouse_layer)
-    for key: String in self.map.mouse_layer.ground_points.keys():
+    for key: Vector2i in self.map.mouse_layer.ground_points.keys():
         ground_point = self.map.mouse_layer.ground_points[key]
-        tile = self.map.model.tiles[key]
+        tile = self.map.model.get_tile(key)
         ground_point.bind_ground_for_mouse(self.map, tile.position)
 
 

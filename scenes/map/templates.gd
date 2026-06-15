@@ -1,5 +1,7 @@
 class_name MapTemplates
 
+const DUMMY_GROUND := "dummy_ground"
+
 const GROUND_GRASS := "ground_grass"
 const GROUND_CONCRETE := "ground_concrete"
 const GROUND_RIVER1 := "ground_river1"
@@ -373,69 +375,66 @@ const PLAYER_BLACK := "black"
 
 const MATERIAL_NORMAL := "normal"
 const MATERIAL_METALLIC := "metallic"
+const GROUND_TILE_SCENE: PackedScene = preload("res://scenes/tiles/ground/ground_tile.tscn")
 
-var _ground_templates: Dictionary[String, PackedScene] = {
-    self.GROUND_GRASS : preload("res://scenes/tiles/ground/grass.tscn"),
-    self.GROUND_CONCRETE : preload("res://scenes/tiles/ground/concrete.tscn"),
-    self.GROUND_MUD : preload("res://scenes/tiles/ground/mud.tscn"),
-    self.GROUND_RIVER1 : preload("res://scenes/tiles/ground/river1.tscn"),
-    self.GROUND_RIVER2 : preload("res://scenes/tiles/ground/river2.tscn"),
-    self.GROUND_SWAMP : preload("res://scenes/tiles/ground/swamp.tscn"),
-    self.GROUND_SWAMP2 : preload("res://scenes/tiles/ground/swamp2.tscn"),
-    self.GROUND_SWAMP3 : preload("res://scenes/tiles/ground/swamp3.tscn"),
-    self.GROUND_ROAD1 : preload("res://scenes/tiles/ground/road1.tscn"),
-    self.GROUND_ROAD2 : preload("res://scenes/tiles/ground/road2.tscn"),
-    self.GROUND_ROAD3 : preload("res://scenes/tiles/ground/road3.tscn"),
-    self.GROUND_ROAD4 : preload("res://scenes/tiles/ground/road4.tscn"),
-    self.GROUND_ROAD_TRANSITION : preload("res://scenes/tiles/ground/road_transition.tscn"),
-    self.GROUND_ROAD_TRANSITION2 : preload("res://scenes/tiles/ground/road_transition2.tscn"),
-    self.GROUND_ROAD_TRANSITION3 : preload("res://scenes/tiles/ground/road_transition3.tscn"),
-    self.GROUND_ROAD_TRANSITION4 : preload("res://scenes/tiles/ground/road_transition4.tscn"),
-    self.GROUND_DIRT_ROAD1 : preload("res://scenes/tiles/ground/dirt_road1.tscn"),
-    self.GROUND_DIRT_ROAD2 : preload("res://scenes/tiles/ground/dirt_road2.tscn"),
-    self.GROUND_DIRT_ROAD3 : preload("res://scenes/tiles/ground/dirt_road3.tscn"),
-    self.GROUND_DIRT_ROAD4 : preload("res://scenes/tiles/ground/dirt_road4.tscn"),
-
-    self.GROUND_SNOW : preload("res://scenes/tiles/ground/snow/snow.tscn"),
-    self.GROUND_SNOW_RIVER1 : preload("res://scenes/tiles/ground/snow/ice_river1.tscn"),
-    self.GROUND_SNOW_RIVER2 : preload("res://scenes/tiles/ground/snow/ice_river2.tscn"),
-    self.GROUND_SNOW_ROAD1 : preload("res://scenes/tiles/ground/snow/snow_road1.tscn"),
-    self.GROUND_SNOW_ROAD2 : preload("res://scenes/tiles/ground/snow/snow_road2.tscn"),
-    self.GROUND_SNOW_ROAD3 : preload("res://scenes/tiles/ground/snow/snow_road3.tscn"),
-    self.GROUND_SNOW_ROAD4 : preload("res://scenes/tiles/ground/snow/snow_road4.tscn"),
-    self.GROUND_SNOW_ROAD_TRANSITION : preload("res://scenes/tiles/ground/snow/snow_road_transition.tscn"),
-    self.GROUND_SNOW_ROAD_TRANSITION2 : preload("res://scenes/tiles/ground/snow/snow_road_transition2.tscn"),
-    self.GROUND_SNOW_ROAD_TRANSITION3 : preload("res://scenes/tiles/ground/snow/snow_road_transition3.tscn"),
-    self.GROUND_SNOW_ROAD_TRANSITION4 : preload("res://scenes/tiles/ground/snow/snow_road_transition4.tscn"),
-    self.GROUND_SNOW_DIRT_ROAD1 : preload("res://scenes/tiles/ground/snow/snow_dirt_road1.tscn"),
-    self.GROUND_SNOW_DIRT_ROAD2 : preload("res://scenes/tiles/ground/snow/snow_dirt_road2.tscn"),
-    self.GROUND_SNOW_DIRT_ROAD3 : preload("res://scenes/tiles/ground/snow/snow_dirt_road3.tscn"),
-    self.GROUND_SNOW_DIRT_ROAD4 : preload("res://scenes/tiles/ground/snow/snow_dirt_road4.tscn"),
-
-    self.GROUND_SAND : preload("res://scenes/tiles/ground/sand/sand.tscn"),
-    self.GROUND_SAND_RIVER1 : preload("res://scenes/tiles/ground/sand/sand_river1.tscn"),
-    self.GROUND_SAND_RIVER2 : preload("res://scenes/tiles/ground/sand/sand_river2.tscn"),
-    self.GROUND_SAND_ROAD1 : preload("res://scenes/tiles/ground/sand/sand_road1.tscn"),
-    self.GROUND_SAND_ROAD2 : preload("res://scenes/tiles/ground/sand/sand_road2.tscn"),
-    self.GROUND_SAND_ROAD3 : preload("res://scenes/tiles/ground/sand/sand_road3.tscn"),
-    self.GROUND_SAND_ROAD4 : preload("res://scenes/tiles/ground/sand/sand_road4.tscn"),
-    self.GROUND_SAND_ROAD_TRANSITION : preload("res://scenes/tiles/ground/sand/sand_road_transition.tscn"),
-    self.GROUND_SAND_ROAD_TRANSITION2 : preload("res://scenes/tiles/ground/sand/sand_road_transition2.tscn"),
-    self.GROUND_SAND_ROAD_TRANSITION3 : preload("res://scenes/tiles/ground/sand/sand_road_transition3.tscn"),
-    self.GROUND_SAND_ROAD_TRANSITION4 : preload("res://scenes/tiles/ground/sand/sand_road_transition4.tscn"),
-    self.GROUND_SAND_DIRT_ROAD1 : preload("res://scenes/tiles/ground/sand/sand_dirt_road1.tscn"),
-    self.GROUND_SAND_DIRT_ROAD2 : preload("res://scenes/tiles/ground/sand/sand_dirt_road2.tscn"),
-    self.GROUND_SAND_DIRT_ROAD3 : preload("res://scenes/tiles/ground/sand/sand_dirt_road3.tscn"),
-    self.GROUND_SAND_DIRT_ROAD4 : preload("res://scenes/tiles/ground/sand/sand_dirt_road4.tscn"),
-
-    self.BRIDGE_PLATE : preload("res://scenes/tiles/ground/bridge_plate.tscn"),
-    self.BRIDGE2_PLATE : preload("res://scenes/tiles/ground/bridge2_plate.tscn"),
-    self.BRIDGE_LEGS : preload("res://scenes/tiles/ground/bridge_legs.tscn"),
-    self.BRIDGE2_LEGS : preload("res://scenes/tiles/ground/bridge2_legs.tscn"),
-    self.BRIDGE_STONE : preload("res://scenes/tiles/ground/bridge_stone.tscn"),
-    self.BRIDGE2_STONE : preload("res://scenes/tiles/ground/bridge2_stone.tscn"),
-
-    self.GROUND_FLYABLE : preload("res://scenes/tiles/ground/flyable.tscn"),
+var _ground_templates: Dictionary[String, GroundTileResource] = {
+    self.GROUND_GRASS : preload("res://resources/ground/ground_grass.tres"),
+    self.GROUND_CONCRETE : preload("res://resources/ground/ground_concrete.tres"),
+    self.GROUND_MUD : preload("res://resources/ground/ground_mud.tres"),
+    self.GROUND_RIVER1 : preload("res://resources/ground/ground_river1.tres"),
+    self.GROUND_RIVER2 : preload("res://resources/ground/ground_river2.tres"),
+    self.GROUND_SWAMP : preload("res://resources/ground/ground_swamp.tres"),
+    self.GROUND_SWAMP2 : preload("res://resources/ground/ground_swamp2.tres"),
+    self.GROUND_SWAMP3 : preload("res://resources/ground/ground_swamp3.tres"),
+    self.GROUND_ROAD1 : preload("res://resources/ground/ground_road1.tres"),
+    self.GROUND_ROAD2 : preload("res://resources/ground/ground_road2.tres"),
+    self.GROUND_ROAD3 : preload("res://resources/ground/ground_road3.tres"),
+    self.GROUND_ROAD4 : preload("res://resources/ground/ground_road4.tres"),
+    self.GROUND_ROAD_TRANSITION : preload("res://resources/ground/ground_road_transition.tres"),
+    self.GROUND_ROAD_TRANSITION2 : preload("res://resources/ground/ground_road_transition2.tres"),
+    self.GROUND_ROAD_TRANSITION3 : preload("res://resources/ground/ground_road_transition3.tres"),
+    self.GROUND_ROAD_TRANSITION4 : preload("res://resources/ground/ground_road_transition4.tres"),
+    self.GROUND_DIRT_ROAD1 : preload("res://resources/ground/ground_dirt_road1.tres"),
+    self.GROUND_DIRT_ROAD2 : preload("res://resources/ground/ground_dirt_road2.tres"),
+    self.GROUND_DIRT_ROAD3 : preload("res://resources/ground/ground_dirt_road3.tres"),
+    self.GROUND_DIRT_ROAD4 : preload("res://resources/ground/ground_dirt_road4.tres"),
+    self.GROUND_SNOW : preload("res://resources/ground/ground_snow.tres"),
+    self.GROUND_SNOW_RIVER1 : preload("res://resources/ground/ground_snow_river1.tres"),
+    self.GROUND_SNOW_RIVER2 : preload("res://resources/ground/ground_snow_river2.tres"),
+    self.GROUND_SNOW_ROAD1 : preload("res://resources/ground/ground_snow_road1.tres"),
+    self.GROUND_SNOW_ROAD2 : preload("res://resources/ground/ground_snow_road2.tres"),
+    self.GROUND_SNOW_ROAD3 : preload("res://resources/ground/ground_snow_road3.tres"),
+    self.GROUND_SNOW_ROAD4 : preload("res://resources/ground/ground_snow_road4.tres"),
+    self.GROUND_SNOW_ROAD_TRANSITION : preload("res://resources/ground/ground_snow_road_transition.tres"),
+    self.GROUND_SNOW_ROAD_TRANSITION2 : preload("res://resources/ground/ground_snow_road_transition2.tres"),
+    self.GROUND_SNOW_ROAD_TRANSITION3 : preload("res://resources/ground/ground_snow_road_transition3.tres"),
+    self.GROUND_SNOW_ROAD_TRANSITION4 : preload("res://resources/ground/ground_snow_road_transition4.tres"),
+    self.GROUND_SNOW_DIRT_ROAD1 : preload("res://resources/ground/ground_snow_dirt_road1.tres"),
+    self.GROUND_SNOW_DIRT_ROAD2 : preload("res://resources/ground/ground_snow_dirt_road2.tres"),
+    self.GROUND_SNOW_DIRT_ROAD3 : preload("res://resources/ground/ground_snow_dirt_road3.tres"),
+    self.GROUND_SNOW_DIRT_ROAD4 : preload("res://resources/ground/ground_snow_dirt_road4.tres"),
+    self.GROUND_SAND : preload("res://resources/ground/ground_sand.tres"),
+    self.GROUND_SAND_RIVER1 : preload("res://resources/ground/ground_sand_river1.tres"),
+    self.GROUND_SAND_RIVER2 : preload("res://resources/ground/ground_sand_river2.tres"),
+    self.GROUND_SAND_ROAD1 : preload("res://resources/ground/ground_sand_road1.tres"),
+    self.GROUND_SAND_ROAD2 : preload("res://resources/ground/ground_sand_road2.tres"),
+    self.GROUND_SAND_ROAD3 : preload("res://resources/ground/ground_sand_road3.tres"),
+    self.GROUND_SAND_ROAD4 : preload("res://resources/ground/ground_sand_road4.tres"),
+    self.GROUND_SAND_ROAD_TRANSITION : preload("res://resources/ground/ground_sand_road_transition.tres"),
+    self.GROUND_SAND_ROAD_TRANSITION2 : preload("res://resources/ground/ground_sand_road_transition2.tres"),
+    self.GROUND_SAND_ROAD_TRANSITION3 : preload("res://resources/ground/ground_sand_road_transition3.tres"),
+    self.GROUND_SAND_ROAD_TRANSITION4 : preload("res://resources/ground/ground_sand_road_transition4.tres"),
+    self.GROUND_SAND_DIRT_ROAD1 : preload("res://resources/ground/ground_sand_dirt_road1.tres"),
+    self.GROUND_SAND_DIRT_ROAD2 : preload("res://resources/ground/ground_sand_dirt_road2.tres"),
+    self.GROUND_SAND_DIRT_ROAD3 : preload("res://resources/ground/ground_sand_dirt_road3.tres"),
+    self.GROUND_SAND_DIRT_ROAD4 : preload("res://resources/ground/ground_sand_dirt_road4.tres"),
+    self.BRIDGE_PLATE : preload("res://resources/ground/bridge_plate.tres"),
+    self.BRIDGE2_PLATE : preload("res://resources/ground/bridge2_plate.tres"),
+    self.BRIDGE_LEGS : preload("res://resources/ground/bridge_legs.tres"),
+    self.BRIDGE2_LEGS : preload("res://resources/ground/bridge2_legs.tres"),
+    self.BRIDGE_STONE : preload("res://resources/ground/bridge_stone.tres"),
+    self.BRIDGE2_STONE : preload("res://resources/ground/bridge2_stone.tres"),
+    self.GROUND_FLYABLE : preload("res://resources/ground/ground_flyable.tres"),
 }
 
 var _damage_templates: Dictionary[String, PackedScene] = {
@@ -769,7 +768,7 @@ var _hero_templates: Dictionary[String, PackedScene] = {
     self.HERO_WARLORD : preload("res://scenes/tiles/units/heroes/warlord.tscn"),
 }
 
-var templates: Dictionary[String, PackedScene] = {}
+var templates: Dictionary[String, Variant] = {}
 
 var side_materials: Dictionary[String, Resource] = {
     self.PLAYER_NEUTRAL : ResourceLoader.load("res://assets/materials/arne32_neutral.tres"),
@@ -805,6 +804,10 @@ var side_materials_metallic_desat: Dictionary[String, Resource] = {
     self.PLAYER_BLACK : ResourceLoader.load("res://assets/materials/arne32_metallic_black_desat.tres"),
 }
 
+var _other_templates: Dictionary[String, PackedScene] = {
+    self.DUMMY_GROUND : preload("res://scenes/tiles/ground/mouse_listener_tile.tscn"),
+}
+
 var generic_building: Script = preload("res://scenes/tiles/buildings/building.gd")
 var generic_unit: Script = preload("res://scenes/tiles/units/unit.gd")
 
@@ -837,7 +840,15 @@ func get_template(template: String) -> MapObject:
     if self.templates.size() == 0:
         _compile_templates_list()
 
-    var new_tile: MapObject = self.templates[template].instantiate()
+    var template_entry: Variant = self.templates[template]
+    var new_tile: MapObject
+    var ground_tile_resource: GroundTileResource = template_entry as GroundTileResource
+    if ground_tile_resource != null:
+        var ground_tile: GroundTile = self.GROUND_TILE_SCENE.instantiate() as GroundTile
+        ground_tile.configure(ground_tile_resource)
+        new_tile = ground_tile
+    else:
+        new_tile = (template_entry as PackedScene).instantiate()
     new_tile.template_name = template
 
     return new_tile

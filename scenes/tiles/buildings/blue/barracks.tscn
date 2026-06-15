@@ -3,8 +3,8 @@
 [ext_resource type="ArrayMesh" uid="uid://cco5m3jr0wt7a" path="res://assets/buildings/blue/barracks.obj" id="1"]
 [ext_resource type="Material" uid="uid://bd7bg72rx00b2" path="res://assets/materials/arne32_blue.tres" id="2"]
 [ext_resource type="PackedScene" uid="uid://bif4f4faebcoj" path="res://scenes/tiles/buildings/building.tscn" id="3"]
-[ext_resource type="Resource" path="res://scenes/abilities/production/blue/infantry.tres" id="4"]
-[ext_resource type="Resource" path="res://scenes/abilities/production/blue/mobile_infantry.tres" id="5"]
+[ext_resource type="Resource" path="res://resources/abilities/production/blue/infantry.tres" id="4"]
+[ext_resource type="Resource" path="res://resources/abilities/production/blue/mobile_infantry.tres" id="5"]
 
 [sub_resource type="Animation" id="1"]
 resource_name = "ap_gain"

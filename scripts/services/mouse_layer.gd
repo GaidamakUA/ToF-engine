@@ -13,7 +13,7 @@ func initialize(size: int, tile_size: int) -> void:
     self.initialized = true
     for x: int in range(size):
         for y: int in range(size):
-            var key = Vector2i(x, y)
+            var key: Vector2i = Vector2i(x, y)
             self.ground_points[key] = self.dummy_ground_template.instantiate() as BaseGround
             self.mouse_layer.add_child(self.ground_points[key])
             self.ground_points[key].set_position(Vector3(x * tile_size, 0, y * tile_size))

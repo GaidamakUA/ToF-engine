@@ -3,8 +3,8 @@
 [ext_resource type="PackedScene" uid="uid://bif4f4faebcoj" path="res://scenes/tiles/buildings/building.tscn" id="1"]
 [ext_resource type="Material" uid="uid://j71bn7wbij01" path="res://assets/materials/arne32_red.tres" id="2"]
 [ext_resource type="ArrayMesh" uid="uid://eb6ho08dmuym" path="res://assets/buildings/red/airfield.obj" id="3"]
-[ext_resource type="Resource" path="res://scenes/abilities/production/red/scout.tres" id="4"]
-[ext_resource type="Resource" path="res://scenes/abilities/production/red/heli.tres" id="5"]
+[ext_resource type="Resource" path="res://resources/abilities/production/red/scout.tres" id="4"]
+[ext_resource type="Resource" path="res://resources/abilities/production/red/heli.tres" id="5"]
 
 [sub_resource type="Animation" id="1"]
 resource_name = "ap_gain"

@@ -3,8 +3,8 @@
 [ext_resource type="Material" uid="uid://cmuoryv8gy5rs" path="res://assets/materials/arne32_yellow.tres" id="1"]
 [ext_resource type="PackedScene" uid="uid://pbf2ydgtfdt4" path="res://scenes/tiles/units/heroes/hero.tscn" id="2"]
 [ext_resource type="ArrayMesh" uid="uid://d0qn6xvmqn3s2" path="res://assets/units/heroes/warlord.obj" id="3"]
-[ext_resource type="Resource" path="res://scenes/abilities/hero/passive/intimidate.tres" id="4"]
-[ext_resource type="Resource" path="res://scenes/abilities/hero/active/promote.tres" id="5"]
+[ext_resource type="Resource" path="res://resources/abilities/hero/passive/intimidate.tres" id="4"]
+[ext_resource type="Resource" path="res://resources/abilities/hero/active/promote.tres" id="5"]
 
 [node name="warlord" instance=ExtResource("2")]
 unit_name = "TR_WARLORD"

@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://bmnsx7l2e4cb"]
 
-[ext_resource type="Resource" path="res://scenes/abilities/production/green/scout.tres" id="1"]
-[ext_resource type="Resource" path="res://scenes/abilities/production/green/heli.tres" id="2"]
+[ext_resource type="Resource" path="res://resources/abilities/production/green/scout.tres" id="1"]
+[ext_resource type="Resource" path="res://resources/abilities/production/green/heli.tres" id="2"]
 [ext_resource type="PackedScene" uid="uid://bif4f4faebcoj" path="res://scenes/tiles/buildings/building.tscn" id="3"]
 [ext_resource type="Material" uid="uid://cj2u6cis5y0wd" path="res://assets/materials/arne32_green.tres" id="4"]
 [ext_resource type="ArrayMesh" uid="uid://wbfjqsv3j53y" path="res://assets/buildings/green/airfield.obj" id="5"]

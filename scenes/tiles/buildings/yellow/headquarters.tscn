@@ -1,11 +1,11 @@
 [gd_scene load_steps=9 format=3 uid="uid://qdqgx8twq3u1"]
 
 [ext_resource type="PackedScene" uid="uid://bif4f4faebcoj" path="res://scenes/tiles/buildings/building.tscn" id="1"]
-[ext_resource type="Resource" path="res://scenes/abilities/production/yellow/infantry.tres" id="2"]
+[ext_resource type="Resource" path="res://resources/abilities/production/yellow/infantry.tres" id="2"]
 [ext_resource type="Material" uid="uid://cmuoryv8gy5rs" path="res://assets/materials/arne32_yellow.tres" id="3"]
 [ext_resource type="ArrayMesh" uid="uid://ctgjrw786cmh0" path="res://assets/buildings/yellow/headquarters.obj" id="4"]
-[ext_resource type="Resource" path="res://scenes/abilities/production/heroes/warlord.tres" id="5"]
-[ext_resource type="Resource" path="res://scenes/abilities/production/heroes/prince.tres" id="6"]
+[ext_resource type="Resource" path="res://resources/abilities/production/heroes/warlord.tres" id="5"]
+[ext_resource type="Resource" path="res://resources/abilities/production/heroes/prince.tres" id="6"]
 
 [sub_resource type="Animation" id="1"]
 resource_name = "ap_gain"

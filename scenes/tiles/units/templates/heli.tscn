@@ -6,8 +6,8 @@
 [ext_resource type="AudioStream" uid="uid://blrcs175mat68" path="res://assets/units/audio/helicopter_damage.wav" id="4"]
 [ext_resource type="AudioStream" uid="uid://44w75p62dvdw" path="res://assets/units/audio/helicopter_die.wav" id="6"]
 [ext_resource type="AudioStream" uid="uid://sd73vscxvto2" path="res://assets/units/audio/missile_attack.wav" id="7_4xwxc"]
-[ext_resource type="Resource" path="res://scenes/abilities/unit/pick_up.tres" id="8"]
-[ext_resource type="Resource" path="res://scenes/abilities/unit/drop_off.tres" id="9"]
+[ext_resource type="Resource" path="res://resources/abilities/unit/pick_up.tres" id="8"]
+[ext_resource type="Resource" path="res://resources/abilities/unit/drop_off.tres" id="9"]
 
 [node name="heli" instance=ExtResource("2")]
 script = ExtResource("1")

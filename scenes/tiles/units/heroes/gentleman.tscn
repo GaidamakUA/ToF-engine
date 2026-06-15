@@ -3,8 +3,8 @@
 [ext_resource type="Material" uid="uid://j71bn7wbij01" path="res://assets/materials/arne32_red.tres" id="1"]
 [ext_resource type="ArrayMesh" uid="uid://d1opkmg1aacbg" path="res://assets/units/heroes/gentleman.obj" id="2"]
 [ext_resource type="PackedScene" uid="uid://pbf2ydgtfdt4" path="res://scenes/tiles/units/heroes/hero.tscn" id="3"]
-[ext_resource type="Resource" path="res://scenes/abilities/hero/passive/optimise.tres" id="4"]
-[ext_resource type="Resource" path="res://scenes/abilities/hero/active/targeting_automaton.tres" id="5"]
+[ext_resource type="Resource" path="res://resources/abilities/hero/passive/optimise.tres" id="4"]
+[ext_resource type="Resource" path="res://resources/abilities/hero/active/targeting_automaton.tres" id="5"]
 
 [node name="gentleman" instance=ExtResource("3")]
 unit_name = "TR_GENTLEMAN"

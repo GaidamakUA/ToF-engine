@@ -6,8 +6,8 @@
 [ext_resource type="AudioStream" uid="uid://c8x4wd0406myw" path="res://assets/units/audio/tank_move.wav" id="5"]
 [ext_resource type="AudioStream" uid="uid://di5y7cgurfgrm" path="res://assets/units/audio/tank_damage.wav" id="6"]
 [ext_resource type="Script" uid="uid://bub6r1obtavy8" path="res://scenes/tiles/units/templates/rocket_artillery.gd" id="7"]
-[ext_resource type="Resource" path="res://scenes/abilities/unit/missile.tres" id="8"]
-[ext_resource type="Resource" path="res://scenes/abilities/unit/heavy_missile.tres" id="9"]
+[ext_resource type="Resource" path="res://resources/abilities/unit/missile.tres" id="8"]
+[ext_resource type="Resource" path="res://resources/abilities/unit/heavy_missile.tres" id="9"]
 [ext_resource type="AudioStream" uid="uid://sd73vscxvto2" path="res://assets/units/audio/missile_attack.wav" id="10"]
 
 [node name="rocket_artillery" instance=ExtResource("1")]

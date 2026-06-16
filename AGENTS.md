@@ -48,6 +48,7 @@ Runtime state should not be stored in shared resources. Keep state on instances 
 
 - Unit/building ownership and health are dynamic.
 - Ability cooldowns and disabled flags live in `AbilityState`, not `Ability`.
+- Unit HP, moves, attacks, level, experience, kills, team, AI pause, modifiers, tags, and ability states live in `UnitState`, not `UnitResource`.
 - Damage layer instances are dynamic map state.
 
 Important boundary: leave damaged/destroyed city/decor scenes alone for now. They are still scene templates in `_damaged_city_templates` and should remain `PackedScene`s unless the user explicitly asks to migrate them.
@@ -61,6 +62,16 @@ Abilities are resources and should behave like shared, mostly singleton definiti
 - Use `AbilityState` for per-source/per-ability runtime state.
 - Prefer `AbilityState.new()` directly when a state object is needed.
 - Keep `Ability` focused on static configuration and behavior hooks.
+
+## Unit Rules
+
+Regular side unit map templates are resources under `resources/units`.
+
+- Use `UnitResource` for shared unit definitions: scene, mesh, mesh count, rotor scene, side, stats, class, and ability resources.
+- Use `UnitState` for per-instance mutable state.
+- Do not duplicate `UnitResource` per placed unit.
+- `BaseUnit.configure(UnitResource)` is the resource-to-instance boundary.
+- Side-specific unit scenes may still exist as compatibility/view scenes for non-template usages, such as hero ability executor visuals.
 
 ## Mesh and Material Rules
 

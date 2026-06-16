@@ -34,6 +34,8 @@ var move: int = 0
 @export var armor: int = 2
 @export var can_capture: bool = false
 @export var can_fly: bool = false
+@export var can_attack_units: bool = true
+@export var can_attack_air: bool = true
 @export var max_attacks: int = 1
 @export var uses_metallic_material: bool = false
 @export var unit_value: int = 0
@@ -54,6 +56,7 @@ var modifiers: Dictionary[String, Variant] = {}
 var scripting_tags: Dictionary[String, Variant] = {}
 @export var passive_ability: Resource = null
 @export var active_abilities: Array = []
+@export var active_abilities_require_level: bool = true
 var ability_states: Dictionary = {}
 var allow_level_up: bool = true
 
@@ -206,17 +209,26 @@ func remove_moves() -> void:
     self.attacks = 0
     self.use_all_moves()
 
-func can_attack(_unit: BaseUnit) -> bool:
+func can_attack_unit(unit: BaseUnit) -> bool:
+    if unit == null:
+        return false
+
+    if not self.can_attack_units:
+        return false
+
+    if unit.can_fly:
+        return self.can_attack_air or self.modifiers.has("attack_air")
+
     return true
 
 func can_kill(unit: BaseUnit) -> bool:
-    if not self.has_attacks() or not self.has_moves() or not self.can_attack(unit):
+    if not self.has_attacks() or not self.has_moves() or not self.can_attack_unit(unit):
         return false
 
     return self.has_enough_power_to_kill(unit)
 
 func can_retaliate(unit: BaseUnit) -> bool:
-    if not self.has_moves() or not self.can_attack(unit):
+    if not self.has_moves() or not self.can_attack_unit(unit):
         return false
 
     return true
@@ -403,7 +415,7 @@ func get_ability_by_id(id: String) -> Ability:
     return null
 
 func has_active_ability() -> bool:
-    return self.active_abilities.size() > 0 and self.level > 0
+    return self.active_abilities.size() > 0 and (not self.active_abilities_require_level or self.level > 0)
 
 func ability_cd_tick_down() -> void:
     for ability: Ability in self.active_abilities:

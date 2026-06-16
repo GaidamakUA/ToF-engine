@@ -27,4 +27,4 @@ func _execute(board: Board, source: Variant, origin_tile: MapTile, position: Vec
     board.refresh_tile_selection()
 
 func is_tile_applicable(tile: MapTile, origin_tile: MapTile, source: Variant) -> bool:
-    return tile.has_enemy_unit(source.side, source.team) and source.can_attack(tile._get_unit()) and (tile.position.x == origin_tile.position.x or tile.position.y == origin_tile.position.y)
+    return tile.has_enemy_unit(source.side, source.team) and source.can_attack_unit(tile._get_unit()) and (tile.position.x == origin_tile.position.x or tile.position.y == origin_tile.position.y)

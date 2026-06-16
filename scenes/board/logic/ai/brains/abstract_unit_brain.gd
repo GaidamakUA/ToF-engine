@@ -60,7 +60,7 @@ func _gather_attack_actions(entity_tile: MapTile, ap: int) -> Array[AbstractActi
     for enemy_unit_tile: String in self.pathfinder.enemy_units:
         target_tile = self.pathfinder.enemy_units[enemy_unit_tile]
         var target_unit: BaseUnit = self._get_unit(target_tile)
-        if not unit.can_attack(target_unit):
+        if not unit.can_attack_unit(target_unit):
             continue
 
         if target_unit.ai_paused:

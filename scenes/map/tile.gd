@@ -181,7 +181,7 @@ func neighbours_enemy_unit(side: String, team: Variant = null) -> bool:
 func can_attack_neightbour_enemy_unit(attacking_unit: BaseUnit) -> bool:
     for direction: String in self.neighbours.keys():
         if self.neighbours[direction].has_enemy_unit(attacking_unit.side, attacking_unit.team):
-            if attacking_unit.can_attack(self.neighbours[direction]._get_unit()):
+            if attacking_unit.can_attack_unit(self.neighbours[direction]._get_unit()):
                 return true
     return false
 
@@ -201,7 +201,7 @@ func can_unit_interact(interacting_unit: BaseUnit) -> bool:
     if not interacting_unit.has_moves():
         return false
 
-    if self.has_enemy_unit(interacting_unit.side, interacting_unit.team) && interacting_unit.can_attack(self._get_unit()) && interacting_unit.has_attacks():
+    if self.has_enemy_unit(interacting_unit.side, interacting_unit.team) && interacting_unit.can_attack_unit(self._get_unit()) && interacting_unit.has_attacks():
         return true
 
     if self.has_enemy_building(interacting_unit.side, interacting_unit.team) && interacting_unit.can_capture:

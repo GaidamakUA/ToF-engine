@@ -14,6 +14,7 @@
 script = ExtResource("2")
 max_hp = 15
 attack = 0
+can_attack_units = false
 max_attacks = 0
 unit_class = "npc"
 main_tile_view_cam_modifier = -16

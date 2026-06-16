@@ -61,7 +61,7 @@ func should_place_attack_marker(tile: MapTile, unit: BaseUnit) -> bool:
     if unit.move < 1 || not unit.has_attacks():
         return false
 
-    if not unit.can_attack(tile.unit.tile):
+    if not unit.can_attack_unit(tile.unit.tile):
         return false
 
     return true

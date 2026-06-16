@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://ck44txckfimci"]
+[gd_scene load_steps=8 format=3 uid="uid://ck44txckfimci"]
 
 [ext_resource type="Resource" path="res://resources/abilities/unit/rapid_response.tres" id="1"]
 [ext_resource type="PackedScene" uid="uid://du53ax6xw71ai" path="res://scenes/tiles/units/unit.tscn" id="2"]
@@ -7,10 +7,8 @@
 [ext_resource type="AudioStream" uid="uid://44w75p62dvdw" path="res://assets/units/audio/helicopter_die.wav" id="6"]
 [ext_resource type="AudioStream" uid="uid://j4c0pv0pidvk" path="res://assets/units/audio/soldier_attack.wav" id="7"]
 [ext_resource type="AudioStream" uid="uid://dlj62w0jmeuy7" path="res://assets/units/audio/soldier_hit.wav" id="8"]
-[ext_resource type="Script" uid="uid://bl1v48xtojfud" path="res://scenes/tiles/units/templates/scout_heli.gd" id="9"]
 
 [node name="scout" instance=ExtResource("2")]
-script = ExtResource("9")
 unit_name = "TR_SCOUT_HELI"
 material_type = "metallic"
 max_move = 9

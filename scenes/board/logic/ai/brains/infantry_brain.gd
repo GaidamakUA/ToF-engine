@@ -42,7 +42,7 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, board: Board) -> Arr
                     continue
 
                 var target_unit: BaseUnit = self._get_unit(target_tile)
-                if not unit.can_attack(target_unit):
+                if not unit.can_attack_unit(target_unit):
                     continue
 
                 path = self.pathfinder.get_path_to_tile(target_tile)

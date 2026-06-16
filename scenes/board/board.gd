@@ -587,7 +587,7 @@ func battle(attacker_tile: MapTile, defender_tile: MapTile) -> void:
     if defender.is_alive():
         defender.show_explosion()
 
-        if defender.can_attack(attacker) && defender.has_moves():
+        if defender.can_attack_unit(attacker) && defender.has_moves():
             defender.use_all_moves()
             attacker.receive_damage(defender.get_attack())
             await self.get_tree().create_timer(self.RETALIATION_DELAY).timeout

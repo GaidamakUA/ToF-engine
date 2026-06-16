@@ -1,8 +1,5 @@
 extends BaseUnit
 
-func can_attack(_unit: BaseUnit) -> bool:
-    return false
-
 func set_side_material(material: Resource) -> void:
     if material == null:
         return

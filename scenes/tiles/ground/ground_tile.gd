@@ -21,6 +21,7 @@ func configure(resource: GroundTileResource) -> void:
 
     var mesh_instance: MeshInstance3D = $"mesh" as MeshInstance3D
     mesh_instance.mesh = resource.mesh
+    mesh_instance.cast_shadow = resource.mesh_cast_shadow
     mesh_instance.set_surface_override_material(0, self.DEFAULT_MATERIAL)
 
     var reflection: MeshInstance3D = $"reflection" as MeshInstance3D

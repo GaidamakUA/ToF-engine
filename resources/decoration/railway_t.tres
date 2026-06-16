@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="GroundTileResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/tiles/ground/ground_tile_resource.gd" id="1"]
+[ext_resource type="ArrayMesh" path="res://assets/terrain/variety/railway/railway_t.obj" id="2"]
+
+[resource]
+script = ExtResource("1")
+mesh = ExtResource("2")
+unit_can_stand = true

@@ -2,6 +2,7 @@ extends Resource
 class_name GroundTileResource
 
 @export var mesh: Mesh = null
+@export var mesh_cast_shadow: GeometryInstance3D.ShadowCastingSetting = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
 @export var reflection_mesh: Mesh = null
 
 @export var unit_can_stand: bool = false

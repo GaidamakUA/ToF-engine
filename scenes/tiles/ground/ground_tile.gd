@@ -14,7 +14,6 @@ func configure(resource: GroundTileResource) -> void:
     self.unit_vertical_offset = resource.unit_vertical_offset
     self.next_damage_stage_template = resource.next_damage_stage_template
     self.base_stage_template = resource.base_stage_template
-    self.shadow_override = resource.shadow_override
     self.main_tile_view_cam_modifier = resource.main_tile_view_cam_modifier
     self.side_tile_view_cam_modifier = resource.side_tile_view_cam_modifier
     self.tile_view_height_cam_modifier = resource.tile_view_height_cam_modifier

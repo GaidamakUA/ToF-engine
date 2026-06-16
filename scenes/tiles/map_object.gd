@@ -18,9 +18,3 @@ func get_dict() -> Dictionary[String, Variant]:
 
 func reset_position_for_tile_view() -> void:
     return
-
-func disable_shadow() -> void:
-    return
-
-func enable_shadow() -> void:
-    return

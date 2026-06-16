@@ -456,24 +456,6 @@ func get_value() -> int:
     return self.unit_value + self.level * 10
 
 
-func disable_shadow() -> void:
-    self._set_shadow(GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
-
-func enable_shadow() -> void:
-    self._set_shadow(GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
-
-func _set_shadow(shadow_value: GeometryInstance3D.ShadowCastingSetting) -> void:
-    var mesh_anchor: Node = $"mesh_anchor"
-    self._set_shadow_recursive(mesh_anchor, shadow_value)
-
-func _set_shadow_recursive(node: Node, shadow_value: GeometryInstance3D.ShadowCastingSetting) -> void:
-    var mesh: MeshInstance3D = node as MeshInstance3D
-    if mesh != null:
-        mesh.cast_shadow = shadow_value
-
-    for child: Node in node.get_children():
-        self._set_shadow_recursive(child, shadow_value)
-
 func _get_abilities_status() -> Dictionary[String, Array]:
     var status: Dictionary[String, Array] = {}
 

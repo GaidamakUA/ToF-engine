@@ -45,17 +45,6 @@ func set_side_materials(_base_material: Resource, _desaturated_material: Resourc
 func set_side_material(material: Resource) -> void:
     $"mesh".set_surface_override_material(0, material)
 
-func disable_shadow() -> void:
-    self._set_shadow(GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
-
-func enable_shadow() -> void:
-    self._set_shadow(GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
-
-func _set_shadow(shadow_value: GeometryInstance3D.ShadowCastingSetting) -> void:
-    var mesh: MeshInstance3D = $"mesh" as MeshInstance3D
-    assert(mesh != null)
-    mesh.cast_shadow = shadow_value
-
 func register_ability(ability: Ability) -> void:
     self.abilities.append(ability)
     self.get_ability_state(ability)

@@ -7,4 +7,3 @@
 script = ExtResource("1")
 mesh = ExtResource("2")
 mesh_cast_shadow = 0
-shadow_override = true

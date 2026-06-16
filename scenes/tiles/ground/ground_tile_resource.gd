@@ -12,7 +12,6 @@ class_name GroundTileResource
 @export var unit_vertical_offset: int = 0
 @export var next_damage_stage_template: String = ""
 @export var base_stage_template: String = ""
-@export var shadow_override: bool = false
 @export var main_tile_view_cam_modifier: int = 0
 @export var side_tile_view_cam_modifier: int = 0
 @export var tile_view_height_cam_modifier: float = 0.0

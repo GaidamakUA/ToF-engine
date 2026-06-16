@@ -256,46 +256,6 @@ func apply_invisibility() -> void:
 
 
 func _settings_changed(key: String, _new_value: Variant) -> void:
-    var shadows: bool = self.settings.get_option("shadows")
-    var dec_shadows: bool = self.settings.get_option("dec_shadows")
-
-    if key == "shadows" or key == "dec_shadows":
-        if shadows:
-            if self.ground.is_present():
-                self.ground.tile.enable_shadow()
-
-            if self.terrain.is_present():
-                self.terrain.tile.enable_shadow()
-
-            if self.building.is_present():
-                self.building.tile.enable_shadow()
-
-            if self.unit.is_present():
-                self.unit.tile.enable_shadow()
-
-            if dec_shadows:
-                if self.frame.is_present():
-                    self.frame.tile.enable_shadow()
-                if self.decoration.is_present():
-                    self.decoration.tile.enable_shadow()
-            else:
-                if self.frame.is_present():
-                    _disable_shadow(self.frame.tile, shadows)
-                if self.decoration.is_present():
-                    _disable_shadow(self.decoration.tile, shadows)
-        else:
-            if self.ground.is_present():
-                _disable_shadow(self.ground.tile, shadows)
-            if self.frame.is_present():
-                _disable_shadow(self.frame.tile, shadows)
-            if self.decoration.is_present():
-                _disable_shadow(self.decoration.tile, shadows)
-            if self.terrain.is_present():
-                _disable_shadow(self.terrain.tile, shadows)
-            if self.building.is_present():
-                _disable_shadow(self.building.tile, shadows)
-            if self.unit.is_present():
-                _disable_shadow(self.unit.tile, shadows)
     if key == "show_health":
         if _new_value:
             if self.unit.is_present():
@@ -303,10 +263,3 @@ func _settings_changed(key: String, _new_value: Variant) -> void:
         else:
             if self.unit.is_present():
                 self.unit.tile.hide_health()
-
-func _disable_shadow(tile: MapObject, shadow_setting: bool) -> void:
-    var base_tile: BaseTile = tile as BaseTile
-    if base_tile != null and base_tile.shadow_override and shadow_setting:
-        return
-
-    tile.disable_shadow()

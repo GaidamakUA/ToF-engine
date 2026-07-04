@@ -6,10 +6,11 @@ var source: BaseUnit
 var template_name: String
 var board: Board
 
-@export
-var heli: Heli
+@export var heli_resource: UnitResource
+@export var heli: BaseUnit
 
 func _ready() -> void:
+    heli.configure(self.heli_resource)
     heli.sfx_effect("move")
 
 func set_up(_board: Board, _position: Vector2i, _source: BaseUnit, _template_name: String) -> void:

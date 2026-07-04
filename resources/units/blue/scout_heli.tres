@@ -1,0 +1,42 @@
+[gd_resource type="Resource" script_class="UnitResource" format=3]
+
+[ext_resource type="Resource" path="res://resources/abilities/unit/rapid_response.tres" id="1_pvg3s"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/helicopter_move.wav" id="2_m2mir"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_attack.wav" id="3_asorb"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_hit.wav" id="4_nuwlo"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/helicopter_damage.wav" id="5_q86yn"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/helicopter_die.wav" id="6_q46lh"]
+[ext_resource type="AudioStream" path="res://assets/audio/pickup_box.wav" id="7_rg1ki"]
+[ext_resource type="ArrayMesh" path="res://assets/units/blue/scout_heli.obj" id="8_jxlts"]
+[ext_resource type="Script" path="res://resources/units/unit_resource.gd" id="9_l6x38"]
+
+[resource]
+script = ExtResource("9_l6x38")
+mesh = ExtResource("8_jxlts")
+mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+healthbar_offset = Vector2(0, 450)
+explosion_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+dust_visible = false
+unit_name = "TR_SCOUT_HELI"
+side = "blue"
+material_type = "metallic"
+max_move = 9
+attack = 5
+armor = 1
+can_fly = true
+uses_metallic_material = true
+unit_value = 50
+unit_class = "scout"
+perform_extra_lookup = true
+active_abilities = Array[Resource]([ExtResource("1_pvg3s")])
+main_tile_view_cam_modifier = -10
+side_tile_view_cam_modifier = -25
+audio_streams = Dictionary[String, AudioStream]({
+"attack": ExtResource("3_asorb"),
+"damage": ExtResource("5_q86yn"),
+"die": ExtResource("6_q46lh"),
+"hit": ExtResource("4_nuwlo"),
+"level_up": ExtResource("7_rg1ki"),
+"move": ExtResource("2_m2mir"),
+"spawn": ExtResource("2_m2mir")
+})

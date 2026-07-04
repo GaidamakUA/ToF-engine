@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="UnitResource" format=3]
+
+[ext_resource type="Resource" path="res://resources/abilities/unit/missile.tres" id="1_w0r7a"]
+[ext_resource type="Resource" path="res://resources/abilities/unit/heavy_missile.tres" id="2_2b7nr"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/tank_move.wav" id="3_m3kik"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/missile_attack.wav" id="4_l48eh"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/tank_attack.wav" id="5_xb0bw"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/tank_damage.wav" id="6_5irpk"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/tank_die.wav" id="7_1ugtv"]
+[ext_resource type="AudioStream" path="res://assets/audio/pickup_box.wav" id="8_l8wjj"]
+[ext_resource type="ArrayMesh" path="res://assets/units/red/rocket_artillery.obj" id="9_8tgus"]
+[ext_resource type="Script" path="res://resources/units/unit_resource.gd" id="10_idn5g"]
+
+[resource]
+script = ExtResource("10_idn5g")
+mesh = ExtResource("9_8tgus")
+unit_name = "TR_M_R_ART"
+side = "red"
+material_type = "metallic"
+attack = 0
+armor = 0
+can_attack_units = false
+max_attacks = 0
+uses_metallic_material = true
+unit_value = 70
+unit_class = "rocket_artillery"
+active_abilities = Array[Resource]([ExtResource("1_w0r7a"), ExtResource("2_2b7nr")])
+active_abilities_require_level = false
+main_tile_view_cam_modifier = -10
+side_tile_view_cam_modifier = -25
+audio_streams = Dictionary[String, AudioStream]({
+"attack": ExtResource("4_l48eh"),
+"damage": ExtResource("6_5irpk"),
+"die": ExtResource("7_1ugtv"),
+"hit": ExtResource("5_xb0bw"),
+"level_up": ExtResource("8_l8wjj"),
+"move": ExtResource("3_m3kik"),
+"spawn": ExtResource("3_m3kik")
+})

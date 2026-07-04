@@ -44,6 +44,7 @@ var attacks: int = 1
 var level: int = 0
 var experience: int = 0
 var kills: int = 0
+var passenger: BaseUnit = null
 
 # AI modifiers
 var ai_paused: bool = false
@@ -84,6 +85,47 @@ func _ready() -> void:
     self.healthbar_sprite.texture = $"mesh_anchor/healthbar/SubViewport".get_texture()
     self._setup_abilities()
 
+func configure(resource: UnitResource) -> void:
+    $"mesh_anchor/mesh".mesh = resource.mesh
+    $"mesh_anchor/mesh".transform = resource.mesh_transform
+    $"mesh_anchor/dust".visible = resource.dust_visible
+    $"mesh_anchor/healthbar".offset = resource.healthbar_offset
+    $"explosion".transform = resource.explosion_transform
+
+    self.unit_name = resource.unit_name
+    self.side = resource.side
+    self.material_type = resource.material_type
+    self.max_hp = resource.max_hp
+    self.max_move = resource.max_move
+    self.attack = resource.attack
+    self.armor = resource.armor
+    self.can_capture = resource.can_capture
+    self.can_fly = resource.can_fly
+    self.can_attack_units = resource.can_attack_units
+    self.can_attack_air = resource.can_attack_air
+    self.max_attacks = resource.max_attacks
+    self.uses_metallic_material = resource.uses_metallic_material
+    self.unit_value = resource.unit_value
+    self.unit_class = resource.unit_class
+    self.perform_extra_lookup = resource.perform_extra_lookup
+    self.passive_ability = resource.passive_ability
+    self.active_abilities.assign(resource.active_abilities)
+    self.active_abilities_require_level = resource.active_abilities_require_level
+    self.main_tile_view_cam_modifier = resource.main_tile_view_cam_modifier
+    self.side_tile_view_cam_modifier = resource.side_tile_view_cam_modifier
+    self.tile_view_height_cam_modifier = resource.tile_view_height_cam_modifier
+
+    for audio_name: String in resource.audio_streams:
+        var player: AudioStreamPlayer = self.get_node_or_null("audio/" + audio_name) as AudioStreamPlayer
+        if player != null:
+            player.stream = resource.audio_streams[audio_name]
+
+    ($"mesh_anchor/healthbar/SubViewport/bar" as TextureProgressBar).max_value = self.max_hp
+    ($"mesh_anchor/healthbar/SubViewport/energy" as TextureProgressBar).max_value = self.max_move
+
+    if self.is_node_ready():
+        self._setup_abilities()
+
 func reset() -> void:
     var stats: Dictionary[String, int] = self.get_stats_with_modifiers()
 
@@ -102,6 +144,8 @@ func get_dict() -> Dictionary[String, Variant]:
     new_dict["stats"] = self.get_stats_with_modifiers()
     new_dict["abilities"] = self._get_abilities_status()
     new_dict["team"] = self.team
+    if self.passenger != null:
+        new_dict["passenger"] = self.passenger.get_dict()
     if self.scripting_tags.size() > 0:
         new_dict["tags"] = self.scripting_tags
 
@@ -521,6 +565,7 @@ func is_hero() -> bool:
 
 func _update_healthbar() -> void:
     if self.healthbar != null:
+        self.healthbar.max_value = self.max_hp
         self.healthbar.value = self.hp
 
 func _update_level() -> void:

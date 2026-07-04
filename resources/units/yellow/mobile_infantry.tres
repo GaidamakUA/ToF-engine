@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="UnitResource" format=3]
+
+[ext_resource type="Resource" path="res://resources/abilities/unit/medkit.tres" id="1_hwe8m"]
+[ext_resource type="Resource" path="res://resources/abilities/unit/repair_kit.tres" id="2_e1xdf"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/motorcycle_move.wav" id="3_7o6e8"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_attack.wav" id="4_lk0ph"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_hit.wav" id="5_u5hd4"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_damage.wav" id="6_3waub"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_die.wav" id="7_a3uys"]
+[ext_resource type="AudioStream" path="res://assets/audio/pickup_box.wav" id="8_2mipf"]
+[ext_resource type="ArrayMesh" path="res://resources/merged_meshes/yellow_m_inf.tres" id="9_n6q65"]
+[ext_resource type="Script" path="res://resources/units/unit_resource.gd" id="10_ohw6i"]
+
+[resource]
+script = ExtResource("10_ohw6i")
+mesh = ExtResource("9_n6q65")
+unit_name = "TR_M_INF"
+side = "yellow"
+max_move = 6
+attack = 5
+armor = 0
+can_capture = true
+can_attack_air = false
+unit_value = 35
+unit_class = "mobile_infantry"
+active_abilities = Array[Resource]([ExtResource("1_hwe8m"), ExtResource("2_e1xdf")])
+active_abilities_require_level = false
+main_tile_view_cam_modifier = -10
+side_tile_view_cam_modifier = -25
+audio_streams = Dictionary[String, AudioStream]({
+"attack": ExtResource("4_lk0ph"),
+"damage": ExtResource("6_3waub"),
+"die": ExtResource("7_a3uys"),
+"hit": ExtResource("5_u5hd4"),
+"level_up": ExtResource("8_2mipf"),
+"move": ExtResource("3_7o6e8"),
+"spawn": ExtResource("3_7o6e8")
+})

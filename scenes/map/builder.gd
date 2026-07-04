@@ -398,6 +398,4 @@ func rebuild_tile(tile_id: String, tile_data: Dictionary) -> void:
             passenger.restore_from_state(passenger_data)
             self._set_unit_side(passenger, str(passenger_data["side"]))
 
-            var carrier: Heli = unit as Heli
-            assert(carrier != null)
-            carrier.passenger = passenger
+            unit.passenger = passenger

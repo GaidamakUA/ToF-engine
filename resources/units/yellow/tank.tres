@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="UnitResource" format=3]
+
+[ext_resource type="Resource" path="res://resources/abilities/unit/long_range_shell.tres" id="1_lh41o"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/tank_move.wav" id="2_gycoq"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/tank_attack.wav" id="3_ranlr"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/tank_hit.wav" id="4_mqj6x"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/tank_damage.wav" id="5_eynjp"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/tank_die.wav" id="6_nleec"]
+[ext_resource type="AudioStream" path="res://assets/audio/pickup_box.wav" id="7_fjf0j"]
+[ext_resource type="ArrayMesh" path="res://assets/units/yellow/tank.obj" id="8_tva4g"]
+[ext_resource type="Script" path="res://resources/units/unit_resource.gd" id="9_ww3jw"]
+
+[resource]
+script = ExtResource("9_ww3jw")
+mesh = ExtResource("8_tva4g")
+unit_name = "TR_TANK"
+side = "yellow"
+material_type = "metallic"
+max_move = 6
+attack = 10
+can_attack_air = false
+uses_metallic_material = true
+unit_value = 50
+unit_class = "tank"
+active_abilities = Array[Resource]([ExtResource("1_lh41o")])
+main_tile_view_cam_modifier = -10
+side_tile_view_cam_modifier = -25
+audio_streams = Dictionary[String, AudioStream]({
+"attack": ExtResource("3_ranlr"),
+"damage": ExtResource("5_eynjp"),
+"die": ExtResource("6_nleec"),
+"hit": ExtResource("4_mqj6x"),
+"level_up": ExtResource("7_fjf0j"),
+"move": ExtResource("2_gycoq"),
+"spawn": ExtResource("2_gycoq")
+})

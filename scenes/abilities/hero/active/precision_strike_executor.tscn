@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://hpj8i16h21dq"]
+[gd_scene load_steps=6 format=3 uid="uid://hpj8i16h21dq"]
 
 [ext_resource type="Script" uid="uid://njyf70invty0" path="res://scenes/abilities/hero/active/precision_strike_executor.gd" id="1"]
-[ext_resource type="PackedScene" uid="uid://yc45wbcwlx64" path="res://scenes/tiles/units/green/heli.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://du53ax6xw71ai" path="res://scenes/tiles/units/unit.tscn" id="2"]
+[ext_resource type="Resource" path="res://resources/units/green/heli.tres" id="3"]
 
 [sub_resource type="Animation" id="1"]
 resource_name = "strike"
@@ -42,6 +43,7 @@ _data = {
 
 [node name="precision_strike_executor" type="Node3D" node_paths=PackedStringArray("heli")]
 script = ExtResource("1")
+heli_resource = ExtResource("3")
 heli = NodePath("heli")
 
 [node name="heli" parent="." instance=ExtResource("2")]

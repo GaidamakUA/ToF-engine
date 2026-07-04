@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="UnitResource" format=3]
+
+[ext_resource type="Resource" path="res://resources/abilities/unit/heavy_weapon.tres" id="1_luw5p"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_move.wav" id="2_muncf"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_attack.wav" id="3_d330r"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_hit.wav" id="4_r8alo"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_damage.wav" id="5_jmg37"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_die.wav" id="6_sbgkx"]
+[ext_resource type="AudioStream" path="res://assets/audio/pickup_box.wav" id="7_gln31"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/missile_attack.wav" id="8_72cnl"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/tank_attack.wav" id="9_v2dof"]
+[ext_resource type="ArrayMesh" path="res://resources/merged_meshes/red_infantry.tres" id="10_x2615"]
+[ext_resource type="Script" path="res://resources/units/unit_resource.gd" id="11_k18l8"]
+
+[resource]
+script = ExtResource("11_k18l8")
+mesh = ExtResource("10_x2615")
+unit_name = "TR_INFANTRY"
+side = "red"
+attack = 6
+armor = 0
+can_capture = true
+unit_value = 25
+unit_class = "infantry"
+active_abilities = Array[Resource]([ExtResource("1_luw5p")])
+main_tile_view_cam_modifier = -10
+side_tile_view_cam_modifier = -25
+audio_streams = Dictionary[String, AudioStream]({
+"ab_attack": ExtResource("8_72cnl"),
+"ab_hit": ExtResource("9_v2dof"),
+"attack": ExtResource("3_d330r"),
+"damage": ExtResource("5_jmg37"),
+"die": ExtResource("6_sbgkx"),
+"hit": ExtResource("4_r8alo"),
+"level_up": ExtResource("7_gln31"),
+"move": ExtResource("2_muncf"),
+"spawn": ExtResource("2_muncf")
+})

@@ -376,6 +376,7 @@ const PLAYER_BLACK := "black"
 const MATERIAL_NORMAL := "normal"
 const MATERIAL_METALLIC := "metallic"
 const GROUND_TILE_SCENE: PackedScene = preload("res://scenes/tiles/ground/ground_tile.tscn")
+const UNIT_TILE_SCENE: PackedScene = preload("res://scenes/tiles/units/unit.tscn")
 
 var _ground_templates: Dictionary[String, GroundTileResource] = {
     self.GROUND_GRASS : preload("res://resources/ground/ground_grass.tres"),
@@ -716,38 +717,38 @@ var _building_templates: Dictionary[String, PackedScene] = {
     self.NEUTRAL_LIGHTHOUSE : preload("res://scenes/tiles/buildings/neutral/lighthouse.tscn"),
 }
 
-var _unit_templates: Dictionary[String, PackedScene] = {
-    self.UNIT_BLUE_INFANTRY : preload("res://scenes/tiles/units/blue/infantry.tscn"),
-    self.UNIT_BLUE_TANK : preload("res://scenes/tiles/units/blue/tank.tscn"),
-    self.UNIT_BLUE_HELI : preload("res://scenes/tiles/units/blue/heli.tscn"),
-    self.UNIT_BLUE_MINF : preload("res://scenes/tiles/units/blue/mobile_infantry.tscn"),
-    self.UNIT_BLUE_ROCKET : preload("res://scenes/tiles/units/blue/rocket_artillery.tscn"),
-    self.UNIT_BLUE_SCOUT : preload("res://scenes/tiles/units/blue/scout_heli.tscn"),
-    self.UNIT_BLUE_TRUCK : preload("res://scenes/tiles/units/blue/truck.tscn"),
+var _unit_templates: Dictionary[String, Resource] = {
+    self.UNIT_BLUE_INFANTRY : preload("res://resources/units/blue/infantry.tres"),
+    self.UNIT_BLUE_TANK : preload("res://resources/units/blue/tank.tres"),
+    self.UNIT_BLUE_HELI : preload("res://resources/units/blue/heli.tres"),
+    self.UNIT_BLUE_MINF : preload("res://resources/units/blue/mobile_infantry.tres"),
+    self.UNIT_BLUE_ROCKET : preload("res://resources/units/blue/rocket_artillery.tres"),
+    self.UNIT_BLUE_SCOUT : preload("res://resources/units/blue/scout_heli.tres"),
+    self.UNIT_BLUE_TRUCK : preload("res://resources/units/blue/truck.tres"),
 
-    self.UNIT_RED_INFANTRY : preload("res://scenes/tiles/units/red/infantry.tscn"),
-    self.UNIT_RED_TANK : preload("res://scenes/tiles/units/red/tank.tscn"),
-    self.UNIT_RED_HELI : preload("res://scenes/tiles/units/red/heli.tscn"),
-    self.UNIT_RED_MINF : preload("res://scenes/tiles/units/red/mobile_infantry.tscn"),
-    self.UNIT_RED_ROCKET : preload("res://scenes/tiles/units/red/rocket_artillery.tscn"),
-    self.UNIT_RED_SCOUT : preload("res://scenes/tiles/units/red/scout_heli.tscn"),
-    self.UNIT_RED_TRUCK : preload("res://scenes/tiles/units/red/truck.tscn"),
+    self.UNIT_RED_INFANTRY : preload("res://resources/units/red/infantry.tres"),
+    self.UNIT_RED_TANK : preload("res://resources/units/red/tank.tres"),
+    self.UNIT_RED_HELI : preload("res://resources/units/red/heli.tres"),
+    self.UNIT_RED_MINF : preload("res://resources/units/red/mobile_infantry.tres"),
+    self.UNIT_RED_ROCKET : preload("res://resources/units/red/rocket_artillery.tres"),
+    self.UNIT_RED_SCOUT : preload("res://resources/units/red/scout_heli.tres"),
+    self.UNIT_RED_TRUCK : preload("res://resources/units/red/truck.tres"),
 
-    self.UNIT_GREEN_INFANTRY : preload("res://scenes/tiles/units/green/infantry.tscn"),
-    self.UNIT_GREEN_TANK : preload("res://scenes/tiles/units/green/tank.tscn"),
-    self.UNIT_GREEN_HELI : preload("res://scenes/tiles/units/green/heli.tscn"),
-    self.UNIT_GREEN_MINF : preload("res://scenes/tiles/units/green/mobile_infantry.tscn"),
-    self.UNIT_GREEN_ROCKET : preload("res://scenes/tiles/units/green/rocket_artillery.tscn"),
-    self.UNIT_GREEN_SCOUT : preload("res://scenes/tiles/units/green/scout_heli.tscn"),
-    self.UNIT_GREEN_TRUCK : preload("res://scenes/tiles/units/green/truck.tscn"),
+    self.UNIT_GREEN_INFANTRY : preload("res://resources/units/green/infantry.tres"),
+    self.UNIT_GREEN_TANK : preload("res://resources/units/green/tank.tres"),
+    self.UNIT_GREEN_HELI : preload("res://resources/units/green/heli.tres"),
+    self.UNIT_GREEN_MINF : preload("res://resources/units/green/mobile_infantry.tres"),
+    self.UNIT_GREEN_ROCKET : preload("res://resources/units/green/rocket_artillery.tres"),
+    self.UNIT_GREEN_SCOUT : preload("res://resources/units/green/scout_heli.tres"),
+    self.UNIT_GREEN_TRUCK : preload("res://resources/units/green/truck.tres"),
 
-    self.UNIT_YELLOW_INFANTRY : preload("res://scenes/tiles/units/yellow/infantry.tscn"),
-    self.UNIT_YELLOW_TANK : preload("res://scenes/tiles/units/yellow/tank.tscn"),
-    self.UNIT_YELLOW_HELI : preload("res://scenes/tiles/units/yellow/heli.tscn"),
-    self.UNIT_YELLOW_MINF : preload("res://scenes/tiles/units/yellow/mobile_infantry.tscn"),
-    self.UNIT_YELLOW_ROCKET : preload("res://scenes/tiles/units/yellow/rocket_artillery.tscn"),
-    self.UNIT_YELLOW_SCOUT : preload("res://scenes/tiles/units/yellow/scout_heli.tscn"),
-    self.UNIT_YELLOW_TRUCK : preload("res://scenes/tiles/units/yellow/truck.tscn"),
+    self.UNIT_YELLOW_INFANTRY : preload("res://resources/units/yellow/infantry.tres"),
+    self.UNIT_YELLOW_TANK : preload("res://resources/units/yellow/tank.tres"),
+    self.UNIT_YELLOW_HELI : preload("res://resources/units/yellow/heli.tres"),
+    self.UNIT_YELLOW_MINF : preload("res://resources/units/yellow/mobile_infantry.tres"),
+    self.UNIT_YELLOW_ROCKET : preload("res://resources/units/yellow/rocket_artillery.tres"),
+    self.UNIT_YELLOW_SCOUT : preload("res://resources/units/yellow/scout_heli.tres"),
+    self.UNIT_YELLOW_TRUCK : preload("res://resources/units/yellow/truck.tres"),
 }
 
 var _hero_templates: Dictionary[String, PackedScene] = {
@@ -842,11 +843,16 @@ func get_template(template: String) -> MapObject:
 
     var template_entry: Variant = self.templates[template]
     var new_tile: MapObject
+    var template_resource: Resource = template_entry as Resource
     var ground_tile_resource: GroundTileResource = template_entry as GroundTileResource
     if ground_tile_resource != null:
         var ground_tile: GroundTile = self.GROUND_TILE_SCENE.instantiate() as GroundTile
         ground_tile.configure(ground_tile_resource)
         new_tile = ground_tile
+    elif template_resource is UnitResource:
+        var unit: BaseUnit = self.UNIT_TILE_SCENE.instantiate() as BaseUnit
+        unit.configure(template_resource as UnitResource)
+        new_tile = unit
     else:
         new_tile = (template_entry as PackedScene).instantiate()
     new_tile.template_name = template

@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://dqi4hynsdudm3"]
+[gd_scene load_steps=6 format=3 uid="uid://dqi4hynsdudm3"]
 
 [ext_resource type="Script" uid="uid://c2eun2ftun770" path="res://scenes/abilities/hero/active/deep_strike_executor.gd" id="1"]
-[ext_resource type="PackedScene" uid="uid://cwqvkkak44hnt" path="res://scenes/tiles/units/blue/heli.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://du53ax6xw71ai" path="res://scenes/tiles/units/unit.tscn" id="2"]
+[ext_resource type="Resource" path="res://resources/units/blue/heli.tres" id="3"]
 
 [sub_resource type="Animation" id="1"]
 resource_name = "drop"
@@ -42,6 +43,7 @@ _data = {
 
 [node name="deep_strike_executor" type="Node3D" node_paths=PackedStringArray("heli")]
 script = ExtResource("1")
+heli_resource = ExtResource("3")
 heli = NodePath("heli")
 
 [node name="heli" parent="." instance=ExtResource("2")]

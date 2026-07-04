@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="UnitResource" format=3]
+
+[ext_resource type="AudioStream" path="res://assets/units/audio/truck_move.wav" id="1_g4a07"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/tank_attack.wav" id="2_0328h"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/tank_hit.wav" id="3_onnem"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/tank_damage.wav" id="4_obodj"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/tank_die.wav" id="5_17yxu"]
+[ext_resource type="AudioStream" path="res://assets/audio/pickup_box.wav" id="6_grcx6"]
+[ext_resource type="ArrayMesh" path="res://assets/units/yellow/truck.obj" id="7_df0k1"]
+[ext_resource type="Script" path="res://resources/units/unit_resource.gd" id="8_rk6fv"]
+
+[resource]
+script = ExtResource("8_rk6fv")
+mesh = ExtResource("7_df0k1")
+unit_name = "TR_TRUCK"
+side = "yellow"
+material_type = "metallic"
+max_hp = 15
+max_move = 6
+attack = 0
+armor = 0
+can_attack_units = false
+max_attacks = 0
+uses_metallic_material = true
+unit_value = 35
+unit_class = "truck"
+main_tile_view_cam_modifier = -10
+side_tile_view_cam_modifier = -25
+audio_streams = Dictionary[String, AudioStream]({
+"attack": ExtResource("2_0328h"),
+"damage": ExtResource("4_obodj"),
+"die": ExtResource("5_17yxu"),
+"hit": ExtResource("3_onnem"),
+"level_up": ExtResource("6_grcx6"),
+"move": ExtResource("1_g4a07"),
+"spawn": ExtResource("1_g4a07")
+})

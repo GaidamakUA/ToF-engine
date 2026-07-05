@@ -6,10 +6,11 @@ Guidance for coding agents working in this repository.
 
 This is a Godot 4 project for Tanks of Freedom II. Keep changes consistent with the existing GDScript style and scene/resource layout.
 
-Use this Godot binary for local validation:
+Use a local Godot 4 binary for validation. Set `GODOT_BIN` if Godot is not on `PATH`:
 
 ```sh
-HOME=/private/tmp "~/Library/Application Support/Steam/steamapps/common/Godot Engine/Godot.app/Contents/MacOS/Godot" --headless --path /Users/Personal/workspace/godot/ToF-engine --quit
+: "${GODOT_BIN:=godot}"
+HOME=/private/tmp "$GODOT_BIN" --headless --path "$PWD" --quit
 ```
 
 The normal headless load may print shutdown leak warnings. Treat a non-zero exit code, parser errors, stale resource paths, or new script errors as failures.
@@ -96,7 +97,8 @@ Before finishing a non-trivial change:
 ```sh
 git diff --check
 rg -n "old/path/or/template/name" .
-HOME=/private/tmp "~/Library/Application Support/Steam/steamapps/common/Godot Engine/Godot.app/Contents/MacOS/Godot" --headless --path ~/workspace/godot/ToF-engine --quit
+: "${GODOT_BIN:=godot}"
+HOME=/private/tmp "$GODOT_BIN" --headless --path "$PWD" --quit
 ```
 
 Also instantiate or load targeted resources/scenes when changing shared tile, ability, or template code.

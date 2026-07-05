@@ -101,7 +101,16 @@ set -eu
 PROJECT_ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
 
 if [ -z "${GODOT_BIN:-}" ]; then
-    GODOT_BIN="$HOME/Library/Application Support/Steam/steamapps/common/Godot Engine/Godot.app/Contents/MacOS/Godot"
+    if command -v godot >/dev/null 2>&1; then
+        GODOT_BIN="$(command -v godot)"
+    elif command -v godot4 >/dev/null 2>&1; then
+        GODOT_BIN="$(command -v godot4)"
+    elif command -v Godot >/dev/null 2>&1; then
+        GODOT_BIN="$(command -v Godot)"
+    else
+        echo "Set GODOT_BIN to a Godot 4.7 executable or add godot/godot4 to PATH." >&2
+        exit 127
+    fi
 fi
 
 HOME=/private/tmp "$GODOT_BIN" \
@@ -290,7 +299,8 @@ Expected: PASS with the harness smoke test and all `State` tests.
 Run:
 
 ```bash
-HOME=/private/tmp "$HOME/Library/Application Support/Steam/steamapps/common/Godot Engine/Godot.app/Contents/MacOS/Godot" --headless --path /Users/Personal/workspace/godot/ToF-engine --quit
+PROJECT_ROOT="$(pwd)"
+HOME=/private/tmp "${GODOT_BIN:-godot}" --headless --path "$PROJECT_ROOT" --quit
 ```
 
 Expected: exit code `0`. Shutdown leak warnings are acceptable. Parser errors, stale resource paths, or new script errors are failures.
@@ -339,7 +349,8 @@ Expected: all tests pass.
 Run:
 
 ```bash
-HOME=/private/tmp "$HOME/Library/Application Support/Steam/steamapps/common/Godot Engine/Godot.app/Contents/MacOS/Godot" --headless --path /Users/Personal/workspace/godot/ToF-engine --quit
+PROJECT_ROOT="$(pwd)"
+HOME=/private/tmp "${GODOT_BIN:-godot}" --headless --path "$PROJECT_ROOT" --quit
 ```
 
 Expected: exit code `0`. Shutdown leak warnings are acceptable. Parser errors, stale resource paths, or new script errors are failures.

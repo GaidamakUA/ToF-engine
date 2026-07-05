@@ -22,7 +22,9 @@ assets/terrain/grasslands_library.tres
 **/.DS_Store
 
 # Editor addons
-addons/
+addons/*
+!addons/gut/
+!addons/gut/**
 
 # Promo files too big for github
 docs/devlog/steam/trailer/gameplay.mp4

@@ -183,6 +183,19 @@ Events should carry enough game data for views to animate results without queryi
 
 ## Migration Plan
 
+### Phase 0: Add GUT Test Harness
+
+Add GUT as a separate tooling step before the MVC extraction begins. This keeps test setup risk out of the architecture refactor and gives the later phases a stable place to add focused regression tests.
+
+Initial goal:
+
+- Install/configure GUT for headless execution in this Godot project.
+- Add a project-level test command or documented command that runs GUT headlessly.
+- Add one or two smoke tests that prove the harness works.
+- Start with low-dependency tests for existing logic such as `State` player switching, AP clamping/spending, alive-player skipping, and team lookup.
+
+Do not try to heavily test the current full `Board` scene. It mixes rules with UI, camera, animations, timers, and scene effects, so broad scene tests would be brittle before the extraction.
+
 ### Phase 1: Introduce BoardModel Around Existing State
 
 Create `BoardModel` as a wrapper around the existing `State`, `MapModel`, `Events`, `Abilities`, `Scripting`, and core rule methods. Do not immediately remove every dependency on scene-backed unit/building objects.
@@ -240,7 +253,7 @@ Initial goal:
 
 ### Phase 5: Add Headless Validation Path
 
-Add a small headless runner/test path that can:
+Add GUT tests or a small headless runner path that can:
 
 - Load a bundled map.
 - Create a `BoardModel`.
@@ -261,19 +274,32 @@ This should complement the existing Godot headless load validation.
 
 ## Testing and Validation
 
+Use GUT for unit and small integration coverage around the extracted model/rule code. Keep the existing Godot headless project load as a smoke check for resource and parser health.
+
 For non-trivial implementation changes:
 
 - Run `git diff --check`.
 - Run the Godot headless load command from `AGENTS.md`.
-- Add targeted tests or scripts for model operations as they become scene-independent.
+- Run the GUT headless test command once configured.
+- Add targeted GUT tests for model operations as they become scene-independent.
 - Exercise at least movement, attack, capture, ability use, end turn, save/restore, and AI action execution through the new API.
 
-The first useful test target is parity: perform an action through the old board flow and through the new model/controller path, then compare state and emitted events.
+The first useful GUT target is `State`, because it is already scene-independent and central to turns/AP/player flow. The first useful architecture target is parity: perform an action through the old board flow and through the new model/controller path, then compare state and emitted events.
+
+Recommended early GUT coverage:
+
+- `State` AP add/use/clamp behavior.
+- `State` player switching, including skipping dead players.
+- `State` team and side lookup.
+- `BoardModel` movement once `BoardModel` exists.
+- `BoardModel` attack/capture/ability/end-turn behavior as those operations move behind the model API.
+- Legal-action query behavior for movement, interaction, and ability targets.
 
 ## Implementation Defaults
 
 - Add `BoardModel` in `scenes/board/board_model.gd`.
 - Add `BoardController` in `scenes/board/board_controller.gd`.
+- Put tests under `tests/` unless the chosen GUT setup strongly prefers another standard project-local path.
 - Keep `scenes/board/board.gd` as the scene host during early phases. It can act as the first concrete `BoardView` before any rename or scene split.
 - Start `BoardModel` as `RefCounted` unless a concrete Godot node lifecycle need appears during implementation.
 - Allow `BoardModel` to hold references to existing scene-backed map/unit/building objects during phase 1, but do not expose UI nodes or require selection state in its public API.

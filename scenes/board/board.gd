@@ -13,14 +13,15 @@ const RETALIATION_DELAY: float = 0.1
 @onready var campaign: CampaignService = Campaign as CampaignService
 @onready var saves_manager: SavesManagerService = SavesManager as SavesManagerService
 
-var state: State = State.new()
-var radial_abilities: RadialAbilities = RadialAbilities.new()
-var abilities: Abilities = Abilities.new(self)
-var events: Events = Events.new()
-var observers: Observers = Observers.new(self)
-var scripting: Scripting = Scripting.new()
-var ai: Ai = Ai.new(self)
-var collateral: Collateral = Collateral.new(self)
+var board_model: BoardModel
+var state: State
+var radial_abilities: RadialAbilities
+var abilities: Abilities
+var events: Events
+var observers: Observers
+var scripting: Scripting
+var ai: Ai
+var collateral: Collateral
 
 
 var selected_tile: MapTile = null
@@ -44,6 +45,19 @@ var initial_hq_cam_skipped: bool = false
 var mouse_click_position: Variant = null
 
 var last_unit_move: Dictionary[String, Variant] = {}
+
+
+func _init() -> void:
+    self.board_model = BoardModel.new()
+    self.state = self.board_model.state
+    self.radial_abilities = self.board_model.radial_abilities
+    self.events = self.board_model.events
+    self.scripting = self.board_model.scripting
+    self.board_model.attach_board(self)
+    self.abilities = self.board_model.abilities
+    self.observers = self.board_model.observers
+    self.ai = self.board_model.ai
+    self.collateral = self.board_model.collateral
 
 
 func _ready() -> void:

@@ -276,6 +276,54 @@ This should complement the existing Godot headless load validation.
 
 Use GUT for unit and small integration coverage around the extracted model/rule code. Keep the existing Godot headless project load as a smoke check for resource and parser health.
 
+Testing should follow the migration phases. Each phase should add tests only for the stable boundary introduced by that phase.
+
+### Unit Testing Policy By Phase
+
+Phase 0, GUT setup:
+
+- Test already-isolated logic only.
+- Add one harness smoke test proving GUT runs headlessly.
+- Add `State` tests for AP add/use/clamp behavior.
+- Add `State` tests for player switching, including skipping dead players.
+- Add `State` tests for team and side lookup.
+- Do not test broad `Board` scene behavior yet.
+
+Phase 1, `BoardModel` wrapper:
+
+- Test `BoardModel` setup and state delegation through its public API.
+- Test basic turn/AP queries once exposed through `BoardModel`.
+- Test explicit model commands as they appear.
+- Prefer public API tests over tests for private helper methods.
+- Add parity or integration tests only when a rule still delegates through old `Board` behavior and the test can remain stable.
+
+Phase 2, `BoardController` extraction:
+
+- Test controller interpretation, not gameplay rules.
+- Use fake or stub `BoardModel` objects where practical so controller tests stay focused.
+- Cover selection, cancel, legal move routing, legal interaction routing, and ability-targeting routing.
+- Do not duplicate `BoardModel` rule tests in controller tests.
+
+Phase 3, `BoardView` extraction:
+
+- Avoid broad unit tests for visual scene behavior.
+- Add thin tests only for non-trivial view logic that can run without brittle timing or rendering assumptions.
+- Rely primarily on Godot headless load plus targeted scene smoke checks for view/resource health.
+
+Phase 4, AI direct model commands:
+
+- Test that AI actions no longer require `select_tile` or controller selection state.
+- Add deterministic tests for representative AI action execution through `BoardModel`.
+- Keep scoring/brain tests focused on stable deterministic inputs.
+
+Phase 5, headless validation:
+
+- Add small integration tests that load a map, create a `BoardModel`, execute representative commands, and assert final state/events.
+- Cover movement, attack, capture, ability use, end turn, save/restore, and AI action execution through the new API.
+- Keep these tests smaller than full campaign simulations unless a specific regression needs that scope.
+
+General rule: unit-test model rules and controller interpretation; smoke-test views; use integration tests for map/resource/headless flows.
+
 For non-trivial implementation changes:
 
 - Run `git diff --check`.
@@ -285,15 +333,6 @@ For non-trivial implementation changes:
 - Exercise at least movement, attack, capture, ability use, end turn, save/restore, and AI action execution through the new API.
 
 The first useful GUT target is `State`, because it is already scene-independent and central to turns/AP/player flow. The first useful architecture target is parity: perform an action through the old board flow and through the new model/controller path, then compare state and emitted events.
-
-Recommended early GUT coverage:
-
-- `State` AP add/use/clamp behavior.
-- `State` player switching, including skipping dead players.
-- `State` team and side lookup.
-- `BoardModel` movement once `BoardModel` exists.
-- `BoardModel` attack/capture/ability/end-turn behavior as those operations move behind the model API.
-- Legal-action query behavior for movement, interaction, and ability targets.
 
 ## Implementation Defaults
 

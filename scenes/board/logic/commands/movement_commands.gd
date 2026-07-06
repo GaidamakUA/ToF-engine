@@ -16,9 +16,12 @@ func can_move_to_tile(source_tile: MapTile, destination_tile: MapTile, move_cost
 		return false
 	if move_cost <= 0:
 		return false
+	var unit: BaseUnit = source_tile.unit.tile
+	if move_cost > unit.get_move():
+		return false
 	if not self.context.state.can_current_player_afford(move_cost):
 		return false
-	return destination_tile.can_acommodate_unit(source_tile.unit.tile)
+	return destination_tile.can_acommodate_unit(unit)
 
 
 func move_unit_along_path(source_tile: MapTile, destination_tile: MapTile, move_cost: int, movement_path: Array[String]) -> CommandResult:

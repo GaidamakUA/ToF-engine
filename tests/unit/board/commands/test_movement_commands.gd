@@ -130,6 +130,40 @@ func test_move_unit_rejects_unaffordable_move_without_side_effects() -> void:
 	unit.free()
 
 
+func test_move_unit_rejects_move_cost_above_unit_remaining_move_without_side_effects() -> void:
+	var context := _make_context()
+	var source := MapTile.new(0, 0)
+	var destination := MapTile.new(1, 0)
+	var unit := MoveTrackingUnit.new()
+	unit.side = "blue"
+	unit.team = 0
+	unit.move = 2
+	unit.max_move = 4
+	var source_ground := _add_walkable_ground(source)
+	var destination_ground := _add_walkable_ground(destination)
+	source.unit.set_tile(unit)
+	var movement_path: Array[String] = ["0_0", "1_0"]
+	var recorder := UnitMovedRecorder.new()
+	context.events.register_observer(recorder)
+
+	var commands: Variant = MovementCommandsScript.new(context)
+	var result: CommandResult = commands.move_unit_along_path(source, destination, 3, movement_path)
+
+	assert_eq(result.command_name, "move_unit_failed")
+	assert_true(source.unit.is_present())
+	assert_same(source.unit.tile, unit)
+	assert_false(destination.unit.is_present())
+	assert_eq(unit.move, 2)
+	assert_eq(unit.used_move_cost, -1)
+	assert_eq(context.state.get_current_ap(), 4)
+	assert_eq(result.events.size(), 0)
+	assert_eq(recorder.observed_events.size(), 0)
+
+	_free_ground(source, source_ground)
+	_free_ground(destination, destination_ground)
+	unit.free()
+
+
 func test_move_unit_rejects_occupied_destination_without_side_effects() -> void:
 	var context := _make_context()
 	var source := MapTile.new(0, 0)

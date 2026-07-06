@@ -37,7 +37,7 @@ func show_contextual_select(open_unit_abilities: bool = false) -> void:
 func can_move_to_tile(tile: MapTile) -> bool:
 	if self.board == null:
 		return false
-	return self.board.can_move_to_tile(tile)
+	return self.board._can_move_to_tile_from_selection(tile)
 
 
 func move_unit_from_marker_path(source_tile: MapTile, destination_tile: MapTile) -> bool:

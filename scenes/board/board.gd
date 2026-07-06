@@ -555,7 +555,7 @@ func reset_unit_position(tile: MapTile, unit: BaseUnit) -> void:
     unit.set_position(world_position)
 
 
-func can_move_to_tile(tile: MapTile) -> bool:
+func _can_move_to_tile_from_selection(tile: MapTile) -> bool:
     var move_cost: Variant = self.movement_markers.get_tile_cost(tile)
     if move_cost == null:
         return false
@@ -565,7 +565,7 @@ func can_move_to_tile(tile: MapTile) -> bool:
 func should_draw_move_path(tile: MapTile) -> bool:
     if self.selected_tile != null:
         if self.selected_tile.unit.is_present():
-            if self.can_move_to_tile(tile):
+            if self._can_move_to_tile_from_selection(tile):
                 return true
     return false
 

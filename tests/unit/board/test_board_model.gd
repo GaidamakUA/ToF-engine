@@ -1,6 +1,14 @@
 extends GutTest
 
 
+class FakeMovementLegalityBoard:
+	var called: bool = false
+
+	func can_move_to_tile(_tile: MapTile) -> bool:
+		self.called = true
+		return true
+
+
 func test_new_model_owns_headless_gameplay_collaborators() -> void:
 	var model := BoardModel.new()
 
@@ -62,6 +70,37 @@ func test_end_turn_switches_to_next_player() -> void:
 
 	assert_eq(model.state.current_player, 1)
 	assert_eq(model.get_current_side(), "red")
+
+
+func test_can_move_to_tile_from_source_uses_movement_commands_without_board() -> void:
+	var model := _make_model_with_players()
+	var source := MapTile.new(0, 0)
+	var destination := MapTile.new(1, 0)
+	var unit := BaseUnit.new()
+	var ground := BaseTile.new()
+	unit.side = "blue"
+	unit.team = 0
+	unit.move = 3
+	unit.max_move = 3
+	source.unit.set_tile(unit)
+	destination.ground.set_tile(ground)
+
+	assert_true(model.can_move_to_tile_from_source(source, destination, 2))
+	assert_false(model.can_move_to_tile_from_source(source, destination, 4))
+
+	source.unit.release()
+	destination.ground.release()
+	unit.free()
+	ground.free()
+
+
+func test_can_move_to_tile_does_not_delegate_to_board() -> void:
+	var model := _make_model_with_players()
+	var board := FakeMovementLegalityBoard.new()
+	model.board = board
+
+	assert_false(model.can_move_to_tile(MapTile.new(1, 0)))
+	assert_false(board.called)
 
 
 func test_attach_board_creates_board_dependent_collaborators() -> void:

@@ -34,6 +34,19 @@ func show_contextual_select(open_unit_abilities: bool = false) -> void:
 	self.board._show_contextual_select_radial(open_unit_abilities)
 
 
+func can_move_to_tile(tile: MapTile) -> bool:
+	if self.board == null:
+		return false
+	return self.board.can_move_to_tile(tile)
+
+
+func move_unit_from_marker_path(source_tile: MapTile, destination_tile: MapTile) -> bool:
+	if self.board == null:
+		return false
+	self.board._move_unit_from_marker_path(source_tile, destination_tile)
+	return true
+
+
 func show_ability_markers(ability: Ability, tile: MapTile) -> void:
 	if self.board == null:
 		return

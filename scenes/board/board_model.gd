@@ -148,8 +148,12 @@ func execute_active_ability(tile: MapTile) -> void:
 
 
 func can_move_to_tile(tile: MapTile) -> bool:
-	assert(self.board != null)
-	return self.board.can_move_to_tile(tile)
+	return self.can_move_to_tile_from_source(null, tile, 0)
+
+
+func can_move_to_tile_from_source(source_tile: MapTile, destination_tile: MapTile, move_cost: int) -> bool:
+	assert(self.movement_commands != null)
+	return self.movement_commands.can_move_to_tile(source_tile, destination_tile, move_cost)
 
 
 func move_unit(source_tile: MapTile, destination_tile: MapTile) -> CommandResult:

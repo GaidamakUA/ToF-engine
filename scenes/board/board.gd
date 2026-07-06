@@ -512,7 +512,7 @@ func _show_contextual_select_radial(open_unit_abilities: bool) -> void:
         self.toggle_radial_menu(self.selected_tile.building.tile)
 
 
-func move_unit(source_tile: MapTile, destination_tile: MapTile) -> void:
+func _move_unit_from_marker_path(source_tile: MapTile, destination_tile: MapTile) -> void:
     var raw_move_cost: Variant = self.movement_markers.get_tile_cost(destination_tile)
     assert(raw_move_cost != null)
     var move_cost: int = int(raw_move_cost)
@@ -557,9 +557,9 @@ func reset_unit_position(tile: MapTile, unit: BaseUnit) -> void:
 
 func can_move_to_tile(tile: MapTile) -> bool:
     var move_cost: Variant = self.movement_markers.get_tile_cost(tile)
-    if move_cost != null and int(move_cost) > 0 and self.state.can_current_player_afford(int(move_cost)) and tile.can_acommodate_unit(self.selected_tile.unit.tile):
-        return true
-    return false
+    if move_cost == null:
+        return false
+    return self.board_model.can_move_to_tile_from_source(self.selected_tile, tile, int(move_cost))
 
 
 func should_draw_move_path(tile: MapTile) -> bool:

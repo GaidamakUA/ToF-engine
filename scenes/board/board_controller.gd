@@ -66,9 +66,10 @@ func press_tile(tile_position: Vector2i) -> void:
 		self.view.show_contextual_select(open_unit_abilities)
 
 	elif self.selected_tile != null:
-		if self.model.can_move_to_tile(tile):
+		if self.view.can_move_to_tile(tile) or self.model.can_move_to_tile(tile):
 			self.model.set_last_unit_move(null)
-			self.model.move_unit(self.selected_tile, tile)
+			if not self.view.move_unit_from_marker_path(self.selected_tile, tile):
+				self.model.move_unit(self.selected_tile, tile)
 			self.selected_tile = tile
 			self.view.show_contextual_select()
 

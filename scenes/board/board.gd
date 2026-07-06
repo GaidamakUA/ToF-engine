@@ -14,6 +14,7 @@ const RETALIATION_DELAY: float = 0.1
 @onready var saves_manager: SavesManagerService = SavesManager as SavesManagerService
 
 var board_model: BoardModel
+var board_view: BoardView
 var controller: BoardController
 var state: State
 var radial_abilities: RadialAbilities
@@ -62,7 +63,8 @@ var last_unit_move: Dictionary[String, Variant] = {}
 
 func _init() -> void:
     self.board_model = BoardModel.new()
-    self.controller = BoardController.new(self.board_model, self)
+    self.board_view = BoardView.new(self)
+    self.controller = BoardController.new(self.board_model, self.board_view)
     self.state = self.board_model.state
     self.radial_abilities = self.board_model.radial_abilities
     self.events = self.board_model.events

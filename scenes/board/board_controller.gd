@@ -2,19 +2,19 @@ class_name BoardController
 
 
 var model: BoardModel
-var view: Variant = null
+var view: BoardView = BoardView.new()
 var selected_tile: MapTile = null
 var active_ability: Ability = null
 var active_ability_origin_tile: MapTile = null
 
 
-func _init(board_model: BoardModel, view_host: Variant = null) -> void:
+func _init(board_model: BoardModel, view_host: BoardView = null) -> void:
 	self.model = board_model
 	if view_host != null:
 		self.attach_view(view_host)
 
 
-func attach_view(view_host: Variant) -> void:
+func attach_view(view_host: BoardView) -> void:
 	self.view = view_host
 
 
@@ -37,7 +37,6 @@ func clear_selection() -> void:
 
 
 func cancel() -> void:
-	assert(self.view != null)
 	if self.active_ability != null:
 		self.view.cancel_ability()
 	else:
@@ -45,7 +44,6 @@ func cancel() -> void:
 
 
 func press_tile(tile_position: Vector2i) -> void:
-	assert(self.view != null)
 	var tile: MapTile = self.model.get_tile_at(tile_position)
 	if tile == null:
 		return

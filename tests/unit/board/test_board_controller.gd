@@ -50,6 +50,8 @@ class FakeBoardModel:
 
 
 class FakeBoardView:
+	extends BoardView
+
 	var show_contextual_select_args: Array[bool] = []
 	var unselect_count: int = 0
 	var cancel_ability_count: int = 0
@@ -239,3 +241,15 @@ func test_cancel_routes_to_tile_unselect_without_active_ability() -> void:
 
 	assert_eq(view.cancel_ability_count, 0)
 	assert_eq(view.unselect_count, 1)
+
+
+func test_press_tile_can_run_with_null_view() -> void:
+	var model := FakeBoardModel.new()
+	var tile := MapTile.new(1, 2)
+	model.add_tile(tile)
+	model.selectable_tiles.append(tile)
+	var controller := BoardController.new(model)
+
+	controller.press_tile(tile.position)
+
+	assert_same(controller.selected_tile, tile)

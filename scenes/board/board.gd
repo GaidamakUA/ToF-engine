@@ -516,6 +516,11 @@ func move_unit(source_tile: MapTile, destination_tile: MapTile) -> void:
     var raw_move_cost: Variant = self.movement_markers.get_tile_cost(destination_tile)
     assert(raw_move_cost != null)
     var move_cost: int = int(raw_move_cost)
+    var movement_path: Array[String] = self.movement_markers.get_path_to_tile(destination_tile)
+    self.move_unit_along_path(source_tile, destination_tile, move_cost, movement_path)
+
+
+func move_unit_along_path(source_tile: MapTile, destination_tile: MapTile, move_cost: int, movement_path: Array[String]) -> void:
     if not state.is_current_player_ai():
         set_last_unit_move({
             "source": source_tile,
@@ -530,13 +535,19 @@ func move_unit(source_tile: MapTile, destination_tile: MapTile) -> void:
     destination_tile.unit.tile.use_move(move_cost)
 
     self.reset_unit_position(source_tile, destination_tile.unit.tile)
-    self.update_unit_position(destination_tile)
+    self.update_unit_position_along_path(destination_tile, movement_path)
 
     self.events.emit_unit_moved(destination_tile.unit.tile, source_tile, destination_tile)
 
 
 func update_unit_position(tile: MapTile) -> void:
     var path: Array[String] = self.movement_markers.get_path_to_tile(tile)
+    self.update_unit_position_along_path(tile, path)
+
+
+func update_unit_position_along_path(tile: MapTile, path: Array[String]) -> void:
+    if path.size() < 2:
+        return
     var movement_path: Array[String] = self.path_markers.convert_path_to_directions(path)
     var unit: BaseUnit = tile.unit.tile
     assert(unit != null)
@@ -568,18 +579,21 @@ func should_draw_move_path(tile: MapTile) -> bool:
 
 
 func handle_interaction(tile: MapTile) -> void:
-    if self.selected_tile != null:
-        if self.selected_tile.unit.is_present():
-            if tile.unit.is_present():
-                self.battle(self.selected_tile, tile)
+    var source_tile: MapTile = self.selected_tile
+    self.handle_interaction_from_tile(source_tile, tile)
+    if source_tile != null && source_tile.unit.is_present():
+        self.show_contextual_select()
+
+
+func handle_interaction_from_tile(source_tile: MapTile, target_tile: MapTile) -> void:
+    if source_tile != null:
+        if source_tile.unit.is_present():
+            if target_tile.unit.is_present():
+                self.battle(source_tile, target_tile)
                 self.use_current_player_ap(1)
-                if self.selected_tile != null && self.selected_tile.unit.is_present():
-                    self.show_contextual_select()
-            if tile.building.is_present():
-                self.capture(self.selected_tile, tile)
+            if target_tile.building.is_present():
+                self.capture(source_tile, target_tile)
                 self.use_current_player_ap(1)
-                if self.selected_tile != null && self.selected_tile.unit.is_present():
-                    self.show_contextual_select()
 
 
 func battle(attacker_tile: MapTile, defender_tile: MapTile) -> void:
@@ -806,17 +820,20 @@ func _activate_ability(ability: Ability) -> void:
 
 func execute_active_ability(target_tile: MapTile) -> void:
     assert(self.active_ability != null)
+    self.execute_ability_from_tile(self.active_ability_origin_tile, self.active_ability, target_tile)
+    self.cancel_ability()
+
+
+func execute_ability_from_tile(origin_tile: MapTile, ability: Ability, target_tile: MapTile) -> void:
     var source: Variant = null
 
-    if self.active_ability_origin_tile.building.is_present():
-        source = self.active_ability_origin_tile.building.tile
-    elif self.active_ability_origin_tile.unit.is_present():
-        source = self.active_ability_origin_tile.unit.tile
+    if origin_tile.building.is_present():
+        source = origin_tile.building.tile
+    elif origin_tile.unit.is_present():
+        source = origin_tile.unit.tile
 
-    var ability: Ability = self.active_ability
-    ability.execute(self, source, self.active_ability_origin_tile, target_tile.position)
+    ability.execute(self, source, origin_tile, target_tile.position)
     source.activate_ability_cooldown(ability, self)
-    self.cancel_ability()
 
 
 func remove_unit_hightlights() -> void:

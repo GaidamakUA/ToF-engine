@@ -23,6 +23,8 @@ func cancel_ability() -> void:
 func show_contextual_select(open_unit_abilities: bool = false) -> void:
 	if self.board == null:
 		return
+	if self.board.selected_tile == null:
+		return
 	self.board.place_selection_marker()
 	self.board.reset_unit_markers()
 

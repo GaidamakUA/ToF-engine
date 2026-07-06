@@ -109,6 +109,37 @@ func move_unit(source_tile: MapTile, destination_tile: MapTile) -> void:
 	self.board.move_unit(source_tile, destination_tile)
 
 
+func move_unit_along_path(source_tile: MapTile, destination_tile: MapTile, move_cost: int, movement_path: Array[String]) -> void:
+	assert(self.board != null)
+	self.board.move_unit_along_path(source_tile, destination_tile, move_cost, movement_path)
+
+
+func reserve_ap(amount: int) -> void:
+	assert(self.board != null)
+	self.board.ai.reserve_ap(amount)
+
+
+func interact_unit(source_tile: MapTile, interaction_tile: MapTile, target_tile: MapTile) -> void:
+	assert(self.board != null)
+	var action_source: MapTile = source_tile
+	if interaction_tile != null:
+		self.move_unit(source_tile, interaction_tile)
+		action_source = interaction_tile
+	self.board.handle_interaction_from_tile(action_source, target_tile)
+
+
+func use_ability(origin_tile: MapTile, ability: Ability, target_tile: MapTile) -> void:
+	assert(self.board != null)
+	self.board.execute_ability_from_tile(origin_tile, ability, target_tile)
+
+
+func wait_for_action_delay(delay: float) -> void:
+	if delay <= 0.0:
+		return
+	if self.board is Node:
+		await self.board.get_tree().create_timer(delay).timeout
+
+
 func selected_unit_can_interact_with(tile: MapTile) -> bool:
 	assert(self.board != null)
 	return self.board.selected_unit_can_interact_with(tile)

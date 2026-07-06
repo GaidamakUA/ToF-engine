@@ -78,7 +78,7 @@ func _start_game() -> void:
     self.all_players_loaded = true
     self.relay.match_in_progress = true
     _manage_cinematic_bars()
-    start_turn()
+    start_initial_turn()
 
 
 func _on_player_connected(peer_id: int, _player_info: Dictionary) -> void:

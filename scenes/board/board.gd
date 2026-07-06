@@ -86,7 +86,7 @@ func _ready() -> void:
 func _ready_start() -> void:
     if self.match_setup.restore_save_id == null:
         self.match_setup.store_setup()
-        self.start_turn()
+        self.start_initial_turn()
     else:
         self.restore_saved_state()
 
@@ -306,6 +306,9 @@ func start_turn() -> void:
     _manage_ai_start()
     _manage_turn_timer()
 
+
+func start_initial_turn() -> void:
+    await self.start_turn()
     self.events.emit_turn_started(self.state.turn, self.state.current_player)
 
 

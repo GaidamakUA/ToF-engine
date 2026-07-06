@@ -48,3 +48,12 @@ func test_source_explicit_interaction_does_not_refresh_contextual_selection() ->
 	attacker.free()
 	defender.free()
 	board.free()
+
+
+func test_start_turn_does_not_emit_duplicate_turn_started_event() -> void:
+	var file := FileAccess.open("res://scenes/board/board.gd", FileAccess.READ)
+	assert_not_null(file)
+	var source := file.get_as_text()
+	var start_turn_source := source.get_slice("func start_turn() -> void:", 1).get_slice("func start_initial_turn() -> void:", 0)
+
+	assert_eq(start_turn_source.find("emit_turn_started"), -1)

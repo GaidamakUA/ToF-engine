@@ -10,17 +10,9 @@ func _init(ability_object: Ability, origin_tile_object: MapTile, target_object: 
     self.origin_tile = origin_tile_object
     self.target = target_object
 
-func perform(board: Board) -> void:
-    board.selected_tile = self.origin_tile
-    if board.selected_tile.building.is_present():
-        board._activate_production_ability(self.ability)
-    else:
-        board._activate_ability(self.ability)
-    board.selected_tile = null
-    board.select_tile(self.target.position)
-    board.unselect_tile()
-    if self.delay > 0:
-        await board.get_tree().create_timer(self.delay).timeout
+func perform(model: BoardModel) -> void:
+    model.use_ability(self.origin_tile, self.ability, self.target)
+    await model.wait_for_action_delay(self.delay)
 
 
 func _to_string() -> String:

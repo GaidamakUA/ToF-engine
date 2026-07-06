@@ -58,7 +58,7 @@ func _ai_tick() -> void:
 
         if self._failsafe_counter > 0:
             self.board.map.camera.camera_in_transit = false
-        await selected_action.perform(self.board)
+        await selected_action.perform(self.board.board_model)
 
         if str(selected_action) == self._last_action_signature:
             self._failsafe_counter += 1

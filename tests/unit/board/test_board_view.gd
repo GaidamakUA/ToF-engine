@@ -50,6 +50,22 @@ class FakeAbilityMarkers:
 		self.calls.append([ability, tile])
 
 
+class FakeBoardHostWithoutSelection:
+	var selected_tile: MapTile = null
+	var place_selection_marker_count: int = 0
+	var reset_unit_markers_count: int = 0
+	var contextual_select_radial_args: Array[bool] = []
+
+	func place_selection_marker() -> void:
+		self.place_selection_marker_count += 1
+
+	func reset_unit_markers() -> void:
+		self.reset_unit_markers_count += 1
+
+	func _show_contextual_select_radial(open_unit_abilities: bool) -> void:
+		self.contextual_select_radial_args.append(open_unit_abilities)
+
+
 class FakeUi:
 	var resource_values: Array[int] = []
 	var hide_resource_count: int = 0
@@ -91,6 +107,17 @@ func test_board_view_shows_ability_markers() -> void:
 	view.show_ability_markers(ability, tile)
 
 	assert_eq(board.ability_markers.calls, [[ability, tile]])
+
+
+func test_board_view_ignores_contextual_select_without_selected_tile() -> void:
+	var board := FakeBoardHostWithoutSelection.new()
+	var view := BoardView.new(board)
+
+	view.show_contextual_select(true)
+
+	assert_eq(board.place_selection_marker_count, 0)
+	assert_eq(board.reset_unit_markers_count, 0)
+	assert_true(board.contextual_select_radial_args.is_empty())
 
 
 func test_board_view_updates_resource_value() -> void:

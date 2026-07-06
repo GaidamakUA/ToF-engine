@@ -161,7 +161,7 @@ func _attack_action(entity_tile: MapTile, interaction_tile: MapTile, target_tile
     if self._is_beyond_tether(unit, interaction_tile):
         return null
 
-    var action: AttackAction = AttackAction.new(entity_tile, interaction_tile, target_tile, path.size())
+    var action: AttackAction = AttackAction.new(entity_tile, interaction_tile, target_tile, path)
 
     var value: int = target_unit.get_value()
 
@@ -181,7 +181,7 @@ func _capture_action(entity_tile: MapTile, interaction_tile: MapTile, target_til
     if self._is_beyond_tether(self._get_unit(entity_tile), interaction_tile):
         return null
 
-    return CaptureAction.new(entity_tile, interaction_tile, target_tile, path.size())
+    return CaptureAction.new(entity_tile, interaction_tile, target_tile, path)
 
 func _ability_action(ability: Ability, origin_tile: MapTile, target: MapTile) -> UseAbilityAction:
     return UseAbilityAction.new(ability, origin_tile, target)
@@ -208,7 +208,7 @@ func _approach_action(entity_tile: MapTile, path: Array[String], unit_range: int
     var unit: BaseUnit = self._get_unit(entity_tile)
 
     if target_tile.can_acommodate_unit(unit):
-        return MoveAction.new(entity_tile, target_tile, unit_range)
+        return MoveAction.new(entity_tile, target_tile, self.pathfinder.get_path_to_tile(target_tile))
     else:
         var nearby_tiles: Array[MapTile] = self._get_interaction_tiles(target_tile, entity_tile)
         var index: int = nearby_tiles.find_custom(func (nt: MapTile) -> bool:
@@ -217,7 +217,7 @@ func _approach_action(entity_tile: MapTile, path: Array[String], unit_range: int
             )
         var nearby_tile: MapTile = nearby_tiles[index]
         var nearby_path: Array[String] = self.pathfinder.get_path_to_tile(nearby_tile)
-        return MoveAction.new(entity_tile, nearby_tile, nearby_path.size())
+        return MoveAction.new(entity_tile, nearby_tile, nearby_path)
 
 func _move_action(entity_tile: MapTile, path: Array[String], unit_range: int) -> MoveAction:
     if unit_range < 1:
@@ -233,7 +233,7 @@ func _move_action(entity_tile: MapTile, path: Array[String], unit_range: int) ->
         return null
 
     if target_tile.can_acommodate_unit(unit):
-        return MoveAction.new(entity_tile, target_tile, unit_range)
+        return MoveAction.new(entity_tile, target_tile, self.pathfinder.get_path_to_tile(target_tile))
 
     return null
 

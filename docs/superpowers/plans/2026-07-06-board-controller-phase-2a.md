@@ -119,3 +119,81 @@ HOME=/private/tmp "$GODOT_BIN" --headless --path "$PWD" --quit
 ```
 
 Expected: exit `0`, with only existing warnings/shutdown leak output.
+
+## Task 4: Move Tile Press Interpretation Into BoardController
+
+**Files:**
+- Modify: `scenes/board/board_controller.gd`
+- Modify: `scenes/board/board.gd`
+- Modify: `tests/unit/board/test_board_controller.gd`
+
+- [x] **Step 1: Write failing controller routing tests**
+
+Add tests with a fake board host for selection, same-tile ability opening, movement routing, interaction routing, and invalid ability-target cancellation.
+
+- [x] **Step 2: Run test to verify it fails**
+
+Run:
+
+```bash
+GODOT_BIN="/Users/Personal/Library/Application Support/Steam/steamapps/common/Godot Engine/Godot.app/Contents/MacOS/Godot" ./tools/run_gut.sh
+```
+
+Expected: FAIL because `BoardController.attach_board()` and `BoardController.press_tile()` are missing.
+
+- [x] **Step 3: Add controller tile-press routing**
+
+Add `BoardController.attach_board()` and `BoardController.press_tile()`. Keep current scene-backed operations on `Board` for this compatibility slice.
+
+- [x] **Step 4: Delegate Board.select_tile() to BoardController**
+
+Keep camera and hover-menu guards in `Board`, then forward accepted tile presses to `controller.press_tile()`. Add small host methods for tile lookup, current-player selectability, ability markers, AI checks, interaction checks, and click feedback.
+
+- [x] **Step 5: Run GUT**
+
+Run:
+
+```bash
+GODOT_BIN="/Users/Personal/Library/Application Support/Steam/steamapps/common/Godot Engine/Godot.app/Contents/MacOS/Godot" ./tools/run_gut.sh
+```
+
+Expected: PASS.
+
+## Task 5: Move Cancel Interpretation Into BoardController
+
+**Files:**
+- Modify: `scenes/board/board_controller.gd`
+- Modify: `scenes/board/board.gd`
+- Modify: `tests/unit/board/test_board_controller.gd`
+
+- [x] **Step 1: Write failing cancel routing tests**
+
+Add tests that verify cancel routes to ability cancellation while targeting and to tile unselection otherwise.
+
+- [x] **Step 2: Run test to verify it fails**
+
+Run:
+
+```bash
+GODOT_BIN="/Users/Personal/Library/Application Support/Steam/steamapps/common/Godot Engine/Godot.app/Contents/MacOS/Godot" ./tools/run_gut.sh
+```
+
+Expected: FAIL because `BoardController.cancel()` is missing.
+
+- [x] **Step 3: Add controller cancel routing**
+
+Add `BoardController.cancel()` and delegate `Board.unselect_action()` to it.
+
+- [x] **Step 4: Route ability targeting activation through BoardController**
+
+Update unit and production ability activation to call `controller.start_ability_targeting()` instead of assigning active ability fields directly.
+
+- [x] **Step 5: Run GUT**
+
+Run:
+
+```bash
+GODOT_BIN="/Users/Personal/Library/Application Support/Steam/steamapps/common/Godot Engine/Godot.app/Contents/MacOS/Godot" ./tools/run_gut.sh
+```
+
+Expected: PASS.

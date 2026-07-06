@@ -4,6 +4,7 @@ extends GutTest
 class FakeBoardHost:
 	var selected_tile: MapTile = MapTile.new(0, 0)
 	var ability_markers := FakeAbilityMarkers.new()
+	var ui := FakeUi.new()
 	var clear_selection_view_count: int = 0
 	var clear_ability_view_count: int = 0
 	var place_selection_marker_count: int = 0
@@ -49,6 +50,17 @@ class FakeAbilityMarkers:
 		self.calls.append([ability, tile])
 
 
+class FakeUi:
+	var resource_values: Array[int] = []
+	var hide_resource_count: int = 0
+
+	func update_resource_value(value: int) -> void:
+		self.resource_values.append(value)
+
+	func hide_resource() -> void:
+		self.hide_resource_count += 1
+
+
 func test_board_view_delegates_controller_presentation_callbacks() -> void:
 	var board := FakeBoardHost.new()
 	var view := BoardView.new(board)
@@ -79,3 +91,21 @@ func test_board_view_shows_ability_markers() -> void:
 	view.show_ability_markers(ability, tile)
 
 	assert_eq(board.ability_markers.calls, [[ability, tile]])
+
+
+func test_board_view_updates_resource_value() -> void:
+	var board := FakeBoardHost.new()
+	var view := BoardView.new(board)
+
+	view.update_resource_value(7)
+
+	assert_eq(board.ui.resource_values, [7])
+
+
+func test_board_view_hides_resource() -> void:
+	var board := FakeBoardHost.new()
+	var view := BoardView.new(board)
+
+	view.hide_resource()
+
+	assert_eq(board.ui.hide_resource_count, 1)

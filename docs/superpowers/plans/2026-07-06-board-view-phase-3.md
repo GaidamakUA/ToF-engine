@@ -217,7 +217,46 @@ Run:
 
 Expected: PASS.
 
-## Task 6: Final Verification
+## Task 6: Move Resource Display Presentation Into BoardView
+
+**Files:**
+- Modify: `scenes/board/board_view.gd`
+- Modify: `scenes/board/board.gd`
+- Modify: `tests/unit/board/test_board_view.gd`
+
+- [x] **Step 1: Write failing resource display view tests**
+
+Add BoardView tests proving AP resource updates and resource hiding route through `BoardView`.
+
+- [x] **Step 2: Run GUT to verify it fails**
+
+Run:
+
+```bash
+./tools/run_gut.sh
+```
+
+Expected: FAIL because `BoardView.update_resource_value()` and `BoardView.hide_resource()` are missing.
+
+- [x] **Step 3: Add BoardView resource display methods**
+
+Add `BoardView.update_resource_value(value)` and `BoardView.hide_resource()` and delegate to the board host's UI.
+
+- [x] **Step 4: Route Board resource display calls through BoardView**
+
+Update turn start, AP gain/spend, game end, save restore, and undo move paths to call the view adapter.
+
+- [x] **Step 5: Run GUT**
+
+Run:
+
+```bash
+./tools/run_gut.sh
+```
+
+Expected: PASS.
+
+## Task 7: Final Verification
 
 **Files:**
 - No file changes.

@@ -38,6 +38,18 @@ func show_ability_markers(ability: Ability, tile: MapTile) -> void:
 	self.board.ability_markers.show_ability_markers_for_tile(ability, tile)
 
 
+func update_resource_value(value: int) -> void:
+	if self.board == null:
+		return
+	self.board.ui.update_resource_value(value)
+
+
+func hide_resource() -> void:
+	if self.board == null:
+		return
+	self.board.ui.hide_resource()
+
+
 func hover_tile() -> void:
 	if self.board == null:
 		return

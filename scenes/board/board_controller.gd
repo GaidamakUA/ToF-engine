@@ -36,10 +36,12 @@ func clear_selection() -> void:
 	self.selected_tile = null
 
 
-func cancel() -> void:
+func cancel_interaction() -> void:
 	if self.active_ability != null:
+		self.cancel_ability()
 		self.view.cancel_ability()
 	else:
+		self.clear_selection()
 		self.view.unselect_tile()
 
 

@@ -376,11 +376,15 @@ func play_tile_selected_feedback() -> void:
 
 
 func unselect_action() -> void:
-    self.controller.cancel()
+    self.controller.cancel_interaction()
 
 
 func unselect_tile() -> void:
-    self.selected_tile = null
+    self.controller.clear_selection()
+    self.board_view.unselect_tile()
+
+
+func clear_selection_view() -> void:
     self.reset_unit_markers()
     self.cancel_ability()
     self.selected_tile_marker.hide()
@@ -404,8 +408,11 @@ func reset_unit_markers() -> void:
 
 
 func cancel_ability() -> void:
-    self.active_ability = null
-    self.active_ability_origin_tile = null
+    self.controller.cancel_ability()
+    self.board_view.cancel_ability()
+
+
+func clear_ability_view() -> void:
     self.ability_markers.reset()
     self.refresh_tile_selection()
 
@@ -494,15 +501,7 @@ func show_unit_interaction_markers() -> void:
 
 
 func show_contextual_select(open_unit_abilities: bool = false) -> void:
-    self.place_selection_marker()
-    self.movement_markers.reset()
-    self.interaction_markers.reset()
-    self.path_markers.reset()
-
-    if self.selected_tile.unit.is_present():
-        self.show_unit_movement_markers()
-        self.show_unit_interaction_markers()
-    _show_contextual_select_radial(open_unit_abilities)
+    self.board_view.show_contextual_select(open_unit_abilities)
 
 
 func _show_contextual_select_radial(open_unit_abilities: bool) -> void:

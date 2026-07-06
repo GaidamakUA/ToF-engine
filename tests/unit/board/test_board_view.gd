@@ -2,20 +2,37 @@ extends GutTest
 
 
 class FakeBoardHost:
-	var unselect_count: int = 0
-	var cancel_ability_count: int = 0
-	var show_contextual_select_args: Array[bool] = []
+	var selected_tile: MapTile = MapTile.new(0, 0)
+	var clear_selection_view_count: int = 0
+	var clear_ability_view_count: int = 0
+	var place_selection_marker_count: int = 0
+	var reset_unit_markers_count: int = 0
+	var show_unit_movement_markers_count: int = 0
+	var show_unit_interaction_markers_count: int = 0
+	var contextual_select_radial_args: Array[bool] = []
 	var hover_count: int = 0
 	var feedback_count: int = 0
 
-	func unselect_tile() -> void:
-		self.unselect_count += 1
+	func clear_selection_view() -> void:
+		self.clear_selection_view_count += 1
 
-	func cancel_ability() -> void:
-		self.cancel_ability_count += 1
+	func clear_ability_view() -> void:
+		self.clear_ability_view_count += 1
 
-	func show_contextual_select(open_unit_abilities: bool = false) -> void:
-		self.show_contextual_select_args.append(open_unit_abilities)
+	func place_selection_marker() -> void:
+		self.place_selection_marker_count += 1
+
+	func reset_unit_markers() -> void:
+		self.reset_unit_markers_count += 1
+
+	func show_unit_movement_markers() -> void:
+		self.show_unit_movement_markers_count += 1
+
+	func show_unit_interaction_markers() -> void:
+		self.show_unit_interaction_markers_count += 1
+
+	func _show_contextual_select_radial(open_unit_abilities: bool) -> void:
+		self.contextual_select_radial_args.append(open_unit_abilities)
 
 	func hover_tile() -> void:
 		self.hover_count += 1
@@ -34,8 +51,12 @@ func test_board_view_delegates_controller_presentation_callbacks() -> void:
 	view.hover_tile()
 	view.play_tile_selected_feedback()
 
-	assert_eq(board.unselect_count, 1)
-	assert_eq(board.cancel_ability_count, 1)
-	assert_eq(board.show_contextual_select_args, [true])
+	assert_eq(board.clear_selection_view_count, 1)
+	assert_eq(board.clear_ability_view_count, 1)
+	assert_eq(board.place_selection_marker_count, 1)
+	assert_eq(board.reset_unit_markers_count, 1)
+	assert_eq(board.show_unit_movement_markers_count, 0)
+	assert_eq(board.show_unit_interaction_markers_count, 0)
+	assert_eq(board.contextual_select_radial_args, [true])
 	assert_eq(board.hover_count, 1)
 	assert_eq(board.feedback_count, 1)

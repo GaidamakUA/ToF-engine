@@ -102,7 +102,83 @@ Run:
 
 Expected: PASS.
 
-## Task 3: Final Verification
+## Task 3: Split Cancel And Unselect View Cleanup
+
+**Files:**
+- Modify: `scenes/board/board_controller.gd`
+- Modify: `scenes/board/board_view.gd`
+- Modify: `scenes/board/board.gd`
+- Modify: `tests/unit/board/test_board_controller.gd`
+- Modify: `tests/unit/board/test_board_view.gd`
+
+- [x] **Step 1: Write failing controller state tests**
+
+Add tests proving `BoardController.cancel_interaction()` clears active ability targeting state and selected tile state directly instead of relying on the scene-backed board.
+
+- [x] **Step 2: Run GUT to verify it fails**
+
+Run:
+
+```bash
+./tools/run_gut.sh
+```
+
+Expected: FAIL because the controller still leaves cancellation state clearing to the view/board compatibility methods.
+
+- [x] **Step 3: Split controller state from view cleanup**
+
+Update `BoardController.cancel_interaction()` to clear controller state before asking the view to update visuals.
+
+- [x] **Step 4: Add view-only cleanup methods on Board**
+
+Add `Board.clear_selection_view()` and `Board.clear_ability_view()`. Keep `Board.unselect_tile()` and `Board.cancel_ability()` as compatibility methods that coordinate controller state plus view cleanup.
+
+- [x] **Step 5: Run GUT**
+
+Run:
+
+```bash
+./tools/run_gut.sh
+```
+
+Expected: PASS.
+
+## Task 4: Move Contextual Selection Presentation Into BoardView
+
+**Files:**
+- Modify: `scenes/board/board_view.gd`
+- Modify: `scenes/board/board.gd`
+- Modify: `tests/unit/board/test_board_view.gd`
+
+- [x] **Step 1: Write failing BoardView contextual selection test**
+
+Update the BoardView test so `show_contextual_select()` must call marker placement, marker reset, optional unit marker drawing, and radial population directly on its board host.
+
+- [x] **Step 2: Run GUT to verify it fails**
+
+Run:
+
+```bash
+./tools/run_gut.sh
+```
+
+Expected: FAIL because `BoardView.show_contextual_select()` still delegates to `Board.show_contextual_select()`.
+
+- [x] **Step 3: Move contextual selection sequence into BoardView**
+
+Update `BoardView.show_contextual_select()` to perform the view sequence. Change `Board.show_contextual_select()` into a compatibility wrapper that delegates to `board_view`.
+
+- [x] **Step 4: Run GUT**
+
+Run:
+
+```bash
+./tools/run_gut.sh
+```
+
+Expected: PASS.
+
+## Task 5: Final Verification
 
 **Files:**
 - No file changes.

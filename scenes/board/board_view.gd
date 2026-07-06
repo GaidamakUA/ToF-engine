@@ -11,19 +11,25 @@ func _init(board_host: Variant = null) -> void:
 func unselect_tile() -> void:
 	if self.board == null:
 		return
-	self.board.unselect_tile()
+	self.board.clear_selection_view()
 
 
 func cancel_ability() -> void:
 	if self.board == null:
 		return
-	self.board.cancel_ability()
+	self.board.clear_ability_view()
 
 
 func show_contextual_select(open_unit_abilities: bool = false) -> void:
 	if self.board == null:
 		return
-	self.board.show_contextual_select(open_unit_abilities)
+	self.board.place_selection_marker()
+	self.board.reset_unit_markers()
+
+	if self.board.selected_tile.unit.is_present():
+		self.board.show_unit_movement_markers()
+		self.board.show_unit_interaction_markers()
+	self.board._show_contextual_select_radial(open_unit_abilities)
 
 
 func hover_tile() -> void:

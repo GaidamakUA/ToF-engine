@@ -129,32 +129,71 @@ Expected: exit `0`, with only existing warnings/shutdown leak output.
 
 - [x] **Step 1: Write failing controller routing tests**
 
-Add tests with a fake board host for selection, same-tile ability opening, movement routing, interaction routing, and invalid ability-target cancellation.
+Add tests with a fake model and fake view host for selection, same-tile ability opening, movement routing, interaction routing, and invalid ability-target cancellation.
 
 - [x] **Step 2: Run test to verify it fails**
 
 Run:
 
 ```bash
-GODOT_BIN="/Users/Personal/Library/Application Support/Steam/steamapps/common/Godot Engine/Godot.app/Contents/MacOS/Godot" ./tools/run_gut.sh
+./tools/run_gut.sh
 ```
 
-Expected: FAIL because `BoardController.attach_board()` and `BoardController.press_tile()` are missing.
+Expected: FAIL because `BoardController.attach_view()` and `BoardController.press_tile()` are missing.
 
 - [x] **Step 3: Add controller tile-press routing**
 
-Add `BoardController.attach_board()` and `BoardController.press_tile()`. Keep current scene-backed operations on `Board` for this compatibility slice.
+Add `BoardController.attach_view()` and `BoardController.press_tile()`. Route gameplay operations through `BoardModel` and keep view feedback on the scene-backed view host.
 
 - [x] **Step 4: Delegate Board.select_tile() to BoardController**
 
-Keep camera and hover-menu guards in `Board`, then forward accepted tile presses to `controller.press_tile()`. Add small host methods for tile lookup, current-player selectability, ability markers, AI checks, interaction checks, and click feedback.
+Keep camera and hover-menu guards in `Board`, then forward accepted tile presses to `controller.press_tile()`. Add small model bridge methods for tile lookup, current-player selectability, ability markers, AI checks, movement, and interaction, with click feedback staying on `Board` as view behavior.
 
 - [x] **Step 5: Run GUT**
 
 Run:
 
 ```bash
-GODOT_BIN="/Users/Personal/Library/Application Support/Steam/steamapps/common/Godot Engine/Godot.app/Contents/MacOS/Godot" ./tools/run_gut.sh
+./tools/run_gut.sh
+```
+
+Expected: PASS.
+
+## Task 6: Route Controller Gameplay Calls Through BoardModel
+
+**Files:**
+- Modify: `scenes/board/board_controller.gd`
+- Modify: `scenes/board/board_model.gd`
+- Modify: `tests/unit/board/test_board_controller.gd`
+
+- [x] **Step 1: Split controller tests into fake model and fake view**
+
+Update controller tests so tile lookup, selectability, movement, interaction, and ability execution are verified on a fake `BoardModel`, while unselect/cancel/contextual-select/hover/click feedback are verified on a fake view host.
+
+- [x] **Step 2: Run test to verify it fails**
+
+Run:
+
+```bash
+./tools/run_gut.sh
+```
+
+Expected: FAIL because the controller still has one board host instead of split model/view responsibilities.
+
+- [x] **Step 3: Update BoardController dependencies**
+
+Replace the controller `board` host with `view`, add `attach_view()`, route gameplay checks and operations through `BoardModel`, and keep only presentation callbacks on `view`.
+
+- [x] **Step 4: Add BoardModel bridge operations**
+
+Add explicit `BoardModel` methods for the controller operations. During this migration slice they delegate to the existing scene-backed board host.
+
+- [x] **Step 5: Run GUT**
+
+Run:
+
+```bash
+./tools/run_gut.sh
 ```
 
 Expected: PASS.
@@ -175,7 +214,7 @@ Add tests that verify cancel routes to ability cancellation while targeting and 
 Run:
 
 ```bash
-GODOT_BIN="/Users/Personal/Library/Application Support/Steam/steamapps/common/Godot Engine/Godot.app/Contents/MacOS/Godot" ./tools/run_gut.sh
+./tools/run_gut.sh
 ```
 
 Expected: FAIL because `BoardController.cancel()` is missing.
@@ -193,7 +232,7 @@ Update unit and production ability activation to call `controller.start_ability_
 Run:
 
 ```bash
-GODOT_BIN="/Users/Personal/Library/Application Support/Steam/steamapps/common/Godot Engine/Godot.app/Contents/MacOS/Godot" ./tools/run_gut.sh
+./tools/run_gut.sh
 ```
 
 Expected: PASS.

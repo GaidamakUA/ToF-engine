@@ -2,20 +2,20 @@ class_name BoardController
 
 
 var model: BoardModel
-var board: Variant = null
+var view: Variant = null
 var selected_tile: MapTile = null
 var active_ability: Ability = null
 var active_ability_origin_tile: MapTile = null
 
 
-func _init(board_model: BoardModel, board_host: Variant = null) -> void:
+func _init(board_model: BoardModel, view_host: Variant = null) -> void:
 	self.model = board_model
-	if board_host != null:
-		self.attach_board(board_host)
+	if view_host != null:
+		self.attach_view(view_host)
 
 
-func attach_board(board_host: Variant) -> void:
-	self.board = board_host
+func attach_view(view_host: Variant) -> void:
+	self.view = view_host
 
 
 func select_tile(tile: MapTile) -> void:
@@ -37,47 +37,47 @@ func clear_selection() -> void:
 
 
 func cancel() -> void:
-	assert(self.board != null)
+	assert(self.view != null)
 	if self.active_ability != null:
-		self.board.cancel_ability()
+		self.view.cancel_ability()
 	else:
-		self.board.unselect_tile()
+		self.view.unselect_tile()
 
 
 func press_tile(tile_position: Vector2i) -> void:
-	assert(self.board != null)
-	var tile: MapTile = self.board.get_tile_at(tile_position)
+	assert(self.view != null)
+	var tile: MapTile = self.model.get_tile_at(tile_position)
 	if tile == null:
 		return
 
 	var open_unit_abilities: bool = false
 
 	if self.active_ability != null:
-		if self.board.has_active_ability_target_marker(tile) or self.board.is_current_player_ai():
-			self.board.set_last_unit_move(null)
-			self.board.execute_active_ability(tile)
+		if self.model.has_active_ability_target_marker(tile) or self.model.is_current_player_ai():
+			self.model.set_last_unit_move(null)
+			self.model.execute_active_ability(tile)
 		else:
-			self.board.unselect_tile()
+			self.view.unselect_tile()
 
-	elif self.board.is_tile_selectable_for_current_player(tile):
+	elif self.model.is_tile_selectable_for_current_player(tile):
 		if self.selected_tile == tile:
 			open_unit_abilities = true
 		self.selected_tile = tile
-		self.board.show_contextual_select(open_unit_abilities)
+		self.view.show_contextual_select(open_unit_abilities)
 
 	elif self.selected_tile != null:
-		if self.board.can_move_to_tile(tile):
-			self.board.set_last_unit_move(null)
-			self.board.move_unit(self.selected_tile, tile)
+		if self.model.can_move_to_tile(tile):
+			self.model.set_last_unit_move(null)
+			self.model.move_unit(self.selected_tile, tile)
 			self.selected_tile = tile
-			self.board.show_contextual_select()
+			self.view.show_contextual_select()
 
-		elif self.board.selected_unit_can_interact_with(tile):
-			self.board.set_last_unit_move(null)
-			self.board.handle_interaction(tile)
+		elif self.model.selected_unit_can_interact_with(tile):
+			self.model.set_last_unit_move(null)
+			self.model.handle_interaction(tile)
 
 		else:
-			self.board.unselect_tile()
+			self.view.unselect_tile()
 
-	self.board.hover_tile()
-	self.board.play_tile_selected_feedback()
+	self.view.hover_tile()
+	self.view.play_tile_selected_feedback()

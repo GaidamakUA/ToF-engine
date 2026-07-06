@@ -68,3 +68,52 @@ func can_current_player_afford(amount: int) -> bool:
 
 func end_turn() -> void:
 	self.state.switch_to_next_player()
+
+
+func get_tile_at(tile_position: Vector2i) -> MapTile:
+	assert(self.board != null)
+	return self.board.get_tile_at(tile_position)
+
+
+func is_tile_selectable_for_current_player(tile: MapTile) -> bool:
+	assert(self.board != null)
+	return self.board.is_tile_selectable_for_current_player(tile)
+
+
+func has_active_ability_target_marker(tile: MapTile) -> bool:
+	assert(self.board != null)
+	return self.board.has_active_ability_target_marker(tile)
+
+
+func is_current_player_ai() -> bool:
+	return self.state.is_current_player_ai()
+
+
+func set_last_unit_move(value: Variant) -> void:
+	assert(self.board != null)
+	self.board.set_last_unit_move(value)
+
+
+func execute_active_ability(tile: MapTile) -> void:
+	assert(self.board != null)
+	self.board.execute_active_ability(tile)
+
+
+func can_move_to_tile(tile: MapTile) -> bool:
+	assert(self.board != null)
+	return self.board.can_move_to_tile(tile)
+
+
+func move_unit(source_tile: MapTile, destination_tile: MapTile) -> void:
+	assert(self.board != null)
+	self.board.move_unit(source_tile, destination_tile)
+
+
+func selected_unit_can_interact_with(tile: MapTile) -> bool:
+	assert(self.board != null)
+	return self.board.selected_unit_can_interact_with(tile)
+
+
+func handle_interaction(tile: MapTile) -> void:
+	assert(self.board != null)
+	self.board.handle_interaction(tile)

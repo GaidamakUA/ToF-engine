@@ -13,19 +13,33 @@ const RETALIATION_DELAY: float = 0.1
 @onready var campaign: CampaignService = Campaign as CampaignService
 @onready var saves_manager: SavesManagerService = SavesManager as SavesManagerService
 
-var state: State = State.new()
-var radial_abilities: RadialAbilities = RadialAbilities.new()
-var abilities: Abilities = Abilities.new(self)
-var events: Events = Events.new()
-var observers: Observers = Observers.new(self)
-var scripting: Scripting = Scripting.new()
-var ai: Ai = Ai.new(self)
-var collateral: Collateral = Collateral.new(self)
+var board_model: BoardModel
+var controller: BoardController
+var state: State
+var radial_abilities: RadialAbilities
+var abilities: Abilities
+var events: Events
+var observers: Observers
+var scripting: Scripting
+var ai: Ai
+var collateral: Collateral
 
 
-var selected_tile: MapTile = null
-var active_ability: Ability = null
-var active_ability_origin_tile: MapTile = null
+var selected_tile: MapTile:
+    get:
+        return self.controller.selected_tile
+    set(value):
+        self.controller.selected_tile = value
+var active_ability: Ability:
+    get:
+        return self.controller.active_ability
+    set(value):
+        self.controller.active_ability = value
+var active_ability_origin_tile: MapTile:
+    get:
+        return self.controller.active_ability_origin_tile
+    set(value):
+        self.controller.active_ability_origin_tile = value
 var last_hover_tile: MapTile = null
 @onready var selected_tile_marker: Node3D = $"marker_anchor/tile_marker"
 @onready var movement_markers: MovementMarkers = $"marker_anchor/movement_markers"
@@ -44,6 +58,20 @@ var initial_hq_cam_skipped: bool = false
 var mouse_click_position: Variant = null
 
 var last_unit_move: Dictionary[String, Variant] = {}
+
+
+func _init() -> void:
+    self.board_model = BoardModel.new()
+    self.controller = BoardController.new(self.board_model, self)
+    self.state = self.board_model.state
+    self.radial_abilities = self.board_model.radial_abilities
+    self.events = self.board_model.events
+    self.scripting = self.board_model.scripting
+    self.board_model.attach_board(self)
+    self.abilities = self.board_model.abilities
+    self.observers = self.board_model.observers
+    self.ai = self.board_model.ai
+    self.collateral = self.board_model.collateral
 
 
 func _ready() -> void:
@@ -311,56 +339,42 @@ func select_tile(tile_position: Vector2i) -> void:
     if self.ui.hover_menu.hover_stack > 0:
         return
 
-    var tile: MapTile = self.map.model.get_tile(tile_position)
-    if tile == null:
-        return
+    self.controller.press_tile(tile_position)
 
+
+func get_tile_at(tile_position: Vector2i) -> MapTile:
+    return self.map.model.get_tile(tile_position)
+
+
+func is_tile_selectable_for_current_player(tile: MapTile) -> bool:
     var current_player: Dictionary[String, Variant]
     current_player.assign(self.state.get_current_player())
-    var open_unit_abilities: bool = false
+    return tile.is_selectable(String(current_player["side"]))
 
-    if self.active_ability != null:
-        if self.ability_markers.marker_exists(tile_position) or self.state.is_current_player_ai():
-            set_last_unit_move(null)
-            self.execute_active_ability(tile)
-        else:
-            self.unselect_tile()
 
-    elif tile.is_selectable(String(current_player["side"])):
-        if self.selected_tile == tile:
-            open_unit_abilities = true
-        self.selected_tile = tile
-        self.show_contextual_select(open_unit_abilities)
+func has_active_ability_target_marker(tile: MapTile) -> bool:
+    return self.ability_markers.marker_exists(tile.position)
 
-    elif self.selected_tile != null:
-        if self.selected_tile.unit.is_present():
-            if self.can_move_to_tile(tile):
-                set_last_unit_move(null)
-                self.move_unit(self.selected_tile, tile)
-                self.selected_tile = tile
-                self.show_contextual_select()
 
-            elif self.selected_tile.is_neighbour(tile) && tile.can_unit_interact(self.selected_tile.unit.tile) && self.state.can_current_player_afford(1):
-                set_last_unit_move(null)
-                self.handle_interaction(tile)
+func is_current_player_ai() -> bool:
+    return self.state.is_current_player_ai()
 
-            else:
-                self.unselect_tile()
 
-        else:
-            self.unselect_tile()
+func selected_unit_can_interact_with(tile: MapTile) -> bool:
+    if self.selected_tile == null:
+        return false
+    if not self.selected_tile.unit.is_present():
+        return false
+    return self.selected_tile.is_neighbour(tile) && tile.can_unit_interact(self.selected_tile.unit.tile) && self.state.can_current_player_afford(1)
 
-    self.hover_tile()
 
+func play_tile_selected_feedback() -> void:
     if self.selected_tile != null and not self.state.is_current_player_ai():
         self.audio.play("map_click")
 
 
 func unselect_action() -> void:
-    if self.active_ability != null:
-        self.cancel_ability()
-    else:
-        self.unselect_tile()
+    self.controller.cancel()
 
 
 func unselect_tile() -> void:
@@ -768,8 +782,7 @@ func _activate_production_ability(ability: SpawnUnit) -> void:
     cost = self.abilities.get_modified_cost(cost, ability.template_name, building)
 
     if self.state.can_current_player_afford(cost):
-        self.active_ability = ability
-        self.active_ability_origin_tile = self.selected_tile
+        self.controller.start_ability_targeting(self.selected_tile, ability)
         if self.selected_tile != null:
             self.ability_markers.show_ability_markers_for_tile(ability, self.selected_tile)
 
@@ -785,8 +798,7 @@ func activate_ability(args: Array) -> void:
 
 func _activate_ability(ability: Ability) -> void:
     self.reset_unit_markers()
-    self.active_ability = ability
-    self.active_ability_origin_tile = self.selected_tile
+    self.controller.start_ability_targeting(self.selected_tile, ability)
     if self.selected_tile != null:
         self.ability_markers.show_ability_markers_for_tile(ability, self.selected_tile)
 

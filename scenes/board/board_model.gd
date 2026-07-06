@@ -1,11 +1,14 @@
 class_name BoardModel
 
 
+const MovementCommandsScript: Script = preload("res://scenes/board/logic/commands/movement_commands.gd")
+
 var board: Variant = null
 var state: State = State.new()
 var radial_abilities: RadialAbilities = RadialAbilities.new()
 var map_model: MapModel = null
 var command_context: BoardCommandContext = null
+var movement_commands: RefCounted = null
 var action_pacer: ActionPacer = NoOpActionPacer.new()
 var abilities: Abilities = null
 var events: Events = Events.new()
@@ -18,6 +21,8 @@ var collateral: Collateral = null
 func _init(board_host: Variant = null) -> void:
 	if board_host != null:
 		self.attach_board(board_host)
+	else:
+		self._rebuild_command_context()
 
 
 func attach_board(board_host: Variant) -> void:
@@ -54,6 +59,7 @@ func _rebuild_command_context() -> void:
 		self.abilities,
 		self.collateral
 	)
+	self.movement_commands = MovementCommandsScript.new(self.command_context)
 
 
 func _sync_map_model_from_board() -> void:
@@ -111,6 +117,12 @@ func get_tile_at(tile_position: Vector2i) -> MapTile:
 	return self.map_model.get_tile(tile_position)
 
 
+func _get_tile_key(tile: MapTile) -> String:
+	if tile == null:
+		return ""
+	return str(tile.position.x) + "_" + str(tile.position.y)
+
+
 func is_tile_selectable_for_current_player(tile: MapTile) -> bool:
 	assert(self.board != null)
 	return self.board.is_tile_selectable_for_current_player(tile)
@@ -140,14 +152,35 @@ func can_move_to_tile(tile: MapTile) -> bool:
 	return self.board.can_move_to_tile(tile)
 
 
-func move_unit(source_tile: MapTile, destination_tile: MapTile) -> void:
-	assert(self.board != null)
-	self.board.move_unit(source_tile, destination_tile)
+func move_unit(source_tile: MapTile, destination_tile: MapTile) -> CommandResult:
+	var movement_path: Array[String] = [
+		_get_tile_key(source_tile),
+		_get_tile_key(destination_tile),
+	]
+	var result: CommandResult = self.move_unit_along_path(source_tile, destination_tile, 1, movement_path)
+	return result
 
 
-func move_unit_along_path(source_tile: MapTile, destination_tile: MapTile, move_cost: int, movement_path: Array[String]) -> void:
-	assert(self.board != null)
-	self.board.move_unit_along_path(source_tile, destination_tile, move_cost, movement_path)
+func move_unit_along_path(source_tile: MapTile, destination_tile: MapTile, move_cost: int, movement_path: Array[String]) -> CommandResult:
+	assert(self.movement_commands != null)
+	if self.board != null and self.board.has_method(&"set_last_unit_move"):
+		if not self.state.is_current_player_ai():
+			self.set_last_unit_move({
+				"source": source_tile,
+				"destination": destination_tile,
+				"cost": move_cost
+			})
+		else:
+			self.set_last_unit_move(null)
+	var result: CommandResult = self.movement_commands.move_unit_along_path(source_tile, destination_tile, move_cost, movement_path)
+	var animated_by_board: bool = self.board != null and self.board.has_method(&"_animate_unit_move_result")
+	if animated_by_board:
+		self.board._animate_unit_move_result(result)
+	elif result.command_name == "move_unit" and not result.events.is_empty():
+		var event: UnitMovedEvent = result.events[0] as UnitMovedEvent
+		if event != null and event.unit != null:
+			event.unit.call_deferred("emit_signal", "move_finished")
+	return result
 
 
 func reserve_ap(amount: int) -> void:

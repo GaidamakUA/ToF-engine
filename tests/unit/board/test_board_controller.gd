@@ -42,8 +42,9 @@ class FakeBoardModel:
 	func selected_unit_can_interact_with(tile: MapTile) -> bool:
 		return self.interactable_tiles.has(tile)
 
-	func move_unit(source_tile: MapTile, destination_tile: MapTile) -> void:
+	func move_unit(source_tile: MapTile, destination_tile: MapTile) -> CommandResult:
 		self.moved_units.append([source_tile, destination_tile])
+		return CommandResult.new("move_unit")
 
 	func handle_interaction(tile: MapTile) -> void:
 		self.handled_interactions.append(tile)

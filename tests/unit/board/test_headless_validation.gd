@@ -6,13 +6,15 @@ func test_headless_fixture_can_move_unit_and_emit_event() -> void:
 	var source: MapTile = scenario.get_tile(Vector2i(0, 0))
 	var destination: MapTile = scenario.get_tile(Vector2i(1, 0))
 
-	scenario.model.move_unit_along_path(source, destination, 1, ["0_0", "1_0"])
+	var result := scenario.model.move_unit_along_path(source, destination, 1, ["0_0", "1_0"])
 
 	assert_false(source.unit.is_present())
 	assert_true(destination.unit.is_present())
 	assert_eq(destination.unit.tile.side, "blue")
 	assert_eq(destination.unit.tile.move, 3)
 	assert_eq(scenario.model.get_current_ap(), 3)
+	assert_eq(result.command_name, "move_unit")
+	assert_eq(result.events.size(), 1)
 	assert_eq(scenario.moved_events.size(), 1)
 	assert_eq(scenario.moved_events[0].start, source)
 	assert_eq(scenario.moved_events[0].finish, destination)

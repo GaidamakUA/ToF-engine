@@ -24,15 +24,6 @@ class HeadlessBoardHost:
 	func get_tile_at(tile_position: Vector2i) -> MapTile:
 		return self.scenario.get_tile(tile_position)
 
-	func move_unit_along_path(source_tile: MapTile, destination_tile: MapTile, move_cost: int, _movement_path: Array[String]) -> void:
-		var unit: BaseUnit = source_tile.unit.tile
-		source_tile.unit.release()
-		destination_tile.unit.set_tile(unit)
-		unit.move = max(0, unit.move - move_cost)
-		self.scenario.model.use_current_player_ap(move_cost)
-		self.scenario.model.events.emit_unit_moved(unit, source_tile, destination_tile)
-		unit.call_deferred("emit_signal", "move_finished")
-
 	func execute_ability_from_tile(origin_tile: MapTile, ability: Ability, target_tile: MapTile) -> void:
 		self.scenario.used_abilities.append({
 			"origin": origin_tile,
@@ -85,6 +76,7 @@ class CapturedEventRecorder:
 
 var model: BoardModel = BoardModel.new()
 var host: HeadlessBoardHost = HeadlessBoardHost.new(self)
+var map_model: MapModel = MapModel.new()
 var tiles: Dictionary[Vector2i, MapTile] = {}
 var moved_events: Array[UnitMovedEvent] = []
 var captured_events: Array[BuildingCapturedEvent] = []
@@ -114,7 +106,6 @@ func cleanup() -> void:
 
 
 func _load_fixture(payload: Dictionary) -> void:
-	self.model.board = self.host
 	self.model.events.register_observer(MovedEventRecorder.new(self))
 	self.model.events.register_observer(CapturedEventRecorder.new(self))
 
@@ -129,11 +120,15 @@ func _load_fixture(payload: Dictionary) -> void:
 		var destination_tile: MapTile = self.get_tile(self._vector2i_from_array(neighbour_data["to"]))
 		source_tile.add_neighbour(String(neighbour_data["direction"]), destination_tile)
 
+	self.model.set_map_model(self.map_model)
+	self.model.board = self.host
+
 
 func _load_tile(tile_data: Dictionary) -> void:
 	var tile_position: Vector2i = self._vector2i_from_array(tile_data["position"])
 	var tile := MapTile.new(tile_position.x, tile_position.y)
 	self.tiles[tile_position] = tile
+	self.map_model.tiles[str(tile_position.x) + "_" + str(tile_position.y)] = tile
 
 	if tile_data.has("unit"):
 		var unit_data: Dictionary = tile_data["unit"]

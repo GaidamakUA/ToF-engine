@@ -45,8 +45,25 @@ class FakeBoardHost:
 
 func _make_model(board: FakeBoardHost) -> BoardModel:
 	var model := BoardModel.new()
+	model.add_player({
+		"type": State.PLAYER_HUMAN,
+		"side": "blue",
+		"alive": true,
+		"team": 0,
+		"ap": 5,
+	})
 	model.board = board
 	return model
+
+
+func _place_unit(tile: MapTile) -> BaseUnit:
+	var unit := BaseUnit.new()
+	unit.side = "blue"
+	unit.team = 0
+	unit.move = 5
+	unit.max_move = 5
+	tile.unit.set_tile(unit)
+	return unit
 
 
 func test_move_action_uses_model_command_without_selection() -> void:
@@ -54,15 +71,19 @@ func test_move_action_uses_model_command_without_selection() -> void:
 	var model := _make_model(board)
 	var source := MapTile.new(0, 0)
 	var target := MapTile.new(1, 0)
+	var unit := _place_unit(source)
 	var movement_path: Array[String] = ["1_0", "0_0"]
 	var action := MoveAction.new(source, target, movement_path)
 
 	action.perform(model)
 
-	assert_eq(board.path_moves, [[source, target, 1, movement_path]])
+	assert_true(source.unit.is_present() == false)
+	assert_same(target.unit.tile, unit)
+	assert_true(board.path_moves.is_empty())
 	assert_true(board.moved_pairs.is_empty())
 	assert_eq(board.select_tile_count, 0)
 	assert_eq(board.unselect_tile_count, 0)
+	unit.free()
 
 
 func test_attack_action_uses_model_interaction_command_without_selection() -> void:
@@ -86,16 +107,20 @@ func test_attack_action_with_interaction_uses_path_move_without_selection() -> v
 	var source := MapTile.new(0, 0)
 	var interaction := MapTile.new(1, 0)
 	var target := MapTile.new(2, 0)
+	var unit := _place_unit(source)
 	var movement_path: Array[String] = ["1_0", "0_0"]
 	var action := AttackAction.new(source, interaction, target, movement_path)
 
 	action.perform(model)
 
-	assert_eq(board.path_moves, [[source, interaction, 1, movement_path]])
+	assert_true(source.unit.is_present() == false)
+	assert_same(interaction.unit.tile, unit)
+	assert_true(board.path_moves.is_empty())
 	assert_eq(board.interaction_pairs, [[interaction, target]])
 	assert_true(board.moved_pairs.is_empty())
 	assert_eq(board.select_tile_count, 0)
 	assert_eq(board.unselect_tile_count, 0)
+	unit.free()
 
 
 func test_capture_action_uses_model_interaction_command_without_selection() -> void:

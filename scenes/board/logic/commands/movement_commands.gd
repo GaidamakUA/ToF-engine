@@ -31,7 +31,7 @@ func move_unit_along_path(source_tile: MapTile, destination_tile: MapTile, move_
 	destination_tile.unit.set_tile(unit)
 	source_tile.unit.release()
 	self.context.state.use_current_player_ap(move_cost)
-	unit.move = max(0, unit.move - move_cost)
+	unit.use_move(move_cost)
 
 	var event := UnitMovedEvent.new()
 	event.unit = unit

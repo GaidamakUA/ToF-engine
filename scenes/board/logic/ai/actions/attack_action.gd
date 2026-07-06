@@ -13,7 +13,8 @@ func _init(unit_tile: MapTile, interaction_tile: MapTile, target_tile: MapTile, 
 
 func perform(model: BoardModel) -> void:
     if self.interaction != null:
-        model.move_unit_along_path(self.unit, self.interaction, self._get_move_cost(), self.movement_path)
+        var result := model.move_unit_along_path(self.unit, self.interaction, self._get_move_cost(), self.movement_path)
+        self._present_movement_result(model, result)
         await model.wait_for_action_delay(self.movement_path.size() * 0.1)
         model.interact_unit(self.interaction, null, self.target)
     else:

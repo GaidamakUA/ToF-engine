@@ -9,6 +9,17 @@ class FakeMovementLegalityBoard:
 		return true
 
 
+class FakeMovementPresentationBoard:
+	var last_unit_move_values: Array[Variant] = []
+	var animated_results: Array[CommandResult] = []
+
+	func set_last_unit_move(value: Variant) -> void:
+		self.last_unit_move_values.append(value)
+
+	func _animate_unit_move_result(result: CommandResult) -> void:
+		self.animated_results.append(result)
+
+
 func test_new_model_owns_headless_gameplay_collaborators() -> void:
 	var model := BoardModel.new()
 
@@ -101,6 +112,30 @@ func test_can_move_to_tile_does_not_delegate_to_board() -> void:
 
 	assert_false(model.can_move_to_tile(MapTile.new(1, 0)))
 	assert_false(board.called)
+
+
+func test_move_unit_along_path_returns_result_without_board_presentation_side_effects() -> void:
+	var model := _make_model_with_players()
+	var board := FakeMovementPresentationBoard.new()
+	var source := MapTile.new(0, 0)
+	var destination := MapTile.new(1, 0)
+	var unit := BaseUnit.new()
+	var movement_path: Array[String] = ["0_0", "1_0"]
+	unit.side = "blue"
+	unit.team = 0
+	unit.move = 3
+	unit.max_move = 3
+	source.unit.set_tile(unit)
+	model.board = board
+
+	var result := model.move_unit_along_path(source, destination, 1, movement_path)
+
+	assert_eq(result.command_name, "move_unit")
+	assert_true(board.last_unit_move_values.is_empty())
+	assert_true(board.animated_results.is_empty())
+
+	destination.unit.release()
+	unit.free()
 
 
 func test_attach_board_creates_board_dependent_collaborators() -> void:

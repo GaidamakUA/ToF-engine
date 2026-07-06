@@ -167,23 +167,7 @@ func move_unit(source_tile: MapTile, destination_tile: MapTile) -> CommandResult
 
 func move_unit_along_path(source_tile: MapTile, destination_tile: MapTile, move_cost: int, movement_path: Array[String]) -> CommandResult:
 	assert(self.movement_commands != null)
-	if self.board != null and self.board.has_method(&"set_last_unit_move"):
-		if not self.state.is_current_player_ai():
-			self.set_last_unit_move({
-				"source": source_tile,
-				"destination": destination_tile,
-				"cost": move_cost
-			})
-		else:
-			self.set_last_unit_move(null)
 	var result: CommandResult = self.movement_commands.move_unit_along_path(source_tile, destination_tile, move_cost, movement_path)
-	var animated_by_board: bool = self.board != null and self.board.has_method(&"_animate_unit_move_result")
-	if animated_by_board:
-		self.board._animate_unit_move_result(result)
-	elif result.command_name == "move_unit" and not result.events.is_empty():
-		var event: UnitMovedEvent = result.events[0] as UnitMovedEvent
-		if event != null and event.unit != null:
-			event.unit.call_deferred("emit_signal", "move_finished")
 	return result
 
 

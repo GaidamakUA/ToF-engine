@@ -5,9 +5,11 @@ func test_headless_fixture_can_move_unit_and_emit_event() -> void:
 	var scenario := HeadlessBoardScenario.from_fixture("res://tests/fixtures/board/headless_validation_map.json")
 	var source: MapTile = scenario.get_tile(Vector2i(0, 0))
 	var destination: MapTile = scenario.get_tile(Vector2i(1, 0))
+	scenario.model.board = null
 
 	var result := scenario.model.move_unit_along_path(source, destination, 1, ["0_0", "1_0"])
 
+	assert_null(scenario.model.board)
 	assert_false(source.unit.is_present())
 	assert_true(destination.unit.is_present())
 	assert_eq(destination.unit.tile.side, "blue")

@@ -1,0 +1,62 @@
+{
+  "players": [
+    {
+      "type": "human",
+      "side": "blue",
+      "alive": true,
+      "team": 0,
+      "ap": 4
+    },
+    {
+      "type": "ai",
+      "side": "red",
+      "alive": true,
+      "team": 1,
+      "ap": 3
+    }
+  ],
+  "tiles": [
+    {
+      "position": [0, 0],
+      "unit": {
+        "side": "blue",
+        "team": 0,
+        "max_move": 4,
+        "move": 4,
+        "can_capture": true
+      }
+    },
+    {
+      "position": [1, 0]
+    },
+    {
+      "position": [2, 0],
+      "building": {
+        "side": "red",
+        "team": 1
+      }
+    }
+  ],
+  "neighbours": [
+    {
+      "from": [0, 0],
+      "direction": "e",
+      "to": [1, 0]
+    },
+    {
+      "from": [1, 0],
+      "direction": "w",
+      "to": [0, 0]
+    },
+    {
+      "from": [1, 0],
+      "direction": "e",
+      "to": [2, 0]
+    },
+    {
+      "from": [2, 0],
+      "direction": "w",
+      "to": [1, 0]
+    }
+  ]
+}

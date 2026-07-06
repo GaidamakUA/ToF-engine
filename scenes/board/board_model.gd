@@ -60,8 +60,8 @@ func _rebuild_command_context() -> void:
 		self.abilities,
 		self.collateral
 	)
-	self.movement_commands = MovementCommandsScript.new(self.command_context)
 	self.turn_commands = TurnCommands.new(self.command_context)
+	self.movement_commands = MovementCommandsScript.new(self.command_context, self.turn_commands)
 
 
 func _sync_map_model_from_board() -> void:

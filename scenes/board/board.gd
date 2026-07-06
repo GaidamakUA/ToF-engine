@@ -538,7 +538,11 @@ func _move_unit_from_marker_path(source_tile: MapTile, destination_tile: MapTile
 func _animate_unit_move_result(result: CommandResult) -> void:
     if result.command_name != "move_unit" or result.events.is_empty():
         return
-    var event: UnitMovedEvent = result.events[0] as UnitMovedEvent
+    var event: UnitMovedEvent = null
+    for result_event: BaseEvent in result.events:
+        if result_event is UnitMovedEvent:
+            event = result_event as UnitMovedEvent
+            break
     if event == null or event.unit == null or event.start == null or event.finish == null:
         return
     var movement_path: Array[String] = []

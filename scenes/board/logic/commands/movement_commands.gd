@@ -3,10 +3,15 @@ extends RefCounted
 
 
 var context: BoardCommandContext
+var turn_commands: TurnCommands
 
 
-func _init(command_context: BoardCommandContext) -> void:
+func _init(command_context: BoardCommandContext, new_turn_commands: TurnCommands = null) -> void:
 	self.context = command_context
+	if new_turn_commands == null:
+		self.turn_commands = TurnCommands.new(command_context)
+	else:
+		self.turn_commands = new_turn_commands
 
 
 func can_move_to_tile(source_tile: MapTile, destination_tile: MapTile, move_cost: int) -> bool:
@@ -33,7 +38,8 @@ func move_unit_along_path(source_tile: MapTile, destination_tile: MapTile, move_
 	var unit: BaseUnit = source_tile.unit.tile
 	destination_tile.unit.set_tile(unit)
 	source_tile.unit.release()
-	self.context.state.use_current_player_ap(move_cost)
+	var ap_result := self.turn_commands.use_current_player_ap(move_cost)
+	result.events.append_array(ap_result.events)
 	unit.use_move(move_cost)
 
 	var event := UnitMovedEvent.new()

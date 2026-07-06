@@ -14,6 +14,7 @@ const RETALIATION_DELAY: float = 0.1
 @onready var saves_manager: SavesManagerService = SavesManager as SavesManagerService
 
 var board_model: BoardModel
+var controller: BoardController
 var state: State
 var radial_abilities: RadialAbilities
 var abilities: Abilities
@@ -24,9 +25,21 @@ var ai: Ai
 var collateral: Collateral
 
 
-var selected_tile: MapTile = null
-var active_ability: Ability = null
-var active_ability_origin_tile: MapTile = null
+var selected_tile: MapTile:
+    get:
+        return self.controller.selected_tile
+    set(value):
+        self.controller.selected_tile = value
+var active_ability: Ability:
+    get:
+        return self.controller.active_ability
+    set(value):
+        self.controller.active_ability = value
+var active_ability_origin_tile: MapTile:
+    get:
+        return self.controller.active_ability_origin_tile
+    set(value):
+        self.controller.active_ability_origin_tile = value
 var last_hover_tile: MapTile = null
 @onready var selected_tile_marker: Node3D = $"marker_anchor/tile_marker"
 @onready var movement_markers: MovementMarkers = $"marker_anchor/movement_markers"
@@ -49,6 +62,7 @@ var last_unit_move: Dictionary[String, Variant] = {}
 
 func _init() -> void:
     self.board_model = BoardModel.new()
+    self.controller = BoardController.new(self.board_model)
     self.state = self.board_model.state
     self.radial_abilities = self.board_model.radial_abilities
     self.events = self.board_model.events

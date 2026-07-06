@@ -127,8 +127,11 @@ func _load_fixture(payload: Dictionary) -> void:
 func _load_tile(tile_data: Dictionary) -> void:
 	var tile_position: Vector2i = self._vector2i_from_array(tile_data["position"])
 	var tile := MapTile.new(tile_position.x, tile_position.y)
+	var ground := BaseTile.new()
 	self.tiles[tile_position] = tile
 	self.map_model.tiles[str(tile_position.x) + "_" + str(tile_position.y)] = tile
+	tile.ground.set_tile(ground)
+	self._nodes.append(ground)
 
 	if tile_data.has("unit"):
 		var unit_data: Dictionary = tile_data["unit"]

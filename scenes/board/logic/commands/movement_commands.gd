@@ -23,7 +23,7 @@ func can_move_to_tile(source_tile: MapTile, destination_tile: MapTile, move_cost
 
 func move_unit_along_path(source_tile: MapTile, destination_tile: MapTile, move_cost: int, movement_path: Array[String]) -> CommandResult:
 	var result := CommandResult.new("move_unit")
-	if source_tile == null or destination_tile == null or not source_tile.unit.is_present():
+	if not self.can_move_to_tile(source_tile, destination_tile, move_cost):
 		result.command_name = "move_unit_failed"
 		return result
 

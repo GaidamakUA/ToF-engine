@@ -120,12 +120,14 @@ func test_move_unit_along_path_returns_result_without_board_presentation_side_ef
 	var source := MapTile.new(0, 0)
 	var destination := MapTile.new(1, 0)
 	var unit := BaseUnit.new()
+	var ground := BaseTile.new()
 	var movement_path: Array[String] = ["0_0", "1_0"]
 	unit.side = "blue"
 	unit.team = 0
 	unit.move = 3
 	unit.max_move = 3
 	source.unit.set_tile(unit)
+	destination.ground.set_tile(ground)
 	model.board = board
 
 	var result := model.move_unit_along_path(source, destination, 1, movement_path)
@@ -135,7 +137,9 @@ func test_move_unit_along_path_returns_result_without_board_presentation_side_ef
 	assert_true(board.animated_results.is_empty())
 
 	destination.unit.release()
+	destination.ground.release()
 	unit.free()
+	ground.free()
 
 
 func test_attach_board_creates_board_dependent_collaborators() -> void:

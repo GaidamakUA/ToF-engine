@@ -66,12 +66,24 @@ func _place_unit(tile: MapTile) -> BaseUnit:
 	return unit
 
 
+func _add_walkable_ground(tile: MapTile) -> BaseTile:
+	var ground := BaseTile.new()
+	tile.ground.set_tile(ground)
+	return ground
+
+
+func _free_ground(tile: MapTile, ground: BaseTile) -> void:
+	tile.ground.release()
+	ground.free()
+
+
 func test_move_action_uses_model_command_without_selection() -> void:
 	var board := FakeBoardHost.new()
 	var model := _make_model(board)
 	var source := MapTile.new(0, 0)
 	var target := MapTile.new(1, 0)
 	var unit := _place_unit(source)
+	var target_ground := _add_walkable_ground(target)
 	var movement_path: Array[String] = ["1_0", "0_0"]
 	var action := MoveAction.new(source, target, movement_path)
 
@@ -83,6 +95,7 @@ func test_move_action_uses_model_command_without_selection() -> void:
 	assert_true(board.moved_pairs.is_empty())
 	assert_eq(board.select_tile_count, 0)
 	assert_eq(board.unselect_tile_count, 0)
+	_free_ground(target, target_ground)
 	unit.free()
 
 
@@ -108,6 +121,7 @@ func test_attack_action_with_interaction_uses_path_move_without_selection() -> v
 	var interaction := MapTile.new(1, 0)
 	var target := MapTile.new(2, 0)
 	var unit := _place_unit(source)
+	var interaction_ground := _add_walkable_ground(interaction)
 	var movement_path: Array[String] = ["1_0", "0_0"]
 	var action := AttackAction.new(source, interaction, target, movement_path)
 
@@ -120,6 +134,7 @@ func test_attack_action_with_interaction_uses_path_move_without_selection() -> v
 	assert_true(board.moved_pairs.is_empty())
 	assert_eq(board.select_tile_count, 0)
 	assert_eq(board.unselect_tile_count, 0)
+	_free_ground(interaction, interaction_ground)
 	unit.free()
 
 

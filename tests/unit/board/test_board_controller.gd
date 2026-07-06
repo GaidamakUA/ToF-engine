@@ -50,6 +50,8 @@ class FakeBoardModel:
 
 
 class FakeBoardView:
+	extends BoardView
+
 	var show_contextual_select_args: Array[bool] = []
 	var unselect_count: int = 0
 	var cancel_ability_count: int = 0
@@ -218,24 +220,41 @@ func test_press_invalid_ability_target_clears_selection() -> void:
 	assert_true(model.executed_ability_targets.is_empty())
 
 
-func test_cancel_routes_to_ability_cancel_when_targeting() -> void:
+func test_cancel_interaction_routes_to_ability_cancel_when_targeting() -> void:
 	var model := FakeBoardModel.new()
 	var view := FakeBoardView.new()
 	var controller := _make_controller_with_hosts(model, view)
 	controller.start_ability_targeting(MapTile.new(1, 2), Ability.new())
 
-	controller.cancel()
+	controller.cancel_interaction()
 
+	assert_null(controller.active_ability)
+	assert_null(controller.active_ability_origin_tile)
 	assert_eq(view.cancel_ability_count, 1)
 	assert_eq(view.unselect_count, 0)
 
 
-func test_cancel_routes_to_tile_unselect_without_active_ability() -> void:
+func test_cancel_interaction_routes_to_tile_unselect_without_active_ability() -> void:
 	var model := FakeBoardModel.new()
 	var view := FakeBoardView.new()
 	var controller := _make_controller_with_hosts(model, view)
+	var selected_tile := MapTile.new(1, 2)
+	controller.select_tile(selected_tile)
 
-	controller.cancel()
+	controller.cancel_interaction()
 
+	assert_null(controller.selected_tile)
 	assert_eq(view.cancel_ability_count, 0)
 	assert_eq(view.unselect_count, 1)
+
+
+func test_press_tile_can_run_with_null_view() -> void:
+	var model := FakeBoardModel.new()
+	var tile := MapTile.new(1, 2)
+	model.add_tile(tile)
+	model.selectable_tiles.append(tile)
+	var controller := BoardController.new(model)
+
+	controller.press_tile(tile.position)
+
+	assert_same(controller.selected_tile, tile)

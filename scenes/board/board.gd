@@ -14,6 +14,7 @@ const RETALIATION_DELAY: float = 0.1
 @onready var saves_manager: SavesManagerService = SavesManager as SavesManagerService
 
 var board_model: BoardModel
+var board_view: BoardView
 var controller: BoardController
 var state: State
 var radial_abilities: RadialAbilities
@@ -62,7 +63,8 @@ var last_unit_move: Dictionary[String, Variant] = {}
 
 func _init() -> void:
     self.board_model = BoardModel.new()
-    self.controller = BoardController.new(self.board_model, self)
+    self.board_view = BoardView.new(self)
+    self.controller = BoardController.new(self.board_model, self.board_view)
     self.state = self.board_model.state
     self.radial_abilities = self.board_model.radial_abilities
     self.events = self.board_model.events
@@ -298,7 +300,7 @@ func start_turn() -> void:
 
     self.replenish_unit_actions()
     self.gain_building_ap()
-    self.ui.update_resource_value(self.state.get_current_ap())
+    self.board_view.update_resource_value(self.state.get_current_ap())
     self.ui.flash_start_end_card(self.state.get_current_side(), self.state.turn)
 
     _manage_ai_start()
@@ -374,11 +376,15 @@ func play_tile_selected_feedback() -> void:
 
 
 func unselect_action() -> void:
-    self.controller.cancel()
+    self.controller.cancel_interaction()
 
 
 func unselect_tile() -> void:
-    self.selected_tile = null
+    self.controller.clear_selection()
+    self.board_view.unselect_tile()
+
+
+func clear_selection_view() -> void:
     self.reset_unit_markers()
     self.cancel_ability()
     self.selected_tile_marker.hide()
@@ -402,8 +408,11 @@ func reset_unit_markers() -> void:
 
 
 func cancel_ability() -> void:
-    self.active_ability = null
-    self.active_ability_origin_tile = null
+    self.controller.cancel_ability()
+    self.board_view.cancel_ability()
+
+
+func clear_ability_view() -> void:
     self.ability_markers.reset()
     self.refresh_tile_selection()
 
@@ -492,15 +501,7 @@ func show_unit_interaction_markers() -> void:
 
 
 func show_contextual_select(open_unit_abilities: bool = false) -> void:
-    self.place_selection_marker()
-    self.movement_markers.reset()
-    self.interaction_markers.reset()
-    self.path_markers.reset()
-
-    if self.selected_tile.unit.is_present():
-        self.show_unit_movement_markers()
-        self.show_unit_interaction_markers()
-    _show_contextual_select_radial(open_unit_abilities)
+    self.board_view.show_contextual_select(open_unit_abilities)
 
 
 func _show_contextual_select_radial(open_unit_abilities: bool) -> void:
@@ -784,7 +785,7 @@ func _activate_production_ability(ability: SpawnUnit) -> void:
     if self.state.can_current_player_afford(cost):
         self.controller.start_ability_targeting(self.selected_tile, ability)
         if self.selected_tile != null:
-            self.ability_markers.show_ability_markers_for_tile(ability, self.selected_tile)
+            self.board_view.show_ability_markers(ability, self.selected_tile)
 
 
 func activate_ability(args: Array) -> void:
@@ -800,7 +801,7 @@ func _activate_ability(ability: Ability) -> void:
     self.reset_unit_markers()
     self.controller.start_ability_targeting(self.selected_tile, ability)
     if self.selected_tile != null:
-        self.ability_markers.show_ability_markers_for_tile(ability, self.selected_tile)
+        self.board_view.show_ability_markers(ability, self.selected_tile)
 
 
 func execute_active_ability(target_tile: MapTile) -> void:
@@ -861,12 +862,12 @@ func gain_building_ap() -> void:
 
 func add_current_player_ap(ap_sum: int) -> void:
     self.state.add_current_player_ap(ap_sum)
-    self.ui.update_resource_value(self.state.get_current_ap())
+    self.board_view.update_resource_value(self.state.get_current_ap())
 
 
 func use_current_player_ap(value: int) -> void:
     self.state.use_current_player_ap(value)
-    self.ui.update_resource_value(self.state.get_current_ap())
+    self.board_view.update_resource_value(self.state.get_current_ap())
     if self.state.get_current_ap() == 0 and bool(self.settings.get_option("notify_ap_spent")) and not self.state.is_current_player_ai():
         self.ui.ap_depleted.flash()
 
@@ -963,7 +964,7 @@ func close_end_turn_confirm_panel() -> void:
 func end_game(winner: Variant) -> void:
     self.map.camera.paused = true
     self.ai.abort()
-    self.ui.hide_resource()
+    self.board_view.hide_resource()
     self.ui.clear_tile_highlight()
     self.map.tile_box.hide()
     self._signal_winner(winner)
@@ -1131,7 +1132,7 @@ func _restore_saved_state(save_data: Dictionary[String, Variant]) -> void:
     # resume turn after state is loaded
     self.update_for_current_player()
 
-    self.ui.update_resource_value(self.state.get_current_ap())
+    self.board_view.update_resource_value(self.state.get_current_ap())
     self.ui.flash_start_end_card(self.state.get_current_side(), self.state.turn)
 
     self.map.camera.ai_operated = false
@@ -1181,7 +1182,7 @@ func _undo_unit_move() -> void:
         destination_tile.unit.set_tile(source_tile.unit.tile)
         source_tile.unit.release()
         self.state.add_current_player_ap(move_cost)
-        self.ui.update_resource_value(self.state.get_current_ap())
+        self.board_view.update_resource_value(self.state.get_current_ap())
         destination_tile.unit.tile.restore_move(move_cost)
         self.reset_unit_position(destination_tile, destination_tile.unit.tile)
         self.unselect_tile()

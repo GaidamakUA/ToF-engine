@@ -10,7 +10,8 @@ func _execute(board: Board, source: Variant, _origin_tile: MapTile, position: Ve
     var new_unit: BaseUnit = board.map.builder.place_unit(position, self.template_name, 0, board.state.get_current_side())
     var cost: int = self.ap_cost
     cost = board.abilities.get_modified_cost(cost, self.template_name, source)
-    board.use_current_player_ap(cost)
+    board.board_model.use_current_player_ap(cost)
+    board._update_ap_spent_presentation()
 
     new_unit.replenish_moves()
     new_unit.team = board.state.get_player_team(board.state.get_current_side())

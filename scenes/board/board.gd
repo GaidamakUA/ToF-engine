@@ -281,7 +281,7 @@ func end_turn() -> void:
 
 func _end_turn() -> void:
     self.unselect_tile()
-    self.state.switch_to_next_player()
+    self.board_model.end_turn()
     self.ui.reset_timer()
     self.call_deferred(&"start_turn")
 
@@ -594,10 +594,12 @@ func handle_interaction_from_tile(source_tile: MapTile, target_tile: MapTile) ->
         if source_tile.unit.is_present():
             if target_tile.unit.is_present():
                 self.battle(source_tile, target_tile)
-                self.use_current_player_ap(1)
+                self.board_model.use_current_player_ap(1)
+                self._update_ap_spent_presentation()
             if target_tile.building.is_present():
                 self.capture(source_tile, target_tile)
-                self.use_current_player_ap(1)
+                self.board_model.use_current_player_ap(1)
+                self._update_ap_spent_presentation()
 
 
 func battle(attacker_tile: MapTile, defender_tile: MapTile) -> void:
@@ -878,16 +880,15 @@ func gain_building_ap() -> void:
 
         building.team = self.state.get_player_team(side)
 
-    self.add_current_player_ap(ap_sum)
+    self.board_model.add_current_player_ap(ap_sum)
+    self._update_ap_presentation()
 
 
-func add_current_player_ap(ap_sum: int) -> void:
-    self.state.add_current_player_ap(ap_sum)
+func _update_ap_presentation() -> void:
     self.board_view.update_resource_value(self.state.get_current_ap())
 
 
-func use_current_player_ap(value: int) -> void:
-    self.state.use_current_player_ap(value)
+func _update_ap_spent_presentation() -> void:
     self.board_view.update_resource_value(self.state.get_current_ap())
     if self.state.get_current_ap() == 0 and bool(self.settings.get_option("notify_ap_spent")) and not self.state.is_current_player_ai():
         self.ui.ap_depleted.flash()
@@ -1202,8 +1203,8 @@ func _undo_unit_move() -> void:
         var move_cost: int = int(last_unit_move["cost"])
         destination_tile.unit.set_tile(source_tile.unit.tile)
         source_tile.unit.release()
-        self.state.add_current_player_ap(move_cost)
-        self.board_view.update_resource_value(self.state.get_current_ap())
+        self.board_model.add_current_player_ap(move_cost)
+        self._update_ap_presentation()
         destination_tile.unit.tile.restore_move(move_cost)
         self.reset_unit_position(destination_tile, destination_tile.unit.tile)
         self.unselect_tile()

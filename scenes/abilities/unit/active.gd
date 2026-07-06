@@ -11,7 +11,8 @@ func get_named_icon() -> String:
     return self.named_icon
 
 func execute(board: Board, source: Variant, origin_tile: MapTile, position: Vector2i) -> void:
-    board.use_current_player_ap(self.get_cost(source))
+    board.board_model.use_current_player_ap(self.get_cost(source))
+    board._update_ap_spent_presentation()
     super.execute(board, source, origin_tile, position)
     source.use_move(1)
 

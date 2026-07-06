@@ -66,21 +66,28 @@ func test_add_player_initializes_state_ap_and_team() -> void:
 func test_use_and_add_current_player_ap_delegate_to_state() -> void:
 	var model := _make_model_with_players()
 
-	model.use_current_player_ap(5)
+	var use_result := model.use_current_player_ap(5)
 	assert_eq(model.get_current_ap(), 0)
 	assert_true(model.state.has_player_moved)
+	assert_eq(use_result.events.size(), 1)
+	assert_true(use_result.events[0] is ApChangedEvent)
 
-	model.add_current_player_ap(4)
+	var add_result := model.add_current_player_ap(4)
 	assert_eq(model.get_current_ap(), 4)
+	assert_eq(add_result.events.size(), 1)
+	assert_true(add_result.events[0] is ApChangedEvent)
 
 
 func test_end_turn_switches_to_next_player() -> void:
 	var model := _make_model_with_players()
 
-	model.end_turn()
+	var result := model.end_turn()
 
 	assert_eq(model.state.current_player, 1)
 	assert_eq(model.get_current_side(), "red")
+	assert_eq(result.events.size(), 2)
+	assert_true(result.events[0] is TurnEndedEvent)
+	assert_true(result.events[1] is TurnStartedEvent)
 
 
 func test_can_move_to_tile_from_source_uses_movement_commands_without_board() -> void:

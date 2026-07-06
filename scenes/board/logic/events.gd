@@ -47,11 +47,29 @@ func emit_ability_used(ability: Ability, target: Vector2i) -> void:
     event.target = target
     self.emit_event(event)
 
-func emit_turn_started(turn_no: int, player_id: int) -> void:
+func emit_ap_changed(player_id: int, old_ap: int, new_ap: int) -> ApChangedEvent:
+    var event := ApChangedEvent.new()
+    event.player_id = player_id
+    event.old_ap = old_ap
+    event.new_ap = new_ap
+    self.emit_event(event)
+    return event
+
+
+func emit_turn_ended(turn_no: int, player_id: int) -> TurnEndedEvent:
+    var event := TurnEndedEvent.new()
+    event.turn_no = turn_no
+    event.player_id = player_id
+    self.emit_event(event)
+    return event
+
+
+func emit_turn_started(turn_no: int, player_id: int) -> TurnStartedEvent:
     var event := TurnStartedEvent.new()
     event.turn_no = turn_no
     event.player_id = player_id
     self.emit_event(event)
+    return event
 
 func emit_unit_moved(unit: BaseUnit, start: MapTile, finish: MapTile) -> void:
     var event := UnitMovedEvent.new()

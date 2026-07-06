@@ -9,6 +9,7 @@ var radial_abilities: RadialAbilities = RadialAbilities.new()
 var map_model: MapModel = null
 var command_context: BoardCommandContext = null
 var movement_commands: RefCounted = null
+var turn_commands: TurnCommands = null
 var action_pacer: ActionPacer = NoOpActionPacer.new()
 var abilities: Abilities = null
 var events: Events = Events.new()
@@ -60,6 +61,7 @@ func _rebuild_command_context() -> void:
 		self.collateral
 	)
 	self.movement_commands = MovementCommandsScript.new(self.command_context)
+	self.turn_commands = TurnCommands.new(self.command_context)
 
 
 func _sync_map_model_from_board() -> void:
@@ -96,20 +98,23 @@ func get_player_team(side: String) -> int:
 	return self.state.get_player_team(side)
 
 
-func add_current_player_ap(value: int) -> void:
-	self.state.add_current_player_ap(value)
+func add_current_player_ap(value: int) -> CommandResult:
+	assert(self.turn_commands != null)
+	return self.turn_commands.add_current_player_ap(value)
 
 
-func use_current_player_ap(value: int) -> void:
-	self.state.use_current_player_ap(value)
+func use_current_player_ap(value: int) -> CommandResult:
+	assert(self.turn_commands != null)
+	return self.turn_commands.use_current_player_ap(value)
 
 
 func can_current_player_afford(amount: int) -> bool:
 	return self.state.can_current_player_afford(amount)
 
 
-func end_turn() -> void:
-	self.state.switch_to_next_player()
+func end_turn() -> CommandResult:
+	assert(self.turn_commands != null)
+	return self.turn_commands.end_turn()
 
 
 func get_tile_at(tile_position: Vector2i) -> MapTile:

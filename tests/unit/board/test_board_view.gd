@@ -66,6 +66,15 @@ class FakeBoardHostWithoutSelection:
 		self.contextual_select_radial_args.append(open_unit_abilities)
 
 
+class FakeMovementBoardHost:
+	var result := CommandResult.new("move_unit")
+	var moved_units: Array[Array] = []
+
+	func _move_unit_from_marker_path(source_tile: MapTile, destination_tile: MapTile) -> CommandResult:
+		self.moved_units.append([source_tile, destination_tile])
+		return self.result
+
+
 class FakeUi:
 	var resource_values: Array[int] = []
 	var hide_resource_count: int = 0
@@ -107,6 +116,19 @@ func test_board_view_shows_ability_markers() -> void:
 	view.show_ability_markers(ability, tile)
 
 	assert_eq(board.ability_markers.calls, [[ability, tile]])
+
+
+func test_board_view_reports_marker_move_command_failure() -> void:
+	var board := FakeMovementBoardHost.new()
+	board.result.command_name = "move_unit_failed"
+	var view := BoardView.new(board)
+	var source := MapTile.new(0, 0)
+	var destination := MapTile.new(1, 0)
+
+	var did_move := view.move_unit_from_marker_path(source, destination)
+
+	assert_false(did_move)
+	assert_eq(board.moved_units, [[source, destination]])
 
 
 func test_board_view_ignores_contextual_select_without_selected_tile() -> void:

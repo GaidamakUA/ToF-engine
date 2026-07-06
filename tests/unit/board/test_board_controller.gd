@@ -54,10 +54,20 @@ class FakeBoardView:
 	extends BoardView
 
 	var show_contextual_select_args: Array[bool] = []
+	var movable_tiles: Array[MapTile] = []
+	var moved_units: Array[Array] = []
+	var move_result: bool = false
 	var unselect_count: int = 0
 	var cancel_ability_count: int = 0
 	var hover_count: int = 0
 	var feedback_count: int = 0
+
+	func can_move_to_tile(tile: MapTile) -> bool:
+		return self.movable_tiles.has(tile)
+
+	func move_unit_from_marker_path(source_tile: MapTile, destination_tile: MapTile) -> bool:
+		self.moved_units.append([source_tile, destination_tile])
+		return self.move_result
 
 	func unselect_tile() -> void:
 		self.unselect_count += 1
@@ -187,6 +197,27 @@ func test_press_reachable_tile_routes_move_and_selects_destination() -> void:
 	assert_eq(model.moved_units, [[source_tile, destination_tile]])
 	assert_same(controller.selected_tile, destination_tile)
 	assert_eq(view.show_contextual_select_args, [false])
+	assert_eq(view.feedback_count, 1)
+
+
+func test_press_marker_move_failure_keeps_selection_and_skips_destination_context() -> void:
+	var model := FakeBoardModel.new()
+	var view := FakeBoardView.new()
+	var source_tile := MapTile.new(1, 2)
+	var destination_tile := MapTile.new(2, 2)
+	model.add_tile(destination_tile)
+	view.movable_tiles.append(destination_tile)
+	view.move_result = false
+	var controller := _make_controller_with_hosts(model, view)
+	controller.select_tile(source_tile)
+
+	controller.press_tile(destination_tile.position)
+
+	assert_eq(model.last_unit_move_values, [null])
+	assert_eq(view.moved_units, [[source_tile, destination_tile]])
+	assert_true(model.moved_units.is_empty())
+	assert_same(controller.selected_tile, source_tile)
+	assert_true(view.show_contextual_select_args.is_empty())
 	assert_eq(view.feedback_count, 1)
 
 

@@ -43,8 +43,8 @@ func can_move_to_tile(tile: MapTile) -> bool:
 func move_unit_from_marker_path(source_tile: MapTile, destination_tile: MapTile) -> bool:
 	if self.board == null:
 		return false
-	self.board._move_unit_from_marker_path(source_tile, destination_tile)
-	return true
+	var result: CommandResult = self.board._move_unit_from_marker_path(source_tile, destination_tile)
+	return result.command_name == "move_unit"
 
 
 func show_ability_markers(ability: Ability, tile: MapTile) -> void:

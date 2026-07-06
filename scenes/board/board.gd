@@ -512,14 +512,14 @@ func _show_contextual_select_radial(open_unit_abilities: bool) -> void:
         self.toggle_radial_menu(self.selected_tile.building.tile)
 
 
-func _move_unit_from_marker_path(source_tile: MapTile, destination_tile: MapTile) -> void:
+func _move_unit_from_marker_path(source_tile: MapTile, destination_tile: MapTile) -> CommandResult:
     var raw_move_cost: Variant = self.movement_markers.get_tile_cost(destination_tile)
     assert(raw_move_cost != null)
     var move_cost: int = int(raw_move_cost)
     var movement_path: Array[String] = self.movement_markers.get_path_to_tile(destination_tile)
     var result := self.board_model.move_unit_along_path(source_tile, destination_tile, move_cost, movement_path)
     if result.command_name != "move_unit":
-        return
+        return result
     if not self.state.is_current_player_ai():
         self.set_last_unit_move({
             "source": source_tile,
@@ -529,6 +529,7 @@ func _move_unit_from_marker_path(source_tile: MapTile, destination_tile: MapTile
     else:
         self.set_last_unit_move(null)
     self._animate_unit_move_result(result)
+    return result
 
 
 func _animate_unit_move_result(result: CommandResult) -> void:

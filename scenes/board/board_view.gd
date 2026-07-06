@@ -32,6 +32,12 @@ func show_contextual_select(open_unit_abilities: bool = false) -> void:
 	self.board._show_contextual_select_radial(open_unit_abilities)
 
 
+func show_ability_markers(ability: Ability, tile: MapTile) -> void:
+	if self.board == null:
+		return
+	self.board.ability_markers.show_ability_markers_for_tile(ability, tile)
+
+
 func hover_tile() -> void:
 	if self.board == null:
 		return

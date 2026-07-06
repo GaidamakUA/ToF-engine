@@ -3,6 +3,7 @@ extends GutTest
 
 class FakeBoardHost:
 	var selected_tile: MapTile = MapTile.new(0, 0)
+	var ability_markers := FakeAbilityMarkers.new()
 	var clear_selection_view_count: int = 0
 	var clear_ability_view_count: int = 0
 	var place_selection_marker_count: int = 0
@@ -41,6 +42,13 @@ class FakeBoardHost:
 		self.feedback_count += 1
 
 
+class FakeAbilityMarkers:
+	var calls: Array[Array] = []
+
+	func show_ability_markers_for_tile(ability: Ability, tile: MapTile) -> void:
+		self.calls.append([ability, tile])
+
+
 func test_board_view_delegates_controller_presentation_callbacks() -> void:
 	var board := FakeBoardHost.new()
 	var view := BoardView.new(board)
@@ -60,3 +68,14 @@ func test_board_view_delegates_controller_presentation_callbacks() -> void:
 	assert_eq(board.contextual_select_radial_args, [true])
 	assert_eq(board.hover_count, 1)
 	assert_eq(board.feedback_count, 1)
+
+
+func test_board_view_shows_ability_markers() -> void:
+	var board := FakeBoardHost.new()
+	var view := BoardView.new(board)
+	var ability := Ability.new()
+	var tile := MapTile.new(1, 2)
+
+	view.show_ability_markers(ability, tile)
+
+	assert_eq(board.ability_markers.calls, [[ability, tile]])

@@ -178,7 +178,46 @@ Run:
 
 Expected: PASS.
 
-## Task 5: Final Verification
+## Task 5: Move Ability Marker Presentation Into BoardView
+
+**Files:**
+- Modify: `scenes/board/board_view.gd`
+- Modify: `scenes/board/board.gd`
+- Modify: `tests/unit/board/test_board_view.gd`
+
+- [x] **Step 1: Write failing ability marker view test**
+
+Add a BoardView test proving ability target marker drawing is routed through `BoardView.show_ability_markers()`.
+
+- [x] **Step 2: Run GUT to verify it fails**
+
+Run:
+
+```bash
+./tools/run_gut.sh
+```
+
+Expected: FAIL because `BoardView.show_ability_markers()` is missing.
+
+- [x] **Step 3: Add BoardView ability marker method**
+
+Add `BoardView.show_ability_markers(ability, tile)` and delegate to the board host's `ability_markers` renderer.
+
+- [x] **Step 4: Route ability activation through BoardView**
+
+Update unit and production ability activation in `Board` to call `board_view.show_ability_markers()` after controller targeting state is set.
+
+- [x] **Step 5: Run GUT**
+
+Run:
+
+```bash
+./tools/run_gut.sh
+```
+
+Expected: PASS.
+
+## Task 6: Final Verification
 
 **Files:**
 - No file changes.

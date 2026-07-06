@@ -785,7 +785,7 @@ func _activate_production_ability(ability: SpawnUnit) -> void:
     if self.state.can_current_player_afford(cost):
         self.controller.start_ability_targeting(self.selected_tile, ability)
         if self.selected_tile != null:
-            self.ability_markers.show_ability_markers_for_tile(ability, self.selected_tile)
+            self.board_view.show_ability_markers(ability, self.selected_tile)
 
 
 func activate_ability(args: Array) -> void:
@@ -801,7 +801,7 @@ func _activate_ability(ability: Ability) -> void:
     self.reset_unit_markers()
     self.controller.start_ability_targeting(self.selected_tile, ability)
     if self.selected_tile != null:
-        self.ability_markers.show_ability_markers_for_tile(ability, self.selected_tile)
+        self.board_view.show_ability_markers(ability, self.selected_tile)
 
 
 func execute_active_ability(target_tile: MapTile) -> void:

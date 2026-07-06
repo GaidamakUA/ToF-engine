@@ -1,8 +1,8 @@
 class_name Abilities
-var board: Board
+var state: State
 
-func _init(_board: Board) -> void:
-    self.board = _board
+func _init(state_object: State) -> void:
+    self.state = state_object
 
 func get_modified_cost(cost: int, template_name: String, source: Variant) -> int:
     var passive_abilities: Array[PassiveAbility] = self._get_passives_for_source(source)
@@ -67,7 +67,7 @@ func _get_passives_for_source(source: Variant) -> Array[PassiveAbility]:
         return []
 
     var abilities: Array[PassiveAbility] = []
-    var heroes: Array[HeroUnit] = self.board.state.get_heroes_for_side(source.side)
+    var heroes: Array[HeroUnit] = self.state.get_heroes_for_side(source.side)
 
     for hero: HeroUnit in heroes:
         if hero.has_passive_ability():

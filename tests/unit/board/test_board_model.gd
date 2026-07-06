@@ -8,6 +8,8 @@ func test_new_model_owns_headless_gameplay_collaborators() -> void:
 	assert_not_null(model.events)
 	assert_not_null(model.scripting)
 	assert_not_null(model.radial_abilities)
+	assert_not_null(model.action_pacer)
+	assert_null(model.map_model)
 	assert_null(model.abilities)
 	assert_null(model.observers)
 	assert_null(model.ai)
@@ -64,14 +66,23 @@ func test_end_turn_switches_to_next_player() -> void:
 
 func test_attach_board_creates_board_dependent_collaborators() -> void:
 	var board := Board.new()
+	board.map = Map.new()
 	var model := BoardModel.new()
 	board.events = model.events
 
 	model.attach_board(board)
 
 	assert_same(model.board, board)
-	assert_same(model.abilities.board, board)
+	assert_same(model.map_model, board.map.model)
+	assert_not_null(model.command_context)
+	assert_same(model.command_context.state, model.state)
+	assert_same(model.command_context.map_model, board.map.model)
+	assert_same(model.command_context.events, model.events)
+	assert_same(model.command_context.abilities, model.abilities)
+	assert_same(model.command_context.collateral, model.collateral)
+	assert_same(model.abilities.state, model.state)
 	assert_not_null(model.observers)
 	assert_same(model.ai.board, board)
-	assert_same(model.collateral.board, board)
+	assert_same(model.collateral.model, model)
+	board.map.free()
 	board.free()

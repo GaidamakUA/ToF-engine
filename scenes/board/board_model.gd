@@ -4,6 +4,9 @@ class_name BoardModel
 var board: Variant = null
 var state: State = State.new()
 var radial_abilities: RadialAbilities = RadialAbilities.new()
+var map_model: MapModel = null
+var command_context: BoardCommandContext = null
+var action_pacer: ActionPacer = NoOpActionPacer.new()
 var abilities: Abilities = null
 var events: Events = Events.new()
 var observers: Observers = null
@@ -19,10 +22,43 @@ func _init(board_host: Variant = null) -> void:
 
 func attach_board(board_host: Variant) -> void:
 	self.board = board_host
-	self.abilities = Abilities.new(board_host)
+	if board_host.map != null:
+		self.map_model = board_host.map.model
+	elif board_host is Node and not board_host.ready.is_connected(self._sync_map_model_from_board):
+		board_host.ready.connect(self._sync_map_model_from_board, CONNECT_ONE_SHOT)
+	self.abilities = Abilities.new(self.state)
 	self.observers = Observers.new(board_host)
 	self.ai = Ai.new(board_host)
-	self.collateral = Collateral.new(board_host)
+	self.collateral = Collateral.new(self)
+	self._rebuild_command_context()
+
+
+func set_map_model(new_map_model: MapModel) -> void:
+	self.map_model = new_map_model
+	self._rebuild_command_context()
+
+
+func set_action_pacer(new_pacer: ActionPacer) -> void:
+	if new_pacer == null:
+		self.action_pacer = NoOpActionPacer.new()
+		return
+	self.action_pacer = new_pacer
+
+
+func _rebuild_command_context() -> void:
+	self.command_context = BoardCommandContext.new(
+		self.state,
+		self.map_model,
+		self.events,
+		self.scripting,
+		self.abilities,
+		self.collateral
+	)
+
+
+func _sync_map_model_from_board() -> void:
+	if self.board != null and self.board.map != null:
+		self.set_map_model(self.board.map.model)
 
 
 func add_player(data: Dictionary[String, Variant]) -> void:
@@ -71,8 +107,8 @@ func end_turn() -> void:
 
 
 func get_tile_at(tile_position: Vector2i) -> MapTile:
-	assert(self.board != null)
-	return self.board.get_tile_at(tile_position)
+	assert(self.map_model != null)
+	return self.map_model.get_tile(tile_position)
 
 
 func is_tile_selectable_for_current_player(tile: MapTile) -> bool:

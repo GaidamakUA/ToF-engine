@@ -3,9 +3,11 @@ class_name Collateral
 const COLLATERAL_CHANCE: float = 0.5
 
 var board: Board
+var model: BoardModel
 
-func _init(board_object: Board) -> void:
-    self.board = board_object
+func _init(model_object: BoardModel) -> void:
+    self.model = model_object
+    self.board = model_object.board
 
 func damage_tile(tile: MapTile) -> Variant:
     var ground: BaseTile = tile.ground.tile

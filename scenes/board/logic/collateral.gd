@@ -28,6 +28,8 @@ func damage_tile(tile: MapTile) -> Variant:
     var random_angle: int = angles[randi() % angles.size()]
     var random_template: String = damage_templates[randi() % damage_templates.size()]
     apply_tile_damage(tile.position, random_template, random_angle)
+    var damaged_tiles: Array[Vector2i] = [tile.position]
+    self.model.events.emit_collateral_damage_applied(tile.position, damaged_tiles, random_template)
 
     return [tile.position, random_template, random_angle]
 
@@ -42,6 +44,9 @@ func generate_collateral(tile: MapTile) -> Array[Vector2i]:
         if randf() <= self.COLLATERAL_CHANCE:
             if self.damage_terrain(neighbour):
                 summary.append(neighbour.position)
+
+    if summary.size() > 0:
+        self.model.events.emit_collateral_damage_applied(tile.position, summary, null)
 
     return summary
 

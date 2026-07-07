@@ -2,6 +2,7 @@ class_name BoardModel
 
 
 const MovementCommandsScript: Script = preload("res://scenes/board/logic/commands/movement_commands.gd")
+const UnitLifecycleCommandsScript: Script = preload("res://scenes/board/logic/commands/unit_lifecycle_commands.gd")
 
 var board: Variant = null
 var state: State = State.new()
@@ -10,6 +11,7 @@ var map_model: MapModel = null
 var command_context: BoardCommandContext = null
 var movement_commands: RefCounted = null
 var turn_commands: TurnCommands = null
+var unit_lifecycle_commands: RefCounted = null
 var action_pacer: ActionPacer = NoOpActionPacer.new()
 var abilities: Abilities = null
 var events: Events = Events.new()
@@ -62,6 +64,7 @@ func _rebuild_command_context() -> void:
 	)
 	self.turn_commands = TurnCommands.new(self.command_context)
 	self.movement_commands = MovementCommandsScript.new(self.command_context, self.turn_commands)
+	self.unit_lifecycle_commands = UnitLifecycleCommandsScript.new(self.command_context)
 
 
 func _sync_map_model_from_board() -> void:
@@ -115,6 +118,16 @@ func can_current_player_afford(amount: int) -> bool:
 func end_turn() -> CommandResult:
 	assert(self.turn_commands != null)
 	return self.turn_commands.end_turn()
+
+
+func destroy_unit_on_tile(tile: MapTile, attacker: BaseUnit = null) -> CommandResult:
+	assert(self.unit_lifecycle_commands != null)
+	return self.unit_lifecycle_commands.destroy_unit_on_tile(tile, attacker)
+
+
+func replenish_unit_actions(side: String = self.get_current_side()) -> CommandResult:
+	assert(self.unit_lifecycle_commands != null)
+	return self.unit_lifecycle_commands.replenish_unit_actions(side)
 
 
 func get_tile_at(tile_position: Vector2i) -> MapTile:

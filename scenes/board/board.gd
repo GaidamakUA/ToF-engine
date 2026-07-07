@@ -298,7 +298,7 @@ func start_turn() -> void:
         if self._move_camera_to_hq():
             await self.get_tree().create_timer(1).timeout
 
-    self.replenish_unit_actions()
+    self.board_model.replenish_unit_actions()
     self.gain_building_ap()
     self.board_view.update_resource_value(self.state.get_current_ap())
     self.ui.flash_start_end_card(self.state.get_current_side(), self.state.turn)
@@ -642,39 +642,31 @@ func battle(attacker_tile: MapTile, defender_tile: MapTile) -> void:
                 attacker.show_explosion()
                 self.events.emit_unit_attacked(defender, attacker)
             else:
-                var attacker_id: int = attacker.get_instance_id()
-                var attacker_type: String = attacker.template_name
-                var attacker_side: String = attacker.side
-
                 self.unselect_tile()
-                self.destroy_unit_on_tile(attacker_tile)
-                self.events.emit_unit_destroyed(defender, attacker_id, attacker_type, attacker_side)
+                self._present_unit_destruction(attacker_tile)
+                self.board_model.destroy_unit_on_tile(attacker_tile, defender)
 
         self.events.emit_unit_attacked(attacker, defender)
     else:
-        var defender_id: int = defender.get_instance_id()
-        var defender_type: String = defender.template_name
-        var defender_side: String = defender.side
-
-        self.destroy_unit_on_tile(defender_tile)
-        self.events.emit_unit_destroyed(attacker, defender_id, defender_type, defender_side)
+        self._present_unit_destruction(defender_tile)
+        self.board_model.destroy_unit_on_tile(defender_tile, attacker)
 
 
-func destroy_unit_on_tile(tile: MapTile, skip_explosion: bool = false) -> void:
+func _present_unit_destruction(tile: MapTile, skip_explosion: bool = false) -> void:
     var unit: BaseUnit = tile.unit.tile
     assert(unit != null)
-
-    if unit.unit_class == "hero":
-        var hero: HeroUnit = tile.unit.tile as HeroUnit
-        assert(hero != null)
-        self.state.clear_hero_for_side(unit.side, hero)
 
     if not skip_explosion:
         self.explode_a_tile(tile, true)
         _generate_collateral_damage(tile)
         if bool(self.settings.get_option("cam_shake")):
             self.map.camera.shake()
-    tile.unit.clear()
+
+
+func destroy_unit_on_tile(tile: MapTile, skip_explosion: bool = false) -> void:
+    self._present_unit_destruction(tile, skip_explosion)
+    assert(self.board_model.unit_lifecycle_commands != null)
+    self.board_model.unit_lifecycle_commands.destroy_unit_on_tile(tile, null, false)
 
 
 func _generate_collateral_damage(tile: MapTile) -> Dictionary[String, Variant]:
@@ -773,12 +765,9 @@ func cheat_kill() -> void:
 
     var unit: BaseUnit = tile.unit.tile
     assert(unit != null)
-    var unit_id: int = unit.get_instance_id()
-    var unit_type: String = unit.template_name
-    var unit_side: String = unit.side
 
-    self.destroy_unit_on_tile(tile)
-    self.events.emit_unit_destroyed(null, unit_id, unit_type, unit_side)
+    self._present_unit_destruction(tile)
+    self.board_model.destroy_unit_on_tile(tile)
 
 
 func cheat_level_up() -> void:
@@ -857,20 +846,6 @@ func remove_unit_hightlights() -> void:
 
     for unit: BaseUnit in units:
         unit.remove_highlight()
-
-
-func replenish_unit_actions() -> void:
-    var current_player: Dictionary[String, Variant]
-    current_player.assign(self.state.get_current_player())
-    var side: String = String(current_player["side"])
-    var units: Array[BaseUnit] = self.map.model.get_player_units(side)
-
-    for unit: BaseUnit in units:
-        unit.clear_modifiers()
-        self.abilities.apply_passive_modifiers(unit)
-        unit.replenish_moves()
-        unit.ability_cd_tick_down()
-        unit.team = self.state.get_player_team(side)
 
 
 func gain_building_ap() -> void:

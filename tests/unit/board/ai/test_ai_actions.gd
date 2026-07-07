@@ -14,6 +14,7 @@ class FakeBoardHost:
 	var moved_pairs: Array[Array] = []
 	var path_moves: Array[Array] = []
 	var interaction_pairs: Array[Array] = []
+	var capture_pairs: Array[Array] = []
 	var ability_calls: Array[Array] = []
 	var select_tile_count: int = 0
 	var unselect_tile_count: int = 0
@@ -26,6 +27,9 @@ class FakeBoardHost:
 
 	func handle_interaction_from_tile(source_tile: MapTile, target_tile: MapTile) -> void:
 		self.interaction_pairs.append([source_tile, target_tile])
+
+	func _present_capture_result(_result: CommandResult) -> void:
+		pass
 
 	func execute_ability_from_tile(origin_tile: MapTile, ability: Ability, target_tile: MapTile) -> void:
 		self.ability_calls.append([origin_tile, ability, target_tile])
@@ -53,6 +57,9 @@ func _make_model(board: FakeBoardHost) -> BoardModel:
 		"ap": 5,
 	})
 	model.board = board
+	model.set_map_model(MapModel.new())
+	model.abilities = Abilities.new(model.state)
+	model._rebuild_command_context()
 	return model
 
 
@@ -95,6 +102,7 @@ func test_move_action_uses_model_command_without_selection() -> void:
 	assert_true(board.moved_pairs.is_empty())
 	assert_eq(board.select_tile_count, 0)
 	assert_eq(board.unselect_tile_count, 0)
+	target.unit.clear()
 	_free_ground(target, target_ground)
 	unit.free()
 
@@ -104,14 +112,33 @@ func test_attack_action_uses_model_interaction_command_without_selection() -> vo
 	var model := _make_model(board)
 	var source := MapTile.new(0, 0)
 	var target := MapTile.new(1, 0)
+	var attacker := _place_unit(source)
+	attacker.attack = 3
+	attacker.attacks = 1
+	var defender := BaseUnit.new()
+	defender.side = "red"
+	defender.team = 1
+	defender.hp = 5
+	defender.max_hp = 5
+	defender.armor = 0
+	defender.move = 0
+	defender.max_move = 0
+	target.unit.set_tile(defender)
 	var movement_path: Array[String] = []
 	var action := AttackAction.new(source, null, target, movement_path)
 
 	action.perform(model)
 
-	assert_eq(board.interaction_pairs, [[source, target]])
+	assert_eq(model.get_current_ap(), 4)
+	assert_eq(defender.hp, 2)
+	assert_true(board.interaction_pairs.is_empty())
 	assert_eq(board.select_tile_count, 0)
 	assert_eq(board.unselect_tile_count, 0)
+
+	source.unit.clear()
+	target.unit.clear()
+	attacker.free()
+	defender.free()
 
 
 func test_attack_action_with_interaction_uses_path_move_without_selection() -> void:
@@ -121,6 +148,17 @@ func test_attack_action_with_interaction_uses_path_move_without_selection() -> v
 	var interaction := MapTile.new(1, 0)
 	var target := MapTile.new(2, 0)
 	var unit := _place_unit(source)
+	unit.attack = 3
+	unit.attacks = 1
+	var defender := BaseUnit.new()
+	defender.side = "red"
+	defender.team = 1
+	defender.hp = 5
+	defender.max_hp = 5
+	defender.armor = 0
+	defender.move = 0
+	defender.max_move = 0
+	target.unit.set_tile(defender)
 	var interaction_ground := _add_walkable_ground(interaction)
 	var movement_path: Array[String] = ["1_0", "0_0"]
 	var action := AttackAction.new(source, interaction, target, movement_path)
@@ -129,13 +167,18 @@ func test_attack_action_with_interaction_uses_path_move_without_selection() -> v
 
 	assert_true(source.unit.is_present() == false)
 	assert_same(interaction.unit.tile, unit)
+	assert_eq(model.get_current_ap(), 3)
+	assert_eq(defender.hp, 2)
 	assert_true(board.path_moves.is_empty())
-	assert_eq(board.interaction_pairs, [[interaction, target]])
+	assert_true(board.interaction_pairs.is_empty())
 	assert_true(board.moved_pairs.is_empty())
 	assert_eq(board.select_tile_count, 0)
 	assert_eq(board.unselect_tile_count, 0)
+	interaction.unit.clear()
+	target.unit.clear()
 	_free_ground(interaction, interaction_ground)
 	unit.free()
+	defender.free()
 
 
 func test_capture_action_uses_model_interaction_command_without_selection() -> void:
@@ -143,14 +186,29 @@ func test_capture_action_uses_model_interaction_command_without_selection() -> v
 	var model := _make_model(board)
 	var source := MapTile.new(0, 0)
 	var target := MapTile.new(1, 0)
+	var unit := _place_unit(source)
+	unit.can_capture = true
+	var building := BaseBuilding.new()
+	building.side = "red"
+	building.team = 1
+	building.require_crew = false
+	target.building.set_tile(building)
 	var movement_path: Array[String] = []
 	var action := CaptureAction.new(source, null, target, movement_path)
 
 	action.perform(model)
 
-	assert_eq(board.interaction_pairs, [[source, target]])
+	assert_eq(target.building.tile.side, "blue")
+	assert_eq(target.building.tile.team, 0)
+	assert_eq(model.get_current_ap(), 4)
+	assert_true(board.interaction_pairs.is_empty())
 	assert_eq(board.select_tile_count, 0)
 	assert_eq(board.unselect_tile_count, 0)
+
+	source.unit.clear()
+	target.building.clear()
+	unit.free()
+	building.free()
 
 
 func test_ability_action_uses_model_ability_command_without_selection() -> void:

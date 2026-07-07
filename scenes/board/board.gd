@@ -602,9 +602,8 @@ func handle_interaction_from_tile(source_tile: MapTile, target_tile: MapTile) ->
             if target_tile.unit.is_present():
                 self.battle(source_tile, target_tile)
             if target_tile.building.is_present():
-                self.capture(source_tile, target_tile)
-                self.board_model.use_current_player_ap(1)
-                self._update_ap_spent_presentation()
+                var result := self.board_model.capture_building(source_tile, target_tile)
+                self._present_capture_result(result)
 
 
 func battle(attacker_tile: MapTile, defender_tile: MapTile) -> void:
@@ -708,26 +707,32 @@ func _spawn_temporary_explosion_instance_on_tile(tile: MapTile, free_delay: floa
     return new_explosion
 
 
-func capture(attacker_tile: MapTile, building_tile: MapTile) -> void:
-    var attacker: BaseUnit = attacker_tile.unit.tile
-    var building: BaseBuilding = building_tile.building.tile
-    assert(attacker != null)
-    assert(building != null)
+func _present_capture_result(result: CommandResult) -> void:
+    if result.command_name != "capture_building":
+        return
 
-    var old_side: String = building.side
+    for event: BaseEvent in result.events:
+        if event is BuildingCapturedEvent:
+            self._present_building_captured(event as BuildingCapturedEvent)
 
-    attacker.use_all_moves()
-    self.map.builder.set_building_side(building_tile.position, attacker.side, attacker.team)
-    self.smoke_a_tile(building_tile)
-    building.sfx_effect("capture")
-
-    if building.require_crew and not self.abilities.can_intimidate_crew(attacker):
+    if bool(result.metadata.get("crew_retaliated", false)):
         await self.get_tree().create_timer(self.RETALIATION_DELAY).timeout
-        self.smoke_a_tile(attacker_tile)
-        attacker_tile.unit.clear()
+        var attacker_tile: MapTile = result.metadata.get("attacker_tile")
+        if attacker_tile != null:
+            self.smoke_a_tile(attacker_tile)
         self.unselect_tile()
 
-    self.events.emit_building_captured(building, old_side, attacker.side)
+    self._update_ap_spent_presentation()
+
+
+func _present_building_captured(event: BuildingCapturedEvent) -> void:
+    var tile: MapTile = self.map.model.get_tile_for_building(event.building)
+    if tile == null:
+        return
+
+    self.map.builder.set_building_side(tile.position, event.new_side, event.building.team)
+    self.smoke_a_tile(tile)
+    event.building.sfx_effect("capture")
 
 
 func cheat_capture() -> void:

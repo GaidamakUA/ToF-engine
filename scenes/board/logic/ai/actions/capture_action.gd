@@ -12,14 +12,20 @@ func _init(unit_tile: MapTile, interaction_tile: MapTile, target_tile: MapTile, 
     self.movement_path = movement_path_val
 
 func perform(model: BoardModel) -> void:
+    var capture_result: CommandResult = null
     if self.interaction != null:
         var result := model.move_unit_along_path(self.unit, self.interaction, self._get_move_cost(), self.movement_path)
         self._present_movement_result(model, result)
         await model.wait_for_action_delay(self.movement_path.size() * 0.1)
-        model.interact_unit(self.interaction, null, self.target)
+        capture_result = model.capture_building(self.interaction, self.target)
+        if model.board != null and model.board.has_method(&"_present_capture_result"):
+            model.board._present_capture_result(capture_result)
     else:
-        model.interact_unit(self.unit, null, self.target)
-    await model.wait_for_action_delay(0.5)
+        capture_result = model.capture_building(self.unit, self.target)
+        if model.board != null and model.board.has_method(&"_present_capture_result"):
+            model.board._present_capture_result(capture_result)
+    if capture_result != null:
+        await model.wait_for_action_delay(capture_result.delay)
 
 func _to_string() -> String:
     var message: String = str(self.unit.position) + " captures " + str(self.target.position)

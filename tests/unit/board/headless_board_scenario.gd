@@ -32,19 +32,6 @@ class HeadlessBoardHost:
 		})
 		self.scenario.model.events.emit_ability_used(ability, target_tile.position)
 
-	func handle_interaction_from_tile(source_tile: MapTile, target_tile: MapTile) -> void:
-		if not source_tile.unit.is_present() or not target_tile.building.is_present():
-			return
-		var unit: BaseUnit = source_tile.unit.tile
-		if not unit.can_capture:
-			return
-		var building: BaseBuilding = target_tile.building.tile
-		var old_side: String = building.side
-		building.side = unit.side
-		building.team = unit.team
-		self.scenario.model.use_current_player_ap(1)
-		self.scenario.model.events.emit_building_captured(building, old_side, building.side)
-
 
 class MovedEventRecorder:
 	extends Observer

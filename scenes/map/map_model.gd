@@ -89,6 +89,16 @@ func get_player_buildings(side: String) -> Array[BaseBuilding]:
 
     return buildings
 
+func get_tile_for_building(building: BaseBuilding) -> MapTile:
+    if building == null:
+        return null
+
+    for key: String in self.tiles.keys():
+        if self.tiles[key].building.tile == building:
+            return self.tiles[key]
+
+    return null
+
 func get_player_units_tiles(side: String) -> Array[MapTile]:
     var units: Array[MapTile] = []
     for key: String in self.tiles.keys():

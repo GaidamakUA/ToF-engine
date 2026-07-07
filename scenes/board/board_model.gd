@@ -4,6 +4,7 @@ class_name BoardModel
 const MovementCommandsScript: Script = preload("res://scenes/board/logic/commands/movement_commands.gd")
 const UnitLifecycleCommandsScript: Script = preload("res://scenes/board/logic/commands/unit_lifecycle_commands.gd")
 const CombatCommandsScript: Script = preload("res://scenes/board/logic/commands/combat_commands.gd")
+const CaptureCommandsScript: Script = preload("res://scenes/board/logic/commands/capture_commands.gd")
 
 var board: Variant = null
 var state: State = State.new()
@@ -14,6 +15,7 @@ var movement_commands: RefCounted = null
 var turn_commands: TurnCommands = null
 var unit_lifecycle_commands: RefCounted = null
 var combat_commands: RefCounted = null
+var capture_commands: RefCounted = null
 var action_pacer: ActionPacer = NoOpActionPacer.new()
 var abilities: Abilities = null
 var events: Events = Events.new()
@@ -68,6 +70,7 @@ func _rebuild_command_context() -> void:
 	self.movement_commands = MovementCommandsScript.new(self.command_context, self.turn_commands)
 	self.unit_lifecycle_commands = UnitLifecycleCommandsScript.new(self.command_context)
 	self.combat_commands = CombatCommandsScript.new(self.command_context, self.unit_lifecycle_commands, self.turn_commands)
+	self.capture_commands = CaptureCommandsScript.new(self.command_context, self.unit_lifecycle_commands, self.turn_commands)
 
 
 func _sync_map_model_from_board() -> void:
@@ -131,6 +134,11 @@ func destroy_unit_on_tile(tile: MapTile, attacker: BaseUnit = null) -> CommandRe
 func attack_unit(source_tile: MapTile, target_tile: MapTile) -> CommandResult:
 	assert(self.combat_commands != null)
 	return self.combat_commands.attack_unit(source_tile, target_tile)
+
+
+func capture_building(source_tile: MapTile, target_tile: MapTile) -> CommandResult:
+	assert(self.capture_commands != null)
+	return self.capture_commands.capture_building(source_tile, target_tile)
 
 
 func replenish_unit_actions(side: String = self.get_current_side()) -> CommandResult:
@@ -212,8 +220,10 @@ func interact_unit(source_tile: MapTile, interaction_tile: MapTile, target_tile:
 		if self.board != null and self.board.has_method(&"_present_attack_result"):
 			self.board._present_attack_result(result)
 		return
-	assert(self.board != null)
-	self.board.handle_interaction_from_tile(action_source, target_tile)
+	if target_tile != null and target_tile.building.is_present():
+		var result := self.capture_building(action_source, target_tile)
+		if self.board != null and self.board.has_method(&"_present_capture_result"):
+			self.board._present_capture_result(result)
 
 
 func use_ability(origin_tile: MapTile, ability: Ability, target_tile: MapTile) -> void:

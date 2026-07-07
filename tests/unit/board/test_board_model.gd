@@ -165,6 +165,7 @@ func test_attach_board_creates_board_dependent_collaborators() -> void:
 	assert_same(model.command_context.events, model.events)
 	assert_same(model.command_context.abilities, model.abilities)
 	assert_same(model.command_context.collateral, model.collateral)
+	assert_not_null(model.combat_commands)
 	assert_same(model.abilities.state, model.state)
 	assert_not_null(model.observers)
 	assert_same(model.ai.board, board)

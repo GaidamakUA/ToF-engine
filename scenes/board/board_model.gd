@@ -3,6 +3,7 @@ class_name BoardModel
 
 const MovementCommandsScript: Script = preload("res://scenes/board/logic/commands/movement_commands.gd")
 const UnitLifecycleCommandsScript: Script = preload("res://scenes/board/logic/commands/unit_lifecycle_commands.gd")
+const CombatCommandsScript: Script = preload("res://scenes/board/logic/commands/combat_commands.gd")
 
 var board: Variant = null
 var state: State = State.new()
@@ -12,6 +13,7 @@ var command_context: BoardCommandContext = null
 var movement_commands: RefCounted = null
 var turn_commands: TurnCommands = null
 var unit_lifecycle_commands: RefCounted = null
+var combat_commands: RefCounted = null
 var action_pacer: ActionPacer = NoOpActionPacer.new()
 var abilities: Abilities = null
 var events: Events = Events.new()
@@ -65,6 +67,7 @@ func _rebuild_command_context() -> void:
 	self.turn_commands = TurnCommands.new(self.command_context)
 	self.movement_commands = MovementCommandsScript.new(self.command_context, self.turn_commands)
 	self.unit_lifecycle_commands = UnitLifecycleCommandsScript.new(self.command_context)
+	self.combat_commands = CombatCommandsScript.new(self.command_context, self.unit_lifecycle_commands, self.turn_commands)
 
 
 func _sync_map_model_from_board() -> void:
@@ -123,6 +126,11 @@ func end_turn() -> CommandResult:
 func destroy_unit_on_tile(tile: MapTile, attacker: BaseUnit = null) -> CommandResult:
 	assert(self.unit_lifecycle_commands != null)
 	return self.unit_lifecycle_commands.destroy_unit_on_tile(tile, attacker)
+
+
+func attack_unit(source_tile: MapTile, target_tile: MapTile) -> CommandResult:
+	assert(self.combat_commands != null)
+	return self.combat_commands.attack_unit(source_tile, target_tile)
 
 
 func replenish_unit_actions(side: String = self.get_current_side()) -> CommandResult:
@@ -195,11 +203,16 @@ func reserve_ap(amount: int) -> void:
 
 
 func interact_unit(source_tile: MapTile, interaction_tile: MapTile, target_tile: MapTile) -> void:
-	assert(self.board != null)
 	var action_source: MapTile = source_tile
 	if interaction_tile != null:
 		self.move_unit(source_tile, interaction_tile)
 		action_source = interaction_tile
+	if target_tile != null and target_tile.unit.is_present():
+		var result := self.attack_unit(action_source, target_tile)
+		if self.board != null and self.board.has_method(&"_present_attack_result"):
+			self.board._present_attack_result(result)
+		return
+	assert(self.board != null)
 	self.board.handle_interaction_from_tile(action_source, target_tile)
 
 

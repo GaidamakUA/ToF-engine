@@ -601,8 +601,6 @@ func handle_interaction_from_tile(source_tile: MapTile, target_tile: MapTile) ->
         if source_tile.unit.is_present():
             if target_tile.unit.is_present():
                 self.battle(source_tile, target_tile)
-                self.board_model.use_current_player_ap(1)
-                self._update_ap_spent_presentation()
             if target_tile.building.is_present():
                 self.capture(source_tile, target_tile)
                 self.board_model.use_current_player_ap(1)
@@ -610,52 +608,54 @@ func handle_interaction_from_tile(source_tile: MapTile, target_tile: MapTile) ->
 
 
 func battle(attacker_tile: MapTile, defender_tile: MapTile) -> void:
-    var attacker: BaseUnit = attacker_tile.unit.tile
-    var defender: BaseUnit = defender_tile.unit.tile
+    var result := self.board_model.attack_unit(attacker_tile, defender_tile)
+    self._present_attack_result(result)
+
+
+func _present_attack_result(result: CommandResult) -> void:
+    if result.command_name != "attack_unit":
+        return
+
+    var attack_steps: Array = result.metadata.get("attack_steps", [])
+    for index: int in range(attack_steps.size()):
+        var step: Dictionary = attack_steps[index]
+        var attacker: BaseUnit = step.get("attacker")
+        var defender: BaseUnit = step.get("defender")
+        var attacker_tile: MapTile = step.get("attacker_tile")
+        var defender_tile: MapTile = step.get("defender_tile")
+        if attacker == null or attacker_tile == null or defender_tile == null:
+            continue
+
+        if index > 0 and result.delay > 0.0:
+            await self.get_tree().create_timer(result.delay).timeout
+
+        self._present_attack_step(attacker, attacker_tile, defender, defender_tile, bool(step.get("destroyed", false)))
+
+    self._update_ap_spent_presentation()
+    if self.selected_tile != null and not self.selected_tile.unit.is_present():
+        self.unselect_tile()
+
+
+func _present_attack_step(attacker: BaseUnit, attacker_tile: MapTile, defender: BaseUnit, defender_tile: MapTile, destroyed: bool) -> void:
     assert(attacker != null)
-    assert(defender != null)
-
-    attacker.use_move(1)
-    attacker.use_attack()
-
     self.reset_unit_position(attacker_tile, attacker)
 
-    attacker.rotate_unit_to_direction(attacker_tile.get_direction_to_neighbour(defender_tile))
+    var direction: Variant = attacker_tile.get_direction_to_neighbour(defender_tile)
+    if direction != null:
+        attacker.rotate_unit_to_direction(String(direction))
 
-    defender.receive_damage(attacker.get_attack())
     attacker.sfx_effect("attack")
     attacker.sfx_effect("hit")
 
-    if defender.is_alive():
-        defender.show_explosion()
-
-        if defender.can_attack_unit(attacker) && defender.has_moves():
-            defender.use_all_moves()
-            attacker.receive_damage(defender.get_attack())
-            await self.get_tree().create_timer(self.RETALIATION_DELAY).timeout
-            defender.rotate_unit_to_direction(defender_tile.get_direction_to_neighbour(attacker_tile))
-
-            defender.sfx_effect("attack")
-            defender.sfx_effect("hit")
-
-            if attacker.is_alive():
-                attacker.show_explosion()
-                self.events.emit_unit_attacked(defender, attacker)
-            else:
-                self.unselect_tile()
-                self._present_unit_destruction(attacker_tile)
-                self.board_model.destroy_unit_on_tile(attacker_tile, defender)
-
-        self.events.emit_unit_attacked(attacker, defender)
-    else:
+    if destroyed:
         self._present_unit_destruction(defender_tile)
-        self.board_model.destroy_unit_on_tile(defender_tile, attacker)
+        return
+
+    if defender != null:
+        defender.show_explosion()
 
 
 func _present_unit_destruction(tile: MapTile, skip_explosion: bool = false) -> void:
-    var unit: BaseUnit = tile.unit.tile
-    assert(unit != null)
-
     if not skip_explosion:
         self.explode_a_tile(tile, true)
         _generate_collateral_damage(tile)
@@ -678,7 +678,7 @@ func _generate_collateral_damage(tile: MapTile) -> Dictionary[String, Variant]:
 func explode_a_tile(tile: MapTile, grab_sfx: bool = false) -> void:
     var new_explosion: ExplosionFx = self._spawn_temporary_explosion_instance_on_tile(tile, 0.5)
     new_explosion.explode()
-    if grab_sfx:
+    if grab_sfx and tile.unit.is_present():
         new_explosion.grab_sfx_effect(tile.unit.tile)
 
 

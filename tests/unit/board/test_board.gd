@@ -18,6 +18,7 @@ class FakeBoard:
 
 		var used_ap: Array[int] = []
 		var destroy_calls: Array[Array] = []
+		var attack_calls: Array[Array] = []
 		var fake_unit_lifecycle_commands := FakeUnitLifecycleCommands.new()
 
 		func _init() -> void:
@@ -31,19 +32,23 @@ class FakeBoard:
 			self.destroy_calls.append([tile, attacker])
 			return CommandResult.new("destroy_unit")
 
-	var battle_calls: Array[Array] = []
+		func attack_unit(source_tile: MapTile, target_tile: MapTile) -> CommandResult:
+			self.attack_calls.append([source_tile, target_tile])
+			return CommandResult.new("attack_unit")
+
 	var contextual_select_count: int = 0
+	var presented_attack_results: Array[CommandResult] = []
 	var presented_destructions: Array[Array] = []
 
 	func _init() -> void:
 		super()
 		self.board_model = FakeBoardModel.new()
 
-	func battle(attacker_tile: MapTile, defender_tile: MapTile) -> void:
-		self.battle_calls.append([attacker_tile, defender_tile])
-
 	func _update_ap_spent_presentation() -> void:
 		pass
+
+	func _present_attack_result(result: CommandResult) -> void:
+		self.presented_attack_results.append(result)
 
 	func show_contextual_select(_open_unit_abilities: bool = false) -> void:
 		self.contextual_select_count += 1
@@ -63,8 +68,10 @@ func test_source_explicit_interaction_does_not_refresh_contextual_selection() ->
 
 	board.handle_interaction_from_tile(source, target)
 
-	assert_eq(board.battle_calls, [[source, target]])
-	assert_eq((board.board_model as FakeBoard.FakeBoardModel).used_ap, [1])
+	assert_eq((board.board_model as FakeBoard.FakeBoardModel).attack_calls, [[source, target]])
+	assert_true((board.board_model as FakeBoard.FakeBoardModel).used_ap.is_empty())
+	assert_eq(board.presented_attack_results.size(), 1)
+	assert_eq(board.presented_attack_results[0].command_name, "attack_unit")
 	assert_eq(board.contextual_select_count, 0)
 
 	attacker.free()

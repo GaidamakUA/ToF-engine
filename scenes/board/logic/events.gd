@@ -21,11 +21,14 @@ func emit_building_captured(building: BaseBuilding, old_side: String, new_side: 
     event.new_side = new_side
     self.emit_event(event)
 
-func emit_unit_attacked(attacker: BaseUnit, defender: BaseUnit) -> void:
+func emit_unit_attacked(attacker: BaseUnit, defender: BaseUnit, attacker_tile: MapTile = null, defender_tile: MapTile = null) -> UnitAttackedEvent:
     var event := UnitAttackedEvent.new()
     event.unit = defender
     event.attacker = attacker
+    event.attacker_tile = attacker_tile
+    event.unit_tile = defender_tile
     self.emit_event(event)
+    return event
 
 func emit_unit_destroyed(attacker: BaseUnit, defender_id: int, defender_type: String, defender_side: String) -> void:
     var event := UnitDestroyedEvent.new()

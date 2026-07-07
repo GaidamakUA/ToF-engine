@@ -115,3 +115,30 @@ func test_headless_host_dispatches_reserve_ap_and_ability_commands() -> void:
 	assert_eq(scenario.used_abilities[0].target, target)
 
 	scenario.cleanup()
+
+
+func test_attack_action_runs_without_board_scene() -> void:
+	var scenario := HeadlessBoardScenario.from_fixture("res://tests/fixtures/board/headless_validation_map.json")
+	var source: MapTile = scenario.get_tile(Vector2i(0, 0))
+	var target := MapTile.new(1, 1)
+	var defender := BaseUnit.new()
+	defender.side = "red"
+	defender.team = 1
+	defender.hp = 5
+	defender.max_hp = 5
+	defender.armor = 0
+	defender.move = 0
+	defender.max_move = 0
+	target.unit.set_tile(defender)
+	source.add_neighbour(MapTile.SOUTH, target)
+	target.add_neighbour(MapTile.NORTH, source)
+	var action := AttackAction.new(source, null, target, [])
+
+	await action.perform(scenario.model)
+
+	assert_eq(scenario.model.get_current_ap(), 3)
+	assert_eq(defender.hp, 0)
+	assert_false(target.unit.is_present())
+
+	defender.free()
+	scenario.cleanup()

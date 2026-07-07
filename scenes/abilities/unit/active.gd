@@ -23,8 +23,12 @@ func execute(board: Board, source: Variant, origin_tile: MapTile, position: Vect
         board.select_tile(position)
 
 func execute_model(model: BoardModel, source: Variant, origin_tile: MapTile, position: Vector2i) -> CommandResult:
+    var ability_result := super.execute_model(model, source, origin_tile, position)
+    if ability_result.command_name == "use_ability_failed":
+        return ability_result
+
     var result := model.use_current_player_ap(self.get_cost(source))
-    result.merge_from(super.execute_model(model, source, origin_tile, position))
+    result.merge_from(ability_result)
     source.use_move(1)
     return result
 

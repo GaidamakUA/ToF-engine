@@ -11,6 +11,7 @@ var board: Variant = null
 var state: State = State.new()
 var radial_abilities: RadialAbilities = RadialAbilities.new()
 var map_model: MapModel = null
+var map_templates: MapTemplates = MapTemplates.new()
 var command_context: BoardCommandContext = null
 var movement_commands: RefCounted = null
 var turn_commands: TurnCommands = null
@@ -240,12 +241,49 @@ func use_ability(origin_tile: MapTile, ability: Ability, target_tile: MapTile) -
 
 
 func spawn_unit(position: Vector2i, template_name: String, rotation: int, side: String, _source: Variant = null, ai_paused: bool = false) -> BaseUnit:
-	if not (self.board is Board):
+	if self.map_model == null:
 		return null
+	var tile: MapTile = self.map_model.get_tile(position)
+	if tile == null or not tile.can_acommodate_unit():
+		return null
+	if not (self.board is Board):
+		return self._spawn_unit_without_board(tile, template_name, rotation, side, ai_paused)
 	var unit: BaseUnit = self.board.map.builder.place_unit(position, template_name, rotation, side, ai_paused)
 	if unit is HeroUnit:
 		self.state.auto_set_hero(unit as HeroUnit)
 	return unit
+
+
+func _spawn_unit_without_board(tile: MapTile, template_name: String, rotation: int, side: String, ai_paused: bool) -> BaseUnit:
+	var unit := self.map_templates.get_template(template_name) as BaseUnit
+	if unit == null:
+		return null
+	tile.unit.set_tile(unit)
+	unit.set_rotation(Vector3(0, deg_to_rad(rotation), 0))
+	unit.current_rotation = rotation
+	self._set_spawned_unit_side(unit, side)
+	unit.ai_paused = ai_paused
+	unit.reset()
+	if ai_paused:
+		unit.remove_highlight()
+	if self.map_model.metadata.has("editor_version"):
+		unit.disable_dlc_abilities(int(self.map_model.metadata["editor_version"]))
+	if self.map_model.metadata.has("allow_level_up"):
+		unit.allow_level_up = bool(self.map_model.metadata["allow_level_up"])
+	if unit is HeroUnit:
+		self.state.auto_set_hero(unit as HeroUnit)
+	return unit
+
+
+func _set_spawned_unit_side(unit: BaseUnit, side: String) -> void:
+	var material_type: String = self.map_templates.MATERIAL_NORMAL
+	if unit.uses_metallic_material:
+		material_type = self.map_templates.MATERIAL_METALLIC
+	unit.set_side(side)
+	unit.set_side_materials(
+		self.map_templates.get_side_material(side, material_type),
+		self.map_templates.get_side_material_desat(side, material_type)
+	)
 
 
 func anchor_unit(unit: BaseUnit, unit_position: Vector2i) -> void:

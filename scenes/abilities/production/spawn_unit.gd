@@ -32,12 +32,13 @@ func _execute_model(model: BoardModel, source: Variant, _origin_tile: MapTile, p
     var cost: int = self.ap_cost
     if model.abilities != null:
         cost = model.abilities.get_modified_cost(cost, self.template_name, source)
-    result.merge_from(model.use_current_player_ap(cost))
 
     var new_unit: BaseUnit = model.spawn_unit(position, self.template_name, 0, model.get_current_side(), source)
     if new_unit == null:
         result.command_name = "use_ability_failed"
         return result
+
+    result.merge_from(model.use_current_player_ap(cost))
 
     new_unit.replenish_moves()
     new_unit.team = model.get_current_team()

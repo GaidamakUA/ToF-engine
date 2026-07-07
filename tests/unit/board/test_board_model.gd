@@ -54,6 +54,12 @@ func _make_model_with_players() -> BoardModel:
 	return model
 
 
+func _add_walkable_ground(tile: MapTile) -> BaseTile:
+	var ground := BaseTile.new()
+	tile.ground.set_tile(ground)
+	return ground
+
+
 func test_add_player_initializes_state_ap_and_team() -> void:
 	var model := _make_model_with_players()
 
@@ -172,3 +178,43 @@ func test_attach_board_creates_board_dependent_collaborators() -> void:
 	assert_same(model.collateral.model, model)
 	board.map.free()
 	board.free()
+
+
+func test_spawn_unit_instantiates_resource_template_without_board() -> void:
+	var model := _make_model_with_players()
+	model.set_map_model(MapModel.new())
+	var target := model.get_tile_at(Vector2i(2, 3))
+	var ground := _add_walkable_ground(target)
+
+	var unit := model.spawn_unit(target.position, "blue_tank", 90, "blue")
+
+	assert_not_null(unit)
+	assert_same(target.unit.tile, unit)
+	assert_eq(unit.template_name, "blue_tank")
+	assert_eq(unit.side, "blue")
+	assert_eq(unit.current_rotation, 90)
+	assert_eq(unit.max_move, 6)
+	assert_eq(unit.move, 6)
+	assert_false(model.state.has_side_a_hero("blue"))
+
+	target.unit.release()
+	ground.free()
+	unit.free()
+
+
+func test_spawn_unit_registers_hero_without_board() -> void:
+	var model := _make_model_with_players()
+	model.set_map_model(MapModel.new())
+	var target := model.get_tile_at(Vector2i(4, 5))
+	var ground := _add_walkable_ground(target)
+
+	var hero := model.spawn_unit(target.position, "hero_prince", 0, "blue")
+
+	assert_true(hero is HeroUnit)
+	assert_same(target.unit.tile, hero)
+	assert_true(model.state.has_side_a_hero("blue"))
+	assert_eq(model.state.get_heroes_for_side("blue"), [hero])
+
+	target.unit.release()
+	ground.free()
+	hero.free()

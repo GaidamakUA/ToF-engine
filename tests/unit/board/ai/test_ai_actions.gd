@@ -90,6 +90,17 @@ class TrackingAbility:
 		return CommandResult.new("tracking_ai_ability")
 
 
+class FrameBlockingPacer:
+	extends ActionPacer
+
+	var steps: Array[String] = []
+
+	func wait_after(_result: CommandResult) -> void:
+		self.steps.append("started")
+		await (Engine.get_main_loop() as SceneTree).process_frame
+		self.steps.append("finished")
+
+
 func test_move_action_uses_model_command_without_selection() -> void:
 	var board := FakeBoardHost.new()
 	var model := _make_model(board)
@@ -108,7 +119,7 @@ func test_move_action_uses_model_command_without_selection() -> void:
 	assert_true(board.moved_pairs.is_empty())
 	assert_eq(board.select_tile_count, 0)
 	assert_eq(board.unselect_tile_count, 0)
-	target.unit.clear()
+	target.unit.release()
 	_free_ground(target, target_ground)
 	unit.free()
 
@@ -141,8 +152,8 @@ func test_attack_action_uses_model_interaction_command_without_selection() -> vo
 	assert_eq(board.select_tile_count, 0)
 	assert_eq(board.unselect_tile_count, 0)
 
-	source.unit.clear()
-	target.unit.clear()
+	source.unit.release()
+	target.unit.release()
 	attacker.free()
 	defender.free()
 
@@ -180,8 +191,8 @@ func test_attack_action_with_interaction_uses_path_move_without_selection() -> v
 	assert_true(board.moved_pairs.is_empty())
 	assert_eq(board.select_tile_count, 0)
 	assert_eq(board.unselect_tile_count, 0)
-	interaction.unit.clear()
-	target.unit.clear()
+	interaction.unit.release()
+	target.unit.release()
 	_free_ground(interaction, interaction_ground)
 	unit.free()
 	defender.free()
@@ -211,8 +222,8 @@ func test_capture_action_uses_model_interaction_command_without_selection() -> v
 	assert_eq(board.select_tile_count, 0)
 	assert_eq(board.unselect_tile_count, 0)
 
-	source.unit.clear()
-	target.building.clear()
+	source.unit.release()
+	target.building.release()
 	unit.free()
 	building.free()
 
@@ -238,7 +249,27 @@ func test_ability_action_uses_model_ability_command_without_selection() -> void:
 	assert_eq(board.select_tile_count, 0)
 	assert_eq(board.unselect_tile_count, 0)
 
-	origin.unit.clear()
+	origin.unit.release()
+	unit.free()
+
+
+func test_ability_action_awaits_action_pacer() -> void:
+	var board := FakeBoardHost.new()
+	var model := _make_model(board)
+	var pacer := FrameBlockingPacer.new()
+	model.set_action_pacer(pacer)
+	var origin := MapTile.new(0, 0)
+	var target := MapTile.new(1, 0)
+	var unit := _place_unit(origin)
+	var ability := TrackingAbility.new()
+	var action := UseAbilityAction.new(ability, origin, target)
+
+	await action.perform(model)
+
+	assert_eq(pacer.steps, ["started", "finished"])
+	assert_eq(ability.executed_position, target.position)
+
+	origin.unit.release()
 	unit.free()
 
 

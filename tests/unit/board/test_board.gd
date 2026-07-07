@@ -133,6 +133,15 @@ func test_capture_result_presentation_defers_retaliation_cleanup_in_board() -> v
 	assert_ne(capture_result_source.find("retaliation_destroyed_unit.queue_free()"), -1)
 
 
+func test_execute_active_ability_awaits_action_pacer() -> void:
+	var file := FileAccess.open("res://scenes/board/board.gd", FileAccess.READ)
+	assert_not_null(file)
+	var source := file.get_as_text()
+	var execute_ability_source := source.get_slice("func execute_active_ability(target_tile: MapTile) -> void:", 1).get_slice("func _present_ability_result(result: CommandResult) -> void:", 0)
+
+	assert_ne(execute_ability_source.find("await self.board_model.action_pacer.wait_after(result)"), -1)
+
+
 func test_direct_damage_abilities_do_not_manually_emit_unit_destroyed_events() -> void:
 	for path: String in [
 		"res://scenes/abilities/unit/heavy_weapon.gd",

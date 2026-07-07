@@ -825,7 +825,7 @@ func execute_active_ability(target_tile: MapTile) -> void:
     assert(self.active_ability != null)
     var result := self.board_model.use_ability(self.active_ability_origin_tile, self.active_ability, target_tile)
     self._present_ability_result(result)
-    self.board_model.action_pacer.wait_after(result)
+    await self.board_model.action_pacer.wait_after(result)
     await self.board_model.wait_for_action_delay(result.delay)
     self.cancel_ability()
     var select_tile_position: Variant = result.metadata.get("select_tile_position")

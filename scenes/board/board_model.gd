@@ -219,7 +219,7 @@ func reserve_ap(amount: int) -> void:
 	self.board.ai.reserve_ap(amount)
 
 
-func interact_unit(source_tile: MapTile, interaction_tile: MapTile, target_tile: MapTile) -> void:
+func interact_unit(source_tile: MapTile, interaction_tile: MapTile, target_tile: MapTile) -> CommandResult:
 	var action_source: MapTile = source_tile
 	if interaction_tile != null:
 		self.move_unit(source_tile, interaction_tile)
@@ -228,12 +228,13 @@ func interact_unit(source_tile: MapTile, interaction_tile: MapTile, target_tile:
 		var result := self.attack_unit(action_source, target_tile)
 		if self.board != null and self.board.has_method(&"_present_attack_result"):
 			self.board._present_attack_result(result)
-		return
+		return result
 	if target_tile != null and target_tile.building.is_present():
 		var result := self.capture_building(action_source, target_tile)
 		if self.board != null and self.board.has_method(&"_present_capture_result"):
 			self.board._present_capture_result(result)
-
+		return result
+	return null
 
 func use_ability(origin_tile: MapTile, ability: Ability, target_tile: MapTile) -> CommandResult:
 	assert(self.ability_commands != null)
@@ -302,13 +303,6 @@ func reset_unit_position(tile: MapTile, unit: BaseUnit) -> void:
 	if not (self.board is Board):
 		return
 	self.board.reset_unit_position(tile, unit)
-
-
-func wait_for_action_delay(delay: float) -> void:
-	if delay <= 0.0:
-		return
-	if self.board is Node:
-		await self.board.get_tree().create_timer(delay).timeout
 
 
 func selected_unit_can_interact_with(tile: MapTile) -> bool:

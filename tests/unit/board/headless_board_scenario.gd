@@ -61,6 +61,7 @@ var moved_events: Array[UnitMovedEvent] = []
 var captured_events: Array[BuildingCapturedEvent] = []
 var reserved_ap: Array[int] = []
 var _nodes: Array[Node] = []
+var _extra_objects: Array = []
 
 
 static func from_fixture(path: String) -> HeadlessBoardScenario:
@@ -68,6 +69,27 @@ static func from_fixture(path: String) -> HeadlessBoardScenario:
 	var payload: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
 	assert(payload is Dictionary)
 	scenario._load_fixture(payload)
+	return scenario
+
+
+static func with_adjacent_enemy() -> HeadlessBoardScenario:
+	var scenario := HeadlessBoardScenario.from_fixture("res://tests/fixtures/board/headless_validation_map.json")
+	var target_tile := MapTile.new(1, 1)
+	scenario.tiles[target_tile.position] = target_tile
+	scenario.map_model.tiles["1_1"] = target_tile
+	scenario._extra_objects.append(target_tile)
+	var defender := BaseUnit.new()
+	defender.side = "red"
+	defender.team = 1
+	defender.hp = 5
+	defender.max_hp = 5
+	defender.armor = 0
+	defender.move = 0
+	defender.max_move = 0
+	target_tile.unit.set_tile(defender)
+	scenario.get_tile(Vector2i(0, 0)).add_neighbour(MapTile.SOUTH, target_tile)
+	target_tile.add_neighbour(MapTile.NORTH, scenario.get_tile(Vector2i(0, 0)))
+	scenario._nodes.append(defender)
 	return scenario
 
 
@@ -81,6 +103,10 @@ func cleanup() -> void:
 		if is_instance_valid(node) and not node.is_queued_for_deletion():
 			node.free()
 	self._nodes.clear()
+	for extra_object: Variant in self._extra_objects:
+		if extra_object is Node and is_instance_valid(extra_object) and not extra_object.is_queued_for_deletion():
+			extra_object.free()
+	self._extra_objects.clear()
 
 
 func _load_fixture(payload: Dictionary) -> void:

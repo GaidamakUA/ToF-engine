@@ -111,7 +111,7 @@ func test_move_action_uses_model_command_without_selection() -> void:
 	var movement_path: Array[String] = ["1_0", "0_0"]
 	var action := MoveAction.new(source, target, movement_path)
 
-	action.perform(model)
+	await action.perform(model)
 
 	assert_true(source.unit.is_present() == false)
 	assert_same(target.unit.tile, unit)
@@ -144,7 +144,7 @@ func test_attack_action_uses_model_interaction_command_without_selection() -> vo
 	var movement_path: Array[String] = []
 	var action := AttackAction.new(source, null, target, movement_path)
 
-	action.perform(model)
+	await action.perform(model)
 
 	assert_eq(model.get_current_ap(), 4)
 	assert_eq(defender.hp, 2)
@@ -180,7 +180,7 @@ func test_attack_action_with_interaction_uses_path_move_without_selection() -> v
 	var movement_path: Array[String] = ["1_0", "0_0"]
 	var action := AttackAction.new(source, interaction, target, movement_path)
 
-	action.perform(model)
+	await action.perform(model)
 
 	assert_true(source.unit.is_present() == false)
 	assert_same(interaction.unit.tile, unit)
@@ -213,7 +213,7 @@ func test_capture_action_uses_model_interaction_command_without_selection() -> v
 	var movement_path: Array[String] = []
 	var action := CaptureAction.new(source, null, target, movement_path)
 
-	action.perform(model)
+	await action.perform(model)
 
 	assert_eq(target.building.tile.side, "blue")
 	assert_eq(target.building.tile.team, 0)
@@ -239,7 +239,7 @@ func test_ability_action_uses_model_ability_command_without_selection() -> void:
 	ability.cooldown = 3
 	var action := UseAbilityAction.new(ability, origin, target)
 
-	action.perform(model)
+	await action.perform(model)
 
 	assert_eq(ability.executed_position, target.position)
 	assert_eq(model.get_current_ap(), 3)

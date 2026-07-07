@@ -13,7 +13,6 @@ func _init(ability_object: Ability, origin_tile_object: MapTile, target_object: 
 func perform(model: BoardModel) -> void:
     var result := model.use_ability(self.origin_tile, self.ability, self.target)
     await model.action_pacer.wait_after(result)
-    await model.wait_for_action_delay(result.delay)
 
 
 func _to_string() -> String:

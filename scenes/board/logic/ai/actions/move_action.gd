@@ -12,13 +12,9 @@ func _init(unit_tile: MapTile, target_tile: MapTile, movement_path_val: Array[St
 
 
 func perform(model: BoardModel) -> void:
-    var unit_object: BaseUnit = self.unit.unit.tile
-
     var result := model.move_unit_along_path(self.unit, self.target, self._get_move_cost(), self.movement_path)
     self._present_movement_result(model, result)
-
-    if unit_object and not unit_object.is_queued_for_deletion():
-        await unit_object.move_finished
+    await model.action_pacer.wait_after(result)
 
 
 func _to_string() -> String:

@@ -12,14 +12,16 @@ func _init(unit_tile: MapTile, interaction_tile: MapTile, target_tile: MapTile, 
     self.movement_path = movement_path_val
 
 func perform(model: BoardModel) -> void:
+    var result: CommandResult = null
     if self.interaction != null:
-        var result := model.move_unit_along_path(self.unit, self.interaction, self._get_move_cost(), self.movement_path)
-        self._present_movement_result(model, result)
-        await model.wait_for_action_delay(self.movement_path.size() * 0.1)
-        model.interact_unit(self.interaction, null, self.target)
+        var move_result := model.move_unit_along_path(self.unit, self.interaction, self._get_move_cost(), self.movement_path)
+        self._present_movement_result(model, move_result)
+        await model.action_pacer.wait_after(move_result)
+        result = model.interact_unit(self.interaction, null, self.target)
     else:
-        model.interact_unit(self.unit, null, self.target)
-    await model.wait_for_action_delay(0.5)
+        result = model.interact_unit(self.unit, null, self.target)
+    if result != null:
+        await model.action_pacer.wait_after(result)
 
 func _to_string() -> String:
     var message: String = str(self.unit.position) + " attacks " + str(self.target.position)

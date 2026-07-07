@@ -6,6 +6,7 @@ const UnitLifecycleCommandsScript: Script = preload("res://scenes/board/logic/co
 const CombatCommandsScript: Script = preload("res://scenes/board/logic/commands/combat_commands.gd")
 const CaptureCommandsScript: Script = preload("res://scenes/board/logic/commands/capture_commands.gd")
 const AbilityCommandsScript: Script = preload("res://scenes/board/logic/commands/ability_commands.gd")
+const SceneTreeActionPacerScript: Script = preload("res://scenes/board/logic/commands/scene_tree_action_pacer.gd")
 
 var board: Variant = null
 var state: State = State.new()
@@ -37,6 +38,8 @@ func _init(board_host: Variant = null) -> void:
 
 func attach_board(board_host: Variant) -> void:
 	self.board = board_host
+	if board_host is Node or board_host is SceneTree:
+		self.set_action_pacer(SceneTreeActionPacerScript.new(board_host))
 	if board_host.map != null:
 		self.map_model = board_host.map.model
 	elif board_host is Node and not board_host.ready.is_connected(self._sync_map_model_from_board):

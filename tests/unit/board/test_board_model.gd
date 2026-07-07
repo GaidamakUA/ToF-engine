@@ -1,5 +1,7 @@
 extends GutTest
 
+const SceneTreeActionPacerScript: Script = preload("res://scenes/board/logic/commands/scene_tree_action_pacer.gd")
+
 
 class FakeMovementLegalityBoard:
 	var called: bool = false
@@ -176,8 +178,15 @@ func test_attach_board_creates_board_dependent_collaborators() -> void:
 	assert_not_null(model.observers)
 	assert_same(model.ai.board, board)
 	assert_same(model.collateral.model, model)
+	assert_same(model.action_pacer.get_script(), SceneTreeActionPacerScript)
 	board.map.free()
 	board.free()
+
+
+func test_headless_model_keeps_no_op_action_pacer_by_default() -> void:
+	var model := BoardModel.new()
+
+	assert_true(model.action_pacer is NoOpActionPacer)
 
 
 func test_spawn_unit_instantiates_resource_template_without_board() -> void:

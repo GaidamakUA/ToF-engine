@@ -20,6 +20,8 @@ class FakeBoard:
 		var destroy_calls: Array[Array] = []
 		var attack_calls: Array[Array] = []
 		var cheat_capture_calls: Array[MapTile] = []
+		var ability_calls: Array[Array] = []
+		var next_ability_result: CommandResult = null
 		var fake_unit_lifecycle_commands := FakeUnitLifecycleCommands.new()
 
 		func _init() -> void:
@@ -41,12 +43,19 @@ class FakeBoard:
 			self.cheat_capture_calls.append(target_tile)
 			return CommandResult.new("capture_building")
 
+		func use_ability(origin_tile: MapTile, ability: Ability, target_tile: MapTile) -> CommandResult:
+			self.ability_calls.append([origin_tile, ability, target_tile])
+			return self.next_ability_result
+
 	var contextual_select_count: int = 0
 	var presented_attack_results: Array[CommandResult] = []
 	var presented_destructions: Array[Array] = []
 	var presented_capture_results: Array[CommandResult] = []
 	var smoked_tiles: Array[MapTile] = []
 	var unselect_count: int = 0
+	var cancel_ability_count: int = 0
+	var selected_positions: Array[Vector2i] = []
+	var presented_ability_results: Array[CommandResult] = []
 
 	func _init() -> void:
 		super()
@@ -72,6 +81,25 @@ class FakeBoard:
 
 	func unselect_tile() -> void:
 		self.unselect_count += 1
+
+	func cancel_ability() -> void:
+		self.cancel_ability_count += 1
+
+	func select_tile(tile_position: Vector2i) -> void:
+		self.selected_positions.append(tile_position)
+
+	func _present_ability_result(result: CommandResult) -> void:
+		self.presented_ability_results.append(result)
+
+
+class FrameDelayingPacer:
+	extends ActionPacer
+
+	var wait_calls: Array[CommandResult] = []
+
+	func wait_after(result: CommandResult) -> void:
+		self.wait_calls.append(result)
+		await (Engine.get_main_loop() as SceneTree).process_frame
 
 
 func test_source_explicit_interaction_does_not_refresh_contextual_selection() -> void:
@@ -133,13 +161,34 @@ func test_capture_result_presentation_defers_retaliation_cleanup_in_board() -> v
 	assert_ne(capture_result_source.find("retaliation_destroyed_unit.queue_free()"), -1)
 
 
-func test_execute_active_ability_awaits_action_pacer() -> void:
-	var file := FileAccess.open("res://scenes/board/board.gd", FileAccess.READ)
-	assert_not_null(file)
-	var source := file.get_as_text()
-	var execute_ability_source := source.get_slice("func execute_active_ability(target_tile: MapTile) -> void:", 1).get_slice("func _present_ability_result(result: CommandResult) -> void:", 0)
+func test_execute_active_ability_waits_for_pacer_before_cleanup() -> void:
+	var board := FakeBoard.new()
+	var pacer := FrameDelayingPacer.new()
+	var origin := MapTile.new(0, 0)
+	var target := MapTile.new(1, 0)
+	var ability := ActiveUnitAbility.new()
+	var result := CommandResult.new("use_ability")
+	result.delay = 0.25
+	result.metadata["select_tile_position"] = Vector2i(2, 3)
+	(board.board_model as FakeBoard.FakeBoardModel).next_ability_result = result
+	board.board_model.set_action_pacer(pacer)
+	board.active_ability = ability
+	board.active_ability_origin_tile = origin
 
-	assert_ne(execute_ability_source.find("await self.board_model.action_pacer.wait_after(result)"), -1)
+	board.execute_active_ability(target)
+
+	assert_eq(pacer.wait_calls, [result])
+	assert_eq((board.board_model as FakeBoard.FakeBoardModel).ability_calls, [[origin, ability, target]])
+	assert_eq(board.cancel_ability_count, 0)
+	assert_eq(board.selected_positions.size(), 0)
+	assert_eq(board.presented_ability_results, [result])
+
+	await wait_process_frames(1)
+
+	assert_eq(board.cancel_ability_count, 1)
+	assert_eq(board.selected_positions, [Vector2i(2, 3)])
+
+	board.free()
 
 
 func test_direct_damage_abilities_do_not_manually_emit_unit_destroyed_events() -> void:

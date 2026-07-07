@@ -9,7 +9,7 @@ func _init(command_context: BoardCommandContext) -> void:
 	self.context = command_context
 
 
-func destroy_unit_on_tile(tile: MapTile, attacker: BaseUnit = null, emit_event: bool = true) -> CommandResult:
+func destroy_unit_on_tile(tile: MapTile, attacker: BaseUnit = null) -> CommandResult:
 	var result := CommandResult.new("destroy_unit")
 	if tile == null or not tile.unit.is_present():
 		result.command_name = "destroy_unit_failed"
@@ -27,14 +27,13 @@ func destroy_unit_on_tile(tile: MapTile, attacker: BaseUnit = null, emit_event: 
 
 	tile.unit.clear()
 
-	if emit_event:
-		var event := UnitDestroyedEvent.new()
-		event.unit_id = unit_id
-		event.unit_type = unit_type
-		event.unit_side = unit_side
-		event.attacker = attacker
-		self.context.events.emit_event(event)
-		result.add_event(event)
+	var event := UnitDestroyedEvent.new()
+	event.unit_id = unit_id
+	event.unit_type = unit_type
+	event.unit_side = unit_side
+	event.attacker = attacker
+	self.context.events.emit_event(event)
+	result.add_event(event)
 
 	return result
 

@@ -663,10 +663,9 @@ func _present_unit_destruction(tile: MapTile, skip_explosion: bool = false) -> v
             self.map.camera.shake()
 
 
-func destroy_unit_on_tile(tile: MapTile, skip_explosion: bool = false) -> void:
+func destroy_unit_on_tile(tile: MapTile, skip_explosion: bool = false, attacker: Variant = null) -> void:
     self._present_unit_destruction(tile, skip_explosion)
-    assert(self.board_model.unit_lifecycle_commands != null)
-    self.board_model.unit_lifecycle_commands.destroy_unit_on_tile(tile, null, false)
+    self.board_model.destroy_unit_on_tile(tile, attacker)
 
 
 func _generate_collateral_damage(tile: MapTile) -> Dictionary[String, Variant]:

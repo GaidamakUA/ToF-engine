@@ -39,7 +39,7 @@ func _bomb_tile(tile: MapTile) -> void:
     if tile.unit.is_present():
         tile.unit.tile.receive_direct_damage(self.DAMAGE)
         if not tile.unit.tile.is_alive():
-            self.board.destroy_unit_on_tile(tile)
+            self.board.destroy_unit_on_tile(tile, false, self.source)
 
     self.board.explode_a_tile(tile)
     board.refresh_tile_selection()

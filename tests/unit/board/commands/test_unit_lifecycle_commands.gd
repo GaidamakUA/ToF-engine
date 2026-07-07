@@ -34,6 +34,25 @@ func test_destroy_unit_clears_tile_and_emits_destroyed_event() -> void:
 	defender.free()
 
 
+func test_destroy_unit_can_defer_node_free_while_clearing_tile_and_emitting_event() -> void:
+	var context := _make_context()
+	var tile := MapTile.new(0, 0)
+	var defender := BaseUnit.new()
+	defender.template_name = "infantry"
+	defender.side = "blue"
+	tile.unit.set_tile(defender)
+
+	var commands: Variant = UnitLifecycleCommandsScript.new(context)
+	var result: CommandResult = commands.destroy_unit_on_tile(tile, null, true)
+
+	assert_false(tile.unit.is_present())
+	assert_eq(result.events.size(), 1)
+	assert_true(result.events[0] is UnitDestroyedEvent)
+	assert_same(result.metadata.get("released_unit"), defender)
+
+	defender.free()
+
+
 func test_destroy_hero_clears_state_registration() -> void:
 	var context := _make_context()
 	var tile := MapTile.new(0, 0)

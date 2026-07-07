@@ -718,8 +718,11 @@ func _present_capture_result(result: CommandResult) -> void:
     if bool(result.metadata.get("crew_retaliated", false)):
         await self.get_tree().create_timer(self.RETALIATION_DELAY).timeout
         var attacker_tile: MapTile = result.metadata.get("attacker_tile")
+        var retaliation_destroyed_unit: BaseUnit = result.metadata.get("retaliation_destroyed_unit")
         if attacker_tile != null:
             self.smoke_a_tile(attacker_tile)
+        if retaliation_destroyed_unit != null and is_instance_valid(retaliation_destroyed_unit) and not retaliation_destroyed_unit.is_queued_for_deletion():
+            retaliation_destroyed_unit.queue_free()
         self.unselect_tile()
 
     self._update_ap_spent_presentation()
@@ -746,14 +749,8 @@ func cheat_capture() -> void:
         print("No building found")
         return
 
-    var building: BaseBuilding = tile.building.tile
-    assert(building != null)
-    var old_side: String = building.side
-
-    self.map.builder.set_building_side(tile.position, self.state.get_current_side(), self.state.get_current_team())
-    self.smoke_a_tile(tile)
-    building.sfx_effect("capture")
-    self.events.emit_building_captured(building, old_side, self.state.get_current_side())
+    var result := self.board_model.cheat_capture_building(tile)
+    self._present_capture_result(result)
 
 
 func cheat_kill() -> void:

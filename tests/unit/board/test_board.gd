@@ -19,6 +19,7 @@ class FakeBoard:
 		var used_ap: Array[int] = []
 		var destroy_calls: Array[Array] = []
 		var attack_calls: Array[Array] = []
+		var cheat_capture_calls: Array[MapTile] = []
 		var fake_unit_lifecycle_commands := FakeUnitLifecycleCommands.new()
 
 		func _init() -> void:
@@ -36,9 +37,16 @@ class FakeBoard:
 			self.attack_calls.append([source_tile, target_tile])
 			return CommandResult.new("attack_unit")
 
+		func cheat_capture_building(target_tile: MapTile) -> CommandResult:
+			self.cheat_capture_calls.append(target_tile)
+			return CommandResult.new("capture_building")
+
 	var contextual_select_count: int = 0
 	var presented_attack_results: Array[CommandResult] = []
 	var presented_destructions: Array[Array] = []
+	var presented_capture_results: Array[CommandResult] = []
+	var smoked_tiles: Array[MapTile] = []
+	var unselect_count: int = 0
 
 	func _init() -> void:
 		super()
@@ -50,11 +58,20 @@ class FakeBoard:
 	func _present_attack_result(result: CommandResult) -> void:
 		self.presented_attack_results.append(result)
 
+	func _present_capture_result(result: CommandResult) -> void:
+		self.presented_capture_results.append(result)
+
+	func smoke_a_tile(tile: MapTile) -> void:
+		self.smoked_tiles.append(tile)
+
 	func show_contextual_select(_open_unit_abilities: bool = false) -> void:
 		self.contextual_select_count += 1
 
 	func _present_unit_destruction(tile: MapTile, skip_explosion: bool = false) -> void:
 		self.presented_destructions.append([tile, skip_explosion])
+
+	func unselect_tile() -> void:
+		self.unselect_count += 1
 
 
 func test_source_explicit_interaction_does_not_refresh_contextual_selection() -> void:
@@ -106,6 +123,16 @@ func test_destroy_unit_on_tile_routes_through_board_model_and_preserves_presenta
 	board.free()
 
 
+func test_capture_result_presentation_defers_retaliation_cleanup_in_board() -> void:
+	var file := FileAccess.open("res://scenes/board/board.gd", FileAccess.READ)
+	assert_not_null(file)
+	var source := file.get_as_text()
+	var capture_result_source := source.get_slice("func _present_capture_result(result: CommandResult) -> void:", 1).get_slice("func _present_building_captured(event: BuildingCapturedEvent) -> void:", 0)
+
+	assert_ne(capture_result_source.find("result.metadata.get(\"retaliation_destroyed_unit\")"), -1)
+	assert_ne(capture_result_source.find("retaliation_destroyed_unit.queue_free()"), -1)
+
+
 func test_direct_damage_abilities_do_not_manually_emit_unit_destroyed_events() -> void:
 	for path: String in [
 		"res://scenes/abilities/unit/heavy_weapon.gd",
@@ -115,3 +142,24 @@ func test_direct_damage_abilities_do_not_manually_emit_unit_destroyed_events() -
 		var file := FileAccess.open(path, FileAccess.READ)
 		assert_not_null(file)
 		assert_eq(file.get_as_text().find("emit_unit_destroyed"), -1, path)
+
+
+func test_cheat_capture_routes_through_board_model() -> void:
+	var board := FakeBoard.new()
+	board.map = Map.new()
+	board.map.model = MapModel.new()
+	board.map.tile_box_position = Vector2i(3, 4)
+	var tile := MapTile.new(3, 4)
+	var building := BaseBuilding.new()
+	tile.building.set_tile(building)
+	board.map.model.tiles["3_4"] = tile
+
+	board.cheat_capture()
+
+	assert_eq((board.board_model as FakeBoard.FakeBoardModel).cheat_capture_calls, [tile])
+	assert_eq(board.presented_capture_results.size(), 1)
+	assert_eq(board.presented_capture_results[0].command_name, "capture_building")
+
+	building.free()
+	board.map.free()
+	board.free()

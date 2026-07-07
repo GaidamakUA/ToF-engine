@@ -9,7 +9,7 @@ func _init(command_context: BoardCommandContext) -> void:
 	self.context = command_context
 
 
-func destroy_unit_on_tile(tile: MapTile, attacker: BaseUnit = null) -> CommandResult:
+func destroy_unit_on_tile(tile: MapTile, attacker: BaseUnit = null, defer_free: bool = false) -> CommandResult:
 	var result := CommandResult.new("destroy_unit")
 	if tile == null or not tile.unit.is_present():
 		result.command_name = "destroy_unit_failed"
@@ -25,7 +25,11 @@ func destroy_unit_on_tile(tile: MapTile, attacker: BaseUnit = null) -> CommandRe
 		if hero != null:
 			self.context.state.clear_hero_for_side(unit.side, hero)
 
-	tile.unit.clear()
+	if defer_free:
+		tile.unit.release()
+		result.metadata["released_unit"] = unit
+	else:
+		tile.unit.clear()
 
 	var event := UnitDestroyedEvent.new()
 	event.unit_id = unit_id

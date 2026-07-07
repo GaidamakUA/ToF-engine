@@ -132,3 +132,58 @@ func test_capture_with_crew_retaliation_clears_attacker_tile_once() -> void:
 
 	attacker.free()
 	building.free()
+
+
+func test_capture_with_crew_retaliation_reports_deferred_cleanup_for_live_board_hosts() -> void:
+	var model := _make_model()
+	model.board = Board.new()
+	var attacker_tile := MapTile.new(0, 0)
+	var building_tile := MapTile.new(1, 0)
+	var attacker := MoveTrackingUnit.new()
+	attacker.side = "blue"
+	attacker.team = 0
+	attacker.template_name = "infantry"
+	attacker.can_capture = true
+	attacker.move = 4
+	attacker.max_move = 4
+	var building := BaseBuilding.new()
+	building.side = "red"
+	building.team = 1
+	building.require_crew = true
+	attacker_tile.unit.set_tile(attacker)
+	building_tile.building.set_tile(building)
+
+	var result: CommandResult = model.capture_building(attacker_tile, building_tile)
+
+	assert_eq(result.command_name, "capture_building")
+	assert_false(attacker_tile.unit.is_present())
+	assert_same(result.metadata.get("retaliation_destroyed_unit"), attacker)
+	assert_true(bool(result.metadata.get("crew_retaliated", false)))
+
+	attacker.free()
+	building.free()
+	model.board.free()
+
+
+func test_cheat_capture_routes_through_model_capture_without_spending_ap() -> void:
+	var model := _make_model()
+	var captured_recorder := BuildingCapturedRecorder.new()
+	model.events.register_observer(captured_recorder)
+	var building_tile := MapTile.new(1, 0)
+	var building := BaseBuilding.new()
+	building.side = "red"
+	building.team = 1
+	building_tile.building.set_tile(building)
+
+	var result: CommandResult = model.cheat_capture_building(building_tile)
+
+	assert_eq(result.command_name, "capture_building")
+	assert_eq(building.side, "blue")
+	assert_eq(building.team, 0)
+	assert_eq(model.get_current_ap(), 4)
+	assert_eq(result.events.size(), 1)
+	assert_true(result.events[0] is BuildingCapturedEvent)
+	assert_eq(captured_recorder.observed_events.size(), 1)
+	assert_same(result.events[0], captured_recorder.observed_events[0])
+
+	building.free()

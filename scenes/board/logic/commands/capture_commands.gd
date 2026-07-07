@@ -13,7 +13,7 @@ func _init(command_context: BoardCommandContext, lifecycle_commands: UnitLifecyc
 	self.turns = turn_commands
 
 
-func capture_building(attacker_tile: MapTile, building_tile: MapTile) -> CommandResult:
+func capture_building(attacker_tile: MapTile, building_tile: MapTile, defer_retaliation_free: bool = false) -> CommandResult:
 	var result := CommandResult.new("capture_building")
 	if not self._can_capture(attacker_tile, building_tile):
 		result.command_name = "capture_building_failed"
@@ -30,7 +30,10 @@ func capture_building(attacker_tile: MapTile, building_tile: MapTile) -> Command
 
 	var crew_retaliated: bool = building.require_crew and self.context.abilities != null and not self.context.abilities.can_intimidate_crew(attacker)
 	if crew_retaliated:
-		result.events.append_array(self.lifecycle.destroy_unit_on_tile(attacker_tile, null).events)
+		var destroy_result := self.lifecycle.destroy_unit_on_tile(attacker_tile, null, defer_retaliation_free)
+		result.events.append_array(destroy_result.events)
+		if defer_retaliation_free:
+			result.metadata["retaliation_destroyed_unit"] = destroy_result.metadata.get("released_unit")
 
 	var event := BuildingCapturedEvent.new()
 	event.building = building
@@ -42,6 +45,27 @@ func capture_building(attacker_tile: MapTile, building_tile: MapTile) -> Command
 	result.metadata["attacker_tile"] = attacker_tile
 	result.metadata["building_tile"] = building_tile
 	result.metadata["crew_retaliated"] = crew_retaliated
+	return result
+
+
+func cheat_capture_building(building_tile: MapTile, side: String, team: int) -> CommandResult:
+	var result := CommandResult.new("capture_building")
+	if not self._can_cheat_capture(building_tile):
+		result.command_name = "capture_building_failed"
+		return result
+
+	var building: BaseBuilding = building_tile.building.tile
+	var old_side: String = building.side
+	building.side = side
+	building.team = team
+
+	var event := BuildingCapturedEvent.new()
+	event.building = building
+	event.old_side = old_side
+	event.new_side = side
+	self.context.events.emit_event(event)
+	result.add_event(event)
+	result.metadata["building_tile"] = building_tile
 	return result
 
 
@@ -64,3 +88,7 @@ func _can_capture(attacker_tile: MapTile, building_tile: MapTile) -> bool:
 	if not self.context.state.can_current_player_afford(1):
 		return false
 	return true
+
+
+func _can_cheat_capture(building_tile: MapTile) -> bool:
+	return building_tile != null and building_tile.building.is_present() and building_tile.building.tile != null

@@ -138,7 +138,12 @@ func attack_unit(source_tile: MapTile, target_tile: MapTile) -> CommandResult:
 
 func capture_building(source_tile: MapTile, target_tile: MapTile) -> CommandResult:
 	assert(self.capture_commands != null)
-	return self.capture_commands.capture_building(source_tile, target_tile)
+	return self.capture_commands.capture_building(source_tile, target_tile, self.board is Board)
+
+
+func cheat_capture_building(target_tile: MapTile) -> CommandResult:
+	assert(self.capture_commands != null)
+	return self.capture_commands.cheat_capture_building(target_tile, self.get_current_side(), self.get_current_team())
 
 
 func replenish_unit_actions(side: String = self.get_current_side()) -> CommandResult:

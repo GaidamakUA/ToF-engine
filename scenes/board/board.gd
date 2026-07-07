@@ -281,12 +281,15 @@ func end_turn() -> void:
 
 func _end_turn() -> void:
     self.unselect_tile()
-    self.board_model.end_turn()
+    var turn_result := self.board_model.end_turn()
     self.ui.reset_timer()
-    self.call_deferred(&"start_turn")
+    self.schedule_turn_start(turn_result)
+
+func schedule_turn_start(turn_result: CommandResult = null) -> void:
+    self.call_deferred(&"start_turn", turn_result)
 
 
-func start_turn() -> void:
+func start_turn(turn_result: CommandResult = null) -> void:
     if self.match_setup.turn_limit > 0 and self.state.turn > self.match_setup.turn_limit:
         self.end_game("none")
         return
@@ -298,8 +301,7 @@ func start_turn() -> void:
         if self._move_camera_to_hq():
             await self.get_tree().create_timer(1).timeout
 
-    self.board_model.replenish_unit_actions()
-    self._gain_building_ap()
+    self._present_turn_start_result(turn_result)
     self.board_view.update_resource_value(self.state.get_current_ap())
     self.ui.flash_start_end_card(self.state.get_current_side(), self.state.turn)
 
@@ -308,8 +310,19 @@ func start_turn() -> void:
 
 
 func start_initial_turn() -> void:
-    await self.start_turn()
+    var turn_result := self.board_model.prepare_current_turn()
+    await self.start_turn(turn_result)
     self.events.emit_turn_started(self.state.turn, self.state.current_player)
+
+
+func _present_turn_start_result(turn_result: CommandResult) -> void:
+    if turn_result == null:
+        return
+    var ap_gain_tiles: Array = turn_result.metadata.get("ap_gain_tiles", [])
+    for tile_value: Variant in ap_gain_tiles:
+        var tile := tile_value as MapTile
+        if tile != null and tile.building.is_present():
+            tile.building.tile.animate_coin()
 
 
 func _manage_cinematic_bars() -> void:
@@ -627,7 +640,6 @@ func _present_attack_step(attacker: BaseUnit, attacker_tile: MapTile, defender: 
 func _present_unit_destruction(tile: MapTile, skip_explosion: bool = false) -> void:
     if not skip_explosion:
         self.explode_a_tile(tile, true)
-        _generate_collateral_damage(tile)
         if bool(self.settings.get_option("cam_shake")):
             self.map.camera.shake()
 
@@ -642,6 +654,10 @@ func _generate_collateral_damage(tile: MapTile) -> Dictionary[String, Variant]:
         "collateral": self.collateral.generate_collateral(tile),
         "damage": self.collateral.damage_tile(tile)
     }
+
+
+func _sync_collateral_damage(_event: CollateralDamageAppliedEvent) -> void:
+    return
 
 
 func explode_a_tile(tile: MapTile, grab_sfx: bool = false) -> void:
@@ -792,6 +808,15 @@ func _activate_ability(ability: Ability) -> void:
 
 
 func _present_ability_result(result: CommandResult) -> void:
+    var destroyed_tiles: Array = result.metadata.get("destroyed_tiles", [])
+    var destroyed_lookup: Dictionary[String, bool] = {}
+    for tile_value: Variant in destroyed_tiles:
+        var destroyed_tile := tile_value as MapTile
+        if destroyed_tile == null:
+            continue
+        destroyed_lookup[str(destroyed_tile.position)] = true
+        self._present_unit_destruction(destroyed_tile)
+
     var effects: Array = result.metadata.get("effects", [])
     for effect_data: Dictionary in effects:
         var effect_type: String = String(effect_data.get("type", ""))
@@ -810,7 +835,7 @@ func _present_ability_result(result: CommandResult) -> void:
                     self.heal_a_tile(heal_tile)
             "explode":
                 var explode_tile: MapTile = effect_data.get("tile") as MapTile
-                if explode_tile != null:
+                if explode_tile != null and not destroyed_lookup.has(str(explode_tile.position)):
                     self.explode_a_tile(explode_tile)
             "shoot_projectile":
                 var shoot_origin: MapTile = effect_data.get("origin") as MapTile

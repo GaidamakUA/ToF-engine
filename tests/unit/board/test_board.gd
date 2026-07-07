@@ -56,10 +56,12 @@ class FakeBoard:
 	var cancel_ability_count: int = 0
 	var selected_positions: Array[Vector2i] = []
 	var presented_ability_results: Array[CommandResult] = []
+	var synced_collateral_events: Array[CollateralDamageAppliedEvent] = []
 
 	func _init() -> void:
 		super()
 		self.board_model = FakeBoardModel.new()
+		self.board_model.board = self
 		self.controller = BoardController.new(self.board_model, self.board_view, self)
 
 	func _update_ap_spent_presentation() -> void:
@@ -94,6 +96,9 @@ class FakeBoard:
 
 	func _present_ability_result(result: CommandResult) -> void:
 		self.presented_ability_results.append(result)
+
+	func _sync_collateral_damage(event: CollateralDamageAppliedEvent) -> void:
+		self.synced_collateral_events.append(event)
 
 
 class FrameDelayingPacer:
@@ -132,9 +137,11 @@ func test_start_turn_does_not_emit_duplicate_turn_started_event() -> void:
 	var file := FileAccess.open("res://scenes/board/board.gd", FileAccess.READ)
 	assert_not_null(file)
 	var source := file.get_as_text()
-	var start_turn_source := source.get_slice("func start_turn() -> void:", 1).get_slice("func start_initial_turn() -> void:", 0)
+	var start_turn_source := source.get_slice("func start_turn(", 1).get_slice("func start_initial_turn() -> void:", 0)
 
 	assert_eq(start_turn_source.find("emit_turn_started"), -1)
+	assert_eq(start_turn_source.find("replenish_unit_actions"), -1)
+	assert_eq(start_turn_source.find("_gain_building_ap"), -1)
 
 
 func test_present_destroyed_unit_routes_through_board_model_and_preserves_presentation() -> void:
@@ -225,3 +232,24 @@ func test_cheat_capture_routes_through_board_model() -> void:
 	building.free()
 	board.map.free()
 	board.free()
+
+
+func test_collateral_damage_event_observer_routes_to_board_sync_hook() -> void:
+	var board := FakeBoard.new()
+	var event := board.events.emit_collateral_damage_applied(Vector2i(1, 2), [Vector2i(2, 2)], "damage_template")
+
+	assert_eq(board.synced_collateral_events, [event])
+
+	board.free()
+
+
+func test_multiplayer_boards_sync_model_owned_collateral_events() -> void:
+	for path: String in [
+		"res://scenes/board_multiplayer/board_multiplayer.gd",
+		"res://scenes/board_online/board_online.gd",
+	]:
+		var file := FileAccess.open(path, FileAccess.READ)
+		assert_not_null(file)
+		var source := file.get_as_text()
+		assert_ne(source.find("func _sync_collateral_damage(event: CollateralDamageAppliedEvent) -> void:"), -1, path)
+		assert_ne(source.find("_collateral_event_to_sync_payload(event)"), -1, path)

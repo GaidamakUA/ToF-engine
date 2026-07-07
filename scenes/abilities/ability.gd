@@ -82,3 +82,9 @@ func _append_projectile_effect(result: CommandResult, effect_type: String, origi
         "target": target_tile,
         "tween_time": tween_time,
     })
+
+
+func _append_destroyed_tile(result: CommandResult, tile: MapTile) -> void:
+    var destroyed_tiles: Array = result.metadata.get("destroyed_tiles", [])
+    destroyed_tiles.append(tile)
+    result.metadata["destroyed_tiles"] = destroyed_tiles

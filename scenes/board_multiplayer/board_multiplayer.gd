@@ -244,6 +244,29 @@ func _generate_collateral_damage(tile: MapTile) -> Dictionary[String, Variant]:
     return {}
 
 
+func _sync_collateral_damage(event: CollateralDamageAppliedEvent) -> void:
+    if not _can_broadcast_moves():
+        return
+    _notify_collateral_damage.rpc(_collateral_event_to_sync_payload(event))
+
+
+func _collateral_event_to_sync_payload(event: CollateralDamageAppliedEvent) -> Dictionary[String, Variant]:
+    var damage: Variant = null
+    if event.damage_template != null:
+        damage = [event.origin, event.damage_template, _get_tile_damage_rotation(event.origin)]
+    return {
+        "collateral": event.damaged_tiles,
+        "damage": damage
+    }
+
+
+func _get_tile_damage_rotation(tile_position: Vector2i) -> int:
+    var tile: MapTile = self.map.model.get_tile(tile_position)
+    if tile == null or not tile.damage.is_present():
+        return 0
+    return tile.damage.tile.current_rotation
+
+
 @rpc("any_peer", "call_remote", "reliable")
 func _notify_collateral_damage(damage: Dictionary) -> void:
     if damage["damage"] != null:

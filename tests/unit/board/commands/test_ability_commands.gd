@@ -245,3 +245,81 @@ func test_use_ability_fails_without_a_source_on_origin_tile() -> void:
 
 	assert_eq(result.command_name, "use_ability_failed")
 	assert_true(result.events.is_empty())
+
+
+func test_use_ability_rejects_disabled_source_ability_without_side_effects() -> void:
+	var model := _make_model()
+	var origin := MapTile.new(0, 0)
+	var target := MapTile.new(1, 0)
+	var unit := BaseUnit.new()
+	unit.side = "blue"
+	unit.team = 0
+	unit.move = 4
+	unit.max_move = 4
+	origin.unit.set_tile(unit)
+	var ability := TrackingActiveUnitAbility.new()
+	ability.ap_cost = 2
+	unit.set_ability_disabled(ability, true)
+
+	var result: CommandResult = model.use_ability(origin, ability, target)
+
+	assert_eq(result.command_name, "use_ability_failed")
+	assert_eq(model.get_current_ap(), 4)
+	assert_eq(unit.move, 4)
+	assert_eq(ability.executed_position, Vector2i(-1, -1))
+	assert_true(result.events.is_empty())
+
+	origin.unit.release()
+	unit.free()
+
+
+func test_use_ability_rejects_ability_on_cooldown_without_side_effects() -> void:
+	var model := _make_model()
+	var origin := MapTile.new(0, 0)
+	var target := MapTile.new(1, 0)
+	var unit := BaseUnit.new()
+	unit.side = "blue"
+	unit.team = 0
+	unit.move = 4
+	unit.max_move = 4
+	origin.unit.set_tile(unit)
+	var ability := TrackingActiveUnitAbility.new()
+	ability.ap_cost = 2
+	unit.get_ability_state(ability).cd_turns_left = 1
+
+	var result: CommandResult = model.use_ability(origin, ability, target)
+
+	assert_eq(result.command_name, "use_ability_failed")
+	assert_eq(model.get_current_ap(), 4)
+	assert_eq(unit.move, 4)
+	assert_eq(ability.executed_position, Vector2i(-1, -1))
+	assert_true(result.events.is_empty())
+
+	origin.unit.release()
+	unit.free()
+
+
+func test_use_ability_rejects_unaffordable_ability_without_side_effects() -> void:
+	var model := _make_model()
+	model.state.set_player_ap(0, 1)
+	var origin := MapTile.new(0, 0)
+	var target := MapTile.new(1, 0)
+	var unit := BaseUnit.new()
+	unit.side = "blue"
+	unit.team = 0
+	unit.move = 4
+	unit.max_move = 4
+	origin.unit.set_tile(unit)
+	var ability := TrackingActiveUnitAbility.new()
+	ability.ap_cost = 2
+
+	var result: CommandResult = model.use_ability(origin, ability, target)
+
+	assert_eq(result.command_name, "use_ability_failed")
+	assert_eq(model.get_current_ap(), 1)
+	assert_eq(unit.move, 4)
+	assert_eq(ability.executed_position, Vector2i(-1, -1))
+	assert_true(result.events.is_empty())
+
+	origin.unit.release()
+	unit.free()

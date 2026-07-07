@@ -27,6 +27,9 @@ func _bomb_tile_model(model: BoardModel, result: CommandResult, source: BaseUnit
         tile.unit.tile.receive_direct_damage(PrecisionStrikeExecutor.DAMAGE)
         if not tile.unit.tile.is_alive():
             result.merge_from(model.destroy_unit_on_tile(tile, source))
+            if model.collateral != null:
+                model.collateral.apply_destroyed_unit_collateral(tile)
+            self._append_destroyed_tile(result, tile)
     self._append_tile_effect(result, "explode", tile)
 
 func is_tile_applicable(tile: MapTile, _origin_tile: MapTile, source: Variant) -> bool:

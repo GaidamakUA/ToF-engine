@@ -134,6 +134,7 @@ func test_attack_action_runs_without_board_scene() -> void:
 	var scenario := HeadlessBoardScenario.from_fixture("res://tests/fixtures/board/headless_validation_map.json")
 	var source: MapTile = scenario.get_tile(Vector2i(0, 0))
 	var target := MapTile.new(1, 1)
+	var target_ground := BaseTile.new()
 	var defender := BaseUnit.new()
 	defender.side = "red"
 	defender.team = 1
@@ -142,6 +143,8 @@ func test_attack_action_runs_without_board_scene() -> void:
 	defender.armor = 0
 	defender.move = 0
 	defender.max_move = 0
+	scenario.map_model.tiles["1_1"] = target
+	target.ground.set_tile(target_ground)
 	target.unit.set_tile(defender)
 	source.add_neighbour(MapTile.SOUTH, target)
 	target.add_neighbour(MapTile.NORTH, source)
@@ -152,6 +155,13 @@ func test_attack_action_runs_without_board_scene() -> void:
 	assert_eq(scenario.model.get_current_ap(), 3)
 	assert_eq(defender.hp, 0)
 	assert_false(target.unit.is_present())
+	assert_true(target.damage.is_present())
 
+	if target.damage.is_present():
+		var collateral_damage := target.damage.tile
+		target.damage.release()
+		collateral_damage.free()
+	target.ground.release()
 	defender.free()
+	target_ground.free()
 	scenario.cleanup()

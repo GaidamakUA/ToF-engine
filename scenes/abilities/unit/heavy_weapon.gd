@@ -30,6 +30,9 @@ func _execute_model(model: BoardModel, source: Variant, origin_tile: MapTile, po
         var target_unit: BaseUnit = tile._get_unit()
         if not target_unit.is_alive():
             result.merge_from(model.destroy_unit_on_tile(tile, source))
+            if model.collateral != null:
+                model.collateral.apply_destroyed_unit_collateral(tile)
+            self._append_destroyed_tile(result, tile)
     self._append_projectile_effect(result, "shoot_projectile", origin_tile, tile, self.TWEEN_TIME)
     self._append_tile_effect(result, "explode", tile)
     result.metadata["refresh_selection"] = true

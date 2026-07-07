@@ -28,7 +28,8 @@ func reserve_ap(amount: int) -> void:
 
 
 func _finish_run() -> void:
-    self.board.end_turn()
+    var result := self.board.board_model.end_turn()
+    self.board.schedule_turn_start(result)
 
 
 func _ai_tick() -> void:

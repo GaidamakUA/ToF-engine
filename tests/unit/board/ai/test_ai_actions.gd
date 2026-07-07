@@ -12,6 +12,46 @@ class FakeAi:
 	func reserve_ap(amount: int) -> void:
 		self.reserved_amounts.append(amount)
 
+
+class PresentingBoardModel:
+	extends BoardModel
+
+	var presented_results: Array[CommandResult] = []
+	var next_result := CommandResult.new("use_ability")
+
+	func use_ability(_origin_tile: MapTile, _ability: Ability, _target_tile: MapTile) -> CommandResult:
+		return self.next_result
+
+	func present_action_result(result: CommandResult) -> void:
+		self.presented_results.append(result)
+
+
+class FinishTrackingBoardModel:
+	extends BoardModel
+
+	var end_turn_calls: int = 0
+
+	func end_turn() -> CommandResult:
+		self.end_turn_calls += 1
+		return CommandResult.new("end_turn")
+
+
+class FinishTrackingBoard:
+	extends Board
+
+	var board_end_turn_calls: int = 0
+	var scheduled_results: Array[CommandResult] = []
+
+	func _init() -> void:
+		super()
+		self.board_model = FinishTrackingBoardModel.new()
+
+	func end_turn() -> void:
+		self.board_end_turn_calls += 1
+
+	func schedule_turn_start(result: CommandResult = null) -> void:
+		self.scheduled_results.append(result)
+
 func _make_model(fake_ai: FakeAi = null) -> BoardModel:
 	var model := BoardModel.new()
 	model.add_player({
@@ -216,6 +256,31 @@ func test_ability_action_awaits_action_pacer() -> void:
 
 	origin.unit.release()
 	unit.free()
+
+
+func test_ability_action_routes_successful_results_through_model_presentation() -> void:
+	var model := PresentingBoardModel.new()
+	var origin := MapTile.new(0, 0)
+	var target := MapTile.new(1, 0)
+	var ability := TrackingAbility.new()
+	var action := UseAbilityAction.new(ability, origin, target)
+
+	await action.perform(model)
+
+	assert_eq(model.presented_results, [model.next_result])
+
+
+func test_ai_finish_run_uses_board_model_for_end_turn_and_only_board_for_scheduling() -> void:
+	var board := FinishTrackingBoard.new()
+	var ai := Ai.new(board)
+
+	ai._finish_run()
+
+	assert_eq((board.board_model as FinishTrackingBoardModel).end_turn_calls, 1)
+	assert_eq(board.board_end_turn_calls, 0)
+	assert_eq(board.scheduled_results.size(), 1)
+
+	board.free()
 
 
 func test_reserve_ap_action_uses_model_command_without_selection() -> void:

@@ -326,28 +326,55 @@ func _notify_unselect_tile() -> void:
 func _generate_collateral_damage(tile: MapTile) -> Dictionary[String, Variant]:
     if _can_broadcast_moves():
         var damage: Dictionary = super._generate_collateral_damage(tile)
-        var fixed_damage: Dictionary = {
-            "collateral": [],
-            "damage": null
-        }
-
-        for damaged_tile: Vector2i in damage["collateral"]:
-            fixed_damage["collateral"].append([damaged_tile.x, damaged_tile.y])
-        if damage["damage"] != null:
-            fixed_damage["damage"] = [
-                [damage["damage"][0].x, damage["damage"][0].y],
-                damage["damage"][1],
-                damage["damage"][2]
-            ]
-
-        self.relay.message_broadcast({
-            "type": "collateral_damage",
-            "damage": fixed_damage
-        })
+        self._broadcast_collateral_damage(damage)
         #_notify_collateral_damage.rpc(damage)
 
         return damage
     return {}
+
+
+func _sync_collateral_damage(event: CollateralDamageAppliedEvent) -> void:
+    if not _can_broadcast_moves():
+        return
+    self._broadcast_collateral_damage(_collateral_event_to_sync_payload(event))
+
+
+func _collateral_event_to_sync_payload(event: CollateralDamageAppliedEvent) -> Dictionary:
+    var damage: Variant = null
+    if event.damage_template != null:
+        damage = [event.origin, event.damage_template, _get_tile_damage_rotation(event.origin)]
+    return {
+        "collateral": event.damaged_tiles,
+        "damage": damage
+    }
+
+
+func _broadcast_collateral_damage(damage: Dictionary) -> void:
+    var fixed_damage: Dictionary = {
+        "collateral": [],
+        "damage": null
+    }
+
+    for damaged_tile: Vector2i in damage["collateral"]:
+        fixed_damage["collateral"].append([damaged_tile.x, damaged_tile.y])
+    if damage["damage"] != null:
+        fixed_damage["damage"] = [
+            [damage["damage"][0].x, damage["damage"][0].y],
+            damage["damage"][1],
+            damage["damage"][2]
+        ]
+
+    self.relay.message_broadcast({
+        "type": "collateral_damage",
+        "damage": fixed_damage
+    })
+
+
+func _get_tile_damage_rotation(tile_position: Vector2i) -> int:
+    var tile: MapTile = self.map.model.get_tile(tile_position)
+    if tile == null or not tile.damage.is_present():
+        return 0
+    return tile.damage.tile.current_rotation
 
 
 #@rpc("any_peer", "call_remote", "reliable")

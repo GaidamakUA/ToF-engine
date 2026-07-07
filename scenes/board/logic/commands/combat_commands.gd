@@ -43,6 +43,8 @@ func attack_unit(attacker_tile: MapTile, defender_tile: MapTile) -> CommandResul
 	else:
 		result.metadata["destroyed_tiles"].append(defender_tile)
 		result.events.append_array(self.lifecycle.destroy_unit_on_tile(defender_tile, attacker).events)
+		if self.context.collateral != null:
+			self.context.collateral.apply_destroyed_unit_collateral(defender_tile)
 
 	return result
 
@@ -90,4 +92,6 @@ func _try_retaliation(result: CommandResult, retaliator_tile: MapTile, target_ti
 	else:
 		result.metadata["destroyed_tiles"].append(target_tile)
 		result.events.append_array(self.lifecycle.destroy_unit_on_tile(target_tile, retaliator).events)
+		if self.context.collateral != null:
+			self.context.collateral.apply_destroyed_unit_collateral(target_tile)
 	return true

@@ -156,9 +156,7 @@ func _present_capture_result(result: CommandResult) -> void:
 
 
 func _present_ability_result(result: CommandResult) -> void:
-	if self.board == null:
-		return
-	self.board._present_ability_result(result)
+	self.model.present_action_result(result)
 
 
 func _select_tile_position(tile_position: Vector2i) -> void:

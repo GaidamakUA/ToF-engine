@@ -133,6 +133,11 @@ func end_turn() -> CommandResult:
 	return self.turn_commands.end_turn()
 
 
+func prepare_current_turn() -> CommandResult:
+	assert(self.turn_commands != null)
+	return self.turn_commands.prepare_current_turn()
+
+
 func destroy_unit_on_tile(tile: MapTile, attacker: BaseUnit = null) -> CommandResult:
 	assert(self.unit_lifecycle_commands != null)
 	return self.unit_lifecycle_commands.destroy_unit_on_tile(tile, attacker)
@@ -235,6 +240,8 @@ func present_action_result(result: CommandResult) -> void:
 		self.board._present_attack_result(result)
 	elif result.command_name == "capture_building" and self.board.has_method(&"_present_capture_result"):
 		self.board._present_capture_result(result)
+	elif result.command_name == "use_ability" and self.board.has_method(&"_present_ability_result"):
+		self.board._present_ability_result(result)
 
 
 func use_ability(origin_tile: MapTile, ability: Ability, target_tile: MapTile) -> CommandResult:

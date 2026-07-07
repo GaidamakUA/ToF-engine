@@ -116,6 +116,7 @@ func _make_controller_with_hosts(model: FakeBoardModel, view: FakeBoardView, boa
 	var controller := BoardController.new(model)
 	controller.attach_view(view)
 	if board != null:
+		model.board = board
 		controller.attach_board(board)
 	return controller
 

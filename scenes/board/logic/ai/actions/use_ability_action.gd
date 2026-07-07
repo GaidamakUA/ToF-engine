@@ -12,6 +12,7 @@ func _init(ability_object: Ability, origin_tile_object: MapTile, target_object: 
 
 func perform(model: BoardModel) -> void:
     var result := model.use_ability(self.origin_tile, self.ability, self.target)
+    model.present_action_result(result)
     await model.action_pacer.wait_after(result)
 
 

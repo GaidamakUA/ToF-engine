@@ -23,13 +23,26 @@ var enable_healthbar: bool = false
 
 @export var unit_name: String = ""
 @export var side: String = "neutral"
-var team: Variant = null
+var state: UnitState = UnitState.new()
+var team: Variant:
+    get:
+        return self.state.team
+    set(value):
+        self.state.team = value
 @export var material_type: String = "normal"
 
 @export var max_hp: int = 10
-var hp: int = 0
+var hp: int:
+    get:
+        return self.state.hp
+    set(value):
+        self.state.hp = value
 @export var max_move: int = 4
-var move: int = 0
+var move: int:
+    get:
+        return self.state.move
+    set(value):
+        self.state.move = value
 @export var attack: int = 7
 @export var armor: int = 2
 @export var can_capture: bool = false
@@ -40,25 +53,60 @@ var move: int = 0
 @export var uses_metallic_material: bool = false
 @export var unit_value: int = 0
 @export var unit_class: String = ""
-var attacks: int = 1
-var level: int = 0
-var experience: int = 0
-var kills: int = 0
+var attacks: int:
+    get:
+        return self.state.attacks
+    set(value):
+        self.state.attacks = value
+var level: int:
+    get:
+        return self.state.level
+    set(value):
+        self.state.level = value
+var experience: int:
+    get:
+        return self.state.experience
+    set(value):
+        self.state.experience = value
+var kills: int:
+    get:
+        return self.state.kills
+    set(value):
+        self.state.kills = value
 var passenger: BaseUnit = null
 
 # AI modifiers
-var ai_paused: bool = false
+var ai_paused: bool:
+    get:
+        return self.state.ai_paused
+    set(value):
+        self.state.ai_paused = value
 var tether_point := Vector2i(0, 0)
 var tether_length: int = 0
 @export var perform_extra_lookup: bool = false
 # AI modifiers end
 
-var modifiers: Dictionary[String, Variant] = {}
-var scripting_tags: Dictionary[String, Variant] = {}
+var modifiers: Dictionary[String, Variant]:
+    get:
+        return self.state.modifiers
+    set(value):
+        self.state.modifiers.clear()
+        self.state.modifiers.assign(value)
+var scripting_tags: Dictionary[String, Variant]:
+    get:
+        return self.state.scripting_tags
+    set(value):
+        self.state.scripting_tags.clear()
+        self.state.scripting_tags.assign(value)
 @export var passive_ability: Resource = null
 @export var active_abilities: Array = []
 @export var active_abilities_require_level: bool = true
-var ability_states: Dictionary = {}
+var ability_states: Dictionary:
+    get:
+        return self.state.ability_states
+    set(value):
+        self.state.ability_states.clear()
+        self.state.ability_states.assign(value)
 var allow_level_up: bool = true
 
 var unit_rotations: Dictionary[String, int] = {
@@ -129,9 +177,7 @@ func configure(resource: UnitResource) -> void:
 func reset() -> void:
     var stats: Dictionary[String, int] = self.get_stats_with_modifiers()
 
-    self.hp = stats["max_hp"]
-    self.move = stats["max_move"]
-    self.attacks = stats["max_attacks"]
+    self.state.reset_from_stats(stats)
     self._update_healthbar()
     self._update_energy()
     self._update_level()
@@ -152,10 +198,10 @@ func get_dict() -> Dictionary[String, Variant]:
     return new_dict
 
 func add_script_tag(tag: String) -> void:
-    self.scripting_tags[tag] = true
+    self.state.add_script_tag(tag)
 
 func has_script_tag(tag: String) -> bool:
-    return self.scripting_tags.has(tag)
+    return self.state.has_script_tag(tag)
 
 func set_side(new_side: String) -> void:
     self.side = new_side
@@ -183,30 +229,10 @@ func set_side_material(material: Resource) -> void:
 
 
 func get_stats() -> Dictionary[String, int]:
-    var stats: Dictionary[String, int] = {
-        "hp" : self.hp,
-        "move" : self.move,
-        "attack" : self.attack,
-        "armor" : self.armor,
-        "max_move" : self.max_move,
-        "max_hp" : self.max_hp,
-        "attacks" : self.attacks,
-        "max_attacks" : self.max_attacks,
-        "level" : self.level,
-        "experience" : self.experience,
-        "kills" : self.kills,
-    }
-
-    return stats
+    return self.state.get_base_stats(self)
 
 func get_stats_with_modifiers() -> Dictionary[String, int]:
-    var stats: Dictionary[String, int] = self.get_stats()
-
-    for stat_key: String in stats:
-        if self.modifiers.has(stat_key):
-            stats[stat_key] += int(self.modifiers[stat_key])
-
-    return _apply_experience_modifiers(stats)
+    return self.state.get_stats_with_modifiers(self)
 
 func _apply_experience_modifiers(stats: Dictionary[String, int]) -> Dictionary[String, int]:
     if self.level > 1:
@@ -224,7 +250,7 @@ func has_moves() -> bool:
     return self.move > 0
 
 func use_move(value: int) -> void:
-    self.move -= value
+    self.state.use_move(value)
     if self.move < 1:
         self.remove_highlight()
     self._update_energy()
@@ -234,24 +260,26 @@ func use_all_moves() -> void:
 
 
 func restore_move(value: int) -> void:
-    self.move += value
+    self.state.restore_move(value)
     self.restore_highlight()
     self._update_energy()
 
 func reset_move() -> void:
     var stats: Dictionary[String, int] = self.get_stats_with_modifiers()
-    self.move = stats["max_move"]
+    self.state.reset_move(stats)
     self.restore_highlight()
     self._update_energy()
 
 func replenish_moves() -> void:
-    self.reset_move()
     var stats: Dictionary[String, int] = self.get_stats_with_modifiers()
-    self.attacks = stats["max_attacks"]
+    self.state.replenish_moves(stats)
+    self.restore_highlight()
+    self._update_energy()
 
 func remove_moves() -> void:
-    self.attacks = 0
-    self.use_all_moves()
+    self.state.remove_moves()
+    self.remove_highlight()
+    self._update_energy()
 
 func can_attack_unit(unit: BaseUnit) -> bool:
     if unit == null:
@@ -284,7 +312,7 @@ func has_attacks() -> bool:
     return self.attacks > 0
 
 func use_attack() -> void:
-    self.attacks -= 1
+    self.state.use_attack()
 
 func rotate_unit_to_direction(direction: String) -> void:
     if not self.unit_rotations.has(direction):
@@ -362,13 +390,11 @@ func receive_direct_damage(value: int) -> void:
     if self.ai_paused:
         return
 
-    self.hp -= value
-    if self.hp < 0:
-        self.hp = 0
+    self.state.receive_direct_damage(value)
     self._update_healthbar()
 
 func set_hp(value: int) -> void:
-    self.hp = value
+    self.state.set_hp(value)
     self._update_healthbar()
 
 func is_alive() -> bool:
@@ -425,10 +451,7 @@ func _setup_abilities() -> void:
         self.get_ability_state(ability)
 
 func get_ability_state(ability: Ability) -> AbilityState:
-    if not self.ability_states.has(ability):
-        self.ability_states[ability] = AbilityState.new()
-
-    return self.ability_states[ability]
+    return self.state.get_ability_state(ability)
 
 func is_ability_visible(ability: Ability, board: Board = null) -> bool:
     return ability.is_visible(self.get_ability_state(ability), board, self)
@@ -474,26 +497,23 @@ func activate_all_cooldowns(board: Board) -> void:
         self.activate_ability_cooldown(ability, board)
 
 func apply_modifier(modifier_name: String, value: Variant) -> void:
-    self.modifiers[modifier_name] = value
+    self.state.apply_modifier(modifier_name, value)
 
 func clear_modifiers() -> void:
-    self.modifiers.clear()
+    self.state.clear_modifiers()
 
 func score_kill() -> void:
-    self.kills += 1
+    self.state.score_kill()
     self.gain_exp()
 
 func gain_exp() -> void:
     if not self.is_max_level():
-        self.experience += 1
-
-        if self.experience == self.EXP_PER_LEVEL:
-            self.experience = 0
+        if self.state.gain_exp(self.EXP_PER_LEVEL):
             self.level_up()
 
 func level_up() -> void:
     if not self.is_max_level() and self.allow_level_up:
-        self.level += 1
+        self.state.level_up()
         self.animations.play("level_up")
         self.sfx_effect("level_up")
         self._update_level()
@@ -503,9 +523,7 @@ func is_max_level() -> bool:
 
 func heal(value: int) -> void:
     var stats: Dictionary[String, int] = self.get_stats_with_modifiers()
-    self.hp += value
-    if self.hp > stats["max_hp"]:
-        self.hp = stats["max_hp"]
+    self.state.heal(value, stats)
     self._update_healthbar()
 
 func get_value() -> int:
@@ -513,13 +531,7 @@ func get_value() -> int:
 
 
 func _get_abilities_status() -> Dictionary[String, Array]:
-    var status: Dictionary[String, Array] = {}
-
-    for ability: Ability in self.active_abilities:
-        var state: AbilityState = self.get_ability_state(ability)
-        status["ability" + str(ability.index)] = [state.disabled, state.cd_turns_left]
-
-    return status
+    return self.state.get_abilities_status(self.active_abilities)
 
 func restore_from_state(state: Dictionary) -> void:
     var stats: Dictionary[String, int]
@@ -547,13 +559,7 @@ func restore_from_state(state: Dictionary) -> void:
     if self.move < 1:
         self.remove_highlight()
 
-    var key: String
-    for ability: Ability in self.active_abilities:
-        key = "ability" + str(ability.index)
-        if abilities_status.has(key):
-            var ability_state: AbilityState = self.get_ability_state(ability)
-            ability_state.disabled = bool(abilities_status[key][0])
-            ability_state.cd_turns_left = int(abilities_status[key][1])
+    self.state.restore_abilities_status(self.active_abilities, abilities_status)
 
 func disable_dlc_abilities(editor_version: int) -> void:
     for ability: Ability in self.active_abilities:

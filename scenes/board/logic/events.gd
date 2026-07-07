@@ -26,7 +26,7 @@ func emit_unit_attacked(attacker: BaseUnit, defender: BaseUnit, attacker_tile: M
     event.unit = defender
     event.attacker = attacker
     event.attacker_tile = attacker_tile
-    event.unit_tile = defender_tile
+    event.defender_tile = defender_tile
     self.emit_event(event)
     return event
 

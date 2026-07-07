@@ -38,8 +38,9 @@ func attack_unit(attacker_tile: MapTile, defender_tile: MapTile) -> CommandResul
 	})
 
 	if defender.is_alive():
-		result.add_event(self.context.events.emit_unit_attacked(attacker, defender, attacker_tile, defender_tile))
-		self._try_retaliation(result, defender_tile, attacker_tile)
+		var retaliation_triggered := self._try_retaliation(result, defender_tile, attacker_tile)
+		if not retaliation_triggered or attacker.is_alive():
+			result.add_event(self.context.events.emit_unit_attacked(attacker, defender, attacker_tile, defender_tile))
 	else:
 		result.metadata["destroyed_tiles"].append(defender_tile)
 		result.events.append_array(self.lifecycle.destroy_unit_on_tile(defender_tile, attacker).events)
@@ -66,13 +67,13 @@ func _can_attack(attacker_tile: MapTile, defender_tile: MapTile) -> bool:
 	return true
 
 
-func _try_retaliation(result: CommandResult, retaliator_tile: MapTile, target_tile: MapTile) -> void:
+func _try_retaliation(result: CommandResult, retaliator_tile: MapTile, target_tile: MapTile) -> bool:
 	var retaliator: BaseUnit = retaliator_tile.unit.tile
 	var target: BaseUnit = target_tile.unit.tile
 	if retaliator == null or target == null:
-		return
+		return false
 	if not retaliator.can_retaliate(target):
-		return
+		return false
 
 	retaliator.use_all_moves()
 	target.receive_damage(retaliator.get_attack())
@@ -90,3 +91,4 @@ func _try_retaliation(result: CommandResult, retaliator_tile: MapTile, target_ti
 	else:
 		result.metadata["destroyed_tiles"].append(target_tile)
 		result.events.append_array(self.lifecycle.destroy_unit_on_tile(target_tile, retaliator).events)
+	return true

@@ -148,7 +148,8 @@ Before each development branch is considered complete, run:
 
 ```sh
 git diff --check
-rg -n "/Users/Personal|Steam/steamapps|Godot.app|Contents/MacOS/Godot" .
+PERSONAL_PATH_PATTERN='/'"Users/Personal"'|Steam/'"steamapps"'|Godot.'"app"'|Contents/MacOS/'"Godot"
+rg -n "$PERSONAL_PATH_PATTERN" .
 : "${GODOT_BIN:=godot}"
 HOME=/private/tmp "$GODOT_BIN" --headless --path "$PWD" --quit
 ```

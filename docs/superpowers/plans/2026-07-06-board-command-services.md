@@ -1999,7 +1999,7 @@ git commit -m "Remove board gameplay command surface"
 - Modify: `docs/superpowers/specs/2026-07-06-board-command-services-design.md` only if implementation reveals a necessary clarification.
 - Modify: `docs/superpowers/plans/2026-07-06-board-command-services.md` checkbox statuses during execution.
 
-- [ ] **Step 1: Run full GUT**
+- [x] **Step 1: Run full GUT**
 
 ```sh
 : "${GODOT_BIN:=godot}"
@@ -2008,7 +2008,7 @@ git commit -m "Remove board gameplay command surface"
 
 Expected: all tests pass. Existing shutdown leak warnings are acceptable only if exit code is 0 and there are no new parser/script errors.
 
-- [ ] **Step 2: Run Godot headless load**
+- [x] **Step 2: Run Godot headless load**
 
 ```sh
 : "${GODOT_BIN:=godot}"
@@ -2017,16 +2017,17 @@ HOME=/private/tmp "$GODOT_BIN" --headless --path "$PWD" --quit
 
 Expected: exit code 0. Existing shutdown leak warnings are acceptable.
 
-- [ ] **Step 3: Run diff and personal-path checks**
+- [x] **Step 3: Run diff and personal-path checks**
 
 ```sh
 git diff --check
-rg -n "/Users/Personal|Steam/steamapps|Godot.app|Contents/MacOS/Godot" .
+PERSONAL_PATH_PATTERN='/'"Users/Personal"'|Steam/'"steamapps"'|Godot.'"app"'|Contents/MacOS/'"Godot"
+rg -n "$PERSONAL_PATH_PATTERN" .
 ```
 
 Expected: `git diff --check` prints nothing and exits 0. The path scan prints nothing and exits 1.
 
-- [ ] **Step 4: Run forbidden dependency checks**
+- [x] **Step 4: Run forbidden dependency checks**
 
 ```sh
 rg -n "\\bBoard\\b|board\\.|selected_tile|active_ability|movement_markers|path_markers|ability_markers|camera|radial|audio|animation|animate_|get_tree\\(\\)|create_timer" scenes/board/logic/commands scenes/board/logic/ai/actions
@@ -2035,7 +2036,7 @@ rg -n "func (move_unit|move_unit_along_path|handle_interaction_from_tile|battle|
 
 Expected: both searches print nothing and exit 1.
 
-- [ ] **Step 5: Review final public command API**
+- [x] **Step 5: Review final public command API**
 
 Run:
 
@@ -2045,7 +2046,7 @@ rg -n "func (move_unit|move_unit_along_path|attack_unit|capture_building|use_abi
 
 Expected: command facades appear on `BoardModel`; command implementations appear in command service files; no core implementation appears in `Board`.
 
-- [ ] **Step 6: Commit validation/doc updates**
+- [x] **Step 6: Commit validation/doc updates**
 
 ```sh
 git add docs/superpowers/plans/2026-07-06-board-command-services.md docs/superpowers/specs/2026-07-06-board-command-services-design.md

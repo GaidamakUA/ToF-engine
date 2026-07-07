@@ -31,6 +31,25 @@ func test_destroy_unit_clears_tile_and_emits_destroyed_event() -> void:
 	assert_eq((result.events[0] as UnitDestroyedEvent).unit_side, "red")
 
 	attacker.free()
+	defender.free()
+
+
+func test_destroy_hero_clears_state_registration() -> void:
+	var context := _make_context()
+	var tile := MapTile.new(0, 0)
+	var hero := HeroUnit.new()
+	hero.side = "blue"
+	hero.unit_class = "hero"
+	tile.unit.set_tile(hero)
+	context.state.add_hero_for_side("blue", hero)
+
+	var commands: Variant = UnitLifecycleCommandsScript.new(context)
+	commands.destroy_unit_on_tile(tile)
+
+	assert_false(tile.unit.is_present())
+	assert_eq(context.state.get_heroes_for_side("blue").size(), 0)
+
+	hero.free()
 
 
 func test_replenish_unit_actions_resets_current_player_units() -> void:

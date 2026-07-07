@@ -1,7 +1,5 @@
 class_name Events
 
-const CollateralDamageAppliedEventScript: Script = preload("res://scenes/board/logic/events/collateral_damage_applied.gd")
-
 var observers: Array[Observer] = []
 
 func register_observer(observer_object: Observer) -> void:
@@ -75,12 +73,12 @@ func emit_turn_started(turn_no: int, player_id: int) -> TurnStartedEvent:
 
 
 func emit_collateral_damage_applied(origin: Vector2i, damaged_tiles: Array[Vector2i], damage_template: Variant) -> BaseEvent:
-    var event: Variant = CollateralDamageAppliedEventScript.new()
+    var event := CollateralDamageAppliedEvent.new()
     event.origin = origin
     event.damaged_tiles = damaged_tiles
     event.damage_template = damage_template
-    self.emit_event(event as BaseEvent)
-    return event as BaseEvent
+    self.emit_event(event)
+    return event
 
 func emit_unit_moved(unit: BaseUnit, start: MapTile, finish: MapTile) -> void:
     var event := UnitMovedEvent.new()

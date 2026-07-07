@@ -243,6 +243,16 @@ func test_collateral_damage_event_observer_routes_to_board_sync_hook() -> void:
 	board.free()
 
 
+func test_observer_registry_uses_class_names_without_preload_workarounds() -> void:
+	var file := FileAccess.open("res://scenes/board/logic/observers/observers.gd", FileAccess.READ)
+	assert_not_null(file)
+	var source := file.get_as_text()
+
+	assert_eq(source.find("preload("), -1)
+	assert_eq(source.find("CollateralSyncObserverScript"), -1)
+	assert_ne(source.find("CollateralSyncObserver.new(board)"), -1)
+
+
 func test_multiplayer_boards_sync_model_owned_collateral_events() -> void:
 	for path: String in [
 		"res://scenes/board_multiplayer/board_multiplayer.gd",

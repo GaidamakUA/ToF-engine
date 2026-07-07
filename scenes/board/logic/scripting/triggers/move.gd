@@ -31,7 +31,7 @@ func _observe(_event: BaseEvent) -> void:
 
 func execute_outcome(event: BaseEvent) -> void:
     super.execute_outcome(event)
-    self.board.set_last_unit_move(null)
+    self.board._set_last_unit_move(null)
 
 func _get_outcome_metadata(_event: BaseEvent) -> Dictionary[String, Variant]:
     var event: UnitMovedEvent = _event as UnitMovedEvent

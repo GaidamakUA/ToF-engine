@@ -1,6 +1,6 @@
 extends GutTest
 
-const SceneTreeActionPacerScript: Script = preload("res://scenes/board/logic/commands/scene_tree_action_pacer.gd")
+const SceneTreeActionPacerScript: Script = preload("res://scenes/board/logic/presentation/scene_tree_action_pacer.gd")
 
 
 class FakeMovementLegalityBoard:

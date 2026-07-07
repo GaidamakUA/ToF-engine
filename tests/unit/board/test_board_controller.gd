@@ -7,13 +7,9 @@ class FakeBoardModel:
 	var tiles: Dictionary[Vector2i, MapTile] = {}
 	var selectable_tiles: Array[MapTile] = []
 	var movable_tiles: Array[MapTile] = []
-	var interactable_tiles: Array[MapTile] = []
 	var ability_marker_tiles: Array[MapTile] = []
 	var current_player_ai: bool = false
-	var last_unit_move_values: Array[Variant] = []
-	var executed_ability_targets: Array[MapTile] = []
 	var moved_units: Array[Array] = []
-	var handled_interactions: Array[MapTile] = []
 
 	func add_tile(tile: MapTile) -> void:
 		self.tiles[tile.position] = tile
@@ -30,23 +26,30 @@ class FakeBoardModel:
 	func is_current_player_ai() -> bool:
 		return self.current_player_ai
 
-	func set_last_unit_move(value: Variant) -> void:
-		self.last_unit_move_values.append(value)
-
-	func execute_active_ability(tile: MapTile) -> void:
-		self.executed_ability_targets.append(tile)
-
 	func can_move_to_tile(tile: MapTile) -> bool:
 		return self.movable_tiles.has(tile)
-
-	func selected_unit_can_interact_with(tile: MapTile) -> bool:
-		return self.interactable_tiles.has(tile)
 
 	func move_unit(source_tile: MapTile, destination_tile: MapTile) -> CommandResult:
 		self.moved_units.append([source_tile, destination_tile])
 		return CommandResult.new("move_unit")
 
-	func handle_interaction(tile: MapTile) -> void:
+
+class FakeBoardHost:
+	var last_unit_move_values: Array[Variant] = []
+	var executed_ability_targets: Array[MapTile] = []
+	var interactable_tiles: Array[MapTile] = []
+	var handled_interactions: Array[MapTile] = []
+
+	func _set_last_unit_move(value: Variant) -> void:
+		self.last_unit_move_values.append(value)
+
+	func _execute_targeted_ability(tile: MapTile) -> void:
+		self.executed_ability_targets.append(tile)
+
+	func _selected_unit_can_interact_with(tile: MapTile) -> bool:
+		return self.interactable_tiles.has(tile)
+
+	func _handle_selected_tile_interaction(tile: MapTile) -> void:
 		self.handled_interactions.append(tile)
 
 
@@ -85,9 +88,11 @@ class FakeBoardView:
 		self.feedback_count += 1
 
 
-func _make_controller_with_hosts(model: FakeBoardModel, view: FakeBoardView) -> BoardController:
+func _make_controller_with_hosts(model: FakeBoardModel, view: FakeBoardView, board: FakeBoardHost = null) -> BoardController:
 	var controller := BoardController.new(model)
 	controller.attach_view(view)
+	if board != null:
+		controller.attach_board(board)
 	return controller
 
 
@@ -153,10 +158,11 @@ func test_board_interaction_state_delegates_to_controller() -> void:
 func test_press_tile_selects_current_player_tile() -> void:
 	var model := FakeBoardModel.new()
 	var view := FakeBoardView.new()
+	var board := FakeBoardHost.new()
 	var tile := MapTile.new(1, 2)
 	model.add_tile(tile)
 	model.selectable_tiles.append(tile)
-	var controller := _make_controller_with_hosts(model, view)
+	var controller := _make_controller_with_hosts(model, view, board)
 
 	controller.press_tile(tile.position)
 
@@ -169,10 +175,11 @@ func test_press_tile_selects_current_player_tile() -> void:
 func test_press_selected_tile_opens_unit_abilities() -> void:
 	var model := FakeBoardModel.new()
 	var view := FakeBoardView.new()
+	var board := FakeBoardHost.new()
 	var tile := MapTile.new(1, 2)
 	model.add_tile(tile)
 	model.selectable_tiles.append(tile)
-	var controller := _make_controller_with_hosts(model, view)
+	var controller := _make_controller_with_hosts(model, view, board)
 	controller.select_tile(tile)
 
 	controller.press_tile(tile.position)
@@ -184,16 +191,17 @@ func test_press_selected_tile_opens_unit_abilities() -> void:
 func test_press_reachable_tile_routes_move_and_selects_destination() -> void:
 	var model := FakeBoardModel.new()
 	var view := FakeBoardView.new()
+	var board := FakeBoardHost.new()
 	var source_tile := MapTile.new(1, 2)
 	var destination_tile := MapTile.new(2, 2)
 	model.add_tile(destination_tile)
 	model.movable_tiles.append(destination_tile)
-	var controller := _make_controller_with_hosts(model, view)
+	var controller := _make_controller_with_hosts(model, view, board)
 	controller.select_tile(source_tile)
 
 	controller.press_tile(destination_tile.position)
 
-	assert_eq(model.last_unit_move_values, [null])
+	assert_eq(board.last_unit_move_values, [null])
 	assert_eq(model.moved_units, [[source_tile, destination_tile]])
 	assert_same(controller.selected_tile, destination_tile)
 	assert_eq(view.show_contextual_select_args, [false])
@@ -203,17 +211,18 @@ func test_press_reachable_tile_routes_move_and_selects_destination() -> void:
 func test_press_marker_move_failure_keeps_selection_and_skips_destination_context() -> void:
 	var model := FakeBoardModel.new()
 	var view := FakeBoardView.new()
+	var board := FakeBoardHost.new()
 	var source_tile := MapTile.new(1, 2)
 	var destination_tile := MapTile.new(2, 2)
 	model.add_tile(destination_tile)
 	view.movable_tiles.append(destination_tile)
 	view.move_result = false
-	var controller := _make_controller_with_hosts(model, view)
+	var controller := _make_controller_with_hosts(model, view, board)
 	controller.select_tile(source_tile)
 
 	controller.press_tile(destination_tile.position)
 
-	assert_eq(model.last_unit_move_values, [null])
+	assert_eq(board.last_unit_move_values, [null])
 	assert_eq(view.moved_units, [[source_tile, destination_tile]])
 	assert_true(model.moved_units.is_empty())
 	assert_same(controller.selected_tile, source_tile)
@@ -224,32 +233,34 @@ func test_press_marker_move_failure_keeps_selection_and_skips_destination_contex
 func test_press_interactable_tile_routes_interaction() -> void:
 	var model := FakeBoardModel.new()
 	var view := FakeBoardView.new()
+	var board := FakeBoardHost.new()
 	var source_tile := MapTile.new(1, 2)
 	var target_tile := MapTile.new(1, 3)
 	model.add_tile(target_tile)
-	model.interactable_tiles.append(target_tile)
-	var controller := _make_controller_with_hosts(model, view)
+	board.interactable_tiles.append(target_tile)
+	var controller := _make_controller_with_hosts(model, view, board)
 	controller.select_tile(source_tile)
 
 	controller.press_tile(target_tile.position)
 
-	assert_eq(model.last_unit_move_values, [null])
-	assert_eq(model.handled_interactions, [target_tile])
+	assert_eq(board.last_unit_move_values, [null])
+	assert_eq(board.handled_interactions, [target_tile])
 	assert_same(controller.selected_tile, source_tile)
 
 
 func test_press_invalid_ability_target_clears_selection() -> void:
 	var model := FakeBoardModel.new()
 	var view := FakeBoardView.new()
+	var board := FakeBoardHost.new()
 	var target_tile := MapTile.new(1, 3)
 	model.add_tile(target_tile)
-	var controller := _make_controller_with_hosts(model, view)
+	var controller := _make_controller_with_hosts(model, view, board)
 	controller.start_ability_targeting(MapTile.new(1, 2), Ability.new())
 
 	controller.press_tile(target_tile.position)
 
 	assert_eq(view.unselect_count, 1)
-	assert_true(model.executed_ability_targets.is_empty())
+	assert_true(board.executed_ability_targets.is_empty())
 
 
 func test_cancel_interaction_routes_to_ability_cancel_when_targeting() -> void:

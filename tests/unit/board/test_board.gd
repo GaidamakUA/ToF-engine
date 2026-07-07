@@ -111,7 +111,7 @@ func test_source_explicit_interaction_does_not_refresh_contextual_selection() ->
 	source.unit.set_tile(attacker)
 	target.unit.set_tile(defender)
 
-	board.handle_interaction_from_tile(source, target)
+	board._handle_interaction_from_tile(source, target)
 
 	assert_eq((board.board_model as FakeBoard.FakeBoardModel).attack_calls, [[source, target]])
 	assert_true((board.board_model as FakeBoard.FakeBoardModel).used_ap.is_empty())
@@ -133,14 +133,14 @@ func test_start_turn_does_not_emit_duplicate_turn_started_event() -> void:
 	assert_eq(start_turn_source.find("emit_turn_started"), -1)
 
 
-func test_destroy_unit_on_tile_routes_through_board_model_and_preserves_presentation() -> void:
+func test_present_destroyed_unit_routes_through_board_model_and_preserves_presentation() -> void:
 	var board := FakeBoard.new()
 	var tile := MapTile.new(0, 0)
 	var attacker := BaseUnit.new()
 	var defender := BaseUnit.new()
 	tile.unit.set_tile(defender)
 
-	board.destroy_unit_on_tile(tile, false, attacker)
+	board._present_destroyed_unit(tile, false, attacker)
 
 	assert_eq(board.presented_destructions, [[tile, false]])
 	assert_eq((board.board_model as FakeBoard.FakeBoardModel).destroy_calls, [[tile, attacker]])
@@ -161,7 +161,7 @@ func test_capture_result_presentation_defers_retaliation_cleanup_in_board() -> v
 	assert_ne(capture_result_source.find("retaliation_destroyed_unit.queue_free()"), -1)
 
 
-func test_execute_active_ability_waits_for_pacer_before_cleanup() -> void:
+func test_execute_targeted_ability_waits_for_pacer_before_cleanup() -> void:
 	var board := FakeBoard.new()
 	var pacer := FrameDelayingPacer.new()
 	var origin := MapTile.new(0, 0)
@@ -175,7 +175,7 @@ func test_execute_active_ability_waits_for_pacer_before_cleanup() -> void:
 	board.active_ability = ability
 	board.active_ability_origin_tile = origin
 
-	board.execute_active_ability(target)
+	board._execute_targeted_ability(target)
 
 	assert_eq(pacer.wait_calls, [result])
 	assert_eq((board.board_model as FakeBoard.FakeBoardModel).ability_calls, [[origin, ability, target]])

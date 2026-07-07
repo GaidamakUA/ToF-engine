@@ -64,7 +64,7 @@ var last_unit_move: Dictionary[String, Variant] = {}
 func _init() -> void:
     self.board_model = BoardModel.new()
     self.board_view = BoardView.new(self)
-    self.controller = BoardController.new(self.board_model, self.board_view)
+    self.controller = BoardController.new(self.board_model, self.board_view, self)
     self.state = self.board_model.state
     self.radial_abilities = self.board_model.radial_abilities
     self.events = self.board_model.events
@@ -299,7 +299,7 @@ func start_turn() -> void:
             await self.get_tree().create_timer(1).timeout
 
     self.board_model.replenish_unit_actions()
-    self.gain_building_ap()
+    self._gain_building_ap()
     self.board_view.update_resource_value(self.state.get_current_ap())
     self.ui.flash_start_end_card(self.state.get_current_side(), self.state.turn)
 
@@ -365,7 +365,7 @@ func is_current_player_ai() -> bool:
     return self.state.is_current_player_ai()
 
 
-func selected_unit_can_interact_with(tile: MapTile) -> bool:
+func _selected_unit_can_interact_with(tile: MapTile) -> bool:
     if self.selected_tile == null:
         return false
     if not self.selected_tile.unit.is_present():
@@ -524,13 +524,13 @@ func _move_unit_from_marker_path(source_tile: MapTile, destination_tile: MapTile
     if result.command_name != "move_unit":
         return result
     if not self.state.is_current_player_ai():
-        self.set_last_unit_move({
+        self._set_last_unit_move({
             "source": source_tile,
             "destination": destination_tile,
             "cost": move_cost
         })
     else:
-        self.set_last_unit_move(null)
+        self._set_last_unit_move(null)
     self._animate_unit_move_result(result)
     return result
 
@@ -589,24 +589,24 @@ func should_draw_move_path(tile: MapTile) -> bool:
     return false
 
 
-func handle_interaction(tile: MapTile) -> void:
+func _handle_selected_tile_interaction(tile: MapTile) -> void:
     var source_tile: MapTile = self.selected_tile
-    self.handle_interaction_from_tile(source_tile, tile)
+    self._handle_interaction_from_tile(source_tile, tile)
     if source_tile != null && source_tile.unit.is_present():
         self.show_contextual_select()
 
 
-func handle_interaction_from_tile(source_tile: MapTile, target_tile: MapTile) -> void:
+func _handle_interaction_from_tile(source_tile: MapTile, target_tile: MapTile) -> void:
     if source_tile != null:
         if source_tile.unit.is_present():
             if target_tile.unit.is_present():
-                self.battle(source_tile, target_tile)
+                self._present_attack_from_tiles(source_tile, target_tile)
             if target_tile.building.is_present():
                 var result := self.board_model.capture_building(source_tile, target_tile)
                 self._present_capture_result(result)
 
 
-func battle(attacker_tile: MapTile, defender_tile: MapTile) -> void:
+func _present_attack_from_tiles(attacker_tile: MapTile, defender_tile: MapTile) -> void:
     var result := self.board_model.attack_unit(attacker_tile, defender_tile)
     self._present_attack_result(result)
 
@@ -662,7 +662,7 @@ func _present_unit_destruction(tile: MapTile, skip_explosion: bool = false) -> v
             self.map.camera.shake()
 
 
-func destroy_unit_on_tile(tile: MapTile, skip_explosion: bool = false, attacker: Variant = null) -> void:
+func _present_destroyed_unit(tile: MapTile, skip_explosion: bool = false, attacker: Variant = null) -> void:
     self._present_unit_destruction(tile, skip_explosion)
     self.board_model.destroy_unit_on_tile(tile, attacker)
 
@@ -821,7 +821,7 @@ func _activate_ability(ability: Ability) -> void:
         self.board_view.show_ability_markers(ability, self.selected_tile)
 
 
-func execute_active_ability(target_tile: MapTile) -> void:
+func _execute_targeted_ability(target_tile: MapTile) -> void:
     assert(self.active_ability != null)
     var result := self.board_model.use_ability(self.active_ability_origin_tile, self.active_ability, target_tile)
     self._present_ability_result(result)
@@ -877,7 +877,7 @@ func remove_unit_hightlights() -> void:
         unit.remove_highlight()
 
 
-func gain_building_ap() -> void:
+func _gain_building_ap() -> void:
     var ap_sum: int = 0
     var current_player: Dictionary[String, Variant]
     current_player.assign(self.state.get_current_player())
@@ -1196,7 +1196,7 @@ func _timer_end_turn() -> void:
     end_turn()
 
 
-func set_last_unit_move(move: Variant) -> void:
+func _set_last_unit_move(move: Variant) -> void:
     last_unit_move.clear()
     if move == null:
         return
@@ -1219,4 +1219,4 @@ func _undo_unit_move() -> void:
         destination_tile.unit.tile.restore_move(move_cost)
         self.reset_unit_position(destination_tile, destination_tile.unit.tile)
         self.unselect_tile()
-        set_last_unit_move(null)
+        self._set_last_unit_move(null)

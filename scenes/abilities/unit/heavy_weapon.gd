@@ -17,7 +17,7 @@ func _execute(board: Board, source: Variant, origin_tile: MapTile, position: Vec
     if tile.unit.is_present():
         var target_unit: BaseUnit = tile._get_unit()
         if not target_unit.is_alive():
-            board.destroy_unit_on_tile(tile, false, source)
+            board._present_destroyed_unit(tile, false, source)
 
     board.explode_a_tile(tile)
     board.refresh_tile_selection()

@@ -3,19 +3,26 @@ class_name BoardController
 
 var model: BoardModel
 var view: BoardView = BoardView.new()
+var board: Variant = null
 var selected_tile: MapTile = null
 var active_ability: Ability = null
 var active_ability_origin_tile: MapTile = null
 
 
-func _init(board_model: BoardModel, view_host: BoardView = null) -> void:
+func _init(board_model: BoardModel, view_host: BoardView = null, board_host: Variant = null) -> void:
 	self.model = board_model
 	if view_host != null:
 		self.attach_view(view_host)
+	if board_host != null:
+		self.attach_board(board_host)
 
 
 func attach_view(view_host: BoardView) -> void:
 	self.view = view_host
+
+
+func attach_board(board_host: Variant) -> void:
+	self.board = board_host
 
 
 func select_tile(tile: MapTile) -> void:
@@ -54,8 +61,8 @@ func press_tile(tile_position: Vector2i) -> void:
 
 	if self.active_ability != null:
 		if self.model.has_active_ability_target_marker(tile) or self.model.is_current_player_ai():
-			self.model.set_last_unit_move(null)
-			self.model.execute_active_ability(tile)
+			self._clear_last_unit_move()
+			self._execute_targeted_ability(tile)
 		else:
 			self.view.unselect_tile()
 
@@ -68,10 +75,10 @@ func press_tile(tile_position: Vector2i) -> void:
 	elif self.selected_tile != null:
 		var move_completed: bool = false
 		if self.view.can_move_to_tile(tile):
-			self.model.set_last_unit_move(null)
+			self._clear_last_unit_move()
 			move_completed = self.view.move_unit_from_marker_path(self.selected_tile, tile)
 		elif self.model.can_move_to_tile(tile):
-			self.model.set_last_unit_move(null)
+			self._clear_last_unit_move()
 			var result := self.model.move_unit(self.selected_tile, tile)
 			move_completed = result.command_name == "move_unit"
 
@@ -79,12 +86,36 @@ func press_tile(tile_position: Vector2i) -> void:
 			self.selected_tile = tile
 			self.view.show_contextual_select()
 
-		elif self.model.selected_unit_can_interact_with(tile):
-			self.model.set_last_unit_move(null)
-			self.model.handle_interaction(tile)
+		elif self._selected_unit_can_interact_with(tile):
+			self._clear_last_unit_move()
+			self._handle_selected_tile_interaction(tile)
 
 		else:
 			self.view.unselect_tile()
 
 	self.view.hover_tile()
 	self.view.play_tile_selected_feedback()
+
+
+func _clear_last_unit_move() -> void:
+	if self.board == null:
+		return
+	self.board._set_last_unit_move(null)
+
+
+func _execute_targeted_ability(tile: MapTile) -> void:
+	if self.board == null:
+		return
+	self.board._execute_targeted_ability(tile)
+
+
+func _selected_unit_can_interact_with(tile: MapTile) -> bool:
+	if self.board == null:
+		return false
+	return self.board._selected_unit_can_interact_with(tile)
+
+
+func _handle_selected_tile_interaction(tile: MapTile) -> void:
+	if self.board == null:
+		return
+	self.board._handle_selected_tile_interaction(tile)

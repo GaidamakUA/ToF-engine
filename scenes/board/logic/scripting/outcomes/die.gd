@@ -5,7 +5,7 @@ var who: Vector2i
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
     var tile: MapTile = self.board.map.model.get_tile(self.who)
-    self.board.destroy_unit_on_tile(tile)
+    self.board._present_destroyed_unit(tile)
 
 func _ingest_details(details: Dictionary[String, Variant]) -> void:
     self.who = Vector2i(details['who'][0], details['who'][1])

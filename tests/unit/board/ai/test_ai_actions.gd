@@ -2,48 +2,17 @@ extends GutTest
 
 
 class FakeAi:
+	extends Ai
+
 	var reserved_amounts: Array[int] = []
+
+	func _init() -> void:
+		pass
 
 	func reserve_ap(amount: int) -> void:
 		self.reserved_amounts.append(amount)
 
-
-class FakeBoardHost:
-	var ai := FakeAi.new()
-	var selected_tile: MapTile = null
-	var moved_pairs: Array[Array] = []
-	var path_moves: Array[Array] = []
-	var interaction_pairs: Array[Array] = []
-	var capture_pairs: Array[Array] = []
-	var select_tile_count: int = 0
-	var unselect_tile_count: int = 0
-
-	func move_unit(source_tile: MapTile, destination_tile: MapTile) -> void:
-		self.moved_pairs.append([source_tile, destination_tile])
-
-	func move_unit_along_path(source_tile: MapTile, destination_tile: MapTile, move_cost: int, movement_path: Array[String]) -> void:
-		self.path_moves.append([source_tile, destination_tile, move_cost, movement_path])
-
-	func handle_interaction_from_tile(source_tile: MapTile, target_tile: MapTile) -> void:
-		self.interaction_pairs.append([source_tile, target_tile])
-
-	func _present_capture_result(_result: CommandResult) -> void:
-		pass
-
-	func _activate_ability(_ability: Ability) -> void:
-		pass
-
-	func _activate_production_ability(_ability: Ability) -> void:
-		pass
-
-	func select_tile(_position: Vector2i) -> void:
-		self.select_tile_count += 1
-
-	func unselect_tile() -> void:
-		self.unselect_tile_count += 1
-
-
-func _make_model(board: FakeBoardHost) -> BoardModel:
+func _make_model(fake_ai: FakeAi = null) -> BoardModel:
 	var model := BoardModel.new()
 	model.add_player({
 		"type": State.PLAYER_HUMAN,
@@ -52,9 +21,9 @@ func _make_model(board: FakeBoardHost) -> BoardModel:
 		"team": 0,
 		"ap": 5,
 	})
-	model.board = board
 	model.set_map_model(MapModel.new())
 	model.abilities = Abilities.new(model.state)
+	model.ai = fake_ai
 	model._rebuild_command_context()
 	return model
 
@@ -102,8 +71,7 @@ class FrameBlockingPacer:
 
 
 func test_move_action_uses_model_command_without_selection() -> void:
-	var board := FakeBoardHost.new()
-	var model := _make_model(board)
+	var model := _make_model()
 	var source := MapTile.new(0, 0)
 	var target := MapTile.new(1, 0)
 	var unit := _place_unit(source)
@@ -115,18 +83,13 @@ func test_move_action_uses_model_command_without_selection() -> void:
 
 	assert_true(source.unit.is_present() == false)
 	assert_same(target.unit.tile, unit)
-	assert_true(board.path_moves.is_empty())
-	assert_true(board.moved_pairs.is_empty())
-	assert_eq(board.select_tile_count, 0)
-	assert_eq(board.unselect_tile_count, 0)
 	target.unit.release()
 	_free_ground(target, target_ground)
 	unit.free()
 
 
 func test_attack_action_uses_model_interaction_command_without_selection() -> void:
-	var board := FakeBoardHost.new()
-	var model := _make_model(board)
+	var model := _make_model()
 	var source := MapTile.new(0, 0)
 	var target := MapTile.new(1, 0)
 	var attacker := _place_unit(source)
@@ -148,9 +111,6 @@ func test_attack_action_uses_model_interaction_command_without_selection() -> vo
 
 	assert_eq(model.get_current_ap(), 4)
 	assert_eq(defender.hp, 2)
-	assert_true(board.interaction_pairs.is_empty())
-	assert_eq(board.select_tile_count, 0)
-	assert_eq(board.unselect_tile_count, 0)
 
 	source.unit.release()
 	target.unit.release()
@@ -159,8 +119,7 @@ func test_attack_action_uses_model_interaction_command_without_selection() -> vo
 
 
 func test_attack_action_with_interaction_uses_path_move_without_selection() -> void:
-	var board := FakeBoardHost.new()
-	var model := _make_model(board)
+	var model := _make_model()
 	var source := MapTile.new(0, 0)
 	var interaction := MapTile.new(1, 0)
 	var target := MapTile.new(2, 0)
@@ -186,11 +145,6 @@ func test_attack_action_with_interaction_uses_path_move_without_selection() -> v
 	assert_same(interaction.unit.tile, unit)
 	assert_eq(model.get_current_ap(), 3)
 	assert_eq(defender.hp, 2)
-	assert_true(board.path_moves.is_empty())
-	assert_true(board.interaction_pairs.is_empty())
-	assert_true(board.moved_pairs.is_empty())
-	assert_eq(board.select_tile_count, 0)
-	assert_eq(board.unselect_tile_count, 0)
 	interaction.unit.release()
 	target.unit.release()
 	_free_ground(interaction, interaction_ground)
@@ -199,8 +153,7 @@ func test_attack_action_with_interaction_uses_path_move_without_selection() -> v
 
 
 func test_capture_action_uses_model_interaction_command_without_selection() -> void:
-	var board := FakeBoardHost.new()
-	var model := _make_model(board)
+	var model := _make_model()
 	var source := MapTile.new(0, 0)
 	var target := MapTile.new(1, 0)
 	var unit := _place_unit(source)
@@ -218,9 +171,6 @@ func test_capture_action_uses_model_interaction_command_without_selection() -> v
 	assert_eq(target.building.tile.side, "blue")
 	assert_eq(target.building.tile.team, 0)
 	assert_eq(model.get_current_ap(), 4)
-	assert_true(board.interaction_pairs.is_empty())
-	assert_eq(board.select_tile_count, 0)
-	assert_eq(board.unselect_tile_count, 0)
 
 	source.unit.release()
 	target.building.release()
@@ -229,8 +179,7 @@ func test_capture_action_uses_model_interaction_command_without_selection() -> v
 
 
 func test_ability_action_uses_model_ability_command_without_selection() -> void:
-	var board := FakeBoardHost.new()
-	var model := _make_model(board)
+	var model := _make_model()
 	var origin := MapTile.new(0, 0)
 	var target := MapTile.new(1, 0)
 	var unit := _place_unit(origin)
@@ -245,17 +194,13 @@ func test_ability_action_uses_model_ability_command_without_selection() -> void:
 	assert_eq(model.get_current_ap(), 3)
 	assert_eq(unit.move, 4)
 	assert_eq(unit.get_ability_cooldown(ability), 3)
-	assert_null(board.selected_tile)
-	assert_eq(board.select_tile_count, 0)
-	assert_eq(board.unselect_tile_count, 0)
 
 	origin.unit.release()
 	unit.free()
 
 
 func test_ability_action_awaits_action_pacer() -> void:
-	var board := FakeBoardHost.new()
-	var model := _make_model(board)
+	var model := _make_model()
 	var pacer := FrameBlockingPacer.new()
 	model.set_action_pacer(pacer)
 	var origin := MapTile.new(0, 0)
@@ -274,12 +219,10 @@ func test_ability_action_awaits_action_pacer() -> void:
 
 
 func test_reserve_ap_action_uses_model_command_without_selection() -> void:
-	var board := FakeBoardHost.new()
-	var model := _make_model(board)
+	var fake_ai := FakeAi.new()
+	var model := _make_model(fake_ai)
 	var action := ReserveApAction.new(3)
 
 	action.perform(model)
 
-	assert_eq(board.ai.reserved_amounts, [3])
-	assert_eq(board.select_tile_count, 0)
-	assert_eq(board.unselect_tile_count, 0)
+	assert_eq(fake_ai.reserved_amounts, [3])

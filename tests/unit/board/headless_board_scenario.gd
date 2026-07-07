@@ -2,29 +2,6 @@ class_name HeadlessBoardScenario
 extends RefCounted
 
 
-class HeadlessAi:
-	extends RefCounted
-
-	var scenario: HeadlessBoardScenario
-
-	func reserve_ap(amount: int) -> void:
-		self.scenario.reserved_ap.append(amount)
-
-
-class HeadlessBoardHost:
-	extends RefCounted
-
-	var scenario: HeadlessBoardScenario
-	var ai: HeadlessAi = HeadlessAi.new()
-
-	func _init(owner: HeadlessBoardScenario) -> void:
-		self.scenario = owner
-		self.ai.scenario = owner
-
-	func get_tile_at(tile_position: Vector2i) -> MapTile:
-		return self.scenario.get_tile(tile_position)
-
-
 class MovedEventRecorder:
 	extends Observer
 
@@ -54,12 +31,10 @@ class CapturedEventRecorder:
 
 
 var model: BoardModel = BoardModel.new()
-var host: HeadlessBoardHost = HeadlessBoardHost.new(self)
 var map_model: MapModel = MapModel.new()
 var tiles: Dictionary[Vector2i, MapTile] = {}
 var moved_events: Array[UnitMovedEvent] = []
 var captured_events: Array[BuildingCapturedEvent] = []
-var reserved_ap: Array[int] = []
 var _nodes: Array[Node] = []
 var _extra_objects: Array = []
 
@@ -125,7 +100,9 @@ func _load_fixture(payload: Dictionary) -> void:
 		source_tile.add_neighbour(String(neighbour_data["direction"]), destination_tile)
 
 	self.model.set_map_model(self.map_model)
-	self.model.board = self.host
+	self.model.abilities = Abilities.new(self.model.state)
+	self.model.collateral = Collateral.new(self.model)
+	self.model._rebuild_command_context()
 
 
 func _load_tile(tile_data: Dictionary) -> void:

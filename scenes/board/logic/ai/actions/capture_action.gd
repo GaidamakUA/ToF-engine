@@ -18,12 +18,10 @@ func perform(model: BoardModel) -> void:
         self._present_movement_result(model, move_result)
         await model.action_pacer.wait_after(move_result)
         capture_result = model.capture_building(self.interaction, self.target)
-        if model.board != null and model.board.has_method(&"_present_capture_result"):
-            model.board._present_capture_result(capture_result)
+        model.present_action_result(capture_result)
     else:
         capture_result = model.capture_building(self.unit, self.target)
-        if model.board != null and model.board.has_method(&"_present_capture_result"):
-            model.board._present_capture_result(capture_result)
+        model.present_action_result(capture_result)
     if capture_result != null:
         await model.action_pacer.wait_after(capture_result)
 

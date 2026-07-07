@@ -19,6 +19,18 @@ class TrackingAbility:
 		return result
 
 
+class FakeAi:
+	extends Ai
+
+	var reserved_amounts: Array[int] = []
+
+	func _init() -> void:
+		pass
+
+	func reserve_ap(amount: int) -> void:
+		self.reserved_amounts.append(amount)
+
+
 func test_move_action_waits_on_model_pacer_not_unit_signal() -> void:
 	var scenario := HeadlessBoardScenario.from_fixture("res://tests/fixtures/board/headless_validation_map.json")
 	var pacer := RecordingPacer.new()
@@ -85,12 +97,14 @@ func test_use_ability_action_waits_on_model_pacer() -> void:
 func test_reserve_ap_action_does_not_wait_on_model_pacer() -> void:
 	var scenario := HeadlessBoardScenario.from_fixture("res://tests/fixtures/board/headless_validation_map.json")
 	var pacer := RecordingPacer.new()
+	var fake_ai := FakeAi.new()
 	scenario.model.set_action_pacer(pacer)
+	scenario.model.ai = fake_ai
 	var action := ReserveApAction.new(2)
 
 	action.perform(scenario.model)
 
 	assert_eq(pacer.results.size(), 0)
-	assert_eq(scenario.reserved_ap, [2])
+	assert_eq(fake_ai.reserved_amounts, [2])
 
 	scenario.cleanup()

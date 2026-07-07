@@ -6,7 +6,7 @@ const UnitLifecycleCommandsScript: Script = preload("res://scenes/board/logic/co
 const CombatCommandsScript: Script = preload("res://scenes/board/logic/commands/combat_commands.gd")
 const CaptureCommandsScript: Script = preload("res://scenes/board/logic/commands/capture_commands.gd")
 const AbilityCommandsScript: Script = preload("res://scenes/board/logic/commands/ability_commands.gd")
-const SceneTreeActionPacerScript: Script = preload("res://scenes/board/logic/commands/scene_tree_action_pacer.gd")
+const SceneTreeActionPacerScript: Script = preload("res://scenes/board/logic/presentation/scene_tree_action_pacer.gd")
 
 var board: Variant = null
 var state: State = State.new()
@@ -183,16 +183,6 @@ func is_current_player_ai() -> bool:
 	return self.state.is_current_player_ai()
 
 
-func set_last_unit_move(value: Variant) -> void:
-	assert(self.board != null)
-	self.board.set_last_unit_move(value)
-
-
-func execute_active_ability(tile: MapTile) -> void:
-	assert(self.board != null)
-	self.board.execute_active_ability(tile)
-
-
 func can_move_to_tile(tile: MapTile) -> bool:
 	return self.can_move_to_tile_from_source(null, tile, 0)
 
@@ -218,8 +208,8 @@ func move_unit_along_path(source_tile: MapTile, destination_tile: MapTile, move_
 
 
 func reserve_ap(amount: int) -> void:
-	assert(self.board != null)
-	self.board.ai.reserve_ap(amount)
+	assert(self.ai != null)
+	self.ai.reserve_ap(amount)
 
 
 func interact_unit(source_tile: MapTile, interaction_tile: MapTile, target_tile: MapTile) -> CommandResult:
@@ -238,6 +228,18 @@ func interact_unit(source_tile: MapTile, interaction_tile: MapTile, target_tile:
 			self.board._present_capture_result(result)
 		return result
 	return null
+
+
+func present_action_result(result: CommandResult) -> void:
+	if result == null or self.board == null:
+		return
+	if result.command_name == "move_unit" and result.events.size() > 0 and self.board.has_method(&"_animate_unit_move_result"):
+		self.board._animate_unit_move_result(result)
+	elif result.command_name == "attack_unit" and self.board.has_method(&"_present_attack_result"):
+		self.board._present_attack_result(result)
+	elif result.command_name == "capture_building" and self.board.has_method(&"_present_capture_result"):
+		self.board._present_capture_result(result)
+
 
 func use_ability(origin_tile: MapTile, ability: Ability, target_tile: MapTile) -> CommandResult:
 	assert(self.ability_commands != null)
@@ -306,13 +308,3 @@ func reset_unit_position(tile: MapTile, unit: BaseUnit) -> void:
 	if not (self.board is Board):
 		return
 	self.board.reset_unit_position(tile, unit)
-
-
-func selected_unit_can_interact_with(tile: MapTile) -> bool:
-	assert(self.board != null)
-	return self.board.selected_unit_can_interact_with(tile)
-
-
-func handle_interaction(tile: MapTile) -> void:
-	assert(self.board != null)
-	self.board.handle_interaction(tile)

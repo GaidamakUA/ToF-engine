@@ -17,7 +17,7 @@ func _execute(board: Board, source: Variant, origin_tile: MapTile, position: Vec
         var target_unit: BaseUnit = tile._get_unit()
         target_unit.sfx_effect("damage")
         if not target_unit.is_alive():
-            board.destroy_unit_on_tile(tile, false, source)
+            board._present_destroyed_unit(tile, false, source)
 
     board.explode_a_tile(tile)
     board.refresh_tile_selection()

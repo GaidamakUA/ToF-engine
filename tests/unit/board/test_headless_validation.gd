@@ -15,7 +15,6 @@ func test_headless_fixture_can_move_unit_and_emit_event() -> void:
 	var scenario := HeadlessBoardScenario.from_fixture("res://tests/fixtures/board/headless_validation_map.json")
 	var source: MapTile = scenario.get_tile(Vector2i(0, 0))
 	var destination: MapTile = scenario.get_tile(Vector2i(1, 0))
-	scenario.model.board = null
 
 	var result := scenario.model.move_unit_along_path(source, destination, 1, ["0_0", "1_0"])
 
@@ -97,7 +96,7 @@ func test_capture_action_runs_without_board_scene() -> void:
 	await action.perform(scenario.model)
 
 	assert_false(source.unit.is_present())
-	assert_true(interaction.unit.is_present())
+	assert_false(interaction.unit.is_present())
 	assert_eq(target.building.tile.side, "blue")
 	assert_eq(target.building.tile.team, 0)
 	assert_eq(scenario.model.get_current_ap(), 2)
@@ -109,7 +108,7 @@ func test_capture_action_runs_without_board_scene() -> void:
 	scenario.cleanup()
 
 
-func test_headless_host_dispatches_reserve_ap_and_ability_commands() -> void:
+func test_headless_fixture_dispatches_ability_commands_without_board_host() -> void:
 	var scenario := HeadlessBoardScenario.from_fixture("res://tests/fixtures/board/headless_validation_map.json")
 	var origin: MapTile = scenario.get_tile(Vector2i(0, 0))
 	var target: MapTile = scenario.get_tile(Vector2i(2, 0))
@@ -117,10 +116,8 @@ func test_headless_host_dispatches_reserve_ap_and_ability_commands() -> void:
 	ability.ap_cost = 2
 	ability.cooldown = 3
 
-	scenario.model.reserve_ap(2)
 	var result: CommandResult = scenario.model.use_ability(origin, ability, target)
 
-	assert_eq(scenario.reserved_ap, [2])
 	assert_true(ability.executed)
 	assert_eq(scenario.model.get_current_ap(), 2)
 	assert_eq(origin.unit.tile.move, 3)

@@ -1,6 +1,16 @@
 extends GutTest
 
 
+class HeadlessTrackingAbility:
+	extends ActiveUnitAbility
+
+	var executed: bool = false
+
+	func _execute_model(_model: BoardModel, _source: Variant, _origin_tile: MapTile, _position: Vector2i) -> CommandResult:
+		self.executed = true
+		return CommandResult.new("headless_tracking_ability")
+
+
 func test_headless_fixture_can_move_unit_and_emit_event() -> void:
 	var scenario := HeadlessBoardScenario.from_fixture("res://tests/fixtures/board/headless_validation_map.json")
 	var source: MapTile = scenario.get_tile(Vector2i(0, 0))
@@ -103,16 +113,22 @@ func test_headless_host_dispatches_reserve_ap_and_ability_commands() -> void:
 	var scenario := HeadlessBoardScenario.from_fixture("res://tests/fixtures/board/headless_validation_map.json")
 	var origin: MapTile = scenario.get_tile(Vector2i(0, 0))
 	var target: MapTile = scenario.get_tile(Vector2i(2, 0))
-	var ability := Ability.new()
+	var ability := HeadlessTrackingAbility.new()
+	ability.ap_cost = 2
+	ability.cooldown = 3
 
 	scenario.model.reserve_ap(2)
-	scenario.model.use_ability(origin, ability, target)
+	var result: CommandResult = scenario.model.use_ability(origin, ability, target)
 
 	assert_eq(scenario.reserved_ap, [2])
-	assert_eq(scenario.used_abilities.size(), 1)
-	assert_eq(scenario.used_abilities[0].origin, origin)
-	assert_eq(scenario.used_abilities[0].ability, ability)
-	assert_eq(scenario.used_abilities[0].target, target)
+	assert_true(ability.executed)
+	assert_eq(scenario.model.get_current_ap(), 2)
+	assert_eq(origin.unit.tile.move, 3)
+	assert_eq(origin.unit.tile.get_ability_cooldown(ability), 3)
+	assert_eq(result.command_name, "use_ability")
+	assert_eq(result.events.size(), 2)
+	assert_true(result.events[0] is ApChangedEvent)
+	assert_true(result.events[1] is AbilityUsedEvent)
 
 	scenario.cleanup()
 

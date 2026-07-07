@@ -823,20 +823,49 @@ func _activate_ability(ability: Ability) -> void:
 
 func execute_active_ability(target_tile: MapTile) -> void:
     assert(self.active_ability != null)
-    self.execute_ability_from_tile(self.active_ability_origin_tile, self.active_ability, target_tile)
+    var result := self.board_model.use_ability(self.active_ability_origin_tile, self.active_ability, target_tile)
+    self._present_ability_result(result)
+    self.board_model.action_pacer.wait_after(result)
+    await self.board_model.wait_for_action_delay(result.delay)
     self.cancel_ability()
+    var select_tile_position: Variant = result.metadata.get("select_tile_position")
+    if select_tile_position != null:
+        self.select_tile(Vector2i(select_tile_position))
 
 
-func execute_ability_from_tile(origin_tile: MapTile, ability: Ability, target_tile: MapTile) -> void:
-    var source: Variant = null
-
-    if origin_tile.building.is_present():
-        source = origin_tile.building.tile
-    elif origin_tile.unit.is_present():
-        source = origin_tile.unit.tile
-
-    ability.execute(self, source, origin_tile, target_tile.position)
-    source.activate_ability_cooldown(ability, self)
+func _present_ability_result(result: CommandResult) -> void:
+    var effects: Array = result.metadata.get("effects", [])
+    for effect_data: Dictionary in effects:
+        var effect_type: String = String(effect_data.get("type", ""))
+        match effect_type:
+            "smoke":
+                var smoke_tile: MapTile = effect_data.get("tile") as MapTile
+                if smoke_tile != null:
+                    self.smoke_a_tile(smoke_tile)
+            "bless":
+                var bless_tile: MapTile = effect_data.get("tile") as MapTile
+                if bless_tile != null:
+                    self.bless_a_tile(bless_tile)
+            "heal":
+                var heal_tile: MapTile = effect_data.get("tile") as MapTile
+                if heal_tile != null:
+                    self.heal_a_tile(heal_tile)
+            "explode":
+                var explode_tile: MapTile = effect_data.get("tile") as MapTile
+                if explode_tile != null:
+                    self.explode_a_tile(explode_tile)
+            "shoot_projectile":
+                var shoot_origin: MapTile = effect_data.get("origin") as MapTile
+                var shoot_target: MapTile = effect_data.get("target") as MapTile
+                if shoot_origin != null and shoot_target != null:
+                    self.shoot_projectile(shoot_origin, shoot_target, float(effect_data.get("tween_time", 0.5)))
+            "lob_projectile":
+                var lob_origin: MapTile = effect_data.get("origin") as MapTile
+                var lob_target: MapTile = effect_data.get("target") as MapTile
+                if lob_origin != null and lob_target != null:
+                    self.lob_projectile(lob_origin, lob_target, float(effect_data.get("tween_time", 0.5)))
+    if bool(result.metadata.get("refresh_selection", false)):
+        self.refresh_tile_selection()
 
 
 func remove_unit_hightlights() -> void:

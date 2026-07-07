@@ -38,11 +38,12 @@ func emit_unit_destroyed(attacker: BaseUnit, defender_id: int, defender_type: St
     event.attacker = attacker
     self.emit_event(event)
 
-func emit_unit_spawned(source: MapObject, unit: BaseUnit) -> void:
+func emit_unit_spawned(source: MapObject, unit: BaseUnit) -> UnitSpawnedEvent:
     var event := UnitSpawnedEvent.new()
     event.source = source
     event.unit = unit
     self.emit_event(event)
+    return event
 
 func emit_ability_used(ability: Ability, target: Vector2i) -> void:
     var event := AbilityUsedEvent.new()
@@ -83,9 +84,10 @@ func emit_collateral_damage_applied(origin: Vector2i, damaged_tiles: Array[Vecto
     self.emit_event(event)
     return event
 
-func emit_unit_moved(unit: BaseUnit, start: MapTile, finish: MapTile) -> void:
+func emit_unit_moved(unit: BaseUnit, start: MapTile, finish: MapTile) -> UnitMovedEvent:
     var event := UnitMovedEvent.new()
     event.unit = unit
     event.start = start
     event.finish = finish
     self.emit_event(event)
+    return event

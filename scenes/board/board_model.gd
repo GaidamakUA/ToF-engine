@@ -5,6 +5,7 @@ const MovementCommandsScript: Script = preload("res://scenes/board/logic/command
 const UnitLifecycleCommandsScript: Script = preload("res://scenes/board/logic/commands/unit_lifecycle_commands.gd")
 const CombatCommandsScript: Script = preload("res://scenes/board/logic/commands/combat_commands.gd")
 const CaptureCommandsScript: Script = preload("res://scenes/board/logic/commands/capture_commands.gd")
+const AbilityCommandsScript: Script = preload("res://scenes/board/logic/commands/ability_commands.gd")
 
 var board: Variant = null
 var state: State = State.new()
@@ -16,6 +17,7 @@ var turn_commands: TurnCommands = null
 var unit_lifecycle_commands: RefCounted = null
 var combat_commands: RefCounted = null
 var capture_commands: RefCounted = null
+var ability_commands: RefCounted = null
 var action_pacer: ActionPacer = NoOpActionPacer.new()
 var abilities: Abilities = null
 var events: Events = Events.new()
@@ -71,6 +73,7 @@ func _rebuild_command_context() -> void:
 	self.unit_lifecycle_commands = UnitLifecycleCommandsScript.new(self.command_context)
 	self.combat_commands = CombatCommandsScript.new(self.command_context, self.unit_lifecycle_commands, self.turn_commands)
 	self.capture_commands = CaptureCommandsScript.new(self.command_context, self.unit_lifecycle_commands, self.turn_commands)
+	self.ability_commands = AbilityCommandsScript.new(self, self.command_context)
 
 
 func _sync_map_model_from_board() -> void:
@@ -231,9 +234,36 @@ func interact_unit(source_tile: MapTile, interaction_tile: MapTile, target_tile:
 			self.board._present_capture_result(result)
 
 
-func use_ability(origin_tile: MapTile, ability: Ability, target_tile: MapTile) -> void:
-	assert(self.board != null)
-	self.board.execute_ability_from_tile(origin_tile, ability, target_tile)
+func use_ability(origin_tile: MapTile, ability: Ability, target_tile: MapTile) -> CommandResult:
+	assert(self.ability_commands != null)
+	return self.ability_commands.use_ability(origin_tile, ability, target_tile)
+
+
+func spawn_unit(position: Vector2i, template_name: String, rotation: int, side: String, _source: Variant = null, ai_paused: bool = false) -> BaseUnit:
+	if not (self.board is Board):
+		return null
+	var unit: BaseUnit = self.board.map.builder.place_unit(position, template_name, rotation, side, ai_paused)
+	if unit is HeroUnit:
+		self.state.auto_set_hero(unit as HeroUnit)
+	return unit
+
+
+func anchor_unit(unit: BaseUnit, unit_position: Vector2i) -> void:
+	if not (self.board is Board):
+		return
+	self.board.map.anchor_unit(unit, unit_position)
+
+
+func detach_unit(unit: BaseUnit) -> void:
+	if not (self.board is Board):
+		return
+	self.board.map.detach_unit(unit)
+
+
+func reset_unit_position(tile: MapTile, unit: BaseUnit) -> void:
+	if not (self.board is Board):
+		return
+	self.board.reset_unit_position(tile, unit)
 
 
 func wait_for_action_delay(delay: float) -> void:

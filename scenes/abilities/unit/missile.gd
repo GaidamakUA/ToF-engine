@@ -27,6 +27,27 @@ func _execute(board: Board, source: Variant, origin_tile: MapTile, position: Vec
     source.activate_all_cooldowns(board)
     board.refresh_tile_selection()
 
+func _execute_model(model: BoardModel, source: Variant, origin_tile: MapTile, position: Vector2i) -> CommandResult:
+    var result := CommandResult.new("use_ability")
+    var tile := model.get_tile_at(position)
+
+    if tile.unit.is_present():
+        tile.unit.tile.receive_damage(self.damage)
+        var target_unit: BaseUnit = tile._get_unit()
+        if not target_unit.is_alive():
+            result.merge_from(model.destroy_unit_on_tile(tile, source))
+
+    self._append_tile_effect(result, "smoke", origin_tile)
+    self._append_projectile_effect(result, "lob_projectile", origin_tile, tile, self.TWEEN_TIME)
+    self._append_tile_effect(result, "explode", tile)
+    result.metadata["refresh_selection"] = true
+    result.delay = self.TWEEN_TIME
+
+    for active_ability: Ability in source.active_abilities:
+        source.get_ability_state(active_ability).activate_cooldown_model(active_ability, model.abilities, source)
+
+    return result
+
 func _is_visible(_board: Board, source: Variant = null) -> bool:
     if source == null:
         return false

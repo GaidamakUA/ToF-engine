@@ -14,6 +14,19 @@ func _execute(board: Board, source: Variant, origin_tile: MapTile, position: Vec
         unit_tile.unit.tile.apply_modifier("armor", 1)
         board.bless_a_tile(unit_tile)
 
+func _execute_model(model: BoardModel, source: Variant, origin_tile: MapTile, position: Vector2i) -> CommandResult:
+    var result := CommandResult.new("use_ability")
+    if origin_tile == null:
+        origin_tile = model.get_tile_at(position)
+
+    self._get_units_in_range(origin_tile, source.side, source)
+
+    for unit_tile in self.units_in_range:
+        unit_tile.unit.tile.apply_modifier("armor", 1)
+        self._append_tile_effect(result, "bless", unit_tile)
+
+    return result
+
 func _get_units_in_range(tile: MapTile, side: String, source: Variant) -> void:
     self.tiles_in_range.clear()
     self.units_in_range.clear()

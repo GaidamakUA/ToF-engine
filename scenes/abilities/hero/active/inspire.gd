@@ -7,5 +7,14 @@ func _execute(board: Board, _source: Variant, _origin_tile: MapTile, position: V
     tile.unit.tile.reset_cooldown()
     board.bless_a_tile(tile)
 
+func _execute_model(model: BoardModel, _source: Variant, _origin_tile: MapTile, position: Vector2i) -> CommandResult:
+    var result := CommandResult.new("use_ability")
+    var tile := model.get_tile_at(position)
+
+    tile.unit.tile.replenish_moves()
+    tile.unit.tile.reset_cooldown()
+    self._append_tile_effect(result, "bless", tile)
+    return result
+
 func is_tile_applicable(tile: MapTile, _origin_tile: MapTile, source: Variant) -> bool:
     return tile.has_friendly_unit(source.side) and tile.unit.tile != source

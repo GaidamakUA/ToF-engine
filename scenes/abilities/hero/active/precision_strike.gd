@@ -10,6 +10,25 @@ func _execute(board: Board, source: Variant, _origin_tile: MapTile, position: Ve
     board.ability_markers.add_child(executor)
     executor.set_position(board.map.map_to_local(position))
 
+func _execute_model(model: BoardModel, source: Variant, _origin_tile: MapTile, position: Vector2i) -> CommandResult:
+    var result := CommandResult.new("use_ability")
+    var tile := model.get_tile_at(position)
+
+    self._bomb_tile_model(model, result, source, tile)
+    for neighbour: MapTile in tile.neighbours.values():
+        self._bomb_tile_model(model, result, source, neighbour)
+
+    result.metadata["refresh_selection"] = true
+    return result
+
+
+func _bomb_tile_model(model: BoardModel, result: CommandResult, source: BaseUnit, tile: MapTile) -> void:
+    if tile.unit.is_present():
+        tile.unit.tile.receive_direct_damage(PrecisionStrikeExecutor.DAMAGE)
+        if not tile.unit.tile.is_alive():
+            result.merge_from(model.destroy_unit_on_tile(tile, source))
+    self._append_tile_effect(result, "explode", tile)
+
 func is_tile_applicable(tile: MapTile, _origin_tile: MapTile, source: Variant) -> bool:
     if tile.unit.is_present():
         return tile.unit.tile != source

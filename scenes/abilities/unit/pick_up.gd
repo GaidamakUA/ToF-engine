@@ -12,6 +12,19 @@ func _execute(board: Board, source: Variant, _origin_tile: MapTile, position: Ve
     board.smoke_a_tile(tile)
     source.use_all_moves()
 
+func _execute_model(model: BoardModel, source: Variant, _origin_tile: MapTile, position: Vector2i) -> CommandResult:
+    var result := CommandResult.new("use_ability")
+    var tile := model.get_tile_at(position)
+    var target_unit: BaseUnit = tile._get_unit()
+
+    source.passenger = target_unit
+    tile.unit.release()
+    model.detach_unit(source.passenger)
+    source.use_all_moves()
+
+    self._append_tile_effect(result, "smoke", tile)
+    return result
+
 func _is_visible(_board: Board, source: Variant = null) -> bool:
     if source == null:
         return false

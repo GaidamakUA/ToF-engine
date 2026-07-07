@@ -15,7 +15,6 @@ class FakeBoardHost:
 	var path_moves: Array[Array] = []
 	var interaction_pairs: Array[Array] = []
 	var capture_pairs: Array[Array] = []
-	var ability_calls: Array[Array] = []
 	var select_tile_count: int = 0
 	var unselect_tile_count: int = 0
 
@@ -30,9 +29,6 @@ class FakeBoardHost:
 
 	func _present_capture_result(_result: CommandResult) -> void:
 		pass
-
-	func execute_ability_from_tile(origin_tile: MapTile, ability: Ability, target_tile: MapTile) -> void:
-		self.ability_calls.append([origin_tile, ability, target_tile])
 
 	func _activate_ability(_ability: Ability) -> void:
 		pass
@@ -82,6 +78,16 @@ func _add_walkable_ground(tile: MapTile) -> BaseTile:
 func _free_ground(tile: MapTile, ground: BaseTile) -> void:
 	tile.ground.release()
 	ground.free()
+
+
+class TrackingAbility:
+	extends ActiveUnitAbility
+
+	var executed_position := Vector2i(-1, -1)
+
+	func _execute_model(_model: BoardModel, _source: Variant, _origin_tile: MapTile, position: Vector2i) -> CommandResult:
+		self.executed_position = position
+		return CommandResult.new("tracking_ai_ability")
 
 
 func test_move_action_uses_model_command_without_selection() -> void:
@@ -216,15 +222,24 @@ func test_ability_action_uses_model_ability_command_without_selection() -> void:
 	var model := _make_model(board)
 	var origin := MapTile.new(0, 0)
 	var target := MapTile.new(1, 0)
-	var ability := Ability.new()
+	var unit := _place_unit(origin)
+	var ability := TrackingAbility.new()
+	ability.ap_cost = 2
+	ability.cooldown = 3
 	var action := UseAbilityAction.new(ability, origin, target)
 
 	action.perform(model)
 
-	assert_eq(board.ability_calls, [[origin, ability, target]])
+	assert_eq(ability.executed_position, target.position)
+	assert_eq(model.get_current_ap(), 3)
+	assert_eq(unit.move, 4)
+	assert_eq(unit.get_ability_cooldown(ability), 3)
 	assert_null(board.selected_tile)
 	assert_eq(board.select_tile_count, 0)
 	assert_eq(board.unselect_tile_count, 0)
+
+	origin.unit.clear()
+	unit.free()
 
 
 func test_reserve_ap_action_uses_model_command_without_selection() -> void:

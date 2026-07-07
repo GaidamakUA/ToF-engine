@@ -24,14 +24,6 @@ class HeadlessBoardHost:
 	func get_tile_at(tile_position: Vector2i) -> MapTile:
 		return self.scenario.get_tile(tile_position)
 
-	func execute_ability_from_tile(origin_tile: MapTile, ability: Ability, target_tile: MapTile) -> void:
-		self.scenario.used_abilities.append({
-			"origin": origin_tile,
-			"ability": ability,
-			"target": target_tile,
-		})
-		self.scenario.model.events.emit_ability_used(ability, target_tile.position)
-
 
 class MovedEventRecorder:
 	extends Observer
@@ -68,7 +60,6 @@ var tiles: Dictionary[Vector2i, MapTile] = {}
 var moved_events: Array[UnitMovedEvent] = []
 var captured_events: Array[BuildingCapturedEvent] = []
 var reserved_ap: Array[int] = []
-var used_abilities: Array[Dictionary] = []
 var _nodes: Array[Node] = []
 
 

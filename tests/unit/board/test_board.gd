@@ -60,6 +60,7 @@ class FakeBoard:
 	func _init() -> void:
 		super()
 		self.board_model = FakeBoardModel.new()
+		self.controller = BoardController.new(self.board_model, self.board_view, self)
 
 	func _update_ap_spent_presentation() -> void:
 		pass
@@ -83,6 +84,9 @@ class FakeBoard:
 		self.unselect_count += 1
 
 	func cancel_ability() -> void:
+		self.cancel_ability_count += 1
+
+	func clear_ability_view() -> void:
 		self.cancel_ability_count += 1
 
 	func select_tile(tile_position: Vector2i) -> void:
@@ -111,7 +115,7 @@ func test_source_explicit_interaction_does_not_refresh_contextual_selection() ->
 	source.unit.set_tile(attacker)
 	target.unit.set_tile(defender)
 
-	board._handle_interaction_from_tile(source, target)
+	board.controller._handle_interaction_from_tile(source, target)
 
 	assert_eq((board.board_model as FakeBoard.FakeBoardModel).attack_calls, [[source, target]])
 	assert_true((board.board_model as FakeBoard.FakeBoardModel).used_ap.is_empty())
@@ -175,7 +179,7 @@ func test_execute_targeted_ability_waits_for_pacer_before_cleanup() -> void:
 	board.active_ability = ability
 	board.active_ability_origin_tile = origin
 
-	board._execute_targeted_ability(target)
+	board.controller._execute_targeted_ability(target)
 
 	assert_eq(pacer.wait_calls, [result])
 	assert_eq((board.board_model as FakeBoard.FakeBoardModel).ability_calls, [[origin, ability, target]])

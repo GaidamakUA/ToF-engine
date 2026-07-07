@@ -365,14 +365,6 @@ func is_current_player_ai() -> bool:
     return self.state.is_current_player_ai()
 
 
-func _selected_unit_can_interact_with(tile: MapTile) -> bool:
-    if self.selected_tile == null:
-        return false
-    if not self.selected_tile.unit.is_present():
-        return false
-    return self.selected_tile.is_neighbour(tile) && tile.can_unit_interact(self.selected_tile.unit.tile) && self.state.can_current_player_afford(1)
-
-
 func play_tile_selected_feedback() -> void:
     if self.selected_tile != null and not self.state.is_current_player_ai():
         self.audio.play("map_click")
@@ -589,28 +581,6 @@ func should_draw_move_path(tile: MapTile) -> bool:
     return false
 
 
-func _handle_selected_tile_interaction(tile: MapTile) -> void:
-    var source_tile: MapTile = self.selected_tile
-    self._handle_interaction_from_tile(source_tile, tile)
-    if source_tile != null && source_tile.unit.is_present():
-        self.show_contextual_select()
-
-
-func _handle_interaction_from_tile(source_tile: MapTile, target_tile: MapTile) -> void:
-    if source_tile != null:
-        if source_tile.unit.is_present():
-            if target_tile.unit.is_present():
-                self._present_attack_from_tiles(source_tile, target_tile)
-            if target_tile.building.is_present():
-                var result := self.board_model.capture_building(source_tile, target_tile)
-                self._present_capture_result(result)
-
-
-func _present_attack_from_tiles(attacker_tile: MapTile, defender_tile: MapTile) -> void:
-    var result := self.board_model.attack_unit(attacker_tile, defender_tile)
-    self._present_attack_result(result)
-
-
 func _present_attack_result(result: CommandResult) -> void:
     if result.command_name != "attack_unit":
         return
@@ -819,17 +789,6 @@ func _activate_ability(ability: Ability) -> void:
     self.controller.start_ability_targeting(self.selected_tile, ability)
     if self.selected_tile != null:
         self.board_view.show_ability_markers(ability, self.selected_tile)
-
-
-func _execute_targeted_ability(target_tile: MapTile) -> void:
-    assert(self.active_ability != null)
-    var result := self.board_model.use_ability(self.active_ability_origin_tile, self.active_ability, target_tile)
-    self._present_ability_result(result)
-    await self.board_model.action_pacer.wait_after(result)
-    self.cancel_ability()
-    var select_tile_position: Variant = result.metadata.get("select_tile_position")
-    if select_tile_position != null:
-        self.select_tile(Vector2i(select_tile_position))
 
 
 func _present_ability_result(result: CommandResult) -> void:

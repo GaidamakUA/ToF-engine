@@ -3,14 +3,6 @@ extends GutTest
 const SceneTreeActionPacerScript: Script = preload("res://scenes/board/logic/presentation/scene_tree_action_pacer.gd")
 
 
-class FakeMovementLegalityBoard:
-	var called: bool = false
-
-	func can_move_to_tile(_tile: MapTile) -> bool:
-		self.called = true
-		return true
-
-
 class FakeMovementPresentationBoard:
 	var last_unit_move_values: Array[Variant] = []
 	var animated_results: Array[CommandResult] = []
@@ -120,13 +112,25 @@ func test_can_move_to_tile_from_source_uses_movement_commands_without_board() ->
 	ground.free()
 
 
-func test_can_move_to_tile_does_not_delegate_to_board() -> void:
+func test_can_move_to_tile_from_source_does_not_delegate_to_board() -> void:
 	var model := _make_model_with_players()
-	var board := FakeMovementLegalityBoard.new()
-	model.board = board
+	var source := MapTile.new(0, 0)
+	var destination := MapTile.new(1, 0)
+	var unit := BaseUnit.new()
+	var ground := BaseTile.new()
+	unit.side = "blue"
+	unit.team = 0
+	unit.move = 3
+	unit.max_move = 3
+	source.unit.set_tile(unit)
+	destination.ground.set_tile(ground)
 
-	assert_false(model.can_move_to_tile(MapTile.new(1, 0)))
-	assert_false(board.called)
+	assert_true(model.can_move_to_tile_from_source(source, destination, 1))
+
+	source.unit.release()
+	destination.ground.release()
+	unit.free()
+	ground.free()
 
 
 func test_move_unit_along_path_returns_result_without_board_presentation_side_effects() -> void:

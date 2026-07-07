@@ -10,6 +10,10 @@ class FakeBoardModel:
 	var ability_marker_tiles: Array[MapTile] = []
 	var current_player_ai: bool = false
 	var moved_units: Array[Array] = []
+	var attack_calls: Array[Array] = []
+	var capture_calls: Array[Array] = []
+	var ability_calls: Array[Array] = []
+	var next_ability_result: CommandResult = CommandResult.new("use_ability")
 
 	func add_tile(tile: MapTile) -> void:
 		self.tiles[tile.position] = tile
@@ -26,31 +30,51 @@ class FakeBoardModel:
 	func is_current_player_ai() -> bool:
 		return self.current_player_ai
 
-	func can_move_to_tile(tile: MapTile) -> bool:
+	func can_move_to_tile_from_source(_source_tile: MapTile, tile: MapTile, _move_cost: int) -> bool:
 		return self.movable_tiles.has(tile)
 
 	func move_unit(source_tile: MapTile, destination_tile: MapTile) -> CommandResult:
 		self.moved_units.append([source_tile, destination_tile])
 		return CommandResult.new("move_unit")
 
+	func can_current_player_afford(_amount: int) -> bool:
+		return true
+
+	func attack_unit(source_tile: MapTile, target_tile: MapTile) -> CommandResult:
+		self.attack_calls.append([source_tile, target_tile])
+		return CommandResult.new("attack_unit")
+
+	func capture_building(source_tile: MapTile, target_tile: MapTile) -> CommandResult:
+		self.capture_calls.append([source_tile, target_tile])
+		return CommandResult.new("capture_building")
+
+	func use_ability(origin_tile: MapTile, ability: Ability, target_tile: MapTile) -> CommandResult:
+		self.ability_calls.append([origin_tile, ability, target_tile])
+		return self.next_ability_result
+
 
 class FakeBoardHost:
 	var last_unit_move_values: Array[Variant] = []
-	var executed_ability_targets: Array[MapTile] = []
+	var presented_ability_results: Array[CommandResult] = []
+	var selected_positions: Array[Vector2i] = []
 	var interactable_tiles: Array[MapTile] = []
-	var handled_interactions: Array[MapTile] = []
+	var presented_attack_results: Array[CommandResult] = []
+	var presented_capture_results: Array[CommandResult] = []
 
 	func _set_last_unit_move(value: Variant) -> void:
 		self.last_unit_move_values.append(value)
 
-	func _execute_targeted_ability(tile: MapTile) -> void:
-		self.executed_ability_targets.append(tile)
+	func _present_ability_result(result: CommandResult) -> void:
+		self.presented_ability_results.append(result)
 
-	func _selected_unit_can_interact_with(tile: MapTile) -> bool:
-		return self.interactable_tiles.has(tile)
+	func _present_attack_result(result: CommandResult) -> void:
+		self.presented_attack_results.append(result)
 
-	func _handle_selected_tile_interaction(tile: MapTile) -> void:
-		self.handled_interactions.append(tile)
+	func _present_capture_result(result: CommandResult) -> void:
+		self.presented_capture_results.append(result)
+
+	func select_tile(tile_position: Vector2i) -> void:
+		self.selected_positions.append(tile_position)
 
 
 class FakeBoardView:
@@ -236,16 +260,33 @@ func test_press_interactable_tile_routes_interaction() -> void:
 	var board := FakeBoardHost.new()
 	var source_tile := MapTile.new(1, 2)
 	var target_tile := MapTile.new(1, 3)
+	var attacker := BaseUnit.new()
+	var defender := BaseUnit.new()
+	attacker.side = "blue"
+	attacker.team = 0
+	attacker.move = 1
+	attacker.max_move = 1
+	defender.side = "red"
+	defender.team = 1
+	source_tile.unit.set_tile(attacker)
+	target_tile.unit.set_tile(defender)
+	source_tile.add_neighbour(MapTile.NORTH, target_tile)
 	model.add_tile(target_tile)
-	board.interactable_tiles.append(target_tile)
 	var controller := _make_controller_with_hosts(model, view, board)
 	controller.select_tile(source_tile)
 
 	controller.press_tile(target_tile.position)
 
 	assert_eq(board.last_unit_move_values, [null])
-	assert_eq(board.handled_interactions, [target_tile])
+	assert_eq(model.attack_calls, [[source_tile, target_tile]])
+	assert_eq(board.presented_attack_results.size(), 1)
+	assert_eq(board.presented_attack_results[0].command_name, "attack_unit")
 	assert_same(controller.selected_tile, source_tile)
+
+	source_tile.unit.release()
+	target_tile.unit.release()
+	attacker.free()
+	defender.free()
 
 
 func test_press_invalid_ability_target_clears_selection() -> void:
@@ -260,7 +301,32 @@ func test_press_invalid_ability_target_clears_selection() -> void:
 	controller.press_tile(target_tile.position)
 
 	assert_eq(view.unselect_count, 1)
-	assert_true(board.executed_ability_targets.is_empty())
+	assert_true(model.ability_calls.is_empty())
+
+
+func test_press_valid_ability_target_executes_model_command_and_presentation() -> void:
+	var model := FakeBoardModel.new()
+	var view := FakeBoardView.new()
+	var board := FakeBoardHost.new()
+	var origin_tile := MapTile.new(1, 2)
+	var target_tile := MapTile.new(1, 3)
+	var ability := Ability.new()
+	var result := CommandResult.new("use_ability")
+	result.metadata["select_tile_position"] = Vector2i(2, 4)
+	model.next_ability_result = result
+	model.add_tile(target_tile)
+	model.ability_marker_tiles.append(target_tile)
+	var controller := _make_controller_with_hosts(model, view, board)
+	controller.start_ability_targeting(origin_tile, ability)
+
+	controller.press_tile(target_tile.position)
+
+	assert_eq(model.ability_calls, [[origin_tile, ability, target_tile]])
+	assert_eq(board.presented_ability_results, [result])
+	assert_eq(view.cancel_ability_count, 1)
+	assert_eq(board.selected_positions, [Vector2i(2, 4)])
+	assert_null(controller.active_ability)
+	assert_null(controller.active_ability_origin_tile)
 
 
 func test_cancel_interaction_routes_to_ability_cancel_when_targeting() -> void:

@@ -29,5 +29,6 @@ func test_board_model_no_longer_exposes_board_dependent_command_methods() -> voi
 	assert_false(model.has_method("wait_for_action_delay"))
 	assert_false(model.has_method("execute_active_ability"))
 	assert_false(model.has_method("set_last_unit_move"))
+	assert_false(model.has_method("can_move_to_tile"))
 	assert_false(model.has_method("selected_unit_can_interact_with"))
 	assert_false(model.has_method("handle_interaction"))

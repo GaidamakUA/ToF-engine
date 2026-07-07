@@ -183,10 +183,6 @@ func is_current_player_ai() -> bool:
 	return self.state.is_current_player_ai()
 
 
-func can_move_to_tile(tile: MapTile) -> bool:
-	return self.can_move_to_tile_from_source(null, tile, 0)
-
-
 func can_move_to_tile_from_source(source_tile: MapTile, destination_tile: MapTile, move_cost: int) -> bool:
 	assert(self.movement_commands != null)
 	return self.movement_commands.can_move_to_tile(source_tile, destination_tile, move_cost)

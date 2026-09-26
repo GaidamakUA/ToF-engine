@@ -2,6 +2,12 @@ extends Node
 class_name SettingsService
 
 const SETTINGS_FILE_PATH := "user://settings.json"
+const MSAA_VALUES: Dictionary[int, Viewport.MSAA] = {
+    0: Viewport.MSAA_DISABLED,
+    2: Viewport.MSAA_2X,
+    4: Viewport.MSAA_4X,
+    8: Viewport.MSAA_8X,
+}
 
 signal changed(key: String, new_value: Variant)
 
@@ -128,40 +134,12 @@ func _set_bus_vol(bus_name: String, key: String) -> void:
     AudioServer.set_bus_volume_db(AudioServer.get_bus_index(bus_name), decibels)
 
 func _get_decibels(value: int) -> int:
-    if value == 10:
+    if value < 0 or value > 10:
         return 0
-    elif value == 9:
-        return -6
-    elif value == 8:
-        return -12
-    elif value == 7:
-        return -18
-    elif value == 6:
-        return -24
-    elif value == 5:
-        return -30
-    elif value == 4:
-        return -36
-    elif value == 3:
-        return -42
-    elif value == 2:
-        return -48
-    elif value == 1:
-        return -54
-    elif value == 0:
-        return -80
-    return 0
+    return -80 if value == 0 else (value - 10) * 6
 
-func _get_msaa(value: int) -> int:
-    if value == 0:
-        return 0
-    elif value == 2:
-        return 1
-    elif value == 4:
-        return 2
-    elif value == 8:
-        return 3
-    return 0
+func _get_msaa(value: int) -> Viewport.MSAA:
+    return self.MSAA_VALUES.get(value, Viewport.MSAA_DISABLED)
 
 func _detect_steam_deck() -> void:
     if self.settings["steamdeck_detection"]:

@@ -83,13 +83,13 @@ func _set_match_state(state: Dictionary) -> void:
 
 func player_loaded() -> void:
     if self.is_server():
-        self._mark_player_loaded()
+        self.mark_player_loaded()
     else:
-        self._mark_player_loaded.rpc_id(1)
+        self.mark_player_loaded.rpc_id(1)
 
 
 @rpc("any_peer", "call_remote", "reliable")
-func _mark_player_loaded() -> void:
+func mark_player_loaded() -> void:
     players_loaded += 1
     if players_loaded == players.size():
         all_players_loaded.emit()

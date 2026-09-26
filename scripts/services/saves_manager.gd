@@ -86,14 +86,6 @@ func load_saves_from_file() -> void:
 
 
 func get_entries_page(page_number: int, page_size: int) -> Array[Dictionary]:
-    var pages_count: int = self.get_pages_count(page_size)
-
-    if page_number >= pages_count:
-        return []
-
-    var index_start: int = page_number * page_size
-    var index_end: int = index_start + page_size
-
     var entries_list: Array[Dictionary] = []
 
     for autosave_entry: Variant in self.autosave:
@@ -104,19 +96,7 @@ func get_entries_page(page_number: int, page_size: int) -> Array[Dictionary]:
         var saves_copy: Array[Dictionary] = self.saves.duplicate()
         saves_copy.reverse()
         entries_list += saves_copy
-
-    var entries_count: int = entries_list.size()
-    if index_end > entries_count:
-        index_end = entries_count
-
-    var index: int = index_start
-    var output: Array[Dictionary] = []
-
-    while index < index_end:
-        output.append(entries_list[index])
-        index += 1
-
-    return output
+    return entries_list.slice(page_number * page_size, (page_number + 1) * page_size)
 
 
 func get_pages_count(page_size: int) -> int:
@@ -125,14 +105,7 @@ func get_pages_count(page_size: int) -> int:
         if autosave_entry != null:
             total_saves_count += 1
 
-    var last_page_overflow: int = total_saves_count % page_size
-    @warning_ignore("integer_division")
-    var pages_count: int = (total_saves_count - last_page_overflow) / page_size
-
-    if last_page_overflow > 0:
-        pages_count += 1
-
-    return pages_count
+    return ceili(total_saves_count / float(page_size))
 
 
 func get_save_data(save_id: int) -> Dictionary:

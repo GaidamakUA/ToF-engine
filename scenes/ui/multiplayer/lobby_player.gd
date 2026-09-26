@@ -39,12 +39,14 @@ var swap_target_node: MultiplayerLobbyPlayerPanel
 var attached_icon: Node = null
 var locked_out: bool = false
 var ai_mode: bool = false
+var network: Variant = null
 
 @onready var audio: AudioService = SimpleAudioLibrary as AudioService
-@onready var multiplayer_srv: MultiplayerService = Multiplayer as MultiplayerService
 var icons: IconsFactory = IconsFactory.new()
 
 func _ready() -> void:
+    if self.network == null:
+        self.network = Multiplayer as MultiplayerService
     self.swap_target_node = self.get_node(self.swap_target) as MultiplayerLobbyPlayerPanel
     self.original_team = self.team
 
@@ -54,7 +56,7 @@ func fill_panel(player_side: Variant) -> void:
     self.side = player_side
     self._set_icon(self.icons.get_named_icon(str(side) + "_gem"))
 
-    if not multiplayer.is_server():
+    if not self.network.is_server():
         self.ap_button.hide()
         self.ap_button_label2.show()
         self.team_button.hide()
@@ -108,9 +110,9 @@ func _update_join_label() -> void:
             self.join_button_label.set_text(tr("TR_JOIN"))
     else:
         self.join_button_label.set_text(tr("TR_LEAVE"))
-        if self.player_peer_id != multiplayer.get_unique_id():
+        if self.player_peer_id != self.network.peer_id:
             self.join_button.hide()
-    if self.locked_out or (self.type == self.PLAYER_AI and not self.multiplayer.is_server()):
+    if self.locked_out or (self.type == self.PLAYER_AI and not self.network.is_server()):
         self.join_button.hide()
 
     if self.player_peer_id == null:
@@ -119,8 +121,8 @@ func _update_join_label() -> void:
         else:
             self.player.set_text(tr("TR_AI"))
     else:
-        if self.multiplayer_srv.players.has(self.player_peer_id):
-            self.player.set_text(str(self.multiplayer_srv.players[self.player_peer_id]["name"]))
+        if self.network.players.has(self.player_peer_id):
+            self.player.set_text(str(self.network.players[self.player_peer_id]["name"]))
 
 func lock_side() -> void:
     self.locked_out = true
@@ -205,7 +207,7 @@ func _on_join_pressed() -> void:
                 _set_type(self.PLAYER_HUMAN)
             state_changed.emit(self.index)
         else:
-            _set_peer_id(multiplayer.get_unique_id())
+            _set_peer_id(self.network.peer_id)
             player_joined.emit(self.index)
     else:
         _set_peer_id(null)

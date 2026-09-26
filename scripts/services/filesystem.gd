@@ -1,78 +1,32 @@
 class_name FileSystem
 
+func _resolve_dir_path(path: String) -> String:
+    var executable_relative_path: String = OS.get_executable_path().get_base_dir().path_join(path)
+    return executable_relative_path if DirAccess.dir_exists_absolute(executable_relative_path) else path
+
 func file_exists(filepath: String) -> bool:
     return FileAccess.file_exists(filepath)
 
-func _dir_exists_os(dirpath: String) -> bool:
-    var real_path: String = OS.get_executable_path().get_base_dir().path_join(dirpath)
-    return self._dir_exists_project(real_path)
-
-func _dir_exists_project(dirpath: String) -> bool:
-    var dir: DirAccess = DirAccess.open(dirpath)
-    if dir == null:
-        return false
-    return true
-
 func dir_exists(dirpath: String) -> bool:
-    return self._dir_exists_os(dirpath) or self._dir_exists_project(dirpath)
+    return DirAccess.dir_exists_absolute(self._resolve_dir_path(dirpath))
 
 func read_json_from_file(filepath: String) -> Variant:
     if not FileAccess.file_exists(filepath):
         return {}
 
-    var file: FileAccess = FileAccess.open(filepath, FileAccess.READ)
-    assert(file != null)
-
-    var file_text: String = file.get_as_text()
-    file.close()
-
-    var test_json_conv: JSON = JSON.new()
-    test_json_conv.parse(file_text)
-    var content: Variant = test_json_conv.get_data()
-
-    if content != null:
-        return content
-
-    return {}
+    var content: Variant = JSON.parse_string(FileAccess.get_file_as_string(filepath))
+    return content if content != null else {}
 
 func write_data_as_json_to_file(filepath: String, data: Variant) -> void:
-    var content: String = JSON.stringify(data, "    ", true)
-
     var file: FileAccess = FileAccess.open(filepath, FileAccess.WRITE)
     assert(file != null)
-
-    file.store_string(content)
-    file.close()
+    file.store_string(JSON.stringify(data, "    ", true))
 
 func dir_list(dirpath: String, files: bool = false) -> Array[String]:
-    if self._dir_exists_os(dirpath):
-        return self._dir_list_os(dirpath, files)
-    elif self._dir_exists_project(dirpath):
-        return self._dir_list(dirpath, files)
-    return []
+    var resolved_path: String = self._resolve_dir_path(dirpath)
+    if not DirAccess.dir_exists_absolute(resolved_path):
+        return []
 
-func _dir_list(dirpath: String, files: bool = false) -> Array[String]:
     var listing: Array[String] = []
-    var file_name: String
-
-    var dir: DirAccess = DirAccess.open(dirpath)
-
-    if dir != null:
-        dir.list_dir_begin() # TODOGODOT4 fill missing arguments https://github.com/godotengine/godot/pull/40547
-        file_name = dir.get_next()
-
-        while file_name != "":
-            if dir.current_is_dir() and not files:
-                listing.append(file_name)
-            if not dir.current_is_dir() and files:
-                listing.append(file_name)
-            file_name = dir.get_next()
-    else:
-        print("Failed to open " + dirpath)
-
+    listing.assign(DirAccess.get_files_at(resolved_path) if files else DirAccess.get_directories_at(resolved_path))
     return listing
-
-
-func _dir_list_os(dirpath: String, files: bool = false) -> Array[String]:
-    var real_path: String = OS.get_executable_path().get_base_dir().path_join(dirpath)
-    return self._dir_list(real_path, files)

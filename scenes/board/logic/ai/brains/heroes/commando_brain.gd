@@ -1,2 +1,0 @@
-extends HeroBrain
-class_name CommandoBrain

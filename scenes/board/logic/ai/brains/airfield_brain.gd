@@ -1,2 +1,0 @@
-extends AbstractBuildingBrain
-class_name AirfieldBrain

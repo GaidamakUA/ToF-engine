@@ -49,20 +49,18 @@ class FakeBoardModel:
 		self.handled_interactions.append(tile)
 
 
-class FakeBoardView:
-	extends BoardView
-
+class FakeBoardHost:
 	var show_contextual_select_args: Array[bool] = []
-	var unselect_count: int = 0
-	var cancel_ability_count: int = 0
+	var clear_selection_view_count: int = 0
+	var clear_ability_view_count: int = 0
 	var hover_count: int = 0
 	var feedback_count: int = 0
 
-	func unselect_tile() -> void:
-		self.unselect_count += 1
+	func clear_selection_view() -> void:
+		self.clear_selection_view_count += 1
 
-	func cancel_ability() -> void:
-		self.cancel_ability_count += 1
+	func clear_ability_view() -> void:
+		self.clear_ability_view_count += 1
 
 	func show_contextual_select(open_unit_abilities: bool = false) -> void:
 		self.show_contextual_select_args.append(open_unit_abilities)
@@ -74,9 +72,13 @@ class FakeBoardView:
 		self.feedback_count += 1
 
 
-func _make_controller_with_hosts(model: FakeBoardModel, view: FakeBoardView) -> BoardController:
+func _make_controller_with_hosts(model: FakeBoardModel, board: FakeBoardHost) -> BoardController:
 	var controller := BoardController.new(model)
-	controller.attach_view(view)
+	controller.clear_selection_view_requested.connect(board.clear_selection_view)
+	controller.clear_ability_view_requested.connect(board.clear_ability_view)
+	controller.contextual_select_requested.connect(board.show_contextual_select)
+	controller.hover_tile_requested.connect(board.hover_tile)
+	controller.tile_selected_feedback_requested.connect(board.play_tile_selected_feedback)
 	return controller
 
 
@@ -141,7 +143,7 @@ func test_board_interaction_state_delegates_to_controller() -> void:
 
 func test_press_tile_selects_current_player_tile() -> void:
 	var model := FakeBoardModel.new()
-	var view := FakeBoardView.new()
+	var view := FakeBoardHost.new()
 	var tile := MapTile.new(1, 2)
 	model.add_tile(tile)
 	model.selectable_tiles.append(tile)
@@ -157,7 +159,7 @@ func test_press_tile_selects_current_player_tile() -> void:
 
 func test_press_selected_tile_opens_unit_abilities() -> void:
 	var model := FakeBoardModel.new()
-	var view := FakeBoardView.new()
+	var view := FakeBoardHost.new()
 	var tile := MapTile.new(1, 2)
 	model.add_tile(tile)
 	model.selectable_tiles.append(tile)
@@ -172,7 +174,7 @@ func test_press_selected_tile_opens_unit_abilities() -> void:
 
 func test_press_reachable_tile_routes_move_and_selects_destination() -> void:
 	var model := FakeBoardModel.new()
-	var view := FakeBoardView.new()
+	var view := FakeBoardHost.new()
 	var source_tile := MapTile.new(1, 2)
 	var destination_tile := MapTile.new(2, 2)
 	model.add_tile(destination_tile)
@@ -191,7 +193,7 @@ func test_press_reachable_tile_routes_move_and_selects_destination() -> void:
 
 func test_press_interactable_tile_routes_interaction() -> void:
 	var model := FakeBoardModel.new()
-	var view := FakeBoardView.new()
+	var view := FakeBoardHost.new()
 	var source_tile := MapTile.new(1, 2)
 	var target_tile := MapTile.new(1, 3)
 	model.add_tile(target_tile)
@@ -208,7 +210,7 @@ func test_press_interactable_tile_routes_interaction() -> void:
 
 func test_press_invalid_ability_target_clears_selection() -> void:
 	var model := FakeBoardModel.new()
-	var view := FakeBoardView.new()
+	var view := FakeBoardHost.new()
 	var target_tile := MapTile.new(1, 3)
 	model.add_tile(target_tile)
 	var controller := _make_controller_with_hosts(model, view)
@@ -216,13 +218,13 @@ func test_press_invalid_ability_target_clears_selection() -> void:
 
 	controller.press_tile(target_tile.position)
 
-	assert_eq(view.unselect_count, 1)
+	assert_eq(view.clear_selection_view_count, 1)
 	assert_true(model.executed_ability_targets.is_empty())
 
 
 func test_cancel_interaction_routes_to_ability_cancel_when_targeting() -> void:
 	var model := FakeBoardModel.new()
-	var view := FakeBoardView.new()
+	var view := FakeBoardHost.new()
 	var controller := _make_controller_with_hosts(model, view)
 	controller.start_ability_targeting(MapTile.new(1, 2), Ability.new())
 
@@ -230,13 +232,13 @@ func test_cancel_interaction_routes_to_ability_cancel_when_targeting() -> void:
 
 	assert_null(controller.active_ability)
 	assert_null(controller.active_ability_origin_tile)
-	assert_eq(view.cancel_ability_count, 1)
-	assert_eq(view.unselect_count, 0)
+	assert_eq(view.clear_ability_view_count, 1)
+	assert_eq(view.clear_selection_view_count, 0)
 
 
 func test_cancel_interaction_routes_to_tile_unselect_without_active_ability() -> void:
 	var model := FakeBoardModel.new()
-	var view := FakeBoardView.new()
+	var view := FakeBoardHost.new()
 	var controller := _make_controller_with_hosts(model, view)
 	var selected_tile := MapTile.new(1, 2)
 	controller.select_tile(selected_tile)
@@ -244,11 +246,11 @@ func test_cancel_interaction_routes_to_tile_unselect_without_active_ability() ->
 	controller.cancel_interaction()
 
 	assert_null(controller.selected_tile)
-	assert_eq(view.cancel_ability_count, 0)
-	assert_eq(view.unselect_count, 1)
+	assert_eq(view.clear_ability_view_count, 0)
+	assert_eq(view.clear_selection_view_count, 1)
 
 
-func test_press_tile_can_run_with_null_view() -> void:
+func test_press_tile_can_run_without_view_listeners() -> void:
 	var model := FakeBoardModel.new()
 	var tile := MapTile.new(1, 2)
 	model.add_tile(tile)

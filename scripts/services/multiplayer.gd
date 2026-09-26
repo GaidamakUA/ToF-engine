@@ -7,6 +7,7 @@ signal player_connected(peer_id: int, player_info: Dictionary)
 signal player_disconnected(peer_id: int)
 signal server_disconnected
 signal all_players_loaded
+signal message_received(message_data: Dictionary)
 
 @onready var autodiscovery: AutodiscoveryService = Autodiscovery as AutodiscoveryService
 @onready var map_list_service: MapManagerService = MapManager as MapManagerService
@@ -20,6 +21,11 @@ var selected_map: String = ""
 var match_in_progress: bool = false
 var match_state: Dictionary = {}
 var match_state_available: bool = false
+var peer_id: int:
+    get:
+        if multiplayer.multiplayer_peer == null:
+            return 0
+        return multiplayer.get_unique_id()
 
 func _ready() -> void:
     multiplayer.peer_connected.connect(_on_player_connected)
@@ -75,13 +81,49 @@ func _set_match_state(state: Dictionary) -> void:
     self.match_state_available = true
 
 
-@rpc("any_peer", "call_local", "reliable")
 func player_loaded() -> void:
-    if multiplayer.is_server():
-        players_loaded += 1
-        if players_loaded == players.size():
-            all_players_loaded.emit()
-            players_loaded = 0
+    if self.is_server():
+        self._mark_player_loaded()
+    else:
+        self._mark_player_loaded.rpc_id(1)
+
+
+@rpc("any_peer", "call_remote", "reliable")
+func _mark_player_loaded() -> void:
+    players_loaded += 1
+    if players_loaded == players.size():
+        all_players_loaded.emit()
+        players_loaded = 0
+
+
+func message_direct(target_peer_id: int, payload: Dictionary) -> Error:
+    if multiplayer.multiplayer_peer == null:
+        return ERR_UNCONFIGURED
+    self._receive_message.rpc_id(target_peer_id, payload)
+    return OK
+
+
+func message_broadcast(payload: Dictionary, unreliable: bool = false) -> Error:
+    if multiplayer.multiplayer_peer == null:
+        return ERR_UNCONFIGURED
+    if unreliable:
+        self._receive_unreliable_message.rpc(payload)
+    else:
+        self._receive_message.rpc(payload)
+    return OK
+
+
+@rpc("any_peer", "call_remote", "reliable")
+func _receive_message(payload: Dictionary) -> void:
+    self.message_received.emit({
+        "action": "message",
+        "payload": payload,
+    })
+
+
+@rpc("any_peer", "call_remote", "unreliable_ordered")
+func _receive_unreliable_message(payload: Dictionary) -> void:
+    self._receive_message(payload)
 
 
 func _on_player_connected(id: int) -> void:
@@ -96,6 +138,7 @@ func _register_player(new_player_info: Dictionary) -> void:
 
     if not multiplayer.is_server() and new_player_id == 1:
         self.selected_map = new_player_info["map"]
+        self.match_in_progress = bool(new_player_info["in_progress"])
 
 
 func _on_player_disconnected(id: int) -> void:

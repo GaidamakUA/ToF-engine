@@ -104,7 +104,7 @@ func message_direct(target_peer_id: int, payload: Dictionary) -> Error:
     })
 
 
-func message_broadcast(payload: Dictionary) -> Error:
+func message_broadcast(payload: Dictionary, _unreliable: bool = false) -> Error:
     return _send_message("message_broadcast", {
         "join_code" : self.join_code,
         "source_id" : self.peer_id,

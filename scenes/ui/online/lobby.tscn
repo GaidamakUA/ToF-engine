@@ -8,7 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://bbdwp6f0d3nib" path="res://assets/gui/menu/buttons/buttonMed_brown_pressed.png" id="6_wcimc"]
 [ext_resource type="FontFile" uid="uid://dkpcsi5rudp7j" path="res://assets/fonts/ttf/courier.ttf" id="6_yotih"]
 [ext_resource type="PackedScene" uid="uid://chch0q8y12i3i" path="res://scenes/ui/multiplayer/connected_player_panel.tscn" id="7_4r14n"]
-[ext_resource type="PackedScene" uid="uid://dy4dmaksk0oot" path="res://scenes/ui/online/lobby_player.tscn" id="7_42u2e"]
+[ext_resource type="PackedScene" uid="uid://b784hcbwfshhc" path="res://scenes/ui/multiplayer/lobby_player.tscn" id="7_42u2e"]
 [ext_resource type="Texture2D" uid="uid://dk8ep1qsmga0q" path="res://assets/gui/menu/buttons/buttonMed_brown_hover.png" id="7_r14xm"]
 [ext_resource type="Texture2D" uid="uid://bkp8gbivdpjm" path="res://assets/gui/menu/buttons/buttonSquareSmall_brown.png" id="8_wh7uq"]
 [ext_resource type="FontFile" uid="uid://btstgc45ggura" path="res://assets/fonts/courier.tres" id="8_y4322"]

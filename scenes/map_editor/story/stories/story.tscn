@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3 uid="uid://3jg4od1lphdr"]
+[gd_scene load_steps=33 format=3 uid="uid://3jg4od1lphdr"]
 
 [ext_resource type="Script" uid="uid://euut3yx5qrt7" path="res://scenes/map_editor/story/stories/story.gd" id="1_0lwys"]
 [ext_resource type="PackedScene" uid="uid://yl7ug0tr62ix" path="res://scenes/map_editor/story/stories/story_step_element.tscn" id="2_af5aa"]
@@ -10,21 +10,18 @@
 [ext_resource type="PackedScene" uid="uid://hfr8cim8moqr" path="res://scenes/map_editor/story/stories/types/camera.tscn" id="8_vymkp"]
 [ext_resource type="PackedScene" uid="uid://b330nvtxmj3os" path="res://scenes/map_editor/story/stories/types/claim.tscn" id="9_m177b"]
 [ext_resource type="PackedScene" uid="uid://beivko4wjgis" path="res://scenes/map_editor/story/stories/types/despawn.tscn" id="10_led3u"]
-[ext_resource type="PackedScene" uid="uid://csx0owg6yiwis" path="res://scenes/map_editor/story/stories/types/die.tscn" id="11_dx1g0"]
 [ext_resource type="PackedScene" uid="uid://dp6gq5f4n7ewn" path="res://scenes/map_editor/story/stories/types/eliminate_player.tscn" id="12_c8cf2"]
 [ext_resource type="Texture2D" uid="uid://cat1jloyg2wym" path="res://assets/gui/menu/buttons/buttonMed_brown.png" id="12_nfyn2"]
 [ext_resource type="PackedScene" uid="uid://dcca0ud508onp" path="res://scenes/map_editor/story/stories/types/end_game.tscn" id="13_7743s"]
 [ext_resource type="Texture2D" uid="uid://bbdwp6f0d3nib" path="res://assets/gui/menu/buttons/buttonMed_brown_pressed.png" id="13_sehvg"]
 [ext_resource type="Texture2D" uid="uid://dk8ep1qsmga0q" path="res://assets/gui/menu/buttons/buttonMed_brown_hover.png" id="14_b5j0h"]
 [ext_resource type="PackedScene" uid="uid://c0412vygx3bp3" path="res://scenes/map_editor/story/stories/types/hero_ability.tscn" id="14_oxrqi"]
-[ext_resource type="PackedScene" uid="uid://c8v3obj6muf3n" path="res://scenes/map_editor/story/stories/types/level_up.tscn" id="15_n43d1"]
 [ext_resource type="FontFile" uid="uid://btstgc45ggura" path="res://assets/fonts/courier.tres" id="15_nknqw"]
 [ext_resource type="PackedScene" uid="uid://dw8ppwvdbxlyg" path="res://scenes/map_editor/story/stories/types/lock_hud.tscn" id="16_qebbb"]
 [ext_resource type="PackedScene" uid="uid://cavm8ues0o4w4" path="res://scenes/map_editor/story/stories/types/message.tscn" id="17_d8jt1"]
 [ext_resource type="PackedScene" uid="uid://cxb3sdpck3fyf" path="res://scenes/map_editor/story/stories/types/move.tscn" id="18_immyp"]
 [ext_resource type="PackedScene" uid="uid://w23y105a110o" path="res://scenes/map_editor/story/stories/types/objective.tscn" id="19_7jxlw"]
 [ext_resource type="PackedScene" uid="uid://dyxkg51bo2al2" path="res://scenes/map_editor/story/stories/types/pause_ai.tscn" id="20_oa3ca"]
-[ext_resource type="PackedScene" uid="uid://cypcc88jrcci3" path="res://scenes/map_editor/story/stories/types/revive_player.tscn" id="21_htwnk"]
 [ext_resource type="PackedScene" uid="uid://dh058kdl816av" path="res://scenes/map_editor/story/stories/types/side.tscn" id="22_mknt8"]
 [ext_resource type="PackedScene" uid="uid://cydqtidvevn6d" path="res://scenes/map_editor/story/stories/types/spawn.tscn" id="23_w2447"]
 [ext_resource type="PackedScene" uid="uid://b045k7u4g471f" path="res://scenes/map_editor/story/stories/types/target_vip.tscn" id="24_xwhhi"]
@@ -132,7 +129,7 @@ layout_mode = 1
 offset_right = 0.0
 offset_bottom = 0.0
 
-[node name="die" parent="edit_panels" instance=ExtResource("11_dx1g0")]
+[node name="die" parent="edit_panels" instance=ExtResource("4_usy7x")]
 visible = false
 layout_mode = 1
 offset_right = 0.0
@@ -156,7 +153,7 @@ layout_mode = 1
 offset_right = 0.0
 offset_bottom = 0.0
 
-[node name="level_up" parent="edit_panels" instance=ExtResource("15_n43d1")]
+[node name="level_up" parent="edit_panels" instance=ExtResource("4_usy7x")]
 visible = false
 layout_mode = 1
 offset_right = 0.0
@@ -192,7 +189,7 @@ layout_mode = 1
 offset_right = 0.0
 offset_bottom = 0.0
 
-[node name="revive_player" parent="edit_panels" instance=ExtResource("21_htwnk")]
+[node name="revive_player" parent="edit_panels" instance=ExtResource("12_c8cf2")]
 visible = false
 layout_mode = 1
 offset_right = 0.0

@@ -2,27 +2,27 @@ class_name Brains
 
 var brains: Dictionary[String, AbstractBrain] = {
     "hq" : HqBrain.new(),
-    "barracks" : BarracksBrain.new(),
-    "factory" : FactoryBrain.new(),
-    "airfield" : AirfieldBrain.new(),
+    "barracks" : AbstractBuildingBrain.new(),
+    "factory" : AbstractBuildingBrain.new(),
+    "airfield" : AbstractBuildingBrain.new(),
 
     "infantry" : InfantryBrain.new(),
     "tank" : TankBrain.new(),
-    "heli" : HeliBrain.new(),
+    "heli" : AbstractUnitBrain.new(),
     "mobile_infantry" : MobileInfantryBrain.new(),
     "rocket_artillery" : RocketArtilleryBrain.new(),
     "scout" : ScoutBrain.new(),
 
     "hero_admiral" : AdmiralBrain.new(),
     "hero_captain" : CaptainBrain.new(),
-    "hero_commando" : CommandoBrain.new(),
+    "hero_commando" : HeroBrain.new(),
     "hero_general" : GeneralBrain.new(),
-    "hero_gentleman" : GentlemanBrain.new(),
+    "hero_gentleman" : NobleBrain.new(),
     "hero_noble" : NobleBrain.new(),
     "hero_prince" : PrinceBrain.new(),
     "hero_warlord" : WarlordBrain.new(),
 
-    "npc" : NpcBrain.new(),
+    "npc" : AbstractUnitBrain.new(),
     "hero" : HeroBrain.new()
 }
 

@@ -1,2 +1,0 @@
-extends AbstractUnitBrain
-class_name NpcBrain

@@ -134,11 +134,14 @@ func _ready() -> void:
     self._setup_abilities()
 
 func configure(resource: UnitResource) -> void:
-    $"mesh_anchor/mesh".mesh = resource.mesh
-    $"mesh_anchor/mesh".transform = resource.mesh_transform
-    $"mesh_anchor/dust".visible = resource.dust_visible
-    $"mesh_anchor/healthbar".offset = resource.healthbar_offset
-    $"explosion".transform = resource.explosion_transform
+    var mesh_instance: MeshInstance3D = $"mesh_anchor/mesh" as MeshInstance3D
+    mesh_instance.mesh = resource.mesh
+    mesh_instance.transform = resource.mesh_transform
+    mesh_instance.cast_shadow = resource.mesh_cast_shadow
+    mesh_instance.material_override = resource.mesh_material_override
+    ($"mesh_anchor/dust" as GPUParticles3D).visible = resource.dust_visible
+    ($"mesh_anchor/healthbar" as Sprite3D).offset = resource.healthbar_offset
+    ($"explosion" as Node3D).transform = resource.explosion_transform
 
     self.unit_name = resource.unit_name
     self.side = resource.side

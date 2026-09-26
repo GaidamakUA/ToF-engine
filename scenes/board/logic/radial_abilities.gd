@@ -39,12 +39,11 @@ func fill_radial_with_building_abilities(board: Board, radial: Radial, building:
 
     for ability: Variant in building.abilities:
         if ability.TYPE == "production" and building.is_ability_visible(ability, board):
-            var icon_model: MapObject = board.map.templates.get_template(ability.template_name)
+            var icon_source: MapObjectResource = board.map.templates.get_template_source(ability.template_name)
             var ap_cost: int = ability.get_cost(building)
 
             ap_cost = board.abilities.get_modified_cost(ap_cost, ability.template_name, building)
 
-            icon_model.set_side_material(board.map.templates.get_side_material(building.side))
             icon = tile_view_template.instantiate()
             icon.hide_background()
             icon.is_side_tile = false
@@ -56,7 +55,7 @@ func fill_radial_with_building_abilities(board: Board, radial: Radial, building:
                 radial.set_field_disabled(ability.index, "")
 
             radial.set_field(icon, label, ability.index, board, "activate_production_ability", [ability])
-            icon.set_tile(icon_model, 0)
+            icon.set_tile(icon_source, 0, board.map.templates.get_side_material(building.side) as Material)
 
 func fill_radial_with_unit_abilities(board: Board, radial: Radial, unit: BaseUnit) -> void:
     radial.set_field(board.ui.icons.cross.instantiate(), "TR_CLOSE", 6, board, "toggle_radial_menu")
@@ -88,14 +87,13 @@ func fill_radial_with_building_abilities_bans(editor: Variant, radial: Radial, b
 
     for ability: Variant in building.abilities:
         if ability.TYPE == "production":
-            var icon_model: MapObject = editor.map.templates.get_template(ability.template_name)
+            var icon_source: MapObjectResource = editor.map.templates.get_template_source(ability.template_name)
 
-            icon_model.set_side_material(editor.map.templates.get_side_material(building.side))
             icon = tile_view_template.instantiate()
             icon.hide_background()
             icon.is_side_tile = false
             icon.viewport_size = 20
-            icon.set_tile(icon_model, 0)
+            icon.set_tile(icon_source, 0, editor.map.templates.get_side_material(building.side) as Material)
             label = tr(ability.label)
             label += "\n" + str(ability.get_cost(building)) + " " + tr("TR_AP")
             radial.set_field(icon, label, ability.index, self, "_ban_ability", [building, ability, radial])

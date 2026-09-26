@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="GroundTileResource" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="TileResource" load_steps=3 format=3]
 
-[ext_resource type="Script" path="res://scenes/tiles/ground/ground_tile_resource.gd" id="1"]
+[ext_resource type="Script" path="res://scenes/tiles/tile_resource.gd" id="1"]
 [ext_resource type="ArrayMesh" path="res://resources/merged_meshes/flowers_1_overtile.tres" id="2"]
 
 [resource]

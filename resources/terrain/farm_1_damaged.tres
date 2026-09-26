@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="DamageTileResource" format=3]
+
+[ext_resource type="ArrayMesh" path="res://assets/terrain/rural/farm_1_damaged.obj" id="1_rvfdx"]
+[ext_resource type="Script" path="res://scenes/tiles/damage_tile_resource.gd" id="2_pbb62"]
+
+[resource]
+script = ExtResource("2_pbb62")
+next_damage_stage_template = "destroyed_farm1"
+base_stage_template = "city_farm1"
+mesh = ExtResource("1_rvfdx")
+main_tile_view_cam_modifier = -10
+side_tile_view_cam_modifier = -25

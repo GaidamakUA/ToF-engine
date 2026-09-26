@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="DamageTileResource" format=3]
+
+[ext_resource type="ArrayMesh" path="res://assets/terrain/grasslands/building_small_2_destroyed.obj" id="1_hixm7"]
+[ext_resource type="Script" path="res://scenes/tiles/damage_tile_resource.gd" id="2_6w1gr"]
+
+[resource]
+script = ExtResource("2_6w1gr")
+is_smoking = true
+base_stage_template = "city_building_small2"
+mesh = ExtResource("1_hixm7")
+main_tile_view_cam_modifier = -10
+side_tile_view_cam_modifier = -25

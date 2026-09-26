@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DamageTileResource" format=3]
+
+[ext_resource type="ArrayMesh" path="res://assets/terrain/variety/statues/capsule_statue_damaged.obj" id="1_g5wxr"]
+[ext_resource type="Script" path="res://scenes/tiles/damage_tile_resource.gd" id="2_q76rf"]
+
+[resource]
+script = ExtResource("2_q76rf")
+next_damage_stage_template = "destroyed_statue_capsule"
+base_stage_template = "deco_statue_capsule"
+mesh = ExtResource("1_g5wxr")

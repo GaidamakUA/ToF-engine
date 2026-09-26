@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="RotatingTileResource" format=3]
+
+[ext_resource type="ArrayMesh" path="res://assets/gui/markers/key.obj" id="1_brhk2"]
+[ext_resource type="Script" path="res://scenes/tiles/rotating_tile_resource.gd" id="2_ws1vs"]
+
+[resource]
+script = ExtResource("2_ws1vs")
+mesh = ExtResource("1_brhk2")
+mesh_transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 4, 0)
+mesh_cast_shadow = 0

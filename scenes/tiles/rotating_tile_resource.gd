@@ -1,0 +1,2 @@
+extends TileResource
+class_name RotatingTileResource

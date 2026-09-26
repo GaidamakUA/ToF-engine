@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="TileResource" format=3]
+
+[ext_resource type="ArrayMesh" path="res://assets/terrain/grasslands/building_big_3_overtile.obj" id="1_hixkj"]
+[ext_resource type="ArrayMesh" path="res://assets/terrain/reflections/building_big_3_reflections.obj" id="2_fkkns"]
+[ext_resource type="Script" path="res://scenes/tiles/tile_resource.gd" id="3_aqiic"]
+
+[resource]
+script = ExtResource("3_aqiic")
+next_damage_stage_template = "damaged_building_big3"
+mesh = ExtResource("1_hixkj")
+reflection_mesh = ExtResource("2_fkkns")

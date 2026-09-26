@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="UnitResource" format=3]
+
+[ext_resource type="Resource" path="res://resources/abilities/hero/active/inspire.tres" id="1_u1vit"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_spawn.wav" id="2_87ft8"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/hero_move.wav" id="3_0wjp8"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_attack.wav" id="4_p1rtf"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_hit.wav" id="5_rup57"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_damage.wav" id="6_b5ive"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_die.wav" id="7_agpfl"]
+[ext_resource type="AudioStream" path="res://assets/audio/pickup_box.wav" id="8_xvkkb"]
+[ext_resource type="ArrayMesh" path="res://assets/units/heroes/prince.obj" id="9_bapsh"]
+[ext_resource type="Material" path="res://assets/materials/arne32_yellow.tres" id="10_cg4bf"]
+[ext_resource type="Resource" path="res://resources/abilities/hero/passive/high_morale.tres" id="11_qy2tc"]
+[ext_resource type="Script" path="res://resources/units/unit_resource.gd" id="12_bpx36"]
+
+[resource]
+script = ExtResource("12_bpx36")
+kind = 1
+unit_name = "TR_PRINCE"
+side = "yellow"
+max_hp = 20
+max_move = 5
+attack = 9
+unit_value = 150
+unit_class = "hero"
+passive_ability = ExtResource("11_qy2tc")
+active_abilities = Array[Resource]([ExtResource("1_u1vit")])
+audio_streams = Dictionary[String, AudioStream]({
+"attack": ExtResource("4_p1rtf"),
+"damage": ExtResource("6_b5ive"),
+"die": ExtResource("7_agpfl"),
+"hit": ExtResource("5_rup57"),
+"level_up": ExtResource("8_xvkkb"),
+"move": ExtResource("3_0wjp8"),
+"spawn": ExtResource("2_87ft8")
+})
+mesh = ExtResource("9_bapsh")
+mesh_material_override = ExtResource("10_cg4bf")
+main_tile_view_cam_modifier = -16
+side_tile_view_cam_modifier = -35
+tile_view_height_cam_modifier = -0.5

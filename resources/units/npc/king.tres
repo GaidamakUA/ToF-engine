@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="UnitResource" format=3]
+
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_spawn.wav" id="1_7vq1i"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_move.wav" id="2_kxxpe"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_attack.wav" id="3_tp8qk"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_damage.wav" id="4_giltk"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_die.wav" id="5_5v85u"]
+[ext_resource type="AudioStream" path="res://assets/audio/pickup_box.wav" id="6_g07x3"]
+[ext_resource type="ArrayMesh" path="res://assets/units/npcs/king.obj" id="7_s021d"]
+[ext_resource type="Material" path="res://assets/materials/arne32_yellow.tres" id="8_qu8iw"]
+[ext_resource type="Script" path="res://resources/units/unit_resource.gd" id="9_r1wex"]
+
+[resource]
+script = ExtResource("9_r1wex")
+kind = 2
+unit_name = "TR_KING"
+side = "yellow"
+max_hp = 15
+attack = 0
+can_attack_units = false
+max_attacks = 0
+unit_class = "npc"
+audio_streams = Dictionary[String, AudioStream]({
+"attack": ExtResource("3_tp8qk"),
+"damage": ExtResource("4_giltk"),
+"die": ExtResource("5_5v85u"),
+"level_up": ExtResource("6_g07x3"),
+"move": ExtResource("2_kxxpe"),
+"spawn": ExtResource("1_7vq1i")
+})
+mesh = ExtResource("7_s021d")
+mesh_material_override = ExtResource("8_qu8iw")
+main_tile_view_cam_modifier = -16
+side_tile_view_cam_modifier = -35
+tile_view_height_cam_modifier = -0.5

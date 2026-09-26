@@ -298,14 +298,14 @@ func select_tile(tile_name: String, type: String) -> void:
 
     self.rotations.store_state(type, tile_name)
 
-    self.ui.set_tile_prev(self.map.templates.get_template(rotation_map["prev"]), self.tile_rotation)
-    self.ui.set_tile_current(self.map.templates.get_template(tile_name), self.tile_rotation)
-    self.ui.set_tile_next(self.map.templates.get_template(rotation_map["next"]), self.tile_rotation)
+    self.ui.set_tile_prev(self.map.templates.get_template_source(rotation_map["prev"]), self.tile_rotation)
+    self.ui.set_tile_current(self.map.templates.get_template_source(tile_name), self.tile_rotation)
+    self.ui.set_tile_next(self.map.templates.get_template_source(rotation_map["next"]), self.tile_rotation)
 
     first_tile = self.rotations.get_first_tile(type_map["prev"])
-    self.ui.set_type_prev(self.map.templates.get_template(first_tile), self.tile_rotation)
+    self.ui.set_type_prev(self.map.templates.get_template_source(first_tile), self.tile_rotation)
     first_tile = self.rotations.get_first_tile(type_map["next"])
-    self.ui.set_type_next(self.map.templates.get_template(first_tile), self.tile_rotation)
+    self.ui.set_type_next(self.map.templates.get_template_source(first_tile), self.tile_rotation)
 
 
 func switch_to_prev_tile() -> void:

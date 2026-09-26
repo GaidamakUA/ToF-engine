@@ -37,20 +37,20 @@ func _ready() -> void:
 func update_position(x: int, y: int) -> void:
     self.position_label.set_text("[" + str(x) + ", " + str(y) + "]")
 
-func set_tile_prev(tile: MapObject, t_rotation: int) -> void:
-    self.tile_prev.set_tile(tile, t_rotation)
+func set_tile_prev(source: MapObjectResource, t_rotation: int) -> void:
+    self.tile_prev.set_tile(source, t_rotation)
 
-func set_tile_current(tile: MapObject, t_rotation: int) -> void:
-    self.tile_current.set_tile(tile, t_rotation)
+func set_tile_current(source: MapObjectResource, t_rotation: int) -> void:
+    self.tile_current.set_tile(source, t_rotation)
 
-func set_tile_next(tile: MapObject, t_rotation: int) -> void:
-    self.tile_next.set_tile(tile, t_rotation)
+func set_tile_next(source: MapObjectResource, t_rotation: int) -> void:
+    self.tile_next.set_tile(source, t_rotation)
 
-func set_type_prev(tile: MapObject, t_rotation: int) -> void:
-    self.type_prev.set_tile(tile, t_rotation)
+func set_type_prev(source: MapObjectResource, t_rotation: int) -> void:
+    self.type_prev.set_tile(source, t_rotation)
 
-func set_type_next(tile: MapObject, t_rotation: int) -> void:
-    self.type_next.set_tile(tile, t_rotation)
+func set_type_next(source: MapObjectResource, t_rotation: int) -> void:
+    self.type_next.set_tile(source, t_rotation)
 
 func toggle_radial() -> void:
     if self.radial.is_visible():

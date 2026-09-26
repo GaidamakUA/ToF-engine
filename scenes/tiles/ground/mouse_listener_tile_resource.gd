@@ -1,0 +1,2 @@
+extends MapObjectResource
+class_name MouseListenerTileResource

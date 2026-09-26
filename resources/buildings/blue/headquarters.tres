@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="BuildingResource" format=3]
+
+[ext_resource type="Resource" path="res://resources/abilities/production/blue/infantry.tres" id="1_h3b32"]
+[ext_resource type="Resource" path="res://resources/abilities/production/heroes/general.tres" id="2_hhscn"]
+[ext_resource type="Resource" path="res://resources/abilities/production/heroes/commando.tres" id="3_m705j"]
+[ext_resource type="ArrayMesh" path="res://assets/buildings/blue/headquarters.obj" id="4_qbv66"]
+[ext_resource type="Material" path="res://assets/materials/arne32_blue.tres" id="5_f0iy7"]
+[ext_resource type="Script" path="res://scenes/tiles/buildings/building_resource.gd" id="6_u86u4"]
+
+[resource]
+script = ExtResource("6_u86u4")
+side = "blue"
+ap_gain = 20
+capture_value = 1000
+abilities = Array[Resource]([ExtResource("1_h3b32"), ExtResource("2_hhscn"), ExtResource("3_m705j")])
+mesh = ExtResource("4_qbv66")
+mesh_material_override = ExtResource("5_f0iy7")

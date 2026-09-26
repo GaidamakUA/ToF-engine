@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BuildingResource" format=3]
+
+[ext_resource type="ArrayMesh" path="res://assets/buildings/blue/tower.obj" id="1_vewwb"]
+[ext_resource type="Material" path="res://assets/materials/arne32_blue.tres" id="2_824cn"]
+[ext_resource type="Script" path="res://scenes/tiles/buildings/building_resource.gd" id="3_wwjli"]
+
+[resource]
+script = ExtResource("3_wwjli")
+side = "blue"
+require_crew = false
+ap_gain = 15
+mesh = ExtResource("1_vewwb")
+mesh_material_override = ExtResource("2_824cn")

@@ -25,9 +25,15 @@ const PLAYER_BLACK := "black"
 const MATERIAL_NORMAL := "normal"
 const MATERIAL_METALLIC := "metallic"
 const GROUND_TILE_SCENE: PackedScene = preload("res://scenes/tiles/ground/ground_tile.tscn")
+const DAMAGE_TILE_SCENE: PackedScene = preload("res://scenes/tiles/damaged_tile.tscn")
+const ROTATING_TILE_SCENE: PackedScene = preload("res://scenes/tiles/special/key.tscn")
+const MOUSE_LISTENER_TILE_SCENE: PackedScene = preload("res://scenes/tiles/ground/mouse_listener_tile.tscn")
+const BUILDING_TILE_SCENE: PackedScene = preload("res://scenes/tiles/buildings/building.tscn")
 const UNIT_TILE_SCENE: PackedScene = preload("res://scenes/tiles/units/unit.tscn")
+const HERO_TILE_SCENE: PackedScene = preload("res://scenes/tiles/units/heroes/hero.tscn")
+const NPC_TILE_SCENE: PackedScene = preload("res://scenes/tiles/units/npc/npc.tscn")
 
-var _ground_templates: Dictionary[String, GroundTileResource] = {
+var _ground_templates: Dictionary[String, TileResource] = {
     self.GROUND_GRASS : preload("res://resources/ground/ground_grass.tres"),
     "ground_concrete" : preload("res://resources/ground/ground_concrete.tres"),
     "ground_mud" : preload("res://resources/ground/ground_mud.tres"),
@@ -87,16 +93,16 @@ var _ground_templates: Dictionary[String, GroundTileResource] = {
     "ground_flyable" : preload("res://resources/ground/ground_flyable.tres"),
 }
 
-var _damage_templates: Dictionary[String, PackedScene] = {
-    self.DECO_GROUND_DMG_1 : preload("res://scenes/tiles/decorations/ground_damage_1.tscn"),
-    self.DECO_GROUND_DMG_2 : preload("res://scenes/tiles/decorations/ground_damage_2.tscn"),
-    "deco_ground_dmg3" : preload("res://scenes/tiles/decorations/ground_damage_3.tscn"),
-    "deco_ground_dmg4" : preload("res://scenes/tiles/decorations/ground_damage_4.tscn"),
-    self.DECO_GROUND_DMG_5 : preload("res://scenes/tiles/decorations/ground_damage_5.tscn"),
-    self.DECO_GROUND_DMG_6 : preload("res://scenes/tiles/decorations/ground_damage_6.tscn"),
+var _damage_templates: Dictionary[String, TileResource] = {
+    self.DECO_GROUND_DMG_1 : preload("res://resources/damage/ground_hole_1.tres"),
+    self.DECO_GROUND_DMG_2 : preload("res://resources/damage/ground_hole_2.tres"),
+    "deco_ground_dmg3" : preload("res://resources/damage/ground_hole_3.tres"),
+    "deco_ground_dmg4" : preload("res://resources/damage/ground_hole_4.tres"),
+    self.DECO_GROUND_DMG_5 : preload("res://resources/damage/ground_hole_5.tres"),
+    self.DECO_GROUND_DMG_6 : preload("res://resources/damage/ground_hole_6.tres"),
 }
 
-var _frame_templates: Dictionary[String, Variant] = {
+var _frame_templates: Dictionary[String, TileResource] = {
     "frame_grass1" : preload("res://resources/frame/grass_1_overtile.tres"),
     "frame_grass2" : preload("res://resources/frame/grass_2_overtile.tres"),
     "frame_grass3" : preload("res://resources/frame/grass_3_overtile.tres"),
@@ -135,7 +141,7 @@ var _frame_templates: Dictionary[String, Variant] = {
     "frame_wall" : preload("res://resources/frame/wall_fence_overtile.tres"),
 }
 
-var _decoration_templates: Dictionary[String, Variant] = {
+var _decoration_templates: Dictionary[String, TileResource] = {
     "deco_flower1" : preload("res://resources/decoration/flowers_1_overtile.tres"),
     "deco_flower2" : preload("res://resources/decoration/flowers_2_overtile.tres"),
     "deco_flower3" : preload("res://resources/decoration/flowers_3_overtile.tres"),
@@ -162,7 +168,7 @@ var _decoration_templates: Dictionary[String, Variant] = {
     "deco_beach3" : preload("res://resources/decoration/beach_3_overtile.tres"),
 }
 
-var _railway_templates: Dictionary[String, Variant] = {
+var _railway_templates: Dictionary[String, TileResource] = {
     "deco_rail_straight" : preload("res://resources/decoration/railway_straight.tres"),
     "deco_rail_straight2" : preload("res://resources/decoration/railway_straight2.tres"),
     "deco_rail_turn"     : preload("res://resources/decoration/railway_turn.tres"),
@@ -171,19 +177,19 @@ var _railway_templates: Dictionary[String, Variant] = {
     "deco_rail_end"      : preload("res://resources/decoration/railway_end.tres"),
 }
 
-var _city_decoration_templates: Dictionary[String, Variant] = {
+var _city_decoration_templates: Dictionary[String, TileResource] = {
     "deco_fountain" : preload("res://resources/decoration/fountain_overtile.tres"),
     "deco_statue" : preload("res://resources/decoration/statue_overtile.tres"),
     "deco_statue_rat" : preload("res://resources/decoration/rat_statue_overtile.tres"),
     "deco_statue_capsule" : preload("res://resources/decoration/capsule_statue_overtile.tres"),
 }
 
-var _city_templates: Dictionary[String, Variant] = {
-    "city_building_big1" : preload("res://scenes/tiles/city/building_big_1_overtile.tscn"),
-    "city_building_big2" : preload("res://scenes/tiles/city/building_big_2_overtile.tscn"),
-    "city_building_big3" : preload("res://scenes/tiles/city/building_big_3_overtile.tscn"),
-    "city_building_big4" : preload("res://scenes/tiles/city/building_big_4_overtile.tscn"),
-    "city_building_big5" : preload("res://scenes/tiles/city/building_big_5_overtile.tscn"),
+var _city_templates: Dictionary[String, TileResource] = {
+    "city_building_big1" : preload("res://resources/terrain/building_big_1_overtile.tres"),
+    "city_building_big2" : preload("res://resources/terrain/building_big_2_overtile.tres"),
+    "city_building_big3" : preload("res://resources/terrain/building_big_3_overtile.tres"),
+    "city_building_big4" : preload("res://resources/terrain/building_big_4_overtile.tres"),
+    "city_building_big5" : preload("res://resources/terrain/building_big_5_overtile.tres"),
     "city_building_small5" : preload("res://resources/terrain/building_small_5_overtile.tres"),
     "city_building_small6" : preload("res://resources/terrain/building_small_6_overtile.tres"),
     "city_building_medium1" : preload("res://resources/terrain/building_medium_1_overtile.tres"),
@@ -208,57 +214,57 @@ var _city_templates: Dictionary[String, Variant] = {
     "bridge_stone_barrier_tiled" : preload("res://resources/terrain/bridge_stone_barrier_tiled.tres"),
 }
 
-var _damaged_city_templates: Dictionary[String, PackedScene] = {
-    "damaged_statue" : preload("res://scenes/tiles/decorations/statue_damaged.tscn"),
-    "damaged_statue_rat" : preload("res://scenes/tiles/decorations/rat_statue_damaged.tscn"),
-    "damaged_statue_capsule" : preload("res://scenes/tiles/decorations/capsule_statue_damaged.tscn"),
-    "damaged_fountain" : preload("res://scenes/tiles/decorations/fountain_damaged.tscn"),
-    "damaged_building_medium1" : preload("res://scenes/tiles/city/building_medium_1_damaged.tscn"),
-    "damaged_building_small1" : preload("res://scenes/tiles/city/building_small_1_damaged.tscn"),
-    "damaged_building_small2" : preload("res://scenes/tiles/city/building_small_2_damaged.tscn"),
-    "damaged_building_small3" : preload("res://scenes/tiles/city/building_small_3_damaged.tscn"),
-    "damaged_building_small4" : preload("res://scenes/tiles/city/building_small_4_damaged.tscn"),
-    "damaged_building_small5" : preload("res://scenes/tiles/city/building_small_5_damaged.tscn"),
-    "damaged_building_small6" : preload("res://scenes/tiles/city/building_small_6_damaged.tscn"),
-    "damaged_building_small10" : preload("res://scenes/tiles/city/building_small_10_damaged.tscn"),
-    "damaged_building_small11" : preload("res://scenes/tiles/city/building_small_11_damaged.tscn"),
-    "damaged_shop1" : preload("res://scenes/tiles/city/shop_1_damaged.tscn"),
-    "damaged_shop2" : preload("res://scenes/tiles/city/shop_2_damaged.tscn"),
-    "damaged_shop3" : preload("res://scenes/tiles/city/shop_3_damaged.tscn"),
-    "damaged_farm1" : preload("res://scenes/tiles/city/farm_1_damaged.tscn"),
-    "damaged_farm2" : preload("res://scenes/tiles/city/farm_2_damaged.tscn"),
-    "damaged_building_big1" : preload("res://scenes/tiles/city/building_big_1_damaged.tscn"),
-    "damaged_building_big2" : preload("res://scenes/tiles/city/building_big_2_damaged.tscn"),
-    "damaged_building_big3" : preload("res://scenes/tiles/city/building_big_3_damaged.tscn"),
-    "damaged_building_big4" : preload("res://scenes/tiles/city/building_big_4_damaged.tscn"),
-    "damaged_building_big5" : preload("res://scenes/tiles/city/building_big_5_damaged.tscn"),
+var _damaged_city_templates: Dictionary[String, DamageTileResource] = {
+    "damaged_statue" : preload("res://resources/terrain/statue_damaged.tres"),
+    "damaged_statue_rat" : preload("res://resources/terrain/rat_statue_damaged.tres"),
+    "damaged_statue_capsule" : preload("res://resources/terrain/capsule_statue_damaged.tres"),
+    "damaged_fountain" : preload("res://resources/terrain/fountain_damaged.tres"),
+    "damaged_building_medium1" : preload("res://resources/terrain/building_medium_1_damaged.tres"),
+    "damaged_building_small1" : preload("res://resources/terrain/building_small_1_damaged.tres"),
+    "damaged_building_small2" : preload("res://resources/terrain/building_small_2_damaged.tres"),
+    "damaged_building_small3" : preload("res://resources/terrain/building_small_3_damaged.tres"),
+    "damaged_building_small4" : preload("res://resources/terrain/building_small_4_damaged.tres"),
+    "damaged_building_small5" : preload("res://resources/terrain/building_small_5_damaged.tres"),
+    "damaged_building_small6" : preload("res://resources/terrain/building_small_6_damaged.tres"),
+    "damaged_building_small10" : preload("res://resources/terrain/building_small_10_damaged.tres"),
+    "damaged_building_small11" : preload("res://resources/terrain/building_small_11_damaged.tres"),
+    "damaged_shop1" : preload("res://resources/terrain/shop_1_damaged.tres"),
+    "damaged_shop2" : preload("res://resources/terrain/shop_2_damaged.tres"),
+    "damaged_shop3" : preload("res://resources/terrain/shop_3_damaged.tres"),
+    "damaged_farm1" : preload("res://resources/terrain/farm_1_damaged.tres"),
+    "damaged_farm2" : preload("res://resources/terrain/farm_2_damaged.tres"),
+    "damaged_building_big1" : preload("res://resources/terrain/building_big_1_damaged.tres"),
+    "damaged_building_big2" : preload("res://resources/terrain/building_big_2_damaged.tres"),
+    "damaged_building_big3" : preload("res://resources/terrain/building_big_3_damaged.tres"),
+    "damaged_building_big4" : preload("res://resources/terrain/building_big_4_damaged.tres"),
+    "damaged_building_big5" : preload("res://resources/terrain/building_big_5_damaged.tres"),
 
-    "destroyed_statue" : preload("res://scenes/tiles/decorations/statue_destroyed.tscn"),
-    "destroyed_statue_rat" : preload("res://scenes/tiles/decorations/rat_statue_destroyed.tscn"),
-    "destroyed_statue_capsule" : preload("res://scenes/tiles/decorations/capsule_statue_destroyed.tscn"),
-    "destroyed_fountain" : preload("res://scenes/tiles/decorations/fountain_destroyed.tscn"),
-    "destroyed_building_medium1" : preload("res://scenes/tiles/city/building_medium_1_destroyed.tscn"),
-    "destroyed_building_small1" : preload("res://scenes/tiles/city/building_small_1_destroyed.tscn"),
-    "destroyed_building_small2" : preload("res://scenes/tiles/city/building_small_2_destroyed.tscn"),
-    "destroyed_building_small3" : preload("res://scenes/tiles/city/building_small_3_destroyed.tscn"),
-    "destroyed_building_small4" : preload("res://scenes/tiles/city/building_small_4_destroyed.tscn"),
-    "destroyed_building_small5" : preload("res://scenes/tiles/city/building_small_5_destroyed.tscn"),
-    "destroyed_building_small6" : preload("res://scenes/tiles/city/building_small_6_destroyed.tscn"),
-    "destroyed_building_small10" : preload("res://scenes/tiles/city/building_small_10_destroyed.tscn"),
-    "destroyed_building_small11" : preload("res://scenes/tiles/city/building_small_11_destroyed.tscn"),
-    "destroyed_shop1" : preload("res://scenes/tiles/city/shop_1_destroyed.tscn"),
-    "destroyed_shop2" : preload("res://scenes/tiles/city/shop_2_destroyed.tscn"),
-    "destroyed_shop3" : preload("res://scenes/tiles/city/shop_3_destroyed.tscn"),
-    "destroyed_farm1" : preload("res://scenes/tiles/city/farm_1_destroyed.tscn"),
-    "destroyed_farm2" : preload("res://scenes/tiles/city/farm_2_destroyed.tscn"),
-    "destroyed_building_big1" : preload("res://scenes/tiles/city/building_big_1_destroyed.tscn"),
-    "destroyed_building_big2" : preload("res://scenes/tiles/city/building_big_2_destroyed.tscn"),
-    "destroyed_building_big3" : preload("res://scenes/tiles/city/building_big_3_destroyed.tscn"),
-    "destroyed_building_big4" : preload("res://scenes/tiles/city/building_big_4_destroyed.tscn"),
-    "destroyed_building_big5" : preload("res://scenes/tiles/city/building_big_5_destroyed.tscn"),
+    "destroyed_statue" : preload("res://resources/terrain/statue_destroyed.tres"),
+    "destroyed_statue_rat" : preload("res://resources/terrain/rat_statue_destroyed.tres"),
+    "destroyed_statue_capsule" : preload("res://resources/terrain/capsule_statue_destroyed.tres"),
+    "destroyed_fountain" : preload("res://resources/terrain/fountain_destroyed.tres"),
+    "destroyed_building_medium1" : preload("res://resources/terrain/building_medium_1_destroyed.tres"),
+    "destroyed_building_small1" : preload("res://resources/terrain/building_small_1_destroyed.tres"),
+    "destroyed_building_small2" : preload("res://resources/terrain/building_small_2_destroyed.tres"),
+    "destroyed_building_small3" : preload("res://resources/terrain/building_small_3_destroyed.tres"),
+    "destroyed_building_small4" : preload("res://resources/terrain/building_small_4_destroyed.tres"),
+    "destroyed_building_small5" : preload("res://resources/terrain/building_small_5_destroyed.tres"),
+    "destroyed_building_small6" : preload("res://resources/terrain/building_small_6_destroyed.tres"),
+    "destroyed_building_small10" : preload("res://resources/terrain/building_small_10_destroyed.tres"),
+    "destroyed_building_small11" : preload("res://resources/terrain/building_small_11_destroyed.tres"),
+    "destroyed_shop1" : preload("res://resources/terrain/shop_1_destroyed.tres"),
+    "destroyed_shop2" : preload("res://resources/terrain/shop_2_destroyed.tres"),
+    "destroyed_shop3" : preload("res://resources/terrain/shop_3_destroyed.tres"),
+    "destroyed_farm1" : preload("res://resources/terrain/farm_1_destroyed.tres"),
+    "destroyed_farm2" : preload("res://resources/terrain/farm_2_destroyed.tres"),
+    "destroyed_building_big1" : preload("res://resources/terrain/building_big_1_destroyed.tres"),
+    "destroyed_building_big2" : preload("res://resources/terrain/building_big_2_destroyed.tres"),
+    "destroyed_building_big3" : preload("res://resources/terrain/building_big_3_destroyed.tres"),
+    "destroyed_building_big4" : preload("res://resources/terrain/building_big_4_destroyed.tres"),
+    "destroyed_building_big5" : preload("res://resources/terrain/building_big_5_destroyed.tres"),
 }
 
-var _wall_templates: Dictionary[String, Variant] = {
+var _wall_templates: Dictionary[String, TileResource] = {
     "castle_wall_straight" : preload("res://resources/terrain/wall_straight.tres"),
     "castle_wall_straight2" : preload("res://resources/terrain/wall_straight2.tres"),
     "castle_wall_corner" : preload("res://resources/terrain/wall_corner.tres"),
@@ -296,7 +302,7 @@ var _wall_templates: Dictionary[String, Variant] = {
     "futuristic_wall_gate_closed" : preload("res://resources/terrain/wall4_gate_closed.tres"),
 }
 
-var _nature_templates: Dictionary[String, Variant] = {
+var _nature_templates: Dictionary[String, TileResource] = {
     "nature_big_rocks1" : preload("res://resources/terrain/big_rocks_1_overtile.tres"),
     "nature_big_rocks2" : preload("res://resources/terrain/big_rocks_2_overtile.tres"),
     "nature_big_rocks3" : preload("res://resources/terrain/big_rocks_3_overtile.tres"),
@@ -333,40 +339,40 @@ var _nature_templates: Dictionary[String, Variant] = {
     "nature_sand_palms4" : preload("res://resources/terrain/palms_4_overtile.tres"),
 }
 
-var _special_templates: Dictionary[String, Variant] = {
-    "special_key" : preload("res://scenes/tiles/special/key.tscn"),
+var _special_templates: Dictionary[String, TileResource] = {
+    "special_key" : preload("res://resources/decoration/key.tres"),
     "deco_rail_stop" : preload("res://resources/decoration/railway_stop.tres"),
 }
 
-var _building_templates: Dictionary[String, PackedScene] = {
-    self.MODERN_HQ : preload("res://scenes/tiles/buildings/blue/headquarters.tscn"),
-    "modern_barracks" : preload("res://scenes/tiles/buildings/blue/barracks.tscn"),
-    "modern_factory" : preload("res://scenes/tiles/buildings/blue/factory.tscn"),
-    "modern_airfield" : preload("res://scenes/tiles/buildings/blue/airfield.tscn"),
-    "modern_tower" : preload("res://scenes/tiles/buildings/blue/tower.tscn"),
+var _building_templates: Dictionary[String, BuildingResource] = {
+    self.MODERN_HQ : preload("res://resources/buildings/blue/headquarters.tres"),
+    "modern_barracks" : preload("res://resources/buildings/blue/barracks.tres"),
+    "modern_factory" : preload("res://resources/buildings/blue/factory.tres"),
+    "modern_airfield" : preload("res://resources/buildings/blue/airfield.tres"),
+    "modern_tower" : preload("res://resources/buildings/blue/tower.tres"),
 
-    self.STEAMPUNK_HQ : preload("res://scenes/tiles/buildings/red/headquarters.tscn"),
-    "steampunk_barracks" : preload("res://scenes/tiles/buildings/red/barracks.tscn"),
-    "steampunk_factory" : preload("res://scenes/tiles/buildings/red/factory.tscn"),
-    "steampunk_airfield" : preload("res://scenes/tiles/buildings/red/airfield.tscn"),
-    "steampunk_tower" : preload("res://scenes/tiles/buildings/red/tower.tscn"),
+    self.STEAMPUNK_HQ : preload("res://resources/buildings/red/headquarters.tres"),
+    "steampunk_barracks" : preload("res://resources/buildings/red/barracks.tres"),
+    "steampunk_factory" : preload("res://resources/buildings/red/factory.tres"),
+    "steampunk_airfield" : preload("res://resources/buildings/red/airfield.tres"),
+    "steampunk_tower" : preload("res://resources/buildings/red/tower.tres"),
 
-    self.FUTURISTIC_HQ : preload("res://scenes/tiles/buildings/green/headquarters.tscn"),
-    "futuristic_barracks" : preload("res://scenes/tiles/buildings/green/barracks.tscn"),
-    "futuristic_factory" : preload("res://scenes/tiles/buildings/green/factory.tscn"),
-    "futuristic_airfield" : preload("res://scenes/tiles/buildings/green/airfield.tscn"),
-    "futuristic_tower" : preload("res://scenes/tiles/buildings/green/tower.tscn"),
+    self.FUTURISTIC_HQ : preload("res://resources/buildings/green/headquarters.tres"),
+    "futuristic_barracks" : preload("res://resources/buildings/green/barracks.tres"),
+    "futuristic_factory" : preload("res://resources/buildings/green/factory.tres"),
+    "futuristic_airfield" : preload("res://resources/buildings/green/airfield.tres"),
+    "futuristic_tower" : preload("res://resources/buildings/green/tower.tres"),
 
-    self.FEUDAL_HQ : preload("res://scenes/tiles/buildings/yellow/headquarters.tscn"),
-    "feudal_barracks" : preload("res://scenes/tiles/buildings/yellow/barracks.tscn"),
-    "feudal_factory" : preload("res://scenes/tiles/buildings/yellow/factory.tscn"),
-    "feudal_airfield" : preload("res://scenes/tiles/buildings/yellow/airfield.tscn"),
-    "feudal_tower" : preload("res://scenes/tiles/buildings/yellow/tower.tscn"),
+    self.FEUDAL_HQ : preload("res://resources/buildings/yellow/headquarters.tres"),
+    "feudal_barracks" : preload("res://resources/buildings/yellow/barracks.tres"),
+    "feudal_factory" : preload("res://resources/buildings/yellow/factory.tres"),
+    "feudal_airfield" : preload("res://resources/buildings/yellow/airfield.tres"),
+    "feudal_tower" : preload("res://resources/buildings/yellow/tower.tres"),
 
-    "neutral_lighthouse" : preload("res://scenes/tiles/buildings/neutral/lighthouse.tscn"),
+    "neutral_lighthouse" : preload("res://resources/buildings/neutral/lighthouse.tres"),
 }
 
-var _unit_templates: Dictionary[String, Resource] = {
+var _unit_templates: Dictionary[String, UnitResource] = {
     "blue_infantry" : preload("res://resources/units/blue/infantry.tres"),
     "blue_tank" : preload("res://resources/units/blue/tank.tres"),
     "blue_heli" : preload("res://resources/units/blue/heli.tres"),
@@ -400,25 +406,25 @@ var _unit_templates: Dictionary[String, Resource] = {
     "yellow_truck" : preload("res://resources/units/yellow/truck.tres"),
 }
 
-var _hero_templates: Dictionary[String, PackedScene] = {
-    "npc_president" : preload("res://scenes/tiles/units/npc/president.tscn"),
-    "hero_general" : preload("res://scenes/tiles/units/heroes/general.tscn"),
-    "hero_commando" : preload("res://scenes/tiles/units/heroes/commando.tscn"),
+var _hero_templates: Dictionary[String, UnitResource] = {
+    "npc_president" : preload("res://resources/units/npc/president.tres"),
+    "hero_general" : preload("res://resources/units/heroes/general.tres"),
+    "hero_commando" : preload("res://resources/units/heroes/commando.tres"),
 
-    "npc_lord" : preload("res://scenes/tiles/units/npc/lord.tscn"),
-    "hero_gentleman" : preload("res://scenes/tiles/units/heroes/gentleman.tscn"),
-    "hero_noble" : preload("res://scenes/tiles/units/heroes/noble.tscn"),
+    "npc_lord" : preload("res://resources/units/npc/lord.tres"),
+    "hero_gentleman" : preload("res://resources/units/heroes/gentleman.tres"),
+    "hero_noble" : preload("res://resources/units/heroes/noble.tres"),
 
-    "npc_chancellor" : preload("res://scenes/tiles/units/npc/chancellor.tscn"),
-    "hero_admiral" : preload("res://scenes/tiles/units/heroes/admiral.tscn"),
-    "hero_captain" : preload("res://scenes/tiles/units/heroes/captain.tscn"),
+    "npc_chancellor" : preload("res://resources/units/npc/chancellor.tres"),
+    "hero_admiral" : preload("res://resources/units/heroes/admiral.tres"),
+    "hero_captain" : preload("res://resources/units/heroes/captain.tres"),
 
-    "npc_king" : preload("res://scenes/tiles/units/npc/king.tscn"),
-    "hero_prince" : preload("res://scenes/tiles/units/heroes/prince.tscn"),
-    "hero_warlord" : preload("res://scenes/tiles/units/heroes/warlord.tscn"),
+    "npc_king" : preload("res://resources/units/npc/king.tres"),
+    "hero_prince" : preload("res://resources/units/heroes/prince.tres"),
+    "hero_warlord" : preload("res://resources/units/heroes/warlord.tres"),
 }
 
-var templates: Dictionary[String, Variant] = {}
+var templates: Dictionary[String, MapObjectResource] = {}
 
 var side_materials: Dictionary[String, Resource] = {
     self.PLAYER_NEUTRAL : ResourceLoader.load("res://assets/materials/arne32_neutral.tres"),
@@ -454,12 +460,9 @@ var side_materials_metallic_desat: Dictionary[String, Resource] = {
     self.PLAYER_BLACK : ResourceLoader.load("res://assets/materials/arne32_metallic_black_desat.tres"),
 }
 
-var _other_templates: Dictionary[String, PackedScene] = {
-    "dummy_ground" : preload("res://scenes/tiles/ground/mouse_listener_tile.tscn"),
+var _other_templates: Dictionary[String, MapObjectResource] = {
+    "dummy_ground" : preload("res://resources/ground/mouse_listener.tres"),
 }
-
-var generic_building: Script = preload("res://scenes/tiles/buildings/building.gd")
-var generic_unit: Script = preload("res://scenes/tiles/units/unit.gd")
 
 func _compile_templates_list() -> void:
     var partial_templates: Array[Dictionary] = [
@@ -484,29 +487,53 @@ func _compile_templates_list() -> void:
             self.templates[template_key] = partial_dict[template_key]
 
 func get_template(template: String) -> MapObject:
+    var template_entry: MapObjectResource = self.get_template_source(template)
+    if template_entry == null:
+        return null
+    var new_tile: MapObject
+    var damage_tile_resource: DamageTileResource = template_entry as DamageTileResource
+    var tile_resource: TileResource = template_entry as TileResource
+    var unit_resource: UnitResource = template_entry as UnitResource
+    if template_entry is MouseListenerTileResource:
+        new_tile = self.MOUSE_LISTENER_TILE_SCENE.instantiate() as MapObject
+    elif template_entry is RotatingTileResource:
+        var rotating_tile: GroundTile = self.ROTATING_TILE_SCENE.instantiate() as GroundTile
+        rotating_tile.configure(tile_resource)
+        new_tile = rotating_tile
+    elif damage_tile_resource != null:
+        var damage_tile: DamagedTile = self.DAMAGE_TILE_SCENE.instantiate() as DamagedTile
+        damage_tile.configure(damage_tile_resource)
+        new_tile = damage_tile
+    elif tile_resource != null:
+        var ground_tile: GroundTile = self.GROUND_TILE_SCENE.instantiate() as GroundTile
+        ground_tile.configure(tile_resource)
+        new_tile = ground_tile
+    elif template_entry is BuildingResource:
+        var building: BaseBuilding = self.BUILDING_TILE_SCENE.instantiate() as BaseBuilding
+        building.configure(template_entry as BuildingResource)
+        new_tile = building
+    elif unit_resource != null:
+        var unit_scene: PackedScene = self.UNIT_TILE_SCENE
+        if unit_resource.kind == UnitResource.Kind.HERO:
+            unit_scene = self.HERO_TILE_SCENE
+        elif unit_resource.kind == UnitResource.Kind.NPC:
+            unit_scene = self.NPC_TILE_SCENE
+        var unit: BaseUnit = unit_scene.instantiate() as BaseUnit
+        unit.configure(unit_resource)
+        new_tile = unit
+    assert(new_tile != null, template)
+    new_tile.template_name = template
+
+    return new_tile
+
+func get_template_source(template: String) -> MapObjectResource:
     if template == null:
         return null
 
     if self.templates.size() == 0:
         _compile_templates_list()
 
-    var template_entry: Variant = self.templates[template]
-    var new_tile: MapObject
-    var template_resource: Resource = template_entry as Resource
-    var ground_tile_resource: GroundTileResource = template_entry as GroundTileResource
-    if ground_tile_resource != null:
-        var ground_tile: GroundTile = self.GROUND_TILE_SCENE.instantiate() as GroundTile
-        ground_tile.configure(ground_tile_resource)
-        new_tile = ground_tile
-    elif template_resource is UnitResource:
-        var unit: BaseUnit = self.UNIT_TILE_SCENE.instantiate() as BaseUnit
-        unit.configure(template_resource as UnitResource)
-        new_tile = unit
-    else:
-        new_tile = (template_entry as PackedScene).instantiate()
-    new_tile.template_name = template
-
-    return new_tile
+    return self.templates[template]
 
 func get_side_material(side: String, _type:="normal") -> Resource:
     #if type == self.MATERIAL_METALLIC:

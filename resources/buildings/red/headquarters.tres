@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="BuildingResource" format=3]
+
+[ext_resource type="Resource" path="res://resources/abilities/production/red/infantry.tres" id="1_21cd2"]
+[ext_resource type="Resource" path="res://resources/abilities/production/heroes/gentleman.tres" id="2_3o5sy"]
+[ext_resource type="Resource" path="res://resources/abilities/production/heroes/noble.tres" id="3_mdccm"]
+[ext_resource type="ArrayMesh" path="res://assets/buildings/red/headquarters.obj" id="4_nmguu"]
+[ext_resource type="Material" path="res://assets/materials/arne32_red.tres" id="5_lg8vu"]
+[ext_resource type="Script" path="res://scenes/tiles/buildings/building_resource.gd" id="6_s74jx"]
+
+[resource]
+script = ExtResource("6_s74jx")
+side = "red"
+ap_gain = 20
+capture_value = 1000
+abilities = Array[Resource]([ExtResource("1_21cd2"), ExtResource("2_3o5sy"), ExtResource("3_mdccm")])
+mesh = ExtResource("4_nmguu")
+mesh_material_override = ExtResource("5_lg8vu")

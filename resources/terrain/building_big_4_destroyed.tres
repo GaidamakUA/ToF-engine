@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DamageTileResource" format=3]
+
+[ext_resource type="ArrayMesh" path="res://assets/terrain/grasslands/building_big_4_destroyed.obj" id="1_tmg31"]
+[ext_resource type="Script" path="res://scenes/tiles/damage_tile_resource.gd" id="2_8yo85"]
+
+[resource]
+script = ExtResource("2_8yo85")
+is_smoking = true
+base_stage_template = "city_building_big4"
+mesh = ExtResource("1_tmg31")

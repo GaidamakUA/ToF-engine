@@ -926,10 +926,9 @@ func update_tile_highlight(tile: MapTile) -> void:
         template_name = unit.template_name
         new_side = unit.side
 
-    var new_tile: MapObject = self.map.templates.get_template(template_name)
-    new_tile.set_side_material(self.map.templates.get_side_material(new_side, material_type))
-
-    self.ui.update_tile_highlight(new_tile)
+    var tile_source: MapObjectResource = self.map.templates.get_template_source(template_name)
+    var material: Material = self.map.templates.get_side_material(new_side, material_type) as Material
+    self.ui.update_tile_highlight(tile_source, material)
 
     if building != null:
         var ap_gain: int = building.ap_gain
@@ -960,10 +959,9 @@ func _open_context_panel_for_tile(tile: MapTile) -> void:
         template_name = unit.template_name
         new_side = unit.side
 
-        var tile_preview: MapObject = self.map.templates.get_template(template_name)
-        tile_preview.set_side_material(self.map.templates.get_side_material(new_side, material_type))
-
-        self.ui.show_unit_stats(unit, tile_preview, self)
+        var tile_source: MapObjectResource = self.map.templates.get_template_source(template_name)
+        var material: Material = self.map.templates.get_side_material(new_side, material_type) as Material
+        self.ui.show_unit_stats(unit, tile_source, material, self)
         self.map.camera.paused = true
 
 

@@ -1,8 +1,9 @@
-extends Resource
+extends MapObjectResource
 class_name UnitResource
 
-@export var mesh: ArrayMesh = null
-@export var mesh_transform: Transform3D = Transform3D.IDENTITY
+enum Kind { UNIT, HERO, NPC }
+
+@export var kind: Kind = Kind.UNIT
 @export var healthbar_offset: Vector2 = Vector2(0, 300)
 @export var explosion_transform: Transform3D = Transform3D.IDENTITY
 @export var dust_visible: bool = true
@@ -28,9 +29,5 @@ class_name UnitResource
 @export var passive_ability: Resource = null
 @export var active_abilities: Array[Resource] = []
 @export var active_abilities_require_level: bool = true
-
-@export var main_tile_view_cam_modifier: int = 0
-@export var side_tile_view_cam_modifier: int = 0
-@export var tile_view_height_cam_modifier: float = 0.0
 
 @export var audio_streams: Dictionary[String, AudioStream] = {}

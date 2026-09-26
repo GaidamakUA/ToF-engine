@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="BuildingResource" format=3]
+
+[ext_resource type="Resource" path="res://resources/abilities/production/yellow/infantry.tres" id="1_jl30m"]
+[ext_resource type="Resource" path="res://resources/abilities/production/heroes/prince.tres" id="2_orqgt"]
+[ext_resource type="Resource" path="res://resources/abilities/production/heroes/warlord.tres" id="3_40hjr"]
+[ext_resource type="ArrayMesh" path="res://assets/buildings/yellow/headquarters.obj" id="4_h1klb"]
+[ext_resource type="Material" path="res://assets/materials/arne32_yellow.tres" id="5_3nxby"]
+[ext_resource type="Script" path="res://scenes/tiles/buildings/building_resource.gd" id="6_fq16a"]
+
+[resource]
+script = ExtResource("6_fq16a")
+side = "yellow"
+ap_gain = 20
+capture_value = 1000
+abilities = Array[Resource]([ExtResource("1_jl30m"), ExtResource("2_orqgt"), ExtResource("3_40hjr")])
+mesh = ExtResource("4_h1klb")
+mesh_material_override = ExtResource("5_3nxby")

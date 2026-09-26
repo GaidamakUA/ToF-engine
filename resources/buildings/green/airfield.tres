@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BuildingResource" format=3]
+
+[ext_resource type="Resource" path="res://resources/abilities/production/green/heli.tres" id="1_ggff0"]
+[ext_resource type="Resource" path="res://resources/abilities/production/green/scout.tres" id="2_cc0y5"]
+[ext_resource type="ArrayMesh" path="res://assets/buildings/green/airfield.obj" id="3_16obw"]
+[ext_resource type="Material" path="res://assets/materials/arne32_green.tres" id="4_rktq6"]
+[ext_resource type="Script" path="res://scenes/tiles/buildings/building_resource.gd" id="5_t8hvf"]
+
+[resource]
+script = ExtResource("5_t8hvf")
+side = "green"
+abilities = Array[Resource]([ExtResource("1_ggff0"), ExtResource("2_cc0y5")])
+mesh = ExtResource("3_16obw")
+mesh_material_override = ExtResource("4_rktq6")

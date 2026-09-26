@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="UnitResource" format=3]
+
+[ext_resource type="Resource" path="res://resources/abilities/hero/active/hardened_armour.tres" id="1_jpvet"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_spawn.wav" id="2_xmwwy"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/hero_move.wav" id="3_7dxha"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_attack.wav" id="4_3xc7k"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_hit.wav" id="5_gxwfk"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_damage.wav" id="6_fg0ut"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_die.wav" id="7_dvsps"]
+[ext_resource type="AudioStream" path="res://assets/audio/pickup_box.wav" id="8_o3va5"]
+[ext_resource type="ArrayMesh" path="res://assets/units/heroes/noble.obj" id="9_cjhpi"]
+[ext_resource type="Material" path="res://assets/materials/arne32_red.tres" id="10_8pfip"]
+[ext_resource type="Resource" path="res://resources/abilities/hero/passive/efficient.tres" id="11_q4c6l"]
+[ext_resource type="Script" path="res://resources/units/unit_resource.gd" id="12_fd3jj"]
+
+[resource]
+script = ExtResource("12_fd3jj")
+kind = 1
+unit_name = "TR_NOBLE"
+side = "red"
+max_hp = 20
+max_move = 5
+attack = 9
+unit_value = 150
+unit_class = "hero"
+passive_ability = ExtResource("11_q4c6l")
+active_abilities = Array[Resource]([ExtResource("1_jpvet")])
+audio_streams = Dictionary[String, AudioStream]({
+"attack": ExtResource("4_3xc7k"),
+"damage": ExtResource("6_fg0ut"),
+"die": ExtResource("7_dvsps"),
+"hit": ExtResource("5_gxwfk"),
+"level_up": ExtResource("8_o3va5"),
+"move": ExtResource("3_7dxha"),
+"spawn": ExtResource("2_xmwwy")
+})
+mesh = ExtResource("9_cjhpi")
+mesh_material_override = ExtResource("10_8pfip")
+main_tile_view_cam_modifier = -16
+side_tile_view_cam_modifier = -35
+tile_view_height_cam_modifier = -0.5

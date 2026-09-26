@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="TileResource" format=3]
+
+[ext_resource type="ArrayMesh" path="res://assets/terrain/damage/ground_hole_4.obj" id="1_r3fuc"]
+[ext_resource type="Script" path="res://scenes/tiles/tile_resource.gd" id="2_lqlxn"]
+
+[resource]
+script = ExtResource("2_lqlxn")
+mesh = ExtResource("1_r3fuc")
+mesh_cast_shadow = 0

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BuildingResource" format=3]
+
+[ext_resource type="Resource" path="res://resources/abilities/production/red/infantry.tres" id="1_0qkaw"]
+[ext_resource type="Resource" path="res://resources/abilities/production/red/mobile_infantry.tres" id="2_c6nfj"]
+[ext_resource type="ArrayMesh" path="res://assets/buildings/red/barracks.obj" id="3_susgc"]
+[ext_resource type="Material" path="res://assets/materials/arne32_red.tres" id="4_wvi0t"]
+[ext_resource type="Script" path="res://scenes/tiles/buildings/building_resource.gd" id="5_8axmj"]
+
+[resource]
+script = ExtResource("5_8axmj")
+side = "red"
+abilities = Array[Resource]([ExtResource("1_0qkaw"), ExtResource("2_c6nfj")])
+mesh = ExtResource("3_susgc")
+mesh_material_override = ExtResource("4_wvi0t")

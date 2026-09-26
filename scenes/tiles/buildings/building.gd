@@ -19,6 +19,25 @@ var team: Variant = null
 @export var abilities: Array = []
 var ability_states: Dictionary = {}
 
+func configure(resource: BuildingResource) -> void:
+    var mesh_instance: MeshInstance3D = $"mesh" as MeshInstance3D
+    mesh_instance.mesh = resource.mesh
+    mesh_instance.transform = resource.mesh_transform
+    mesh_instance.cast_shadow = resource.mesh_cast_shadow
+    mesh_instance.material_override = resource.mesh_material_override
+    self.side = resource.side
+    self.require_crew = resource.require_crew
+    self.ap_gain = resource.ap_gain
+    self.capture_value = resource.capture_value
+    self.uses_metallic_material = resource.uses_metallic_material
+    self.abilities.assign(resource.abilities)
+    self.main_tile_view_cam_modifier = resource.main_tile_view_cam_modifier
+    self.side_tile_view_cam_modifier = resource.side_tile_view_cam_modifier
+    self.tile_view_height_cam_modifier = resource.tile_view_height_cam_modifier
+
+    if self.is_node_ready():
+        self._setup_abilities()
+
 func _ready() -> void:
     self._setup_abilities()
 

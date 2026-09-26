@@ -63,7 +63,7 @@ instance:
   scripting tags, AI pause state, and per-ability state.
 - `Ability` defines shared configuration and behavior. `AbilityState` stores a
   source's cooldown and disabled flag.
-- `GroundTileResource` defines reusable ground meshes, movement properties,
+- `TileResource` defines reusable ground meshes, movement properties,
   offsets, shadows, reflections, and damage-stage template names.
 
 Do not duplicate these resources for each placed object, and do not put

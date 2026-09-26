@@ -114,13 +114,13 @@ func update_resource_value(value: int) -> void:
     else:
         self.resource.stop_flash()
 
-func update_tile_highlight(tile_preview: MapObject) -> void:
+func update_tile_highlight(tile_source: MapObjectResource, preview_material: Material) -> void:
     self.clear_tile_highlight()
     if self.cinematic_bars.is_extended:
         return
 
     self.tile_highlight.show()
-    self.tile_highlight.set_tile(tile_preview, 0)
+    self.tile_highlight.set_tile(tile_source, 0, preview_material)
 
 func update_tile_highlight_unit_panel(unit: BaseUnit, board: Board) -> void:
     if self.cinematic_bars.is_extended:
@@ -254,8 +254,8 @@ func hide_cinematic_bars() -> void:
 func are_cinematic_bars_visible() -> bool:
     return self.cinematic_bars.is_extended
 
-func show_unit_stats(unit: BaseUnit, tile_preview: MapObject, board: Board) -> void:
-    self.unit_stats.bind_unit(unit, tile_preview, board)
+func show_unit_stats(unit: BaseUnit, tile_source: MapObjectResource, preview_material: Material, board: Board) -> void:
+    self.unit_stats.bind_unit(unit, tile_source, preview_material, board)
     self.unit_stats.show_panel()
     self.hide_controls()
 

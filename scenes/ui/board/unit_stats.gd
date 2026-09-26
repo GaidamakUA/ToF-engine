@@ -62,13 +62,13 @@ func reset_view() -> void:
     self.icons = [null, null, null]
 
 
-func bind_unit(unit: BaseUnit, tile_preview: MapObject, board_object: Board) -> void:
+func bind_unit(unit: BaseUnit, tile_source: MapObjectResource, preview_material: Material, board_object: Board) -> void:
     self.reset_view()
 
     var stats: Dictionary[String, int]
     stats.assign(unit.get_stats_with_modifiers())
 
-    self.tile_highlight.set_tile(tile_preview, 0)
+    self.tile_highlight.set_tile(tile_source, 0, preview_material)
     self.unit_name.set_text(unit.unit_name)
     self.hp_value.set_text(str(stats['hp']) + "/" + str(stats['max_hp']))
     self.armour_value.set_text(str(stats['armor']))

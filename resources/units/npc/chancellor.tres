@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="UnitResource" format=3]
+
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_spawn.wav" id="1_dcbec"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_move.wav" id="2_37fa2"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_attack.wav" id="3_dkjnr"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_damage.wav" id="4_g5p13"]
+[ext_resource type="AudioStream" path="res://assets/units/audio/soldier_die.wav" id="5_j87uf"]
+[ext_resource type="AudioStream" path="res://assets/audio/pickup_box.wav" id="6_vmg1s"]
+[ext_resource type="ArrayMesh" path="res://assets/units/npcs/chancellor.obj" id="7_6rbcm"]
+[ext_resource type="Material" path="res://assets/materials/arne32_green.tres" id="8_nw6ft"]
+[ext_resource type="Script" path="res://resources/units/unit_resource.gd" id="9_1et2q"]
+
+[resource]
+script = ExtResource("9_1et2q")
+kind = 2
+unit_name = "TR_CHANCELLOR"
+side = "green"
+max_hp = 15
+attack = 0
+can_attack_units = false
+max_attacks = 0
+unit_class = "npc"
+audio_streams = Dictionary[String, AudioStream]({
+"attack": ExtResource("3_dkjnr"),
+"damage": ExtResource("4_g5p13"),
+"die": ExtResource("5_j87uf"),
+"level_up": ExtResource("6_vmg1s"),
+"move": ExtResource("2_37fa2"),
+"spawn": ExtResource("1_dcbec")
+})
+mesh = ExtResource("7_6rbcm")
+mesh_material_override = ExtResource("8_nw6ft")
+main_tile_view_cam_modifier = -16
+side_tile_view_cam_modifier = -35
+tile_view_height_cam_modifier = -0.5

@@ -27,11 +27,11 @@ func set_actor(actor_details: Dictionary[String, Variant]) -> void:
     if actor_details['side'] == 'left':
         self.left_actor.show()
         self.left_actor_name.set_text(actor_details['name'])
-        self.left_actor_portrait.set_tile(actor_details['portrait_tile'], 90)
+        self.left_actor_portrait.set_tile(actor_details['portrait_source'] as MapObjectResource, 90, actor_details['portrait_material'] as Material, -0.2)
     elif actor_details['side'] == 'right':
         self.right_actor.show()
         self.right_actor_name.set_text(actor_details['name'])
-        self.right_actor_portrait.set_tile(actor_details['portrait_tile'], 0)
+        self.right_actor_portrait.set_tile(actor_details['portrait_source'] as MapObjectResource, 0, actor_details['portrait_material'] as Material, -0.2)
 
 func set_text(dialog_text: String) -> void:
     self.text.set_text(dialog_text)

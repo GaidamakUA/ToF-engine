@@ -1,74 +1,79 @@
-# Tanks of Freedom II
+# ToF Engine
 
-![Tanks of Freedom](https://i.imgur.com/o2BNedS.png)
+![ToF Engine](docs/artefacts/tof_engine_logo.png)
 
-## Indie Turn Based Strategy in Isometric Voxel Art
+ToF Engine is a fork of Tanks of Freedom II focused on updating and optimizing
+the codebase while turning game-specific behavior into a configurable engine.
+Tanks of Freedom II remains the bundled reference game and compatibility
+target.
 
-A classic, turn-based strategy game with up to four armies fighting against each other. Challenge yourself in a campaign against AI, or a hot-seat battle with a friend. Using the easy map editor you can create any imaginable scenario to play -and share online for others to discover-!
+The longer-term goal is to support the original Tanks of Freedom II content,
+explore compatibility with [Tanks of Freedom](https://github.com/w84death/Tanks-of-Freedom),
+and make the engine moddable enough to recreate other Advance Wars–style games
+or build new ones.
 
-ToF II follows in the footsteps of the original [Tanks of Freedom](https://github.com/w84death/Tanks-of-Freedom)
+![32-colour voxel art](https://i.imgur.com/Oe6y4SO.jpg)
 
-![32 colour](https://i.imgur.com/Oe6y4SO.jpg)
+## Project direction
 
-Each voxel model was handcrafted in gorgeous, 32 colour pallete. Sound effects were made on real GameBoy hardware. The game is open-source and runs smoothly thanks to Godot Engine.
+- Preserve Tanks of Freedom II as the working reference game.
+- Modernize and optimize the Godot codebase without changing game behavior.
+- Move reusable definitions and rules into configurable resources.
+- Separate static content from per-match runtime state.
+- Support custom campaigns, maps, units, abilities, terrain, and rulesets.
+- Investigate Tanks of Freedom 1 compatibility where its formats and mechanics
+  can be mapped cleanly.
 
-## Open Source Engine
-Game is made using [Godot Engine 4.2+](https://godotengine.org).
+## Original game
 
-## Official pages:
-- Official game page: [czlowiekimadlo.itch.io/tanks-of-freedom-ii](https://czlowiekimadlo.itch.io/tanks-of-freedom-ii)
-- Previous game available at: [w84death.itch.io/tanks-of-freedom](https://w84death.itch.io/tanks-of-freedom)
-- Official game page for ToF1: [tof.p1x.in](https://tof.p1x.in)
-- Official P1X page: [p1x.in](https://p1x.in)
-- Devlog articles: [czlowiekimadlo.pl](https://czlowiekimadlo.pl/blog)
+- [Tanks of Freedom II on itch.io](https://czlowiekimadlo.itch.io/tanks-of-freedom-ii)
+- [Development blog](https://czlowiekimadlo.pl/blog)
+- [P1X website](https://p1x.in)
+- [Original Tanks of Freedom](https://w84death.itch.io/tanks-of-freedom)
 
-## Roadmap
+## Run from source
 
-Development progress can be tracked at [the trello board](https://trello.com/b/RQOwyCwm/tanks-of-freedom-3-d).
+The project requires [Godot 4.7](https://godotengine.org/download/).
+
+1. Clone or download this repository.
+2. Import `project.godot` in Godot.
+3. Run the project from the editor.
+
+To check that the project loads without opening the editor:
+
+```sh
+: "${GODOT_BIN:=godot}"
+HOME=/private/tmp "$GODOT_BIN" --headless --path "$PWD" --quit
+```
+
+Set `GODOT_BIN` to your Godot executable if it is not available as `godot` on
+`PATH`.
+
+## Tests
+
+The repository includes the GUT test framework and unit/headless gameplay
+tests. Run the full suite with:
+
+```sh
+./tools/run_gut.sh
+```
+
+The script accepts `GODOT_BIN` in the same way as the load check.
 
 ## Documentation
 
-For the game design document please see [DESIGN](docs/DESIGN.md)
+- [Development guide](docs/DEVELOPMENT.md) — architecture, project layout, and contribution checks
+- [Map editor manual](docs/MANUAL.md) — advanced map, trigger, and story editing
+- [Game design document](docs/DESIGN.md) — original ToF II world, campaign, and mechanics design
+- [Changelog](docs/CHANGELOG.md) — bundled ToF II release history
+- [Credits](docs/CREDITS.md) and [license](LICENSE.md)
 
-The development process is being documented with screenshots that can be found in [devlog folder](docs/devlog)
-
-Built-in map editor has it's more advanced functions described in [MANUAL](docs/MANUAL.md)
-
-## Build from sources
-To get the latest version of the game, you'll need to use the source code and Godot Engine.
-
-- download & install [Godot Engine](https://godotengine.org/download) version 4.2 or newer
-- download our sources
-  - download [master.zip](https://github.com/P1X-in/Tanks-of-Freedom-3-D/archive/refs/heads/master.zip) and unzip
-  - or clone the repository using git
-- open Godot and import our game
-- run :)
-
-Follow [official documentation](https://docs.godotengine.org/en/stable/getting_started/workflow/export/exporting_projects.html) to learn how to export the game for each platform.
-
-## Credits
-
-### P1X Team
-###  code
-   - czlowiekimadlo https://twitter.com/czlowiekimadlo
-
-### gfx
-   - czlowiekimadlo https://twitter.com/czlowiekimadlo
-   - kenneyNL https://twitter.com/KenneyNL - Control icons
-
-### music
-   - QmYaan (Grand Beats) http://www.grandbeats.com/ licensed under CC BY-SA 4.0
-   - Juan "reduz" Linietsky https://soundcloud.com/reduz licensed under CC BY 4.0
-
-### sfx
-   - QmYaan (Grand Beats) http://www.grandbeats.com/ licensed under CC BY-SA 4.0
-   - czlowiekimadlo https://twitter.com/czlowiekimadlo
-
-### engine
-   - Godot Engine https://godotengine.org/
-
-For any additional credits please see [CREDITS](docs/CREDITS.md)
+Godot's [exporting documentation](https://docs.godotengine.org/en/stable/getting_started/workflow/export/exporting_projects.html)
+explains how to build platform-specific releases.
 
 ## License
 
-For additional credits and license information please see [LICENSE](LICENSE.md)
+The source code and most original assets are released under the MIT License.
+Third-party fonts, music, sound effects, and reference material have their own
+terms. See [LICENSE.md](LICENSE.md) and [docs/CREDITS.md](docs/CREDITS.md) for
+details.

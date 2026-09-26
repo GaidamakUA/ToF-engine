@@ -3,7 +3,7 @@
 
 Map editor is a tool that allows users to create skirmish maps. These maps can also be repackaged into campaigns.
 
-Most basic editor controls are explained in the game settings, and can be overlayed as well.
+Most basic editor controls are explained in the game settings and can also be shown as an overlay.
 
 Tile selector in the lower-right shows which tile will be placed. There is a number of categories, with many tiles in each. Most tiles require a ground tile to be placed first. Some tile categories will replace each other when placed, as things like Terrain, Building or Unit can not share the same tile.
 
@@ -19,13 +19,13 @@ It is divided in three tabs.
 
 This tab contains some map settings that are useful for both skirmish and campaign maps.
 
-- `Skip initial camera pan to HQ` - this setting allows you to skip the inital camera pan to HQ (duh) regardless of the global flag in game Settings. This is useful when you want to open a scenario with a cutscene that leaves the camera in a specific spot.
+- `Skip initial camera pan to HQ` - this setting skips the initial camera pan to HQ regardless of the global flag in game Settings. This is useful when opening a scenario with a cutscene that leaves the camera in a specific spot.
 
 - `Initial camera position` - camera position when the map is loaded. Can be picked manually with a picker button. This is useful when you want to open a scenario with a cutscene without revealing the area of the map where camera spawns as default (middle of the map)
 
 - `Track` - musical track that is going to play during a match on this map. By default the track is randomised.
 
-- `Allow Level up` - wether or not units are allowed to level up on this map. Can be used to create classic ToF 1-style maps.
+- `Allow Level up` - whether units are allowed to level up on this map. This can be used to create classic ToF 1-style maps.
 
 ### Triggers tab
 
@@ -236,7 +236,7 @@ Step that eliminates specific player from the game
 
 ##### End game
 
-Step that ends the game immidiately.
+Step that ends the game immediately.
 
 - `Winner` - named player side who will be announced a winner. Can be picked from a list using picker button.
 
@@ -246,7 +246,7 @@ Step that enables/disables active hero abilities for all heroes at specific side
 
 - `Player side` - named player side who will have hero abilities enabled/disabled. Can be picked from a list using picker button.
 
-- `Disable` - wether the abilities are to be enabled or disabled. Set to 'Off' for enabled or `On` for disabled.
+- `Disable` - whether the abilities are enabled or disabled. Set to `Off` for enabled or `On` for disabled.
 
 ##### Level up
 
@@ -294,7 +294,7 @@ Step that sets or clears mission objective information.
 
 - `Text` - (optional) text of the objective to be set. Can be a translation key.
 
-- `Clear` - wether or not to clear the specific objective slot.
+- `Clear` - whether to clear the specific objective slot.
 
 ##### Pause AI
 
@@ -330,9 +330,9 @@ Step that spawns a new unit. If a specified tile is occupied, old unit will be r
 
 - `Rotation` - rotation in degrees the new unit will have. Values of `0`, `90`, `180` and `270` are recommended.
 
-- `Sound` - wether or not to play the spawn sound.
+- `Sound` - whether to play the spawn sound.
 
-- `Promote` - wether or not to promote the unit by one level upon spawn.
+- `Promote` - whether to promote the unit by one level upon spawn.
 
 ##### Target VIP
 
@@ -356,7 +356,7 @@ Step that adds a piece of terrain to the map.
 
 - `Rotation` - rotation in degrees the new tile will have. Values of `0`, `90`, `180` and `270` are recommended.
 
-- `Smoke` - wether or not to apply a smoke particle effect as the tile appears.
+- `Smoke` - whether to apply a smoke particle effect as the tile appears.
 
 ##### Terrain remove
 
@@ -366,7 +366,7 @@ Step that removes a piece of terrain from the map.
 
 - `Tile type` - type of tile to be removed. Can be picked by using picker button from list of available types.
 
-- `Explosion` - wether or not to apply an explosion particle effect as the tile dissapears.
+- `Explosion` - whether to apply an explosion particle effect as the tile disappears.
 
 ##### Tether
 
@@ -382,7 +382,7 @@ Step that modifies a trigger or group of triggers.
 
 - `Trigger` (optional) name of a Trigger to be modified. Can be picked by using picker button from list of available Triggers. If left empty, `Group` must be set.
 
-- `Suspended` - wether to set the Trigger or a group in a suspended state.
+- `Suspended` - whether to set the Trigger or group to a suspended state.
 
 - `Group` - (optional) name of a group of Triggers to be modified. If left empty, `Trigger` must be set.
 
@@ -412,5 +412,4 @@ Step that makes a unit use it's ability. This can disregard normal ability range
 
 - `Where` - position where the ability will be used. Can be picked using a picker button.
 
-- `Cooldown` - wether or not the cooldown of the ability should be triggered.
-
+- `Cooldown` - whether the ability's cooldown should be triggered.

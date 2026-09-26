@@ -1,5 +1,4 @@
-# Tanks of Freedom 3D
-## Changelog
+# Bundled Tanks of Freedom II changelog
 
 
 ### 1.0.9

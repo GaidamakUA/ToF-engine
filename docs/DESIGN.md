@@ -1,4 +1,9 @@
-# Tanks of Freedom 3-D Design Document
+# Tanks of Freedom II Design Document
+
+> This is the original game design document. It records early plans as well as
+> implemented ideas, so some future-tense notes and the former working title
+> “Tanks of Freedom 3-D” are retained for historical context. For the current
+> codebase, see the [development guide](DEVELOPMENT.md).
 
 ## Project Description
 
@@ -1035,4 +1040,3 @@ ToF3D is a MIT-licensed software. Separate licenses for other software used in d
 
 Following original ToF release, a custom level editor, online map sharing and online multiplayer will be added as optional milestones.
 Partial compatibility with original ToF might help, allowing to use the wealth of already existing maps.
-

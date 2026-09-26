@@ -76,19 +76,12 @@ func _manage_buttons(list_size: int, page_no: int) -> void:
 func _normalize_page_no(list_size: int, page_no: int, index_search: int = -1) -> Array[Variant]:
     if list_size == 0:
         return [0, true]
-    @warning_ignore("integer_division")
-    var full_pages: int = list_size / self.PAGE_SIZE
-    var page_overflow: int = list_size % self.PAGE_SIZE
-    var all_pages: int = full_pages
-    if (page_overflow > 0):
-        all_pages += 1
+    var all_pages: int = ceili(list_size / float(self.PAGE_SIZE))
 
     if index_search >= 0:
-        @warning_ignore("integer_division")
-        page_no = index_search / self.PAGE_SIZE
+        page_no = floori(index_search / float(self.PAGE_SIZE))
 
-    page_no = max(page_no, 0)
-    page_no = min(page_no, all_pages - 1)
+    page_no = clampi(page_no, 0, all_pages - 1)
     
     return [page_no, page_no == all_pages - 1]
 

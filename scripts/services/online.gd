@@ -55,36 +55,10 @@ func fetch_top_downloads() -> int:
 
 
 func get_maps_page(page_number: int, page_size: int) -> Array[Dictionary]:
-    var pages_count: int = self.get_pages_count(page_size)
-    if page_number >= pages_count:
-        return []
-
-    var index_start: int = page_number * page_size
-    var index_end: int = index_start + page_size
-
-    var maps_count: int = self.maps.listing_cache.size()
-    if index_end > maps_count:
-        index_end = maps_count
-
-    var index: int = index_start
-    var output: Array[Dictionary] = []
-
-    while index < index_end:
-        output.append(self.maps.listing_cache[index])
-        index += 1
-
-    return output
+    return self.maps.listing_cache.slice(page_number * page_size, (page_number + 1) * page_size)
 
 func get_pages_count(page_size: int) -> int:
-    var total_map_count: int = self.maps.listing_cache.size()
-    var last_page_overflow: int = total_map_count % page_size
-    @warning_ignore("integer_division")
-    var pages_count: int = (total_map_count - last_page_overflow) / page_size
-
-    if last_page_overflow > 0:
-        pages_count += 1
-
-    return pages_count
+    return ceili(self.maps.listing_cache.size() / float(page_size))
 
 
 func fetch_thumbnail(map_code: String) -> Dictionary[String, Variant]:

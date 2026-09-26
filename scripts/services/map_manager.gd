@@ -95,14 +95,6 @@ func _load_map_names_from_dir(dir_path: String) -> Array[String]:
     return names
 
 func get_maps_page(list: String, page_number: int, page_size: int) -> Array[String]:
-    var pages_count: int = self.get_pages_count(list, page_size)
-
-    if page_number >= pages_count:
-        return []
-
-    var index_start: int = page_number * page_size
-    var index_end: int = index_start + page_size
-
     var map_key_list: Array[String] = []
     if list == self.LIST_STOCK:
         map_key_list.assign(self.skirmish.keys())
@@ -112,19 +104,7 @@ func get_maps_page(list: String, page_number: int, page_size: int) -> Array[Stri
         map_key_list.assign(self.online.keys())
 
     map_key_list.sort()
-
-    var maps_count: int = map_key_list.size()
-    if index_end > maps_count:
-        index_end = maps_count
-
-    var index: int = index_start
-    var output: Array[String] = []
-
-    while index < index_end:
-        output.append(map_key_list[index])
-        index += 1
-
-    return output
+    return map_key_list.slice(page_number * page_size, (page_number + 1) * page_size)
 
 func get_pages_count(list: String, page_size: int) -> int:
     var total_map_count: int = 0
@@ -135,14 +115,7 @@ func get_pages_count(list: String, page_size: int) -> int:
     elif list == self.LIST_DOWNLOADED:
         total_map_count = self.online.size()
 
-    var last_page_overflow: int = total_map_count % page_size
-    @warning_ignore("integer_division")
-    var pages_count: int = (total_map_count - last_page_overflow) / page_size
-
-    if last_page_overflow > 0:
-        pages_count += 1
-
-    return pages_count
+    return ceili(total_map_count / float(page_size))
 
 func map_exists(map_name: String) -> bool:
     if self.is_reserved_name(map_name):

@@ -7,7 +7,7 @@ var player_id: Variant = null
 func _init() -> void:
     self.observed_event_type = TurnStartedEvent
 
-func _observe(_event: BaseEvent) -> void:
+func _observe(_event: BoardDomainEvent) -> void:
     var event: TurnStartedEvent = _event as TurnStartedEvent
     if self.turn_no != null and self.turn_no == event.turn_no:
         if self.player_id == null or self.player_id == event.player_id:
@@ -15,7 +15,7 @@ func _observe(_event: BaseEvent) -> void:
     elif self.turn_no == null and self.player_id != null and self.player_id == event.player_id:
         self.execute_outcome(event)
 
-func _get_outcome_metadata(_event: BaseEvent) -> Dictionary[String, Variant]:
+func _get_outcome_metadata(_event: BoardDomainEvent) -> Dictionary[String, Variant]:
     var event: TurnStartedEvent = _event as TurnStartedEvent
     return {
         'turn_no' : event.turn_no,
@@ -28,7 +28,7 @@ func ingest_details(details: Dictionary[String, Variant]) -> void:
     if details.has('player'):
         self.player_id = details['player']
     if details.has('player_side'):
-        self.player_id = self.board.state.get_player_id_by_side(String(details['player_side']))
+        self.player_id = self.model._state.get_player_id_by_side(String(details['player_side']))
 
 func get_save_data() -> Dictionary[String, Variant]:
     var save_data: Dictionary[String, Variant] = super.get_save_data()

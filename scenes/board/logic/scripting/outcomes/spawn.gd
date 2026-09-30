@@ -10,21 +10,7 @@ var sound: bool = true
 var promote: bool = false
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
-    var tile: MapTile = self.board.map.model.get_tile(self.where)
-    tile.unit.clear()
-
-    var new_unit: BaseUnit = self.board.map.builder.force_place_unit(self.where, self.template_name, self.rotation, self.side)
-    new_unit.team = self.board.state.get_player_team(self.side)
-    new_unit.replenish_moves()
-
-    if self.hp > 0:
-        new_unit.set_hp(self.hp)
-
-    if self.sound:
-        new_unit.sfx_effect("spawn")
-
-    if self.promote:
-        new_unit.level_up()
+    self.model.scripted_spawn_unit(self.where, self.template_name, self.side, self.rotation, self.hp, self.promote)
 
 func _ingest_details(details: Dictionary[String, Variant]) -> void:
     self.where = Vector2i(details['where'][0], details['where'][1])

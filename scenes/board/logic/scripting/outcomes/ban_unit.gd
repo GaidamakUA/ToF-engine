@@ -6,13 +6,7 @@ var where: Vector2i
 var ban: bool
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
-    var tile: MapTile = self.board.map.model.get_tile(self.where)
-    var building: BaseBuilding = tile.building.tile
-    assert(building != null)
-
-    for ability: Ability in building.abilities:
-        if ability.index == self.ability_id:
-            building.set_ability_disabled(ability, self.ban)
+    self.model.set_building_ability_disabled(self.where, self.ability_id, self.ban)
 
 func _ingest_details(details: Dictionary[String, Variant]) -> void:
     self.ability_id = int(details['ability_id'])

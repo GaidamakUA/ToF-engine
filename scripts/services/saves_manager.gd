@@ -121,7 +121,7 @@ func get_save_path(save_id: int) -> String:
     return self.SAVE_PATH + str(save_id) + self.SAVE_EXTENSION
 
 
-func compile_save_data(board: Board) -> Dictionary:
+func compile_save_data(board: BoardView) -> Dictionary:
     var map_name: String = ""
     var map_label: String = ""
 
@@ -135,41 +135,22 @@ func compile_save_data(board: Board) -> Dictionary:
         var mission_details: Dictionary = missions[board.match_setup.mission_no] as Dictionary
         map_label = tr(str(manifest["title"])) + " - " + tr(str(mission_details["title"]))
 
-    var save_data: Dictionary = {
+    var snapshot: BoardStateSnapshot = board.board_model.get_snapshot()
+    var save_data: Dictionary = BoardStateSerializer.to_save_data(snapshot)
+    save_data.merge({
         "map_name": board.match_setup.map_name,
         "campaign_name": board.match_setup.campaign_name,
         "mission_no": board.match_setup.mission_no,
-        "turn": board.state.turn,
-        "active_player": board.state.current_player,
-        "players": board.state.get_players_state_data(),
         "initial_setup": board.match_setup.stored_setup,
         "camera": board.map.camera.get_position_state(),
-        "tiles": self._compile_tiles_data(board),
-        "triggers": board.scripting.get_save_data(),
-        "objectives": board.ui.objectives.raw_text,
-        "player_moved": board.state.has_player_moved,
-        "turn_limit": board.match_setup.turn_limit,
-        "time_limit": board.match_setup.time_limit
-    }
+    }, true)
 
     return {
         "map_name": map_name,
         "map_label": map_label,
-        "turn_no": board.state.turn,
+        "turn_no": snapshot.match.turn,
         "save_data": save_data
     }
-
-func _compile_tiles_data(board: Board) -> Dictionary:
-    var tiles_data: Dictionary = {}
-    var tile: Variant
-
-    for tile_key: Variant in board.map.model.tiles.keys():
-        tile = board.map.model.tiles[tile_key]
-
-        if tile.is_state_modified or tile.building.is_present() or tile.unit.is_present() or tile.damage.is_present():
-            tiles_data[tile_key] = tile.get_dict()
-
-    return tiles_data
 
 
 func _move_save_file(source_id: int, destination_id: int) -> void:

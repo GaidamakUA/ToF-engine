@@ -10,9 +10,6 @@ func is_on_cooldown() -> bool:
 func reset_cooldown() -> void:
     self.cd_turns_left = 0
 
-func activate_cooldown(ability: Ability, board: Board, source: Variant) -> void:
-    self.cd_turns_left = board.abilities.get_modified_cooldown(ability.get_cooldown(source), source)
-
 func tick_cooldown() -> void:
     if self.cd_turns_left > 0:
         self.cd_turns_left -= 1

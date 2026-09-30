@@ -1,11 +1,10 @@
-[gd_scene load_steps=20 format=3 uid="uid://du53ax6xw71ai"]
+[gd_scene load_steps=19 format=3 uid="uid://du53ax6xw71ai"]
 
 [ext_resource type="Script" uid="uid://cyqkwb2a3b2bq" path="res://scenes/tiles/units/unit.gd" id="2"]
 [ext_resource type="PackedScene" uid="uid://siiihsh6wb0p" path="res://scenes/fx/explosion.tscn" id="3"]
 [ext_resource type="Texture2D" uid="uid://m81x4smw4a2u" path="res://assets/gui/board/healthbar/healthbar.png" id="3_4v477"]
 [ext_resource type="Texture2D" uid="uid://c6wfohsbmqdbc" path="res://assets/gui/board/healthbar/healthbar_bg.png" id="3_887dj"]
 [ext_resource type="PackedScene" uid="uid://birqw0e7qiovc" path="res://scenes/ui/board/voxel_star.tscn" id="4"]
-[ext_resource type="AudioStream" uid="uid://d2ui51cs65ub2" path="res://assets/audio/pickup_box.wav" id="5"]
 [ext_resource type="Texture2D" uid="uid://c57gygmdclsy8" path="res://assets/gui/board/healthbar/energybar.png" id="5_4gmy7"]
 [ext_resource type="PackedScene" uid="uid://b6leaqbp4x4wb" path="res://scenes/ui/icons/star.tscn" id="5_dwvvw"]
 
@@ -250,27 +249,3 @@ speed_scale = 6.0
 
 [node name="voxel_star" parent="." index="4" instance=ExtResource("4")]
 visible = false
-
-[node name="audio" type="Node" parent="." index="5"]
-
-[node name="spawn" type="AudioStreamPlayer" parent="audio" index="0"]
-bus = &"Units"
-
-[node name="move" type="AudioStreamPlayer" parent="audio" index="1"]
-bus = &"Units"
-
-[node name="attack" type="AudioStreamPlayer" parent="audio" index="2"]
-bus = &"Attack"
-
-[node name="hit" type="AudioStreamPlayer" parent="audio" index="3"]
-bus = &"Attack"
-
-[node name="damage" type="AudioStreamPlayer" parent="audio" index="4"]
-bus = &"Damage"
-
-[node name="die" type="AudioStreamPlayer" parent="audio" index="5"]
-bus = &"Explosion"
-
-[node name="level_up" type="AudioStreamPlayer" parent="audio" index="6"]
-stream = ExtResource("5")
-bus = &"Units"

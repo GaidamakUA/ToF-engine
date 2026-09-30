@@ -9,14 +9,11 @@ const MEDKIT_UNITS: Array[String] = [
 
 @export var heal: int = 5
 
-func _execute(board: Board, source: Variant, _origin_tile: MapTile, position: Vector2i) -> void:
-    var tile := board.map.model.get_tile(position)
-    var target_unit: BaseUnit = tile._get_unit()
-    target_unit.sfx_effect("spawn")
-
-    target_unit.heal(self.heal)
-    board.heal_a_tile(tile)
-    source.gain_exp()
+func _execute_model(model: BoardModel, source: Variant, _origin_tile: MapTile, position: Vector2i) -> Array[Vector2i]:
+    if not model.heal_unit(position, self.heal):
+        return []
+    model._grant_unit_experience(source)
+    return [position]
 
 func is_tile_applicable(tile: MapTile, origin_tile: MapTile, source: Variant) -> bool:
     if not tile.has_friendly_unit(source.side) or tile == origin_tile:

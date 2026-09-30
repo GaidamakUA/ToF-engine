@@ -2,15 +2,15 @@ class_name Collector
 
 var brains: Brains = Brains.new()
 
-var board: Board
+var model: BoardModel
 
 
-func _init(new_board: Board) -> void:
-    self.board = new_board
+func _init(new_model: BoardModel) -> void:
+    self.model = new_model
 
 
 func select_best_action() -> Variant:
-    var actions: Array[AbstractAction] = await self._gather_all_actions()
+    var actions: Array[AbstractAction] = self._gather_all_actions()
 
     if actions.size() > 0:
         actions = self._sort_actions(actions)
@@ -20,22 +20,22 @@ func select_best_action() -> Variant:
 
 
 func _gather_all_actions() -> Array[AbstractAction]:
-    var side: String = self.board.state.get_current_side()
-    var team: int = self.board.state.get_player_team(side)
-    var ap: int = self.board.state.get_current_ap() - self.board.ai._reserved_ap
+    var side: String = self.model._state.get_current_side()
+    var team: int = self.model._state.get_player_team(side)
+    var ap: int = self.model._state.get_current_ap() - self.model.reserved_ap
 
     if ap <= 0:
         return []
 
-    var buildings: Array[MapTile] = self.board.map.model.get_player_buildings_tiles(side)
-    var units: Array[MapTile] = self.board.map.model.get_player_units_tiles(side)
+    var buildings: Array[MapTile] = self.model.map_model.get_player_buildings_tiles(side)
+    var units: Array[MapTile] = self.model.map_model.get_player_units_tiles(side)
 
-    var enemy_buildings: Array[MapTile] = self.board.map.model.get_enemy_buildings_tiles(side, team)
-    var enemy_units: Array[MapTile] = self.board.map.model.get_enemy_units_tiles(side, team)
+    var enemy_buildings: Array[MapTile] = self.model.map_model.get_enemy_buildings_tiles(side, team)
+    var enemy_units: Array[MapTile] = self.model.map_model.get_enemy_units_tiles(side, team)
 
-    var buildings_actions: Array[AbstractAction] = await self._gather_building_actions(buildings, enemy_buildings, enemy_units, buildings, units, ap)
+    var buildings_actions: Array[AbstractAction] = self._gather_building_actions(buildings, enemy_buildings, enemy_units, buildings, units, ap)
 
-    var units_actions: Array[AbstractAction] = await self._gather_unit_actions(units, enemy_buildings, enemy_units, buildings, units, ap)
+    var units_actions: Array[AbstractAction] = self._gather_unit_actions(units, enemy_buildings, enemy_units, buildings, units, ap)
 
     return buildings_actions + units_actions
 
@@ -53,9 +53,8 @@ func _gather_building_actions(buildings: Array[MapTile],
         brain = self.brains.get_brain_for_template(building_tile.building.tile.template_name)
         if brain == null:
             continue
-        var brain_context: BrainContext = BrainContext.new(building_tile, enemy_buildings, enemy_units, own_buildings, own_units, ap, self.board)
+        var brain_context: BrainContext = BrainContext.new(building_tile, enemy_buildings, enemy_units, own_buildings, own_units, ap, self.model)
         buildings_actions += brain.get_actions(brain_context)
-        await self.board.get_tree().create_timer(0.01).timeout
 
     return buildings_actions
 
@@ -77,9 +76,8 @@ func _gather_unit_actions(units: Array[MapTile],
         brain = self.brains.get_brain_for_unit(unit)
         if brain == null:
             continue
-        var brain_context: BrainContext = BrainContext.new(unit_tile, enemy_buildings, enemy_units, own_buildings, own_units, ap, self.board)
+        var brain_context: BrainContext = BrainContext.new(unit_tile, enemy_buildings, enemy_units, own_buildings, own_units, ap, self.model)
         units_actions += brain.get_actions(brain_context)
-        await self.board.get_tree().create_timer(0.01).timeout
 
     return units_actions
 

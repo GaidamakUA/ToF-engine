@@ -16,12 +16,12 @@ var _ap_points: int = 0
 @onready var _total_points_label: Label = $"background/total_points"
 
 
-func show_player_points(player_data: Dictionary[String, Variant], board: Board) -> void:
-    var side: String = str(player_data["side"])
+func show_player_points(player: PlayerState, board: BoardView) -> void:
+    var side: String = player.side
     _set_icon(side)
     _calculate_building_points(side, board)
     _calculate_unit_points(side, board)
-    _calculate_ap_points(player_data)
+    _calculate_ap_points(player)
     _calculate_total_points()
 
 
@@ -32,7 +32,7 @@ func _set_icon(side: String) -> void:
     _icon_anchor.add_child(_current_icon)
 
 
-func _calculate_building_points(side: String, board: Board) -> void:
+func _calculate_building_points(side: String, board: BoardView) -> void:
     _building_points = 0
     for tile: MapTile in board.map.model.tiles.values():
         if tile.building.is_present():
@@ -43,7 +43,7 @@ func _calculate_building_points(side: String, board: Board) -> void:
     _building_points_label.set_text(str(_building_points))
 
 
-func _calculate_unit_points(side: String, board: Board) -> void:
+func _calculate_unit_points(side: String, board: BoardView) -> void:
     _unit_points = 0
     for tile: MapTile in board.map.model.tiles.values():
         if tile.unit.is_present():
@@ -54,8 +54,8 @@ func _calculate_unit_points(side: String, board: Board) -> void:
     _unit_points_label.set_text(str(_unit_points))
 
 
-func _calculate_ap_points(player_data: Dictionary[String, Variant]) -> void:
-    _ap_points = int(player_data["ap"])
+func _calculate_ap_points(player: PlayerState) -> void:
+    _ap_points = player.ap
     _ap_points_label.set_text(str(_ap_points))
 
 

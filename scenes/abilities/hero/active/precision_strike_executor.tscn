@@ -32,7 +32,7 @@ tracks/1/keys = {
 "method": &"_drop_the_bombu_man"
 }, {
 "args": [],
-"method": &"queue_free"
+"method": &"_finish"
 }]
 }
 

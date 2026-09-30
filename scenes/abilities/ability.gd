@@ -12,24 +12,25 @@ var TYPE: String = "undefined"
 @export var ability_range: int = 0
 @export var draw_range: int = 0
 @export var in_line: bool = false
+@export var animation: BoardAnimation.Kind = BoardAnimation.Kind.NONE
 
-func execute(board: Board, source: Variant, origin_tile: MapTile, position: Vector2i) -> void:
-    self._execute(board, source, origin_tile, position)
-    board.events.emit_ability_used(self, position)
+func execute_model(model: BoardModel, source: Variant, origin_tile: MapTile, position: Vector2i) -> Array[Vector2i]:
+    return self._execute_model(model, source, origin_tile, position)
 
-func _execute(_board: Board, _source: Variant, _origin_tile: MapTile, _position: Vector2i) -> void:
-    return
 
-func is_visible(state: AbilityState = null, _board: Board = null, source: Variant = null) -> bool:
+func _execute_model(_model: BoardModel, _source: Variant, _origin_tile: MapTile, position: Vector2i) -> Array[Vector2i]:
+    return [position]
+
+func is_visible(state: AbilityState = null, model: BoardModel = null, source: Variant = null) -> bool:
     if state != null and state.disabled:
         return false
 
-    return self._is_visible(_board, source)
+    return self._is_visible(model, source)
 
-func _is_visible(_board: Board, _source: Variant = null) -> bool:
+func _is_visible(_model: BoardModel, _source: Variant = null) -> bool:
     return true
 
-func is_available(_board: Board = null) -> bool:
+func is_available(_model: BoardModel = null) -> bool:
     return true
 
 func get_cost(_source: Variant = null) -> int:
@@ -40,6 +41,12 @@ func get_cooldown(_source: Variant = null) -> int:
 
 func get_named_icon() -> String:
     return ""
+
+
+func get_key() -> String:
+    if not self.resource_path.is_empty():
+        return self.resource_path.get_file().get_basename()
+    return "ability" + str(self.index)
 
 func is_tile_applicable(_tile: MapTile, _origin_tile: MapTile, _source: Variant) -> bool:
     return true

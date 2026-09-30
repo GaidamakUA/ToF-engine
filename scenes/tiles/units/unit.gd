@@ -5,7 +5,6 @@ signal move_finished
 
 const MAX_LEVEL: int = 3
 const EXP_PER_LEVEL: int = 2
-@onready var audio: AudioService = SimpleAudioLibrary as AudioService
 
 @onready var animations: AnimationPlayer = $"animations"
 @onready var spotlight: SpotLight3D = $"mesh_anchor/activity_light"
@@ -23,6 +22,7 @@ var enable_healthbar: bool = false
 
 @export var unit_name: String = ""
 @export var side: String = "neutral"
+var model_id: int = 0
 var state: UnitState = UnitState.new()
 var team: Variant:
     get:
@@ -166,11 +166,6 @@ func configure(resource: UnitResource) -> void:
     self.side_tile_view_cam_modifier = resource.side_tile_view_cam_modifier
     self.tile_view_height_cam_modifier = resource.tile_view_height_cam_modifier
 
-    for audio_name: String in resource.audio_streams:
-        var player: AudioStreamPlayer = self.get_node_or_null("audio/" + audio_name) as AudioStreamPlayer
-        if player != null:
-            player.stream = resource.audio_streams[audio_name]
-
     ($"mesh_anchor/healthbar/SubViewport/bar" as TextureProgressBar).max_value = self.max_hp
     ($"mesh_anchor/healthbar/SubViewport/energy" as TextureProgressBar).max_value = self.max_move
 
@@ -187,6 +182,7 @@ func reset() -> void:
 
 func get_dict() -> Dictionary[String, Variant]:
     var new_dict: Dictionary[String, Variant] = super.get_dict()
+    new_dict["id"] = self.model_id
     new_dict["side"] = self.side
     new_dict["modifiers"] = self.modifiers
     new_dict["ai_paused"] = self.ai_paused
@@ -257,10 +253,6 @@ func use_move(value: int) -> void:
     if self.move < 1:
         self.remove_highlight()
     self._update_energy()
-
-func use_all_moves() -> void:
-    self.use_move(self.move)
-
 
 func restore_move(value: int) -> void:
     self.state.restore_move(value)
@@ -354,17 +346,8 @@ func move_in_direction(direction: String) -> void:
     self.rotate_unit_to_direction(direction)
     if self.current_path_index < self.current_path.size() - 1:
         self.animations.play("move")
-        self.sfx_effect("move")
     else:
         self.move_finished.emit()
-
-func stop_animations() -> void:
-    self.current_path.clear()
-    self.current_path_index = 0
-    self.animations.stop()
-    _reset_anchor_position()
-    self.level_star.hide()
-    self.move_finished.emit()
 
 func _reset_anchor_position() -> void:
     $"mesh_anchor".set_position(Vector3(0, 0, 0))
@@ -378,23 +361,6 @@ func reset_position_for_tile_view() -> void:
 
 func show_explosion() -> void:
     self.explosion.explode_a_bit()
-
-func receive_damage(value: int) -> void:
-    if self.ai_paused:
-        return
-
-    var final_damage: int = value - self.get_armor()
-    if final_damage < 0:
-        final_damage = 0
-
-    self.receive_direct_damage(final_damage)
-
-func receive_direct_damage(value: int) -> void:
-    if self.ai_paused:
-        return
-
-    self.state.receive_direct_damage(value)
-    self._update_healthbar()
 
 func set_hp(value: int) -> void:
     self.state.set_hp(value)
@@ -426,24 +392,6 @@ func restore_highlight() -> void:
     self.set_side_material(self.base_material)
     #self.spotlight.show()
 
-func sfx_effect(sfx_name: String) -> void:
-    if not self.audio.sounds_enabled:
-        return
-
-    var audio_player: Variant = self.get_node_or_null("audio/" + sfx_name)
-    if audio_player != null:
-        audio_player.play()
-
-func give_sfx_effect(sfx_name: String) -> Variant:
-    if not self.audio.sounds_enabled:
-        return null
-
-    var audio_player: Variant = self.get_node_or_null("audio/" + sfx_name)
-    if audio_player != null:
-        $"audio".remove_child(audio_player)
-        return audio_player
-    return null
-
 func register_ability(ability: Ability) -> void:
     if ability.TYPE == "active":
         self.active_abilities.append(ability)
@@ -456,8 +404,8 @@ func _setup_abilities() -> void:
 func get_ability_state(ability: Ability) -> AbilityState:
     return self.state.get_ability_state(ability)
 
-func is_ability_visible(ability: Ability, board: Board = null) -> bool:
-    return ability.is_visible(self.get_ability_state(ability), board, self)
+func is_ability_visible(ability: Ability, model: BoardModel = null) -> bool:
+    return ability.is_visible(self.get_ability_state(ability), model, self)
 
 func is_ability_on_cooldown(ability: Ability) -> bool:
     return self.get_ability_state(ability).is_on_cooldown()
@@ -471,19 +419,6 @@ func set_ability_disabled(ability: Ability, disabled: bool) -> void:
 func is_ability_disabled(ability: Ability) -> bool:
     return self.get_ability_state(ability).disabled
 
-func activate_ability_cooldown(ability: Ability, board: Board) -> void:
-    self.get_ability_state(ability).activate_cooldown(ability, board, self)
-
-func get_ability_by_id(id: String) -> Ability:
-    for ability: Ability in self.active_abilities:
-        if ability.resource_path.get_file().get_basename() == id:
-            return ability
-
-    if self.passive_ability != null and self.passive_ability.resource_path.get_file().get_basename() == id:
-        return self.passive_ability
-
-    return null
-
 func has_active_ability() -> bool:
     return self.active_abilities.size() > 0 and (not self.active_abilities_require_level or self.level > 0)
 
@@ -495,31 +430,20 @@ func reset_cooldown() -> void:
     for ability: Ability in self.active_abilities:
         self.get_ability_state(ability).reset_cooldown()
 
-func activate_all_cooldowns(board: Board) -> void:
-    for ability: Ability in self.active_abilities:
-        self.activate_ability_cooldown(ability, board)
-
 func apply_modifier(modifier_name: String, value: Variant) -> void:
     self.state.apply_modifier(modifier_name, value)
 
 func clear_modifiers() -> void:
     self.state.clear_modifiers()
 
-func score_kill() -> void:
-    self.state.score_kill()
-    self.gain_exp()
+func animate_level_up() -> void:
+    self.animations.play("level_up")
+    self._update_level()
 
-func gain_exp() -> void:
-    if not self.is_max_level():
-        if self.state.gain_exp(self.EXP_PER_LEVEL):
-            self.level_up()
-
-func level_up() -> void:
-    if not self.is_max_level() and self.allow_level_up:
-        self.state.level_up()
-        self.animations.play("level_up")
-        self.sfx_effect("level_up")
-        self._update_level()
+func refresh_state_view() -> void:
+    self._update_healthbar()
+    self._update_energy()
+    self._update_level()
 
 func is_max_level() -> bool:
     return self.level >= self.MAX_LEVEL
@@ -545,6 +469,8 @@ func restore_from_state(state: Dictionary) -> void:
 
     if state.has("tags"):
         self.scripting_tags.assign(state["tags"])
+    if state.has("id"):
+        self.model_id = int(state["id"])
     self.hp = stats["hp"]
     self.move = stats["move"]
     self.attacks = stats["attacks"]

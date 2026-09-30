@@ -1,141 +1,116 @@
 extends GutTest
 
 
-class FakeAi:
-	var reserved_amounts: Array[int] = []
+class RecordingBoardModel:
+	extends BoardModel
 
-	func reserve_ap(amount: int) -> void:
-		self.reserved_amounts.append(amount)
+	var moves: Array[Array] = []
+	var attacks: Array[Array] = []
+	var captures: Array[Array] = []
+	var ability_uses: Array[Array] = []
 
+	func move_unit(source: Vector2i, destination: Vector2i) -> bool:
+		self.moves.append([source, destination])
+		return true
 
-class FakeBoardHost:
-	var ai := FakeAi.new()
-	var selected_tile: MapTile = null
-	var moved_pairs: Array[Array] = []
-	var path_moves: Array[Array] = []
-	var interaction_pairs: Array[Array] = []
-	var ability_calls: Array[Array] = []
-	var select_tile_count: int = 0
-	var unselect_tile_count: int = 0
+	func attack_unit(source: Vector2i, target: Vector2i) -> bool:
+		self.attacks.append([source, target])
+		return true
 
-	func move_unit(source_tile: MapTile, destination_tile: MapTile) -> void:
-		self.moved_pairs.append([source_tile, destination_tile])
+	func capture_building(source: Vector2i, target: Vector2i) -> bool:
+		self.captures.append([source, target])
+		return true
 
-	func move_unit_along_path(source_tile: MapTile, destination_tile: MapTile, move_cost: int, movement_path: Array[String]) -> void:
-		self.path_moves.append([source_tile, destination_tile, move_cost, movement_path])
-
-	func handle_interaction_from_tile(source_tile: MapTile, target_tile: MapTile) -> void:
-		self.interaction_pairs.append([source_tile, target_tile])
-
-	func execute_ability_from_tile(origin_tile: MapTile, ability: Ability, target_tile: MapTile) -> void:
-		self.ability_calls.append([origin_tile, ability, target_tile])
-
-	func _activate_ability(_ability: Ability) -> void:
-		pass
-
-	func _activate_production_ability(_ability: Ability) -> void:
-		pass
-
-	func select_tile(_position: Vector2i) -> void:
-		self.select_tile_count += 1
-
-	func unselect_tile() -> void:
-		self.unselect_tile_count += 1
+	func use_ability(origin: Vector2i, ability_key: String, target: Vector2i) -> bool:
+		self.ability_uses.append([origin, ability_key, target])
+		return true
 
 
-func _make_model(board: FakeBoardHost) -> BoardModel:
-	var model := BoardModel.new()
-	model.board = board
-	return model
+class PresentationGate:
+	extends RefCounted
+
+	signal opened
+
+	var wait_count: int = 0
+
+	func wait() -> void:
+		self.wait_count += 1
+		await self.opened
 
 
-func test_move_action_uses_model_command_without_selection() -> void:
-	var board := FakeBoardHost.new()
-	var model := _make_model(board)
+func test_move_action_calls_position_based_model_command() -> void:
+	var model := RecordingBoardModel.new()
 	var source := MapTile.new(0, 0)
 	var target := MapTile.new(1, 0)
-	var movement_path: Array[String] = ["1_0", "0_0"]
-	var action := MoveAction.new(source, target, movement_path)
+	var action := MoveAction.new(source, target, ["1_0", "0_0"])
 
 	action.perform(model)
 
-	assert_eq(board.path_moves, [[source, target, 1, movement_path]])
-	assert_true(board.moved_pairs.is_empty())
-	assert_eq(board.select_tile_count, 0)
-	assert_eq(board.unselect_tile_count, 0)
+	assert_eq(model.moves, [[Vector2i(0, 0), Vector2i(1, 0)]])
 
 
-func test_attack_action_uses_model_interaction_command_without_selection() -> void:
-	var board := FakeBoardHost.new()
-	var model := _make_model(board)
-	var source := MapTile.new(0, 0)
-	var target := MapTile.new(1, 0)
-	var movement_path: Array[String] = []
-	var action := AttackAction.new(source, null, target, movement_path)
-
-	action.perform(model)
-
-	assert_eq(board.interaction_pairs, [[source, target]])
-	assert_eq(board.select_tile_count, 0)
-	assert_eq(board.unselect_tile_count, 0)
-
-
-func test_attack_action_with_interaction_uses_path_move_without_selection() -> void:
-	var board := FakeBoardHost.new()
-	var model := _make_model(board)
+func test_attack_action_moves_then_attacks_from_interaction_position() -> void:
+	var model := RecordingBoardModel.new()
 	var source := MapTile.new(0, 0)
 	var interaction := MapTile.new(1, 0)
 	var target := MapTile.new(2, 0)
-	var movement_path: Array[String] = ["1_0", "0_0"]
-	var action := AttackAction.new(source, interaction, target, movement_path)
+	var action := AttackAction.new(source, interaction, target, ["1_0", "0_0"])
 
 	action.perform(model)
 
-	assert_eq(board.path_moves, [[source, interaction, 1, movement_path]])
-	assert_eq(board.interaction_pairs, [[interaction, target]])
-	assert_true(board.moved_pairs.is_empty())
-	assert_eq(board.select_tile_count, 0)
-	assert_eq(board.unselect_tile_count, 0)
+	assert_eq(model.moves, [[Vector2i(0, 0), Vector2i(1, 0)]])
+	assert_eq(model.attacks, [[Vector2i(1, 0), Vector2i(2, 0)]])
 
 
-func test_capture_action_uses_model_interaction_command_without_selection() -> void:
-	var board := FakeBoardHost.new()
-	var model := _make_model(board)
+func test_attack_action_waits_for_move_presentation_before_combat() -> void:
+	var model := RecordingBoardModel.new()
+	var source := MapTile.new(0, 0)
+	var interaction := MapTile.new(1, 0)
+	var target := MapTile.new(2, 0)
+	var action := AttackAction.new(source, interaction, target, ["1_0", "0_0"])
+	var gate := PresentationGate.new()
+
+	action.perform(model, gate.wait)
+
+	assert_eq(model.moves.size(), 1)
+	assert_eq(model.attacks.size(), 0)
+	assert_eq(gate.wait_count, 1)
+	gate.opened.emit()
+	await wait_process_frames(1)
+	assert_eq(model.attacks.size(), 1)
+	assert_eq(gate.wait_count, 2)
+	gate.opened.emit()
+	await wait_process_frames(1)
+
+
+func test_capture_action_calls_position_based_model_command() -> void:
+	var model := RecordingBoardModel.new()
 	var source := MapTile.new(0, 0)
 	var target := MapTile.new(1, 0)
-	var movement_path: Array[String] = []
-	var action := CaptureAction.new(source, null, target, movement_path)
+	var action := CaptureAction.new(source, null, target, [])
 
 	action.perform(model)
 
-	assert_eq(board.interaction_pairs, [[source, target]])
-	assert_eq(board.select_tile_count, 0)
-	assert_eq(board.unselect_tile_count, 0)
+	assert_eq(model.captures, [[Vector2i(0, 0), Vector2i(1, 0)]])
 
 
-func test_ability_action_uses_model_ability_command_without_selection() -> void:
-	var board := FakeBoardHost.new()
-	var model := _make_model(board)
+func test_ability_action_passes_stable_index_and_positions() -> void:
+	var model := RecordingBoardModel.new()
 	var origin := MapTile.new(0, 0)
 	var target := MapTile.new(1, 0)
 	var ability := Ability.new()
+	ability.index = 4
 	var action := UseAbilityAction.new(ability, origin, target)
 
 	action.perform(model)
 
-	assert_eq(board.ability_calls, [[origin, ability, target]])
-	assert_null(board.selected_tile)
-	assert_eq(board.select_tile_count, 0)
-	assert_eq(board.unselect_tile_count, 0)
+	assert_eq(model.ability_uses, [[Vector2i(0, 0), "ability4", Vector2i(1, 0)]])
 
 
-func test_reserve_ap_action_uses_model_command_without_selection() -> void:
-	var board := FakeBoardHost.new()
-	var model := _make_model(board)
+func test_reserve_ap_action_updates_model_only() -> void:
+	var model := RecordingBoardModel.new()
 	var action := ReserveApAction.new(3)
 
 	action.perform(model)
 
-	assert_eq(board.ai.reserved_amounts, [3])
-	assert_eq(board.select_tile_count, 0)
-	assert_eq(board.unselect_tile_count, 0)
+	assert_eq(model.reserved_ap, 3)

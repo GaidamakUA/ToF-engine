@@ -1,7 +1,7 @@
 extends HeroBrain
 class_name AdmiralBrain
 
-func _gather_ability_actions(entity_tile: MapTile, ap: int, board: Board) -> Array[AbstractAction]:
+func _gather_ability_actions(entity_tile: MapTile, ap: int, model: BoardModel) -> Array[AbstractAction]:
     var unit: BaseUnit = self._get_unit(entity_tile)
     var ability: ActiveHeroAbility = unit.active_abilities[0]
 
@@ -45,9 +45,8 @@ func _gather_ability_actions(entity_tile: MapTile, ap: int, board: Board) -> Arr
 
     var targets_in_range: Array[MapTile] = []
 
-    for tile: MapTile in board.ability_markers.get_all_tiles_in_ability_range(ability, entity_tile):
-        if ability.is_tile_applicable(tile, entity_tile, unit):
-            targets_in_range.append(tile)
+    for position: Vector2i in model.get_legal_ability_targets(entity_tile.position, ability.get_key()):
+        targets_in_range.append(model._get_tile_at(position))
 
     for target_tile: MapTile in targets_in_range:
         var ability_action: UseAbilityAction = self._ability_action(ability, entity_tile, target_tile)

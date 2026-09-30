@@ -6,14 +6,7 @@ var text: Variant = null
 var clear: bool = false
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
-    if self.clear:
-        if self.slot != null:
-            self.board.ui.objectives.clear_objective_slot(self.slot)
-        else:
-            self.board.ui.objectives.clear()
-    else:
-        self.board.ui.objectives.set_objective_slot(self.slot, self.text)
-        self.board.ui.objectives.flash()
+    self.model.set_objective(int(self.slot) if self.slot != null else 0, "" if self.text == null else String(self.text), self.clear and self.slot == null)
 
 func _ingest_details(details: Dictionary[String, Variant]) -> void:
     if details.has('slot'):

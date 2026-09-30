@@ -194,5 +194,3 @@ speed_scale = 2.0
 randomness = 1.0
 process_material = SubResource("21")
 draw_pass_1 = SubResource("20")
-
-[node name="audio" type="Node" parent="."]

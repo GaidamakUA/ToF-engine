@@ -36,20 +36,30 @@ demonstrated modding needs rather than speculative abstraction.
 
 ## Runtime structure
 
-The board is split into three cooperating parts:
+The board uses a model-presenter-view split:
 
-- `Board` is the Godot scene host. It owns scene nodes, presentation, input,
-  audio, animation, and compatibility entry points.
-- `BoardModel` owns gameplay collaborators and exposes commands used by the
-  controller, AI, multiplayer, and headless tests.
-- `BoardController` owns interaction state such as tile selection and ability
-  targeting. It emits requests for visual updates rather than manipulating UI
-  nodes directly.
+- `BoardModel` is the gameplay command surface. It owns rules and emits
+  detached `BoardStateSnapshot` values plus value-only domain events.
+- `BoardPresenter` owns selection, hover, targeting, and legal-highlight state,
+  translates view controls into model commands, and turns snapshots/events into
+  view calls. It queues updates while the view is presenting a previous update.
+- `BoardView` is the Godot scene host at the existing board scene path. It
+  captures input and owns nodes, audio, animation, cameras, and UI.
+- `BoardAnimationPlayer` maps `BoardAnimation.Kind` values to view-owned action
+  choreography and signals the presenter when timed playback has finished.
+
+Headless callers use `BoardModel` directly. Save and network adapters are the
+only boundaries that convert typed state to dictionaries.
 
 The map follows a similar boundary. `MapModel` owns the 40×40 logical grid and
-serialized data, `MapBuilder` places or removes runtime objects, and
+serialized data, `MapBuilder` places or removes runtime objects for the view, and
 `MapLoader` handles current and legacy map data. Template names are registered
 centrally in `res://scenes/map/templates.gd`.
+
+`BoardModel` still stores map objects in scene-backed tile fragments during the
+migration. This is an internal compatibility boundary: nodes never appear in
+snapshots, commands, or domain events, and gameplay paths must not rely on the
+scene tree, animation timing, audio, cameras, or UI.
 
 ## Static definitions and runtime state
 
@@ -67,8 +77,8 @@ instance:
   offsets, shadows, reflections, and damage-stage template names.
 
 Do not duplicate these resources for each placed object, and do not put
-runtime values into them. Damaged and destroyed city/decor scenes remain
-`PackedScene` templates.
+runtime values into them. Map templates are registered resources and share
+runtime scenes by behavior.
 
 ## Making changes
 

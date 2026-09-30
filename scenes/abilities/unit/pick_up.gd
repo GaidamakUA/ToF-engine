@@ -1,18 +1,15 @@
 extends ActiveUnitAbility
 
-func _execute(board: Board, source: Variant, _origin_tile: MapTile, position: Vector2i) -> void:
-    var tile := board.map.model.get_tile(position)
-    var target_unit: BaseUnit = tile._get_unit()
-    target_unit.sfx_effect("move")
-    
-    source.passenger = target_unit
+func _execute_model(model: BoardModel, source: Variant, _origin_tile: MapTile, position: Vector2i) -> Array[Vector2i]:
+    var tile: MapTile = model._get_tile_at(position)
+    if tile == null or not tile.unit.is_present():
+        return []
+    source.passenger = tile.unit.tile
     tile.unit.release()
-    board.map.detach_unit(source.passenger)
+    source.state.remove_moves()
+    return [position]
 
-    board.smoke_a_tile(tile)
-    source.use_all_moves()
-
-func _is_visible(_board: Board, source: Variant = null) -> bool:
+func _is_visible(_model: BoardModel, source: Variant = null) -> bool:
     if source == null:
         return false
 

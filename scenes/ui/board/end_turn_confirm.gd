@@ -8,7 +8,7 @@ class_name EndTurnConfirmPanel
 @onready var audio: AudioService = SimpleAudioLibrary as AudioService
 
 
-var board: Board = null
+var board: BoardView = null
 
 
 func show_panel() -> void:

@@ -7,7 +7,7 @@ func _execute(metadata: Dictionary[String, Variant]) -> void:
     if self.winner == null:
         self.winner = metadata['new_side']
 
-    self.board.end_game(self.winner)
+    self.model.end_game(String(self.winner))
 
 func _ingest_details(details: Dictionary[String, Variant]) -> void:
     if details.has('winner'):

@@ -1,6 +1,8 @@
 extends Node2D
 class_name StoryDialogPanel
 
+signal dismissed
+
 @onready var audio: AudioService = SimpleAudioLibrary as AudioService
 
 @onready var text: Label = $"background/text"
@@ -45,3 +47,4 @@ func _continue_grab_focus() -> void:
 func _on_continue_pressed() -> void:
     self.audio.play("menu_click")
     self.hide()
+    self.dismissed.emit()

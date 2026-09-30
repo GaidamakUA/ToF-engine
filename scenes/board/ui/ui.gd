@@ -122,7 +122,7 @@ func update_tile_highlight(tile_source: MapObjectResource, preview_material: Mat
     self.tile_highlight.show()
     self.tile_highlight.set_tile(tile_source, 0, preview_material)
 
-func update_tile_highlight_unit_panel(unit: BaseUnit, board: Board) -> void:
+func update_tile_highlight_unit_panel(unit: BaseUnit, board: BoardView) -> void:
     if self.cinematic_bars.is_extended:
         return
     self.tile_highlight_unit_panel_hp.set_text(str(unit.hp) + "/" + str(unit.max_hp))
@@ -136,14 +136,14 @@ func update_tile_highlight_unit_panel(unit: BaseUnit, board: Board) -> void:
             self.tile_highlight_level3.show()
     self._show_active_abilities(unit, board)
 
-func _show_active_abilities(unit: BaseUnit, board: Board) -> void:
+func _show_active_abilities(unit: BaseUnit, board: BoardView) -> void:
     if not unit.has_active_ability():
         return
 
     var index: int = 0
 
     for ability: Ability in unit.active_abilities:
-        if unit.is_ability_visible(ability, board):
+        if unit.is_ability_visible(ability, board.board_model):
             if index > 2:
                 return
             self._bind_ability(index, unit, ability)
@@ -254,7 +254,7 @@ func hide_cinematic_bars() -> void:
 func are_cinematic_bars_visible() -> bool:
     return self.cinematic_bars.is_extended
 
-func show_unit_stats(unit: BaseUnit, tile_source: MapObjectResource, preview_material: Material, board: Board) -> void:
+func show_unit_stats(unit: BaseUnit, tile_source: MapObjectResource, preview_material: Material, board: BoardView) -> void:
     self.unit_stats.bind_unit(unit, tile_source, preview_material, board)
     self.unit_stats.show_panel()
     self.hide_controls()

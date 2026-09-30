@@ -10,28 +10,12 @@ var font_size: int = 16
 var sound: Variant = null
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
-    var portrait_source: MapObjectResource = self.board.map.templates.get_template_source(self.portrait)
-    var actor: Dictionary[String, Variant] = {
-        'portrait' : self.portrait,
-        'portrait_source' : portrait_source,
-        'portrait_material' : null,
-        'name' : self.name,
-        'side' : self.side
-    }
-
-    var portrait_unit: UnitResource = portrait_source as UnitResource
-    var portrait_colour: Variant = self.colour if self.colour != null or portrait_unit == null else portrait_unit.side
-
-    if portrait_colour != null:
-        var material_type: String = self.board.map.templates.MATERIAL_NORMAL
-        if portrait_unit != null and portrait_unit.uses_metallic_material:
-            material_type = self.board.map.templates.MATERIAL_METALLIC
-        actor['portrait_material'] = self.board.map.templates.get_side_material(portrait_colour, material_type)
-
-    self.board.ui.show_story_dialog(text, actor, self.font_size)
-
-    if self.sound != null:
-        self.board.audio.play(self.sound)
+    var portrait_key: String = "" if self.portrait == null else String(self.portrait)
+    var sound_key: String = "" if self.sound == null else String(self.sound)
+    var colour_key: String = "" if self.colour == null else String(self.colour)
+    self.model.request_presentation(MessagePresentationEvent.new(
+        self.text, portrait_key, sound_key, self.name, self.side, colour_key, self.font_size
+    ))
 
 func _ingest_details(details: Dictionary[String, Variant]) -> void:
     self.name = String(details['name'])

@@ -1,14 +1,14 @@
 extends SpawnUnit
 class_name SpawnHero
 
-func _is_visible(board: Board, source: Variant = null) -> bool:
+func _is_visible(model: BoardModel, source: Variant = null) -> bool:
     if source == null:
         return false
 
-    if board == null:
+    if model == null:
         return false
 
-    if board.state.has_side_a_hero(source.side):
+    if model._state.has_side_a_hero(source.side):
         return false
 
     return true

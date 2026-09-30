@@ -7,15 +7,16 @@ var player_id: Variant = null
 var player_side: Variant = null
 
 func _init() -> void:
-    self.observed_event_type = BuildingCapturedEvent
+    self.observed_event_type = BuildingCapturedDomainEvent
 
-func _observe(_event: BaseEvent) -> void:
-    var event: BuildingCapturedEvent = _event as BuildingCapturedEvent
-    if self._is_watched_building(event.building):
+func _observe(_event: BoardDomainEvent) -> void:
+    var event := _event as BuildingCapturedDomainEvent
+    var building: BaseBuilding = self.model.map_model.get_tile(event.position).building.tile
+    if self._is_watched_building(building):
         var side: Variant = event.new_side
 
         if self.player_id != null:
-            side = self.board.state.get_player_side_by_id(int(self.player_id))
+            side = self.model._state.get_player_side_by_id(int(self.player_id))
         if self.player_side != null:
             side = self.player_side
 
@@ -23,10 +24,10 @@ func _observe(_event: BaseEvent) -> void:
             self.execute_outcome(event)
 
 
-func _get_outcome_metadata(_event: BaseEvent) -> Dictionary[String, Variant]:
-    var event: BuildingCapturedEvent = _event as BuildingCapturedEvent
+func _get_outcome_metadata(_event: BoardDomainEvent) -> Dictionary[String, Variant]:
+    var event := _event as BuildingCapturedDomainEvent
     return {
-        'building' : event.building,
+        'building' : self.model.map_model.get_tile(event.position).building.tile,
         'new_side' : event.new_side,
         'old_side' : event.old_side
     }
@@ -45,7 +46,7 @@ func ingest_details(details: Dictionary[String, Variant]) -> void:
 
 func _is_watched_building(building: BaseBuilding) -> bool:
     for position: Array in self.list:
-        if building == self.board.map.model.get_tile2(position[0], position[1]).building.tile:
+        if building == self.model.map_model.get_tile2(position[0], position[1]).building.tile:
             return true
     return false
 
@@ -58,7 +59,7 @@ func _count_buildings_for_side(side: Variant) -> int:
         side = [side]
 
     for position: Array in self.list:
-        building = self.board.map.model.get_tile2(position[0], position[1]).building.tile
+        building = self.model.map_model.get_tile2(position[0], position[1]).building.tile
         if building != null:
             for s: Variant in side:
                 if building.side == s:

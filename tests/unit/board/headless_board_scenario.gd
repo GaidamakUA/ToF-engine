@@ -2,94 +2,10 @@ class_name HeadlessBoardScenario
 extends RefCounted
 
 
-class HeadlessAi:
-	extends RefCounted
-
-	var scenario: HeadlessBoardScenario
-
-	func reserve_ap(amount: int) -> void:
-		self.scenario.reserved_ap.append(amount)
-
-
-class HeadlessBoardHost:
-	extends RefCounted
-
-	var scenario: HeadlessBoardScenario
-	var ai: HeadlessAi = HeadlessAi.new()
-
-	func _init(owner: HeadlessBoardScenario) -> void:
-		self.scenario = owner
-		self.ai.scenario = owner
-
-	func get_tile_at(tile_position: Vector2i) -> MapTile:
-		return self.scenario.get_tile(tile_position)
-
-	func move_unit_along_path(source_tile: MapTile, destination_tile: MapTile, move_cost: int, _movement_path: Array[String]) -> void:
-		var unit: BaseUnit = source_tile.unit.tile
-		source_tile.unit.release()
-		destination_tile.unit.set_tile(unit)
-		unit.move = max(0, unit.move - move_cost)
-		self.scenario.model.use_current_player_ap(move_cost)
-		self.scenario.model.events.emit_unit_moved(unit, source_tile, destination_tile)
-		unit.call_deferred("emit_signal", "move_finished")
-
-	func execute_ability_from_tile(origin_tile: MapTile, ability: Ability, target_tile: MapTile) -> void:
-		self.scenario.used_abilities.append({
-			"origin": origin_tile,
-			"ability": ability,
-			"target": target_tile,
-		})
-		self.scenario.model.events.emit_ability_used(ability, target_tile.position)
-
-	func handle_interaction_from_tile(source_tile: MapTile, target_tile: MapTile) -> void:
-		if not source_tile.unit.is_present() or not target_tile.building.is_present():
-			return
-		var unit: BaseUnit = source_tile.unit.tile
-		if not unit.can_capture:
-			return
-		var building: BaseBuilding = target_tile.building.tile
-		var old_side: String = building.side
-		building.side = unit.side
-		building.team = unit.team
-		self.scenario.model.use_current_player_ap(1)
-		self.scenario.model.events.emit_building_captured(building, old_side, building.side)
-
-
-class MovedEventRecorder:
-	extends Observer
-
-	var scenario: HeadlessBoardScenario
-
-	func _init(owner: HeadlessBoardScenario) -> void:
-		super._init(null)
-		self.scenario = owner
-		self.observed_event_type = UnitMovedEvent
-
-	func _observe(event: BaseEvent) -> void:
-		self.scenario.moved_events.append(event)
-
-
-class CapturedEventRecorder:
-	extends Observer
-
-	var scenario: HeadlessBoardScenario
-
-	func _init(owner: HeadlessBoardScenario) -> void:
-		super._init(null)
-		self.scenario = owner
-		self.observed_event_type = BuildingCapturedEvent
-
-	func _observe(event: BaseEvent) -> void:
-		self.scenario.captured_events.append(event)
-
-
-var model: BoardModel = BoardModel.new()
-var host: HeadlessBoardHost = HeadlessBoardHost.new(self)
-var tiles: Dictionary[Vector2i, MapTile] = {}
-var moved_events: Array[UnitMovedEvent] = []
-var captured_events: Array[BuildingCapturedEvent] = []
-var reserved_ap: Array[int] = []
-var used_abilities: Array[Dictionary] = []
+var map_model: MapModel = MapModel.new()
+var model: BoardModel = BoardModel.new(self.map_model)
+var updates: Array[BoardStateSnapshot] = []
+var domain_events: Array[BoardDomainEvent] = []
 var _nodes: Array[Node] = []
 
 
@@ -101,9 +17,20 @@ static func from_fixture(path: String) -> HeadlessBoardScenario:
 	return scenario
 
 
-func get_tile(tile_position: Vector2i) -> MapTile:
-	assert(self.tiles.has(tile_position))
-	return self.tiles[tile_position]
+func get_tile(position: Vector2i) -> MapTile:
+	return self.map_model.get_tile(position)
+
+
+func place_unit(position: Vector2i, side: String, team: int, hp: int = 10) -> BaseUnit:
+	var unit := BaseUnit.new()
+	unit.side = side
+	unit.team = team
+	unit.max_hp = hp
+	unit.state.reset_from_stats(unit.get_stats_with_modifiers())
+	self.get_tile(position).unit.set_tile(unit)
+	self._nodes.append(unit)
+	self.model.set_map_model(self.map_model)
+	return unit
 
 
 func cleanup() -> void:
@@ -114,57 +41,57 @@ func cleanup() -> void:
 
 
 func _load_fixture(payload: Dictionary) -> void:
-	self.model.board = self.host
-	self.model.events.register_observer(MovedEventRecorder.new(self))
-	self.model.events.register_observer(CapturedEventRecorder.new(self))
-
+	self.model.updated.connect(self._on_model_updated)
 	for player_data: Dictionary in payload["players"]:
-		self.model.add_player(self._typed_dictionary(player_data))
-
+		self.model.add_player(
+			String(player_data["type"]), String(player_data["side"]), bool(player_data["alive"]),
+			player_data["team"], int(player_data.get("ap", 0)), player_data.get("peer_id")
+		)
 	for tile_data: Dictionary in payload["tiles"]:
 		self._load_tile(tile_data)
-
 	for neighbour_data: Dictionary in payload["neighbours"]:
-		var source_tile: MapTile = self.get_tile(self._vector2i_from_array(neighbour_data["from"]))
-		var destination_tile: MapTile = self.get_tile(self._vector2i_from_array(neighbour_data["to"]))
-		source_tile.add_neighbour(String(neighbour_data["direction"]), destination_tile)
+		var source: MapTile = self.get_tile(self._vector2i_from_array(neighbour_data["from"]))
+		var destination: MapTile = self.get_tile(self._vector2i_from_array(neighbour_data["to"]))
+		source.add_neighbour(String(neighbour_data["direction"]), destination)
+	self.model.set_map_model(self.map_model)
+	self.model.publish_state()
 
 
 func _load_tile(tile_data: Dictionary) -> void:
-	var tile_position: Vector2i = self._vector2i_from_array(tile_data["position"])
-	var tile := MapTile.new(tile_position.x, tile_position.y)
-	self.tiles[tile_position] = tile
+	var position: Vector2i = self._vector2i_from_array(tile_data["position"])
+	var tile: MapTile = self.get_tile(position)
+	var ground := BaseTile.new()
+	tile.ground.set_tile(ground)
+	self._nodes.append(ground)
 
 	if tile_data.has("unit"):
-		var unit_data: Dictionary = tile_data["unit"]
+		var data: Dictionary = tile_data["unit"]
 		var unit := BaseUnit.new()
-		unit.side = String(unit_data["side"])
-		unit.team = int(unit_data["team"])
-		unit.max_move = int(unit_data["max_move"])
-		unit.move = int(unit_data["move"])
-		if unit_data.has("can_capture"):
-			unit.can_capture = bool(unit_data["can_capture"])
+		unit.side = String(data["side"])
+		unit.team = int(data["team"])
+		unit.max_hp = int(data.get("max_hp", 10))
+		unit.max_move = int(data["max_move"])
+		unit.attack = int(data.get("attack", 7))
+		unit.armor = int(data.get("armor", 2))
+		unit.can_capture = bool(data.get("can_capture", false))
+		unit.state.reset_from_stats(unit.get_stats_with_modifiers())
+		unit.move = int(data["move"])
 		tile.unit.set_tile(unit)
 		self._nodes.append(unit)
 
 	if tile_data.has("building"):
-		var building_data: Dictionary = tile_data["building"]
+		var data: Dictionary = tile_data["building"]
 		var building := BaseBuilding.new()
-		building.side = String(building_data["side"])
-		building.team = int(building_data["team"])
+		building.side = String(data["side"])
+		building.team = int(data["team"])
+		building.require_crew = bool(data.get("require_crew", false))
 		tile.building.set_tile(building)
 		self._nodes.append(building)
 
 
-func _typed_dictionary(data: Dictionary) -> Dictionary[String, Variant]:
-	var typed_data: Dictionary[String, Variant] = {}
-	for key: Variant in data.keys():
-		var key_string: String = String(key)
-		if key_string in ["team", "ap"]:
-			typed_data[key_string] = int(data[key])
-		else:
-			typed_data[key_string] = data[key]
-	return typed_data
+func _on_model_updated(snapshot: BoardStateSnapshot, events: Array[BoardDomainEvent]) -> void:
+	self.updates.append(snapshot)
+	self.domain_events.append_array(events)
 
 
 func _vector2i_from_array(value: Array) -> Vector2i:

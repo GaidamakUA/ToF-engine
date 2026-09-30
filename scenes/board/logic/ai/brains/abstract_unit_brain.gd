@@ -10,12 +10,12 @@ var counter_death_penalty: int = 20
 
 func get_actions(context: BrainContext) -> Array[AbstractAction]:
     self.pathfinder.explore(context.entity_tile, self.EXPLORE_DISTANCE)
-    var actions: Array[AbstractAction] = _gather_all_actions(context.entity_tile, context.ap, context.board)
+    var actions: Array[AbstractAction] = _gather_all_actions(context.entity_tile, context.ap, context.model)
 
     var unit: BaseUnit = self._get_unit(context.entity_tile)
     if actions.size() == 0 and unit.perform_extra_lookup:
         self.pathfinder.explore(context.entity_tile, self.EXTRA_EXPLORE_DISTANCE)
-        return _gather_all_actions(context.entity_tile, context.ap, context.board)
+        return _gather_all_actions(context.entity_tile, context.ap, context.model)
     return actions
 
 func _get_unit(tile: MapTile) -> BaseUnit:
@@ -29,12 +29,12 @@ func _get_building(tile: MapTile) -> BaseBuilding:
     return building
 
 
-func _gather_all_actions(entity_tile: MapTile, ap: int, board: Board) -> Array[AbstractAction]:
+func _gather_all_actions(entity_tile: MapTile, ap: int, model: BoardModel) -> Array[AbstractAction]:
     var actions: Array[AbstractAction] = []
     var unit: BaseUnit = self._get_unit(entity_tile)
 
     actions += self._gather_attack_actions(entity_tile, ap)
-    actions += self._gather_ability_actions(entity_tile, ap, board)
+    actions += self._gather_ability_actions(entity_tile, ap, model)
     if unit.can_capture:
         actions += self._gather_capture_actions(entity_tile, ap)
 
@@ -151,7 +151,7 @@ func _gather_capture_actions(entity_tile: MapTile, ap: int) -> Array[AbstractAct
 
     return actions
 
-func _gather_ability_actions(_entity_tile: MapTile, _ap: int, _board: Board) -> Array[AbstractAction]:
+func _gather_ability_actions(_entity_tile: MapTile, _ap: int, _model: BoardModel) -> Array[AbstractAction]:
     return []
 
 func _attack_action(entity_tile: MapTile, interaction_tile: MapTile, target_tile: MapTile, path: Array[String]) -> AttackAction:

@@ -4,15 +4,13 @@ var tiles_in_range: Dictionary[String, MapTile] = {}
 var units_in_range: Array[MapTile] = []
 
 
-func _execute(board: Board, source: Variant, origin_tile: MapTile, position: Vector2i) -> void:
-    if origin_tile == null:
-        origin_tile = board.map.model.get_tile(position)
-
+func _execute_model(_model: BoardModel, source: Variant, origin_tile: MapTile, _position: Vector2i) -> Array[Vector2i]:
     self._get_units_in_range(origin_tile, source.side, source)
-
-    for unit_tile in self.units_in_range:
-        unit_tile.unit.tile.apply_modifier("armor", 1)
-        board.bless_a_tile(unit_tile)
+    var affected: Array[Vector2i] = []
+    for unit_tile: MapTile in self.units_in_range:
+        unit_tile.unit.tile.state.apply_modifier("armor", 1)
+        affected.append(unit_tile.position)
+    return affected
 
 func _get_units_in_range(tile: MapTile, side: String, source: Variant) -> void:
     self.tiles_in_range.clear()

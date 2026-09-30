@@ -6,7 +6,6 @@ func _init() -> void:
     self.delay = 0.3
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
-    if not self.board.state.is_current_player_ai():
-        self.board.ui.hide_cinematic_bars()
-        self.board.map.camera.ai_operated = false
-        self.board.map.show_tile_box()
+    self.model.request_presentation(LockPresentationEvent.new(
+        LockPresentationEvent.Target.HUD, false
+    ))

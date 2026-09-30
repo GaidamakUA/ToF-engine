@@ -17,6 +17,13 @@ func test_add_player_ap_clamps_to_upper_limit() -> void:
     assert_eq(state.get_player_ap(0), 999)
 
 
+func test_players_are_typed_state_objects() -> void:
+    var state := _make_state()
+
+    assert_true(state.players[0] is PlayerState)
+    assert_eq(state.players[0].side, "blue")
+
+
 func test_add_player_ap_clamps_to_zero() -> void:
     var state := _make_state()
 

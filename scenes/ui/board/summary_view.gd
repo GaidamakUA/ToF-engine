@@ -1,7 +1,7 @@
 extends Node2D
 class_name SummaryView
 
-var board: Board
+var board: BoardView
 
 @onready var menu_button: TextureButton = $"menu_button"
 @onready var restart_button: TextureButton = $"restart_button"
@@ -107,14 +107,12 @@ func _clear_points() -> void:
 
 
 func _show_points() -> void:
-    for player_data: Dictionary in board.state.players:
-        var typed_player_data: Dictionary[String, Variant]
-        typed_player_data.assign(player_data)
-        _show_points_for_player(typed_player_data)
+    for player: PlayerState in board.state.players:
+        _show_points_for_player(player)
 
 
-func _show_points_for_player(player_data: Dictionary[String, Variant]) -> void:
-    var side: String = str(player_data["side"])
+func _show_points_for_player(player: PlayerState) -> void:
+    var side: String = player.side
     if points_panels.has(side):
         points_panels[side].show()
-        points_panels[side].show_player_points(player_data, board)
+        points_panels[side].show_player_points(player, board)

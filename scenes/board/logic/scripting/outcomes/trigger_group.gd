@@ -6,10 +6,7 @@ var group: String
 var action: String
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
-    if self.action == "add":
-        self.board.scripting.add_to_group(self.group, self.name)
-    elif self.action == "remove":
-        self.board.scripting.remove_from_group(self.group, self.name)
+    self.model.set_trigger_group(self.name, self.group, self.action == "add")
 
 
 func _ingest_details(details: Dictionary[String, Variant]) -> void:

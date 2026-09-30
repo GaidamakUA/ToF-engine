@@ -1,19 +1,15 @@
 class_name Observer
 
-var board: Board
 var suspended := false
 var observed_event_type: Resource
 
-func _init(_board: Board) -> void:
-    self.board = _board
-
-func observe(event: BaseEvent) -> void:
+func observe(event: BoardDomainEvent) -> void:
     if self.suspended:
         return
 
     self._observe(event)
 
-func _observe(_event: BaseEvent) -> void:
+func _observe(_event: BoardDomainEvent) -> void:
     return
 
 func activate() -> void:

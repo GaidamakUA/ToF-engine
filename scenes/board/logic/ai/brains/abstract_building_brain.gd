@@ -26,11 +26,11 @@ func get_actions(context: BrainContext) -> Array[AbstractAction]:
     var bonus: int = self._calculate_proximity_value_bonus(context.entity_tile, context.enemy_units, context.enemy_buildings)
 
     for ability: SpawnUnit in building.abilities:
-        if not building.is_ability_visible(ability, context.board):
+        if not context.model.is_ability_visible(context.entity_tile.position, ability.get_key()):
             continue
 
         action = null
-        ability_cost = context.board.abilities.get_modified_cost(ability.get_cost(building), ability.template_name, building)
+        ability_cost = context.model.abilities.get_modified_cost(ability.get_cost(building), ability.template_name, building)
         if ability_cost <= context.ap:
             action = self._create_ability_action(ability, context.entity_tile, self._select_random_spawn_point(spawn_points))
         elif ability_cost * 0.75 <= context.ap:

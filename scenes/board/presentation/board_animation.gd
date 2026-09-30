@@ -1,0 +1,24 @@
+class_name BoardAnimation
+extends RefCounted
+
+
+enum Kind {
+	NONE,
+	MOVE,
+	ATTACK,
+	CAPTURE,
+	SPAWN,
+	DESTROY,
+	TILE_DAMAGE,
+	TILE_CHANGE,
+	SMOKE,
+	BLESS,
+	HEAL,
+	LEVEL_UP,
+	PROJECTILE,
+	LOB_PROJECTILE,
+	PICK_UP,
+	DROP_OFF,
+	DEEP_STRIKE,
+	PRECISION_STRIKE,
+}

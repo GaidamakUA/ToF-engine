@@ -11,13 +11,10 @@ func _init(unit_tile: MapTile, target_tile: MapTile, movement_path_val: Array[St
     self.movement_path = movement_path_val
 
 
-func perform(model: BoardModel) -> void:
-    var unit_object: BaseUnit = self.unit.unit.tile
-
-    model.move_unit_along_path(self.unit, self.target, self._get_move_cost(), self.movement_path)
-
-    if unit_object and not unit_object.is_queued_for_deletion():
-        await unit_object.move_finished
+func perform(model: BoardModel, wait_for_presentation: Callable = Callable()) -> void:
+    model.move_unit(self.unit.position, self.target.position)
+    if wait_for_presentation.is_valid():
+        await wait_for_presentation.call()
 
 
 func _to_string() -> String:

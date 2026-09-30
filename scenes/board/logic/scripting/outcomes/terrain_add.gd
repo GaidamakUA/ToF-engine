@@ -9,37 +9,10 @@ var smoke: bool = false
 var rotation: int = 0
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
-    var tile: MapTile = self.board.map.model.get_tile(self.where)
-
-    if self.type == "decoration":
-        tile.decoration.clear()
-        self.board.map.builder.place_decoration(self.where, self.template_name, self.rotation)
-    if self.type == "damage":
-        tile.damage.clear()
-        self.board.map.builder.place_damage(self.where, self.template_name, self.rotation)
-    elif self.type == "frame":
-        tile.frame.clear()
-        self.board.map.builder.place_frame(self.where, self.template_name, self.rotation)
-    elif self.type == "terrain":
-        tile.terrain.clear()
-        self.board.map.builder.place_terrain(self.where, self.template_name, self.rotation)
-    elif self.type == "ground":
-        tile.ground.clear()
-        self.board.map.builder.place_ground(self.where, self.template_name, self.rotation)
-    elif self.type == "building":
-        tile.building.clear()
-        self.board.map.builder.place_building(self.where, self.template_name, self.rotation, self.side)
-        var building: BaseBuilding = tile.building.tile
-        assert(building != null)
-        building.team = self.board.state.get_player_team(self.side)
-
-    tile.apply_invisibility()
-
-    if self.smoke:
-        self.board.smoke_a_tile(tile)
-    tile.is_state_modified = true
-
-    self.board.audio.play("menu_click")
+    self.model.change_tile_layer(
+        self.where, StringName(self.type), self.template_name, self.rotation, self.side,
+        &"smoke" if self.smoke else &"menu_click"
+    )
 
 func _ingest_details(details: Dictionary[String, Variant]) -> void:
     self.where = Vector2i(details['where'][0], details['where'][1])

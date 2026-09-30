@@ -6,27 +6,27 @@ var vip: Variant = null
 var unit_type: Variant = null
 
 func _init() -> void:
-    self.observed_event_type = UnitDestroyedEvent
+    self.observed_event_type = UnitDestroyedDomainEvent
 
-func _observe(_event: BaseEvent) -> void:
-    var event: UnitDestroyedEvent = _event as UnitDestroyedEvent
+func _observe(_event: BoardDomainEvent) -> void:
+    var event := _event as UnitDestroyedDomainEvent
     if event.unit_id == self.vip_id:
         self.vip = null
         self.execute_outcome(event)
-    elif self.vip_id == null and event.unit_type == self.unit_type:
+    elif self.vip_id == null and event.template_key == self.unit_type:
         self.execute_outcome(event)
 
-func _get_outcome_metadata(_event: BaseEvent) -> Dictionary[String, Variant]:
-    var event: UnitDestroyedEvent = _event as UnitDestroyedEvent
+func _get_outcome_metadata(_event: BoardDomainEvent) -> Dictionary[String, Variant]:
+    var event := _event as UnitDestroyedDomainEvent
     return {
-        'player_id' : self.board.state.get_player_id_by_side(event.unit_side),
+        'player_id' : self.model._state.get_player_id_by_side(event.unit_side),
         'side' : event.unit_side,
-        'attacker' : event.attacker
+        'attacker' : self.model.find_unit_by_id(event.attacker_id)
     }
 
 func set_vip(x: int, y: int) -> void:
-    self.vip = self.board.map.model.get_tile2(x, y).unit.tile
-    self.vip_id = self.vip.get_instance_id()
+    self.vip = self.model.map_model.get_tile2(x, y).unit.tile
+    self.vip_id = self.vip.model_id
 
 func ingest_details(details: Dictionary[String, Variant]) -> void:
     if details.has("vip"):
@@ -36,7 +36,7 @@ func ingest_details(details: Dictionary[String, Variant]) -> void:
 
 func get_save_data() -> Dictionary[String, Variant]:
     var save_data: Dictionary[String, Variant] = super.get_save_data()
-    save_data["vip"] = self.board.map.model.get_unit_position(self.vip)
+    save_data["vip"] = self.model.map_model.get_unit_position(self.vip)
     return save_data
 
 func restore_from_state(state: Dictionary[String, Variant]) -> void:

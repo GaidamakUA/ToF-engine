@@ -322,6 +322,8 @@ func place_tile(tile_id: String, tile_data: Dictionary) -> void:
 
     if building_data["tile"] != null:
         self.place_building(tile.position, str(building_data["tile"]), int(building_data["rotation"]), building_data["side"])
+        if building_data.has("id"):
+            tile.building.tile.model_id = int(building_data["id"])
         if building_data.has("abilities"):
             var building: BaseBuilding = tile.building.tile
             var abilities_status: Dictionary
@@ -355,9 +357,9 @@ func set_unit_side(position: Vector2i, new_side: String) -> void:
     var tile: MapTile = self.map.model.get_tile(position)
     if tile.unit.is_present():
         var unit: BaseUnit = tile.unit.tile
-        self._set_unit_side(unit, new_side)
+        self.configure_unit_side(unit, new_side)
 
-func _set_unit_side(unit: BaseUnit, new_side: String) -> void:
+func configure_unit_side(unit: BaseUnit, new_side: String) -> void:
     var material_type: String = self.map.templates.MATERIAL_NORMAL
     if unit.uses_metallic_material:
         material_type = self.map.templates.MATERIAL_METALLIC
@@ -396,6 +398,6 @@ func rebuild_tile(tile_id: String, tile_data: Dictionary) -> void:
             passenger.set_rotation(Vector3(0, deg_to_rad(int(passenger_data["rotation"])), 0))
             passenger.current_rotation = int(passenger_data["rotation"])
             passenger.restore_from_state(passenger_data)
-            self._set_unit_side(passenger, str(passenger_data["side"]))
+            self.configure_unit_side(passenger, str(passenger_data["side"]))
 
             unit.passenger = passenger

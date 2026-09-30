@@ -32,7 +32,7 @@ tracks/1/keys = {
 "method": &"_deploy_unit"
 }, {
 "args": [],
-"method": &"queue_free"
+"method": &"_finish"
 }]
 }
 

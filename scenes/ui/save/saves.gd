@@ -41,7 +41,7 @@ var bound_cancel_object: Object = null
 var bound_cancel_method: StringName = &""
 var bound_cancel_args: Array = []
 
-var board: Board
+var board: BoardView
 
 var save_mode: bool = true
 var current_page: int = 0

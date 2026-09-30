@@ -24,21 +24,21 @@ func is_object_without_abilities(_board: Variant, context_object: Variant, inclu
     return false
 
 
-func fill_radial_with_abilities(board: Board, radial: Radial, context_object: Variant) -> void:
+func fill_radial_with_abilities(board: BoardView, radial: Radial, context_object: Variant) -> void:
     if context_object is BaseBuilding:
         self.fill_radial_with_building_abilities(board, radial, context_object)
     if context_object is BaseUnit:
         self.fill_radial_with_unit_abilities(board, radial, context_object)
 
 
-func fill_radial_with_building_abilities(board: Board, radial: Radial, building: BaseBuilding) -> void:
+func fill_radial_with_building_abilities(board: BoardView, radial: Radial, building: BaseBuilding) -> void:
     radial.set_field(board.ui.icons.cross.instantiate(), "TR_CLOSE", 6, board, "toggle_radial_menu")
 
     var icon: Variant
     var label: String
 
     for ability: Variant in building.abilities:
-        if ability.TYPE == "production" and building.is_ability_visible(ability, board):
+        if ability.TYPE == "production" and building.is_ability_visible(ability, board.board_model):
             var icon_source: MapObjectResource = board.map.templates.get_template_source(ability.template_name)
             var ap_cost: int = ability.get_cost(building)
 
@@ -57,12 +57,12 @@ func fill_radial_with_building_abilities(board: Board, radial: Radial, building:
             radial.set_field(icon, label, ability.index, board, "activate_production_ability", [ability])
             icon.set_tile(icon_source, 0, board.map.templates.get_side_material(building.side) as Material)
 
-func fill_radial_with_unit_abilities(board: Board, radial: Radial, unit: BaseUnit) -> void:
+func fill_radial_with_unit_abilities(board: BoardView, radial: Radial, unit: BaseUnit) -> void:
     radial.set_field(board.ui.icons.cross.instantiate(), "TR_CLOSE", 6, board, "toggle_radial_menu")
     var label: String
 
     for ability: Variant in unit.active_abilities:
-        if unit.is_ability_visible(ability, board):
+        if unit.is_ability_visible(ability, board.board_model):
             label = tr(ability.label)
             var cost: int = ability.get_cost(unit)
             if cost > 0:

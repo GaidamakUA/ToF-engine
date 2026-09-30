@@ -1,6 +1,6 @@
 class_name BaseOutcome
 
-var board: Board
+var model: BoardModel
 var delay: float = 0.0
 
 func execute(metadata: Dictionary[String, Variant] = {}) -> void:

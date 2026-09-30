@@ -8,48 +8,50 @@ var unit_tag: Variant = null
 var exclude_tags: Array[String] = []
 
 func _init() -> void:
-    self.observed_event_type = UnitMovedEvent
+    self.observed_event_type = UnitMovedDomainEvent
 
-func _observe(_event: BaseEvent) -> void:
-    var event: UnitMovedEvent = _event as UnitMovedEvent
-    if self._is_watched_tile(event.finish):
-        if self.is_excluded_vip(event.unit):
+func _observe(_event: BoardDomainEvent) -> void:
+    var event := _event as UnitMovedDomainEvent
+    var unit: BaseUnit = self.model.find_unit_by_id(event.unit_id)
+    if self._is_watched_position(event.finish):
+        if self.is_excluded_vip(unit):
             return
 
         if self.player_id != null:
-            if self.player_id == self.board.state.get_player_id_by_side(event.unit.side):
+            if self.player_id == self.model._state.get_player_id_by_side(unit.side):
                 self.execute_outcome(event)
         elif self.player_side != null:
-            if self.player_side == event.unit.side:
+            if self.player_side == unit.side:
                 self.execute_outcome(event)
         elif self.unit_tag != null:
-            if event.unit.has_script_tag(self.unit_tag):
+            if unit.has_script_tag(self.unit_tag):
                 self.execute_outcome(event)
         else:
             self.execute_outcome(event)
 
 
-func execute_outcome(event: BaseEvent) -> void:
+func execute_outcome(event: BoardDomainEvent) -> void:
     super.execute_outcome(event)
-    self.board.set_last_unit_move(null)
+    self.model.clear_undo()
 
-func _get_outcome_metadata(_event: BaseEvent) -> Dictionary[String, Variant]:
-    var event: UnitMovedEvent = _event as UnitMovedEvent
+func _get_outcome_metadata(_event: BoardDomainEvent) -> Dictionary[String, Variant]:
+    var event := _event as UnitMovedDomainEvent
+    var unit: BaseUnit = self.model.find_unit_by_id(event.unit_id)
     return {
-        'field' : event.finish,
-        'player_id' : self.board.state.get_player_id_by_side(event.unit.side),
-        'side' : event.unit.side,
-        'unit' : event.unit
+        'field' : self.model.map_model.get_tile(event.finish),
+        'player_id' : self.model._state.get_player_id_by_side(unit.side),
+        'side' : unit.side,
+        'unit' : unit
     }
 
 func set_vip(x: int, y: int) -> void:
     self.unit_tag = "move_" + str(x) + "_" + str(y)
-    self.board.map.model.get_tile2(x, y).unit.tile.add_script_tag(self.unit_tag)
+    self.model.map_model.get_tile2(x, y).unit.tile.add_script_tag(self.unit_tag)
 
 func exclude_vip(x: int, y: int) -> void:
     var new_tag: String = "exclude_move_" + str(x) + "_" + str(y)
     self.exclude_tags.append(new_tag)
-    self.board.map.model.get_tile2(x, y).unit.tile.add_script_tag(new_tag)
+    self.model.map_model.get_tile2(x, y).unit.tile.add_script_tag(new_tag)
 
 func is_excluded_vip(unit: BaseUnit) -> bool:
     if self.exclude_tags.size() < 1:
@@ -75,8 +77,8 @@ func ingest_details(details: Dictionary[String, Variant]) -> void:
         for unit: Array in details['excluded']:
             self.exclude_vip(unit[0], unit[1])
 
-func _is_watched_tile(tile: MapTile) -> bool:
+func _is_watched_position(position: Vector2i) -> bool:
     for rectangle: Dictionary in self.fields:
-        if tile.position.x >= rectangle["x1"] and tile.position.x <= rectangle["x2"] and tile.position.y >= rectangle["y1"] and tile.position.y <= rectangle["y2"]:
+        if position.x >= rectangle["x1"] and position.x <= rectangle["x2"] and position.y >= rectangle["y1"] and position.y <= rectangle["y2"]:
             return true
     return false

@@ -42,6 +42,17 @@ func play(sample_name: String) -> void:
 
     self.samples[sample_name].play()
 
+func play_stream(stream: AudioStream, bus: StringName = BUS_SFX) -> void:
+    if not self.master_switch or not self.sounds_enabled or stream == null:
+        return
+
+    var player := AudioStreamPlayer.new()
+    player.stream = stream
+    player.bus = bus
+    player.finished.connect(player.queue_free)
+    self.add_child(player)
+    player.play()
+
 func track(track_name: String) -> void:
     if not self.soundtracks.has(track_name):
         return

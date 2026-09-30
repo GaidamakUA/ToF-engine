@@ -7,15 +7,7 @@ var suspended: bool
 var turns: int = -1
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
-    if self.group != "":
-        self.board.scripting.suspend_group(self.group, self.suspended)
-    elif self.name != "":
-        self.board.scripting.suspend_trigger(self.name, self.suspended)
-
-        if self.turns >= 0:
-            var trigger: TurnTrigger = self.board.scripting.triggers[self.name] as TurnTrigger
-            assert(trigger != null)
-            trigger.turn_no = self.board.state.turn + self.turns
+    self.model.set_trigger_enabled(self.name, self.group, self.suspended, self.turns)
 
 func _ingest_details(details: Dictionary[String, Variant]) -> void:
     self.suspended = bool(details['suspended'])

@@ -5,7 +5,7 @@ const FADE_OUT_TIME: float = 3.0
 
 @onready var animations: AnimationPlayer = $"animations"
 
-var board: Board = null
+var board: BoardView = null
 var fade_out_timer: float = 0.0
 var hover_stack: int = 0
 

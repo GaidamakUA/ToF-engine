@@ -1,5 +1,5 @@
 class_name Scripting
-var board: Board
+var model: BoardModel
 var scripts: Variant = null
 
 var triggers: Dictionary[String, BaseTrigger] = {}
@@ -8,8 +8,11 @@ var trigger_groups: Dictionary[String, Dictionary] = {}
 var trigger_factory: TriggerFactory = TriggerFactory.new()
 var outcome_factory: OutcomeFactory = OutcomeFactory.new()
 
-func ingest_scripts(board_object: Board, incoming_scripts: Variant) -> void:
-    self.board = board_object
+func _init(board_model: BoardModel) -> void:
+    self.model = board_model
+
+
+func ingest_scripts(incoming_scripts: Variant) -> void:
     self.scripts = incoming_scripts
 
     if self.scripts == null or self.scripts.is_empty() or self.scripts['triggers'].is_empty():
@@ -26,11 +29,11 @@ func ingest_scripts(board_object: Board, incoming_scripts: Variant) -> void:
                 print("Invalid trigger: ", trigger_name)
 
 func _setup_basic_win_condition() -> void:
-    self._build_hq_lost_event(self.board.map.templates.MODERN_HQ)
-    self._build_hq_lost_event(self.board.map.templates.STEAMPUNK_HQ)
-    self._build_hq_lost_event(self.board.map.templates.FUTURISTIC_HQ)
-    self._build_hq_lost_event(self.board.map.templates.FEUDAL_HQ)
-    self.board.ui.objectives.set_objective_slot(0, "Capture enemy HQ")
+    self._build_hq_lost_event(self.model.templates.MODERN_HQ)
+    self._build_hq_lost_event(self.model.templates.STEAMPUNK_HQ)
+    self._build_hq_lost_event(self.model.templates.FUTURISTIC_HQ)
+    self._build_hq_lost_event(self.model.templates.FEUDAL_HQ)
+    self.model.set_objective(0, "Capture enemy HQ")
 
 func _build_hq_lost_event(hq_type: String) -> void:
     var trigger: BuildingLostTrigger = BuildingLostTrigger.new()
@@ -39,9 +42,10 @@ func _build_hq_lost_event(hq_type: String) -> void:
     trigger.outcome = outcome
     trigger.building_type = hq_type
 
-    outcome.board = self.board
+    outcome.model = self.model
 
-    self.board.events.register_observer(trigger)
+    trigger.model = self.model
+    self.model.events.register_observer(trigger)
 
 func _is_trigger_valid(trigger_definition: Dictionary[String, Variant]) -> bool:
     if trigger_definition['type'] == null or trigger_definition['story'] == null:
@@ -52,7 +56,7 @@ func _setup_trigger(trigger_definition: Dictionary[String, Variant]) -> BaseTrig
     var new_trigger: BaseTrigger = self.trigger_factory.get_trigger(String(trigger_definition['type']))
     new_trigger.outcome = self._build_outcome_story(String(trigger_definition['story']))
 
-    new_trigger.board = self.board
+    new_trigger.model = self.model
     var details: Dictionary[String, Variant]
     details.assign(trigger_definition['details'])
     new_trigger.ingest_details(details)
@@ -60,7 +64,7 @@ func _setup_trigger(trigger_definition: Dictionary[String, Variant]) -> BaseTrig
     if trigger_definition.has('one_off'):
         new_trigger.one_off = bool(trigger_definition['one_off'])
 
-    self.board.events.register_observer(new_trigger)
+    self.model.events.register_observer(new_trigger)
 
     return new_trigger
 
@@ -68,7 +72,7 @@ func _build_outcome_story(story_name: String) -> StoryOutcome:
     var story_definition: Array[Dictionary]
     story_definition.assign(self.scripts['stories'][story_name])
     var new_story: StoryOutcome = StoryOutcome.new()
-    new_story.board = self.board
+    new_story.model = self.model
 
     for step_data: Dictionary in story_definition:
         var step: Dictionary[String, Variant]
@@ -79,7 +83,7 @@ func _build_outcome_story(story_name: String) -> StoryOutcome:
 
 func _build_outcome_story_step(step_definition: Dictionary[String, Variant]) -> BaseOutcome:
     var new_step: BaseOutcome = self.outcome_factory.get_outcome(String(step_definition['action']))
-    new_step.board = self.board
+    new_step.model = self.model
     if step_definition.has('details'):
         var details: Dictionary[String, Variant]
         details.assign(step_definition['details'])

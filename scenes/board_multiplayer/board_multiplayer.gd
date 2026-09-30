@@ -53,9 +53,15 @@ func _handle_message(message: Dictionary) -> void:
         "tile_select":
             self._update_tile_select(Vector2i(int(message["x"]), int(message["y"])))
         "activate_production_ability":
-            self._notify_activate_production_ability(Vector2i(int(message["x"]), int(message["y"])), int(message["index"]))
+            self._notify_activate_production_ability(
+                Vector2i(int(message["x"]), int(message["y"])),
+                String(message.get("key", "")), int(message.get("index", -1))
+            )
         "activate_ability":
-            self._notify_activate_ability(Vector2i(int(message["x"]), int(message["y"])), int(message["index"]))
+            self._notify_activate_ability(
+                Vector2i(int(message["x"]), int(message["y"])),
+                String(message.get("key", "")), int(message.get("index", -1))
+            )
         "cancel_ability":
             self._notify_cancel_ability()
         "unselect_tile":
@@ -148,10 +154,11 @@ func _manage_cinematic_bars() -> void:
             if self.state.is_current_player_ai():
                 self.ui_multiplayer.set_announcement(tr("TR_AI"))
             else:
-                self.ui_multiplayer.set_announcement(str(self.network.players[int(self.state.get_current_param("peer_id"))]["name"]))
+                self.ui_multiplayer.set_announcement(str(self.network.players[int(self.state.get_current_player().peer_id)]["name"]))
 
 
 func _manage_ai_start() -> void:
+    self.board_model.random_collateral_enabled = self._can_broadcast_moves()
     if self._can_current_player_perform_actions():
         self.map.camera.ai_operated = false
         self.map.show_tile_box()
@@ -185,7 +192,10 @@ func _show_contextual_select_radial(open_unit_abilities: bool) -> void:
 
 
 func _add_player_to_state(data: Dictionary) -> void:
-    self.state.add_player(str(data["type"]), str(data["side"]), bool(data["alive"]), data["team"], data["peer_id"])
+    self.board_model.add_player(
+        str(data["type"]), str(data["side"]), bool(data["alive"]), data["team"],
+        int(data.get("ap", 0)), data.get("peer_id")
+    )
 
 
 func main_menu() -> void:
@@ -214,6 +224,7 @@ func _update_camera_position(camera_state: Array) -> void:
 
 func select_tile(tile_position: Vector2i) -> void:
     self.lock_multicall += 1
+    self.board_model.random_collateral_enabled = self._can_broadcast_moves()
     super.select_tile(tile_position)
     self.lock_multicall -= 1
     if self._can_broadcast_moves() and self.lock_multicall == 0:
@@ -231,6 +242,7 @@ func _reselect_tile(tile_position: Vector2i) -> void:
 
 
 func _update_tile_select(tile_position: Vector2i) -> void:
+    await self.presenter.wait_until_idle()
     self.select_tile(tile_position)
 
 
@@ -241,15 +253,17 @@ func _activate_production_ability(ability: Ability) -> void:
             "type": "activate_production_ability",
             "x": self.selected_tile.position.x,
             "y": self.selected_tile.position.y,
+            "key": ability.get_key(),
             "index": ability.index,
         })
 
 
-func _notify_activate_production_ability(tile_position: Vector2i, ability_index: int) -> void:
+func _notify_activate_production_ability(tile_position: Vector2i, ability_key: String, legacy_index: int = -1) -> void:
+    await self.presenter.wait_until_idle()
     var building_tile: MapTile = self.map.model.get_tile(tile_position)
     self.selected_tile = building_tile
     for ability: Ability in building_tile.building.tile.abilities:
-        if ability.index == ability_index:
+        if ability.get_key() == ability_key or (ability_key.is_empty() and ability.index == legacy_index):
             self._activate_production_ability(ability)
             return
 
@@ -261,15 +275,17 @@ func _activate_ability(ability: Ability) -> void:
             "type": "activate_ability",
             "x": self.selected_tile.position.x,
             "y": self.selected_tile.position.y,
+            "key": ability.get_key(),
             "index": ability.index,
         })
 
 
-func _notify_activate_ability(tile_position: Vector2i, ability_index: int) -> void:
+func _notify_activate_ability(tile_position: Vector2i, ability_key: String, legacy_index: int = -1) -> void:
+    await self.presenter.wait_until_idle()
     var unit_tile: MapTile = self.map.model.get_tile(tile_position)
     self.selected_tile = unit_tile
     for ability: Ability in unit_tile.unit.tile.active_abilities:
-        if ability.index == ability_index:
+        if ability.get_key() == ability_key or (ability_key.is_empty() and ability.index == legacy_index):
             self._activate_ability(ability)
             return
 
@@ -283,6 +299,7 @@ func cancel_ability() -> void:
 
 
 func _notify_cancel_ability() -> void:
+    await self.presenter.wait_until_idle()
     self.cancel_ability()
 
 
@@ -295,38 +312,52 @@ func unselect_tile() -> void:
 
 
 func _notify_unselect_tile() -> void:
+    await self.presenter.wait_until_idle()
     self.unselect_tile()
 
 
-func _generate_collateral_damage(tile: MapTile) -> Dictionary[String, Variant]:
-    if not self._can_broadcast_moves():
-        return {}
-    var damage: Dictionary = super._generate_collateral_damage(tile)
-    var serialized_damage: Dictionary = {
-        "collateral": [],
-        "damage": null,
-    }
-    for damaged_tile: Vector2i in damage["collateral"]:
-        serialized_damage["collateral"].append([damaged_tile.x, damaged_tile.y])
-    if damage["damage"] != null:
-        serialized_damage["damage"] = [
-            [damage["damage"][0].x, damage["damage"][0].y],
-            damage["damage"][1],
-            damage["damage"][2],
-        ]
-    self.network.message_broadcast({
-        "type": "collateral_damage",
-        "damage": serialized_damage,
-    })
-    return damage
-
-
 func _notify_collateral_damage(damage: Dictionary) -> void:
+    if damage.has("events"):
+        for event_data: Dictionary in damage["events"]:
+            await self.presenter.wait_until_idle()
+            self.board_model.apply_tile_damage_result(
+                Vector2i(int(event_data["x"]), int(event_data["y"])),
+                StringName(event_data["layer"]), String(event_data["template"]), int(event_data["rotation"])
+            )
+        return
     if damage["damage"] != null:
-        var position := Vector2i(int(damage["damage"][0][0]), int(damage["damage"][0][1]))
-        self.collateral.apply_tile_damage(position, str(damage["damage"][1]), int(damage["damage"][2]))
+        await self.presenter.wait_until_idle()
+        var damage_position := Vector2i(int(damage["damage"][0][0]), int(damage["damage"][0][1]))
+        self.board_model.place_ground_damage(damage_position, str(damage["damage"][1]), int(damage["damage"][2]))
     for neighbour: Array in damage["collateral"]:
-        self.collateral.damage_terrain(self.map.model.get_tile(Vector2i(int(neighbour[0]), int(neighbour[1]))))
+        await self.presenter.wait_until_idle()
+        self.board_model.damage_terrain(Vector2i(int(neighbour[0]), int(neighbour[1])))
+
+
+func present_model_update(
+    snapshot: BoardStateSnapshot,
+    domain_events: Array[BoardDomainEvent],
+    command: BoardCommand = null
+) -> void:
+    super.present_model_update(snapshot, domain_events, command)
+    if not self._can_broadcast_moves():
+        return
+    var damage_events: Array[Dictionary] = []
+    for event: BoardDomainEvent in domain_events:
+        if event is TileDamagedEvent:
+            var tile_event := event as TileDamagedEvent
+            damage_events.append({
+                "x": tile_event.position.x,
+                "y": tile_event.position.y,
+                "layer": String(tile_event.layer),
+                "template": tile_event.template_key,
+                "rotation": tile_event.rotation,
+            })
+    if not damage_events.is_empty():
+        self.network.message_broadcast({
+            "type": "collateral_damage",
+            "damage": {"events": damage_events},
+        })
 
 
 func end_turn() -> void:
@@ -343,6 +374,7 @@ func _end_turn() -> void:
 
 
 func _notify_end_turn() -> void:
+    await self.presenter.wait_until_idle()
     self._end_turn()
 
 
@@ -368,6 +400,7 @@ func _notify_player_reconnected(peer_id: int = 0) -> void:
                     "type": "activate_production_ability" if self.active_ability.TYPE == "production" else "activate_ability",
                     "x": self.selected_tile.position.x,
                     "y": self.selected_tile.position.y,
+                    "key": self.active_ability.get_key(),
                     "index": self.active_ability.index,
                 })
         return
@@ -389,4 +422,5 @@ func _undo_unit_move() -> void:
 
 
 func _notify_undo_unit_move() -> void:
+    await self.presenter.wait_until_idle()
     super._undo_unit_move()

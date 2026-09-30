@@ -1,5 +1,5 @@
 class_name Ai
-var board: Board
+var board: BoardView
 var collector: Collector
 
 var _ai_paused: bool = false
@@ -9,22 +9,15 @@ const FAILSAFE: int = 4
 var _failsafe_counter: int = 0
 var _last_action_signature: Variant = null
 
-var _reserved_ap: int = 0
-
-
-func _init(board_object: Board) -> void:
+func _init(board_object: BoardView) -> void:
     self.board = board_object
-    self.collector = Collector.new(board_object)
+    self.collector = Collector.new(board_object.board_model)
 
 
 func run() -> void:
     self._failsafe_counter = 0
-    self._reserved_ap = 0
+    self.board.board_model.reserved_ap = 0
     self.call_deferred("_ai_tick")
-
-
-func reserve_ap(amount: int) -> void:
-    self._reserved_ap += amount
 
 
 func _finish_run() -> void:
@@ -43,7 +36,7 @@ func _ai_tick() -> void:
     if self._ai_abort:
         return
 
-    var selected_action: Variant = await self.collector.select_best_action()
+    var selected_action: Variant = self.collector.select_best_action()
 
     await self.board.get_tree().create_timer(0.1).timeout
 
@@ -58,7 +51,7 @@ func _ai_tick() -> void:
 
         if self._failsafe_counter > 0:
             self.board.map.camera.camera_in_transit = false
-        await selected_action.perform(self.board.board_model)
+        await selected_action.perform(self.board.board_model, self.board.presenter.wait_until_idle)
 
         if str(selected_action) == self._last_action_signature:
             self._failsafe_counter += 1

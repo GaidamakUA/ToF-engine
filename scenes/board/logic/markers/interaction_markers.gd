@@ -22,49 +22,19 @@ func destroy_markers() -> void:
         marker.queue_free()
     self.created_markers.clear()
 
-func show_interaction_markers_for_tile(tile: MapTile, ap_limit: int) -> void:
+func show_legal_interactions(positions: Array[Vector2i]) -> void:
     self.reset()
-    if not tile.unit.is_present() || ap_limit < 1:
-        return
-
-    var unit: BaseUnit = tile.unit.tile
-    var neighbour: MapTile
-    for key: String in tile.neighbours.keys():
-        neighbour = tile.get_neighbour(key)
-
-        if self.should_place_attack_marker(neighbour, unit):
-            self.mark_tile_for_attack(neighbour)
-
-        if self.should_place_catpure_marker(neighbour, unit):
-            self.mark_tile_for_capture(neighbour)
-
-func should_place_catpure_marker(tile: MapTile, unit: BaseUnit) -> bool:
-    if not tile.has_enemy_building(unit.side, unit.team):
-        return false
-
-    if unit.move < 1:
-        return false
-
-    if not unit.can_capture:
-        return false
-
-    return true
+    for map_position: Vector2i in positions:
+        var tile: MapTile = self.map_obj.model.get_tile(map_position)
+        if tile == null:
+            continue
+        if tile.building.is_present():
+            self.mark_tile_for_capture(tile)
+        elif tile.unit.is_present():
+            self.mark_tile_for_attack(tile)
 
 func mark_tile_for_capture(tile: MapTile) -> void:
     self.place_marker(self.capture_marker_template.instantiate() as Node3D, tile)
-
-
-func should_place_attack_marker(tile: MapTile, unit: BaseUnit) -> bool:
-    if not tile.has_enemy_unit(unit.side, unit.team):
-        return false
-
-    if unit.move < 1 || not unit.has_attacks():
-        return false
-
-    if not unit.can_attack_unit(tile.unit.tile):
-        return false
-
-    return true
 
 
 func mark_tile_for_attack(tile: MapTile) -> void:

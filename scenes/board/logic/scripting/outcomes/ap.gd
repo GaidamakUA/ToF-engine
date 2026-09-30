@@ -7,15 +7,12 @@ var set_ap_value: bool = false
 var cap_ap_value: bool = false
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
-    var player_id: int = self.board.state.get_player_id_by_side(self.side)
     if self.set_ap_value:
-        self.board.state.set_player_ap(player_id, self.amount)
+        self.model.set_player_ap(self.side, self.amount, &"set")
     elif self.cap_ap_value:
-        if self.board.state.get_current_ap() > self.amount:
-            self.board.state.set_player_ap(player_id, self.amount)
+        self.model.set_player_ap(self.side, self.amount, &"cap")
     else:
-        self.board.state.add_player_ap(player_id, self.amount)
-    self.board.ui.update_resource_value(self.board.state.get_current_ap())
+        self.model.set_player_ap(self.side, self.amount)
 
 func _ingest_details(details: Dictionary[String, Variant]) -> void:
     self.amount = int(details['amount'])

@@ -1,7 +1,7 @@
 extends HeroBrain
 class_name WarlordBrain
 
-func _gather_ability_actions(entity_tile: MapTile, ap: int, _board: Board) -> Array[AbstractAction]:
+func _gather_ability_actions(entity_tile: MapTile, ap: int, _model: BoardModel) -> Array[AbstractAction]:
     var unit: BaseUnit = self._get_unit(entity_tile)
     var ability: ActiveHeroAbility = unit.active_abilities[0]
 

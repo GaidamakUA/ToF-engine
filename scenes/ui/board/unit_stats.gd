@@ -35,7 +35,7 @@ class_name UnitStatsPanel
 
 @onready var audio: AudioService = SimpleAudioLibrary as AudioService
 
-var board: Board = null
+var board: BoardView = null
 
 var icons: Array[Node] = [null, null, null]
 
@@ -62,7 +62,7 @@ func reset_view() -> void:
     self.icons = [null, null, null]
 
 
-func bind_unit(unit: BaseUnit, tile_source: MapObjectResource, preview_material: Material, board_object: Board) -> void:
+func bind_unit(unit: BaseUnit, tile_source: MapObjectResource, preview_material: Material, board_object: BoardView) -> void:
     self.reset_view()
 
     var stats: Dictionary[String, int]
@@ -91,20 +91,20 @@ func bind_unit(unit: BaseUnit, tile_source: MapObjectResource, preview_material:
         if self.board.map.model.metadata.has("allow_level_up") and not self.board.map.model.metadata["allow_level_up"]:
             self.level_value.set_text("-")
 
-func show_active_abilities(unit: BaseUnit, board_object: Board) -> void:
+func show_active_abilities(unit: BaseUnit, board_object: BoardView) -> void:
     if not unit.has_active_ability():
         return
 
     var index: int = 0
 
     for ability: Ability in unit.active_abilities:
-        if unit.is_ability_visible(ability, board_object):
+        if unit.is_ability_visible(ability, board_object.board_model):
             if index > 2:
                 return
             self.bind_ability(index, ability, board_object)
             index += 1
 
-func bind_ability(index: int, ability: Ability, board_object: Board) -> void:
+func bind_ability(index: int, ability: Ability, board_object: BoardView) -> void:
     var boxes: Array[Node2D] = [
         self.ab1,
         self.ab2,

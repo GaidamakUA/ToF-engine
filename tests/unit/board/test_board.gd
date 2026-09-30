@@ -1,38 +1,30 @@
 extends GutTest
 
 
-class FakeBoard:
-	extends Board
+func test_board_scene_script_is_a_view_with_presenter_and_model() -> void:
+	var view := BoardView.new()
 
-	var battle_calls: Array[Array] = []
-	var used_ap: Array[int] = []
-	var contextual_select_count: int = 0
+	assert_not_null(view.board_model)
+	assert_not_null(view.presenter)
+	assert_same(view.presenter.model, view.board_model)
+	assert_same(view.presenter.view, view)
+	assert_false(view.has_method(&"move_unit"))
+	assert_false(view.has_method(&"battle"))
+	assert_false(view.has_method(&"capture"))
+	assert_false(view.has_method(&"execute_ability_from_tile"))
 
-	func battle(attacker_tile: MapTile, defender_tile: MapTile) -> void:
-		self.battle_calls.append([attacker_tile, defender_tile])
-
-	func use_current_player_ap(value: int) -> void:
-		self.used_ap.append(value)
-
-	func show_contextual_select(_open_unit_abilities: bool = false) -> void:
-		self.contextual_select_count += 1
+	view.free()
 
 
-func test_source_explicit_interaction_does_not_refresh_contextual_selection() -> void:
-	var board := FakeBoard.new()
-	var source := MapTile.new(0, 0)
-	var target := MapTile.new(1, 0)
-	var attacker := BaseUnit.new()
-	var defender := BaseUnit.new()
-	source.unit.set_tile(attacker)
-	target.unit.set_tile(defender)
-
-	board.handle_interaction_from_tile(source, target)
-
-	assert_eq(board.battle_calls, [[source, target]])
-	assert_eq(board.used_ap, [1])
-	assert_eq(board.contextual_select_count, 0)
-
-	attacker.free()
-	defender.free()
-	board.free()
+func test_all_board_scene_variants_instantiate() -> void:
+	var scene_paths: Array[String] = [
+		"res://scenes/board/board.tscn",
+		"res://scenes/board_multiplayer/board_multiplayer.tscn",
+		"res://scenes/board_online/board_online.tscn",
+	]
+	for scene_path: String in scene_paths:
+		var scene: PackedScene = load(scene_path)
+		assert_not_null(scene, scene_path)
+		var instance: Node = scene.instantiate()
+		assert_not_null(instance, scene_path)
+		instance.free()

@@ -8,7 +8,9 @@ func _init() -> void:
     self.delay = 1
 
 func _execute(_metadata: Dictionary[String, Variant]) -> void:
-    self.board.map.move_camera_to_position_if_far_away(self.where, 0, self.zoom)
+    self.model.request_presentation(FocusPresentationEvent.new(
+        self.where, float(self.zoom) if self.zoom != null else -1.0
+    ))
 
 func _ingest_details(details: Dictionary[String, Variant]) -> void:
     self.where = Vector2i(details['where'][0], details['where'][1])

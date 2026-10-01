@@ -98,12 +98,12 @@ Free camera modes continue to use the meshes, as does any resource without a
 baked texture. Ground, ground damage, decorations, standable terrain, units,
 capturable buildings, rotating objects, particles, and editor previews remain
 3D. Source meshes are canonical;
-generated PNG and compressed texture files live under
+generated compressed texture files live under
 `res://assets/impostors/tof`. Resources store lazy texture paths so the template
-registry does not load every baked sheet into GPU memory at startup. PNG source
-imports use VRAM compression and mipmaps; the runtime `.res` copies also contain
-compressed mip levels. Baked TOF shadows are part of the generated artwork and
-do not follow the runtime shadow toggle; AW and Free meshes still do.
+registry does not load every baked sheet into GPU memory at startup. The `.res`
+textures contain compressed mip levels. Baked TOF shadows are part of the
+generated artwork and do not follow the runtime shadow toggle; AW and Free
+meshes still do.
 
 Rebuild all TOF impostors with a Godot window available for rendering:
 

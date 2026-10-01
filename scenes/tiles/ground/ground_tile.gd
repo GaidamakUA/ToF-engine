@@ -10,6 +10,7 @@ var _tof_impostor_path: String = ""
 var _tof_shadow_path: String = ""
 var _tof_impostor_origin := Vector2.ZERO
 var _tof_impostor_allowed: bool = true
+var _mesh_cast_shadow: GeometryInstance3D.ShadowCastingSetting = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
 
 func configure(resource: TileResource) -> void:
     assert(resource != null)
@@ -29,7 +30,8 @@ func configure(resource: TileResource) -> void:
     mesh_instance.mesh = resource.mesh
     mesh_instance.lod_bias = 0.0
     mesh_instance.transform = resource.mesh_transform
-    mesh_instance.cast_shadow = resource.mesh_cast_shadow
+    self._mesh_cast_shadow = resource.mesh_cast_shadow
+    mesh_instance.cast_shadow = self._mesh_cast_shadow
     mesh_instance.material_override = resource.mesh_material_override if resource.mesh_material_override != null else self.DEFAULT_MATERIAL
 
     var reflection: MeshInstance3D = $"reflection" as MeshInstance3D
@@ -52,7 +54,6 @@ func configure(resource: TileResource) -> void:
     self._tof_impostor_origin = resource.tof_impostor_origin
     for sprite: Sprite3D in [impostor, shadow]:
         sprite.offset = Vector2(-resource.tof_impostor_origin.x, 0.0)
-        sprite.pixel_size = resource.tof_impostor_pixel_size
         sprite.position = Vector3.ZERO
         sprite.sorting_offset = 0.0
 
@@ -83,6 +84,8 @@ func set_visual_mode(camera_mode: String) -> void:
 
     var mesh_instance: MeshInstance3D = $"mesh" as MeshInstance3D
     mesh_instance.visible = not use_impostor
+    mesh_instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF \
+        if use_shadow else self._mesh_cast_shadow
 
     var reflection: MeshInstance3D = $"reflection" as MeshInstance3D
     reflection.visible = not use_impostor and reflection.mesh != null

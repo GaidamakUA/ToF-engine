@@ -204,17 +204,6 @@ func _bake_resource(resource_path: String, current: int, total: int) -> void:
         return
 
     var sheet: Image = baked["image"] as Image
-    var png_path: String = output_base + ".png"
-    var png_error: Error = sheet.save_png(png_path)
-    if png_error != OK:
-        push_error("Could not save %s" % png_path)
-        self._failures += 1
-        return
-    var import_error: Error = self._configure_png_import(png_path)
-    if import_error != OK:
-        push_error("Could not configure texture import for %s" % png_path)
-        self._failures += 1
-        return
     var tile_resource: TileResource = resource as TileResource
     if resource.mesh_cast_shadow != GeometryInstance3D.SHADOW_CASTING_SETTING_OFF \
         and (tile_resource.unit_can_stand or resource_path.begins_with(self.DECORATION_PREFIX)):
@@ -235,7 +224,6 @@ func _bake_resource(resource_path: String, current: int, total: int) -> void:
     var original_uid: int = ResourceLoader.get_resource_uid(resource_path)
     resource.tof_impostor_path = texture_path
     resource.tof_impostor_origin = baked["origin"] as Vector2
-    resource.tof_impostor_pixel_size = self.PIXEL_SIZE
     var resource_error: Error = ResourceSaver.save(resource, resource_path)
     if original_uid != ResourceUID.INVALID_ID:
         ResourceSaver.set_uid(resource_path, original_uid)
@@ -328,19 +316,6 @@ func _touches_capture_edge(rect: Rect2i) -> bool:
 func _output_base_for(resource_path: String) -> String:
     var relative_path: String = resource_path.trim_prefix("res://resources/").trim_suffix(".tres")
     return "%s/%s" % [self.OUTPUT_ROOT, relative_path]
-
-
-func _configure_png_import(png_path: String) -> Error:
-    var import_path: String = png_path + ".import"
-    var config := ConfigFile.new()
-    if FileAccess.file_exists(import_path):
-        var load_error: Error = config.load(import_path)
-        if load_error != OK:
-            return load_error
-    config.set_value("params", "compress/mode", 2)
-    config.set_value("params", "mipmaps/generate", true)
-    config.set_value("params", "detect_3d/compress_to", 0)
-    return config.save(import_path)
 
 
 static func build_sheet(images: Array[Image], bounds: Rect2i, origin: Vector2i) -> Dictionary:

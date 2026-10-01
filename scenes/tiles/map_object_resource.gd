@@ -9,7 +9,6 @@ class_name MapObjectResource
 
 @export_file("*.res") var tof_impostor_path: String = ""
 @export var tof_impostor_origin: Vector2 = Vector2.ZERO
-@export var tof_impostor_pixel_size: float = 1.0 / 64.0
 
 @export var main_tile_view_cam_modifier: int = 0
 @export var side_tile_view_cam_modifier: int = 0

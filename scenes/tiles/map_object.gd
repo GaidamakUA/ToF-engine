@@ -18,6 +18,3 @@ func get_dict() -> Dictionary[String, Variant]:
 
 func reset_position_for_tile_view() -> void:
     return
-
-func set_visual_mode(_camera_mode: String) -> void:
-    return

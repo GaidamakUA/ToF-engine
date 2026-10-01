@@ -165,6 +165,6 @@ func _settings_changed(key: String, new_value: Variant) -> void:
 func _camera_mode_changed(camera_mode: String) -> void:
     for anchor: Node3D in [self.tiles_frames_anchor, self.tiles_terrain_anchor]:
         for child: Node in anchor.get_children():
-            var map_object: MapObject = child as MapObject
-            if map_object != null:
-                map_object.set_visual_mode(camera_mode)
+            var tile: GroundTile = child as GroundTile
+            if tile != null:
+                tile.set_visual_mode(camera_mode)

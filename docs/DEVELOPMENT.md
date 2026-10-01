@@ -87,19 +87,17 @@ The fixed TOF camera renders eligible static terrain and frames as baked
 views for rotations 0, 90, 180, and 270 degrees. Frames use adaptive bounds at
 64 pixels per world unit and include the mesh's cast shadow when enabled. Each
 eligible tile uses one alpha-blended billboard shifted toward the fixed TOF
-camera along its view axis. This keeps the complete sprite and its shadow in
-front of the ground without changing its screen position; the shift is applied
-in global space so tile rotation cannot move the billboard. Decorations and
-terrain that units can stand on keep their meshes so a flat billboard cannot
-slice through a unit sharing their tile. The four atlas frames represent the
-tile's own rotation, not different camera angles.
+camera along its view axis so the ground cannot clip it. Decorations and
+standable terrain retain their meshes for correct unit depth, plus a
+shadow-only billboard. The shift is applied in global space so tile rotation
+cannot move it. The four atlas frames represent the tile's own rotation, not
+different camera angles.
 
 The impostors fully replace their source meshes at every TOF zoom level. AW and
 Free camera modes continue to use the meshes, as does any resource without a
 baked texture. Ground, ground damage, decorations, standable terrain, units,
 capturable buildings, rotating objects, particles, and editor previews remain
-3D. The baker still generates decoration atlases so they can be enabled later
-without changing the asset format. Source meshes are canonical;
+3D. Source meshes are canonical;
 generated PNG and compressed texture files live under
 `res://assets/impostors/tof`. Resources store lazy texture paths so the template
 registry does not load every baked sheet into GPU memory at startup. PNG source

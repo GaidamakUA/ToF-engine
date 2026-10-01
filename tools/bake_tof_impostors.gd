@@ -8,6 +8,7 @@ const RESOURCE_PREFIXES: PackedStringArray = [
     "res://resources/frame/",
 ]
 const OUTPUT_ROOT: String = "res://assets/impostors/tof"
+const DECORATION_PREFIX: String = "res://resources/decoration/"
 const ROTATIONS: PackedInt32Array = [0, 90, 180, 270]
 const PIXELS_PER_UNIT: float = 64.0
 const PIXEL_SIZE: float = 1.0 / PIXELS_PER_UNIT
@@ -119,6 +120,7 @@ func _bake_resource(resource_path: String, current: int, total: int) -> void:
         return
 
     var images: Array[Image] = []
+    var shadow_images: Array[Image] = []
     var bounds := Rect2i()
     var has_bounds: bool = false
     var preview: Node3D = self._preview_factory._create_preview(resource)
@@ -142,12 +144,19 @@ func _bake_resource(resource_path: String, current: int, total: int) -> void:
             self._failures += 1
             preview.free()
             return
+        var shadow := Image.create_empty(
+            self.CAPTURE_SIZE.x,
+            self.CAPTURE_SIZE.y,
+            false,
+            Image.FORMAT_RGBA8
+        )
+        shadow.fill(Color.TRANSPARENT)
         if resource.mesh_cast_shadow != GeometryInstance3D.SHADOW_CASTING_SETTING_OFF:
             self._shadow_receiver.show()
             preview.hide()
             var shadow_baseline: Image = await self._capture_image()
             preview.show()
-            var shadow: Image = await self._capture_image()
+            shadow = await self._capture_image()
             self._shadow_receiver.hide()
             var shadow_margin: int = maxi(object_bounds.size.x, object_bounds.size.y)
             shadow = self.extract_shadow(
@@ -175,6 +184,7 @@ func _bake_resource(resource_path: String, current: int, total: int) -> void:
         bounds = used_rect if not has_bounds else bounds.merge(used_rect)
         has_bounds = true
         images.append(image)
+        shadow_images.append(shadow)
 
     preview.free()
     bounds = bounds.grow(self.CELL_PADDING)
@@ -205,19 +215,18 @@ func _bake_resource(resource_path: String, current: int, total: int) -> void:
         push_error("Could not configure texture import for %s" % png_path)
         self._failures += 1
         return
+    var tile_resource: TileResource = resource as TileResource
+    if resource.mesh_cast_shadow != GeometryInstance3D.SHADOW_CASTING_SETTING_OFF \
+        and (tile_resource.unit_can_stand or resource_path.begins_with(self.DECORATION_PREFIX)):
+        var shadow_sheet: Image = (self.build_sheet(shadow_images, bounds, capture_origin)["image"] as Image)
+        var shadow_path: String = output_base + "_shadow.res"
+        if self._save_compressed_texture(shadow_sheet, shadow_path) != OK:
+            push_error("Could not save %s" % shadow_path)
+            self._failures += 1
+            return
 
-    sheet.generate_mipmaps()
     var texture_path: String = output_base + ".res"
-    var texture: PortableCompressedTexture2D = null
-    if resource.tof_impostor_path == texture_path:
-        texture = load(texture_path) as PortableCompressedTexture2D
-    var is_new_texture: bool = texture == null
-    if is_new_texture:
-        texture = PortableCompressedTexture2D.new()
-    texture.keep_compressed_buffer = true
-    texture.create_from_image(sheet, PortableCompressedTexture2D.COMPRESSION_MODE_BASIS_UNIVERSAL)
-    var save_flags: int = ResourceSaver.FLAG_CHANGE_PATH if is_new_texture else ResourceSaver.FLAG_NONE
-    var texture_error: Error = ResourceSaver.save(texture, texture_path, save_flags)
+    var texture_error: Error = self._save_compressed_texture(sheet, texture_path)
     if texture_error != OK:
         push_error("Could not save %s" % texture_path)
         self._failures += 1
@@ -236,6 +245,18 @@ func _bake_resource(resource_path: String, current: int, total: int) -> void:
         return
 
     print("[%d/%d] %s -> %dx%d" % [current, total, resource_path, sheet.get_width(), sheet.get_height()])
+
+
+func _save_compressed_texture(image: Image, path: String) -> Error:
+    image.generate_mipmaps()
+    var texture: PortableCompressedTexture2D = load(path) as PortableCompressedTexture2D
+    var is_new_texture: bool = texture == null
+    if is_new_texture:
+        texture = PortableCompressedTexture2D.new()
+    texture.keep_compressed_buffer = true
+    texture.create_from_image(image, PortableCompressedTexture2D.COMPRESSION_MODE_BASIS_UNIVERSAL)
+    var save_flags: int = ResourceSaver.FLAG_CHANGE_PATH if is_new_texture else ResourceSaver.FLAG_NONE
+    return ResourceSaver.save(texture, path, save_flags)
 
 
 func _capture_image() -> Image:

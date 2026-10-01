@@ -82,7 +82,7 @@ func test_impostor_scene_uses_alpha_blending_and_cull_margin() -> void:
     assert_eq(impostor.extra_cull_margin, 16.0)
 
 
-func test_decoration_and_standable_terrain_keep_meshes_for_units() -> void:
+func test_decoration_and_standable_terrain_use_mesh_with_baked_shadow() -> void:
     for path: String in [
         "res://resources/decoration/flowers_1_overtile.tres",
         "res://resources/terrain/trees_16_overtile.tres",
@@ -95,6 +95,7 @@ func test_decoration_and_standable_terrain_keep_meshes_for_units() -> void:
 
         assert_true((tile.get_node("mesh") as MeshInstance3D).visible, path)
         assert_false((tile.get_node("impostor") as Sprite3D).visible, path)
+        assert_true((tile.get_node("impostor_shadow") as Sprite3D).visible, path)
 
 
 func test_camera_mode_signal_covers_direct_and_cycled_switches() -> void:
@@ -193,6 +194,7 @@ func test_baker_ignores_receiver_noise() -> void:
 
 func test_every_eligible_resource_has_a_generated_impostor() -> void:
     var eligible_count: int = 0
+    var shadow_count: int = 0
     for prefix: String in BAKER.RESOURCE_PREFIXES:
         var directory := DirAccess.open(prefix)
         assert_not_null(directory, prefix)
@@ -208,8 +210,15 @@ func test_every_eligible_resource_has_a_generated_impostor() -> void:
             assert_gt(resource.tof_impostor_origin.x, 0.0, resource.resource_path)
             assert_gt(resource.tof_impostor_origin.y, 0.0, resource.resource_path)
             assert_almost_eq(resource.tof_impostor_pixel_size, 1.0 / 64.0, 0.000001, resource.resource_path)
+            var tile_resource: TileResource = resource as TileResource
+            if resource.mesh_cast_shadow != GeometryInstance3D.SHADOW_CASTING_SETTING_OFF \
+                and (tile_resource.unit_can_stand or prefix == BAKER.DECORATION_PREFIX):
+                shadow_count += 1
+                var shadow_path: String = resource.tof_impostor_path.trim_suffix(".res") + "_shadow.res"
+                assert_true(FileAccess.file_exists(shadow_path), resource.resource_path)
 
     assert_eq(eligible_count, 203)
+    assert_eq(shadow_count, 40)
 
     var representative: PortableCompressedTexture2D = load(
         "res://assets/impostors/tof/terrain/trees_3_overtile.res"
@@ -218,6 +227,13 @@ func test_every_eligible_resource_has_a_generated_impostor() -> void:
     assert_eq(representative.get_width() % 2, 0)
     assert_eq(representative.get_height() % 2, 0)
     assert_true(representative.get_image().has_mipmaps())
+
+    var representative_shadow: PortableCompressedTexture2D = load(
+        "res://assets/impostors/tof/decoration/stumps_1_overtile_shadow.res"
+    ) as PortableCompressedTexture2D
+    assert_not_null(representative_shadow)
+    assert_true(representative_shadow.get_image().has_mipmaps())
+    assert_true(representative_shadow.get_image().get_used_rect().has_area())
 
     var source_file := FileAccess.open(
         "res://assets/impostors/tof/terrain/trees_3_overtile.png",

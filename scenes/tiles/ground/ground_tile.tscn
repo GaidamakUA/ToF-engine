@@ -10,3 +10,16 @@ gi_mode = 0
 
 [node name="reflection" type="MeshInstance3D" parent="."]
 visible = false
+
+[node name="impostor" type="Sprite3D" parent="."]
+visible = false
+sorting_use_aabb_center = false
+cast_shadow = 0
+extra_cull_margin = 16.0
+texture_filter = 2
+billboard = 1
+alpha_cut = 0
+centered = false
+pixel_size = 0.015625
+hframes = 2
+vframes = 2

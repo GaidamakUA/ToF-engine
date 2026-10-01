@@ -8,5 +8,7 @@ script = ExtResource("2_c61ms")
 next_damage_stage_template = "destroyed_statue"
 base_stage_template = "deco_statue"
 mesh = ExtResource("1_6ldq7")
+tof_impostor_path = "res://assets/impostors/tof/terrain/statue_damaged.res"
+tof_impostor_origin = Vector2(248, 203)
 main_tile_view_cam_modifier = -10
 side_tile_view_cam_modifier = -25

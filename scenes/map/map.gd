@@ -6,6 +6,7 @@ const GROUND_HEIGHT: int = 4
 
 @onready var tile_box: TileBox = $"tiles/tile_box"
 @onready var camera: GameCamera = $"camera"
+@onready var directional_light: DirectionalLight3D = $"DirectionalLight3D"
 @onready var campaign: CampaignService = Campaign as CampaignService
 @onready var mouse_layer: MouseLayerService = MouseLayer as MouseLayerService
 @onready var settings: SettingsService = Settings as SettingsService
@@ -26,9 +27,12 @@ var loader: MapLoader = MapLoader.new(self)
 @onready var tiles_units_anchor: Node3D = $"tiles/units"
 
 func _ready() -> void:
+    self.get_tree().root.mesh_lod_threshold = 4.0
     self.tile_box_space_size = self.camera.camera_space_size - self.TILE_SIZE
 
     self.settings.changed.connect(_settings_changed)
+    self.camera.mode_changed.connect(_camera_mode_changed)
+    self.directional_light.shadow_enabled = bool(self.settings.get_option("shadows"))
     for i: String in self.model.tiles.keys():
         self.model.tiles[i].settings = self.settings
         self.settings.changed.connect(self.model.tiles[i]._settings_changed)
@@ -155,3 +159,12 @@ func _settings_changed(key: String, new_value: Variant) -> void:
             self.tiles_frames_anchor.show()
         else:
             self.tiles_frames_anchor.hide()
+    elif key == "shadows":
+        self.directional_light.shadow_enabled = bool(new_value)
+
+func _camera_mode_changed(camera_mode: String) -> void:
+    for anchor: Node3D in [self.tiles_frames_anchor, self.tiles_terrain_anchor]:
+        for child: Node in anchor.get_children():
+            var map_object: MapObject = child as MapObject
+            if map_object != null:
+                map_object.set_visual_mode(camera_mode)

@@ -8,5 +8,7 @@ script = ExtResource("2_k03c1")
 next_damage_stage_template = "destroyed_farm2"
 base_stage_template = "city_farm2"
 mesh = ExtResource("1_6htbf")
+tof_impostor_path = "res://assets/impostors/tof/terrain/farm_2_damaged.res"
+tof_impostor_origin = Vector2(370, 268)
 main_tile_view_cam_modifier = -10
 side_tile_view_cam_modifier = -25

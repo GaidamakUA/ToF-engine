@@ -8,3 +8,5 @@ script = ExtResource("2_oaru7")
 next_damage_stage_template = "destroyed_building_big3"
 base_stage_template = "city_building_big3"
 mesh = ExtResource("1_x4jhh")
+tof_impostor_path = "res://assets/impostors/tof/terrain/building_big_3_damaged.res"
+tof_impostor_origin = Vector2(370, 538)

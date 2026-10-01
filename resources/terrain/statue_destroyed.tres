@@ -8,5 +8,7 @@ script = ExtResource("2_4ptga")
 is_smoking = true
 base_stage_template = "deco_statue"
 mesh = ExtResource("1_6gyum")
+tof_impostor_path = "res://assets/impostors/tof/terrain/statue_destroyed.res"
+tof_impostor_origin = Vector2(248, 174)
 main_tile_view_cam_modifier = -10
 side_tile_view_cam_modifier = -25

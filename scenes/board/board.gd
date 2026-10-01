@@ -31,6 +31,7 @@ var selected_tile: MapTile:
             return null
         return self.map.model.get_tile(self.presenter.selected_position)
     set(value):
+        self.last_hover_tile = null
         if value == null:
             self.presenter.clear_selection()
         else:
@@ -173,7 +174,7 @@ func hover_tile() -> void:
     if not self.ui.is_panel_open():
         var tile: MapTile = self.map.model.get_tile(self.map.tile_box_position)
 
-        if tile != self.last_hover_tile or true:
+        if tile != self.last_hover_tile:
             self.last_hover_tile = tile
             if tile == null:
                 self.presenter.set_hover(null)
@@ -289,6 +290,7 @@ func present_model_update(
         else:
             animation_events.append(event)
     await self.board_animation_player.play(animation_events, command)
+    self.last_hover_tile = null
     self.presentation_finished.emit()
 
 

@@ -1,9 +1,11 @@
-[gd_resource type="Resource" script_class="TileResource" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="TileResource" format=3]
 
 [ext_resource type="Script" path="res://scenes/tiles/tile_resource.gd" id="1"]
 [ext_resource type="ArrayMesh" path="res://assets/terrain/rural/building_small_10_overtile.obj" id="2"]
 
 [resource]
 script = ExtResource("1")
-mesh = ExtResource("2")
 next_damage_stage_template = "damaged_building_small10"
+mesh = ExtResource("2")
+tof_impostor_path = "res://assets/impostors/tof/terrain/building_small_10_overtile.res"
+tof_impostor_origin = Vector2(370, 239)

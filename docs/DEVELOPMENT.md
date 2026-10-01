@@ -80,6 +80,53 @@ Do not duplicate these resources for each placed object, and do not put
 runtime values into them. Map templates are registered resources and share
 runtime scenes by behavior.
 
+## TOF camera impostors
+
+The fixed TOF camera renders eligible static terrain and frames as baked
+`Sprite3D` impostors. Each eligible `MapObjectResource` owns a 2×2 texture with
+views for rotations 0, 90, 180, and 270 degrees. Frames use adaptive bounds at
+64 pixels per world unit and include the mesh's cast shadow when enabled. Each
+eligible tile uses one alpha-blended billboard shifted toward the fixed TOF
+camera along its view axis. This keeps the complete sprite and its shadow in
+front of the ground without changing its screen position; the shift is applied
+in global space so tile rotation cannot move the billboard. Decorations and
+terrain that units can stand on keep their meshes so a flat billboard cannot
+slice through a unit sharing their tile. The four atlas frames represent the
+tile's own rotation, not different camera angles.
+
+The impostors fully replace their source meshes at every TOF zoom level. AW and
+Free camera modes continue to use the meshes, as does any resource without a
+baked texture. Ground, ground damage, decorations, standable terrain, units,
+capturable buildings, rotating objects, particles, and editor previews remain
+3D. The baker still generates decoration atlases so they can be enabled later
+without changing the asset format. Source meshes are canonical;
+generated PNG and compressed texture files live under
+`res://assets/impostors/tof`. Resources store lazy texture paths so the template
+registry does not load every baked sheet into GPU memory at startup. PNG source
+imports use VRAM compression and mipmaps; the runtime `.res` copies also contain
+compressed mip levels. Baked TOF shadows are part of the generated artwork and
+do not follow the runtime shadow toggle; AW and Free meshes still do.
+
+Rebuild all TOF impostors with a Godot window available for rendering:
+
+```sh
+: "${GODOT_BIN:=godot}"
+"$GODOT_BIN" --rendering-method mobile --path "$PWD" \
+    --script res://tools/bake_tof_impostors.gd
+```
+
+To rebuild one resource while checking the pipeline, add:
+
+```sh
+-- --resource=res://resources/terrain/trees_3_overtile.tres
+```
+
+The baker compares a neutral ground receiver with and without each mesh's cast
+shadow, composites that shadow beneath the object capture, then fails on empty
+or clipped combined captures instead of saving incomplete assets. Do not run it
+with `--headless`: Godot uses a dummy renderer there and cannot capture viewport
+textures.
+
 ## Making changes
 
 Follow existing GDScript style and keep changes within the owning layer. When

@@ -1,6 +1,8 @@
 extends Node3D
 class_name GameCamera
 
+signal mode_changed(mode: String)
+
 const DEADZONE: float = 0.2
 const MOVEMENT_AXIS_X: JoyAxis = JOY_AXIS_LEFT_X
 const MOVEMENT_AXIS_Y: JoyAxis = JOY_AXIS_LEFT_Y
@@ -120,7 +122,6 @@ func _ready() -> void:
     _aw_camera_distance = pivot_rotation.z
 
     self.switch_to_camera_style(self.settings.get_option("def_cam_st"))
-    self._set_near_blur(0)
     self._settings_changed("tilt_shift_enabled", self.settings.get_option("tilt_shift_enabled"))
 
 func _input(event: InputEvent) -> void:
@@ -318,31 +319,31 @@ func process_movement_input(delta: float) -> void:
 
 func switch_camera() -> void:
     if self.camera_mode == self.MODE_TOF:
-        self.camera_mode = self.MODE_AW
-        self.camera_aw.make_current()
-        self._set_near_blur(0)
+        self.switch_to_camera_style(self.MODE_AW)
         return
     if self.camera_mode == self.MODE_AW:
-        self.camera_mode = self.MODE_FREE
-        self.camera_lens.make_current()
-        self._set_near_blur(0)
+        self.switch_to_camera_style(self.MODE_FREE)
         return
     if self.camera_mode == self.MODE_FREE:
-        self.camera_mode = self.MODE_TOF
-        self.camera_tof.make_current()
-        self._set_near_blur(self.tof_camera_distance)
+        self.switch_to_camera_style(self.MODE_TOF)
         return
 
 func switch_to_camera_style(style: Variant) -> void:
-    if style == self.MODE_TOF:
-        self.camera_mode = self.MODE_TOF
+    var requested_mode: String = str(style)
+    if requested_mode not in [self.MODE_TOF, self.MODE_AW, self.MODE_FREE]:
+        return
+
+    self.camera_mode = requested_mode
+    if self.camera_mode == self.MODE_TOF:
         self.camera_tof.make_current()
-    if style == self.MODE_AW:
-        self.camera_mode = self.MODE_AW
+        self._set_near_blur(self.tof_camera_distance)
+    elif self.camera_mode == self.MODE_AW:
         self.camera_aw.make_current()
-    if style == self.MODE_FREE:
-        self.camera_mode = self.MODE_FREE
+        self._set_near_blur(0)
+    else:
         self.camera_lens.make_current()
+        self._set_near_blur(0)
+    self.mode_changed.emit(self.camera_mode)
 
 func force_stick_reset() -> void:
     self.reset_stick = true

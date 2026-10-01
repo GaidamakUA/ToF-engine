@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="TileResource" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="TileResource" format=3]
 
 [ext_resource type="Script" path="res://scenes/tiles/tile_resource.gd" id="1"]
 [ext_resource type="ArrayMesh" path="res://assets/terrain/grasslands/rocks_1_overtile.obj" id="2"]
@@ -7,5 +7,7 @@
 script = ExtResource("1")
 mesh = ExtResource("2")
 mesh_cast_shadow = 0
+tof_impostor_path = "res://assets/impostors/tof/decoration/rocks_1_overtile.res"
+tof_impostor_origin = Vector2(212, 116)
 main_tile_view_cam_modifier = -10
 side_tile_view_cam_modifier = -25

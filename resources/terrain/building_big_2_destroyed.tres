@@ -8,3 +8,5 @@ script = ExtResource("2_ov3fh")
 is_smoking = true
 base_stage_template = "city_building_big2"
 mesh = ExtResource("1_yqhdk")
+tof_impostor_path = "res://assets/impostors/tof/terrain/building_big_2_destroyed.res"
+tof_impostor_origin = Vector2(370, 447)

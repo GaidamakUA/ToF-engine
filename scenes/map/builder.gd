@@ -216,6 +216,7 @@ func _spawn_element(position: Vector2i, name: String, rotation: int, vertical_of
     new_tile.set_position(world_position)
     new_tile.set_rotation(Vector3(0, deg_to_rad(rotation), 0))
     new_tile.current_rotation = rotation
+    new_tile.set_visual_mode(self.map.camera.camera_mode)
 
     return new_tile
 

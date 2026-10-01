@@ -7,5 +7,7 @@
 script = ExtResource("2_cfjfi")
 base_stage_template = "deco_fountain"
 mesh = ExtResource("1_tywqc")
+tof_impostor_path = "res://assets/impostors/tof/terrain/fountain_destroyed.res"
+tof_impostor_origin = Vector2(108, 75)
 main_tile_view_cam_modifier = -10
 side_tile_view_cam_modifier = -25

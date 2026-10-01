@@ -8,5 +8,7 @@ script = ExtResource("2_xjy22")
 is_smoking = true
 base_stage_template = "city_farm1"
 mesh = ExtResource("1_hulel")
+tof_impostor_path = "res://assets/impostors/tof/terrain/farm_1_destroyed.res"
+tof_impostor_origin = Vector2(366, 239)
 main_tile_view_cam_modifier = -10
 side_tile_view_cam_modifier = -25

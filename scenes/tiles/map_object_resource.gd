@@ -7,6 +7,10 @@ class_name MapObjectResource
 @export var mesh_material_override: Material = null
 @export var reflection_mesh: Mesh = null
 
+@export_file("*.res") var tof_impostor_path: String = ""
+@export var tof_impostor_origin: Vector2 = Vector2.ZERO
+@export var tof_impostor_pixel_size: float = 1.0 / 64.0
+
 @export var main_tile_view_cam_modifier: int = 0
 @export var side_tile_view_cam_modifier: int = 0
 @export var tile_view_height_cam_modifier: float = 0.0

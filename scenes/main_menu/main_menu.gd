@@ -36,8 +36,7 @@ func _setup_camera() -> void:
     self.map.camera.paused = true
 
     self.map.camera.set_position(Vector3(220, 4.05, 196))
-    self.map.camera.camera_mode = self.map.camera.MODE_FREE
-    self.map.camera.camera_lens.make_current()
+    self.map.camera.switch_to_camera_style(self.map.camera.MODE_FREE)
     self.map.camera.camera_lens.set_position(Vector3(0, 0, 20))
     self.map.camera.camera_pivot.set_rotation_degrees(Vector3(0, 0, 0))
     self.map.camera.camera_arm.set_rotation_degrees(Vector3(-20, 0, 0))

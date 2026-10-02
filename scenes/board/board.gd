@@ -258,7 +258,7 @@ func render_interaction(interaction: BoardPresenter) -> void:
     var marker_position: Vector3 = self.map.map_to_local(tile.position)
     marker_position.y = self.selected_tile_marker.position.y
     self.selected_tile_marker.position = marker_position
-    self.movement_markers.show_legal_moves_for_tile(tile, interaction.legal_moves)
+    self.movement_markers.show_legal_moves_for_tile(tile, interaction.legal_moves, self.state.get_current_ap())
     self.interaction_markers.show_legal_interactions(interaction.legal_interactions)
     if interaction.active_ability != null:
         var marker_colour: String = "green"

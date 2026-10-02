@@ -9,14 +9,19 @@
 [ext_resource type="AudioStream" path="res://assets/audio/pickup_box.wav" id="7_mirpb"]
 [ext_resource type="ArrayMesh" path="res://assets/units/blue/heli_modern.obj" id="8_8abwt"]
 [ext_resource type="Script" path="res://resources/units/unit_resource.gd" id="9_dfrb5"]
+[ext_resource type="Script" path="res://resources/units/rotor_resource.gd" id="9_i1knf"]
+[ext_resource type="ArrayMesh" path="res://assets/units/blue/heli_rotor.obj" id="10_1kfrv"]
+
+[sub_resource type="Resource" id="Resource_usye1"]
+script = ExtResource("9_i1knf")
+mesh = ExtResource("10_1kfrv")
 
 [resource]
 script = ExtResource("9_dfrb5")
-mesh = ExtResource("8_8abwt")
-mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 healthbar_offset = Vector2(0, 450)
 explosion_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 dust_visible = false
+rotors = Array[ExtResource("9_i1knf")]([SubResource("Resource_usye1")])
 unit_name = "TR_ATT_HELI"
 side = "blue"
 material_type = "metallic"
@@ -28,8 +33,6 @@ uses_metallic_material = true
 unit_value = 70
 unit_class = "heli"
 active_abilities = Array[Resource]([ExtResource("1_tg77y"), ExtResource("2_uau1o")])
-main_tile_view_cam_modifier = -10
-side_tile_view_cam_modifier = -25
 audio_streams = Dictionary[String, AudioStream]({
 "attack": ExtResource("4_1kfrv"),
 "damage": ExtResource("5_usye1"),
@@ -38,3 +41,7 @@ audio_streams = Dictionary[String, AudioStream]({
 "move": ExtResource("3_i1knf"),
 "spawn": ExtResource("3_i1knf")
 })
+mesh = ExtResource("8_8abwt")
+mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+main_tile_view_cam_modifier = -10
+side_tile_view_cam_modifier = -25

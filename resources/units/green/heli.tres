@@ -8,15 +8,26 @@
 [ext_resource type="AudioStream" path="res://assets/units/audio/helicopter_die.wav" id="6_577h4"]
 [ext_resource type="AudioStream" path="res://assets/audio/pickup_box.wav" id="7_gx2ps"]
 [ext_resource type="ArrayMesh" path="res://assets/units/green/heli.obj" id="8_tfr4r"]
+[ext_resource type="Script" path="res://resources/units/rotor_resource.gd" id="9_bwd1g"]
 [ext_resource type="Script" path="res://resources/units/unit_resource.gd" id="9_opa4x"]
+[ext_resource type="ArrayMesh" path="res://assets/units/green/heli_rotor.obj" id="10_y04es"]
+
+[sub_resource type="Resource" id="Resource_ewn2v"]
+script = ExtResource("9_bwd1g")
+mesh = ExtResource("10_y04es")
+pivot_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3, 1.4, 0.1)
+
+[sub_resource type="Resource" id="Resource_577h4"]
+script = ExtResource("9_bwd1g")
+mesh = ExtResource("10_y04es")
+pivot_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 1.4, 0.1)
 
 [resource]
 script = ExtResource("9_opa4x")
-mesh = ExtResource("8_tfr4r")
-mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 healthbar_offset = Vector2(0, 450)
 explosion_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 dust_visible = false
+rotors = Array[ExtResource("9_bwd1g")]([SubResource("Resource_ewn2v"), SubResource("Resource_577h4")])
 unit_name = "TR_ATT_HELI"
 side = "green"
 material_type = "metallic"
@@ -28,8 +39,6 @@ uses_metallic_material = true
 unit_value = 70
 unit_class = "heli"
 active_abilities = Array[Resource]([ExtResource("1_ei60x"), ExtResource("2_cdmlk")])
-main_tile_view_cam_modifier = -10
-side_tile_view_cam_modifier = -25
 audio_streams = Dictionary[String, AudioStream]({
 "attack": ExtResource("4_y04es"),
 "damage": ExtResource("5_ewn2v"),
@@ -38,3 +47,7 @@ audio_streams = Dictionary[String, AudioStream]({
 "move": ExtResource("3_bwd1g"),
 "spawn": ExtResource("3_bwd1g")
 })
+mesh = ExtResource("8_tfr4r")
+mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+main_tile_view_cam_modifier = -10
+side_tile_view_cam_modifier = -25

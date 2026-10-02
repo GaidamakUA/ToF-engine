@@ -8,15 +8,31 @@
 [ext_resource type="AudioStream" path="res://assets/units/audio/helicopter_die.wav" id="6_01m3u"]
 [ext_resource type="AudioStream" path="res://assets/audio/pickup_box.wav" id="7_ep8jo"]
 [ext_resource type="ArrayMesh" path="res://assets/units/green/scout_heli.obj" id="8_lrw8q"]
+[ext_resource type="Script" path="res://resources/units/rotor_resource.gd" id="9_ilylc"]
 [ext_resource type="Script" path="res://resources/units/unit_resource.gd" id="9_yochb"]
+[ext_resource type="ArrayMesh" path="res://assets/units/green/scout_heli_rotor.obj" id="10_sbido"]
+
+[sub_resource type="Resource" id="Resource_3yhv1"]
+script = ExtResource("9_ilylc")
+mesh = ExtResource("10_sbido")
+pivot_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.9, 0.8)
+
+[sub_resource type="Resource" id="Resource_01m3u"]
+script = ExtResource("9_ilylc")
+mesh = ExtResource("10_sbido")
+pivot_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.9, 0.8)
+
+[sub_resource type="Resource" id="Resource_ep8jo"]
+script = ExtResource("9_ilylc")
+mesh = ExtResource("10_sbido")
+pivot_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, -0.8)
 
 [resource]
 script = ExtResource("9_yochb")
-mesh = ExtResource("8_lrw8q")
-mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 healthbar_offset = Vector2(0, 450)
 explosion_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 dust_visible = false
+rotors = Array[ExtResource("9_ilylc")]([SubResource("Resource_3yhv1"), SubResource("Resource_01m3u"), SubResource("Resource_ep8jo")])
 unit_name = "TR_SCOUT_HELI"
 side = "green"
 material_type = "metallic"
@@ -28,8 +44,6 @@ uses_metallic_material = true
 unit_value = 50
 unit_class = "scout"
 active_abilities = Array[Resource]([ExtResource("1_aqwta")])
-main_tile_view_cam_modifier = -10
-side_tile_view_cam_modifier = -25
 audio_streams = Dictionary[String, AudioStream]({
 "attack": ExtResource("3_ilylc"),
 "damage": ExtResource("5_3yhv1"),
@@ -39,3 +53,7 @@ audio_streams = Dictionary[String, AudioStream]({
 "move": ExtResource("2_ny8bl"),
 "spawn": ExtResource("2_ny8bl")
 })
+mesh = ExtResource("8_lrw8q")
+mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+main_tile_view_cam_modifier = -10
+side_tile_view_cam_modifier = -25

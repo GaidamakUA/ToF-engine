@@ -14,10 +14,18 @@ const REFLECTION_MATERIAL: Material = preload("res://assets/materials/arne32_ref
 @onready var lens: Camera3D = $"SubViewport/tile_cam/pivot/arm/lens"
 
 var tile: Node3D = null
+var _rotor_pivots: Array[Node3D] = []
+var _rotor_axes: Array[Vector3] = []
 
 func _ready() -> void:
     self.lens.set_size(self.viewport_size)
     self.refresh()
+
+func _process(delta: float) -> void:
+    for index: int in self._rotor_pivots.size():
+        self._rotor_pivots[index].rotate_object_local(
+            self._rotor_axes[index], UnitResource.ROTOR_SPEED * delta
+        )
 
 func refresh() -> void:
     var texture: Texture2D = self.viewport.get_texture()
@@ -46,6 +54,8 @@ func set_tile(source: MapObjectResource, requested_rotation: int, preview_materi
 
 func _create_preview(source: MapObjectResource, preview_material: Material = null) -> Node3D:
     var preview := Node3D.new()
+    self._rotor_pivots.clear()
+    self._rotor_axes.clear()
     if source.mesh == null:
         return preview
 
@@ -59,6 +69,10 @@ func _create_preview(source: MapObjectResource, preview_material: Material = nul
         mesh_instance.material_override = self.DEFAULT_MATERIAL
     preview.add_child(mesh_instance)
 
+    var unit_resource: UnitResource = source as UnitResource
+    if unit_resource != null:
+        self._add_rotors(unit_resource, mesh_instance)
+
     if source.reflection_mesh != null:
         var reflection := MeshInstance3D.new()
         reflection.mesh = source.reflection_mesh
@@ -66,7 +80,27 @@ func _create_preview(source: MapObjectResource, preview_material: Material = nul
         preview.add_child(reflection)
     return preview
 
+func _add_rotors(source: UnitResource, parent: Node3D) -> void:
+    for rotor: RotorResource in source.rotors:
+        assert(rotor.mesh != null)
+        assert(not rotor.rotation_axis.is_zero_approx())
+        var pivot := Node3D.new()
+        pivot.transform = rotor.pivot_transform
+        parent.add_child(pivot)
+
+        var rotor_mesh := MeshInstance3D.new()
+        rotor_mesh.mesh = rotor.mesh
+        rotor_mesh.transform = rotor.mesh_transform
+        rotor_mesh.cast_shadow = source.mesh_cast_shadow
+        rotor_mesh.material_override = self.DEFAULT_MATERIAL
+        pivot.add_child(rotor_mesh)
+
+        self._rotor_pivots.append(pivot)
+        self._rotor_axes.append(rotor.rotation_axis.normalized())
+
 func clear() -> void:
+    self._rotor_pivots.clear()
+    self._rotor_axes.clear()
     if self.tile == null:
         return
 

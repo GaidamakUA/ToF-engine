@@ -3,10 +3,13 @@ class_name UnitResource
 
 enum Kind { UNIT, HERO, NPC }
 
+const ROTOR_SPEED: float = TAU * 2.0
+
 @export var kind: Kind = Kind.UNIT
 @export var healthbar_offset: Vector2 = Vector2(0, 300)
 @export var explosion_transform: Transform3D = Transform3D.IDENTITY
 @export var dust_visible: bool = true
+@export var rotors: Array[RotorResource] = []
 
 @export var unit_name: String = ""
 @export var side: String = "neutral"

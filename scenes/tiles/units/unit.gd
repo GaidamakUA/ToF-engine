@@ -5,6 +5,7 @@ signal move_finished
 
 const MAX_LEVEL: int = 3
 const EXP_PER_LEVEL: int = 2
+const ROTOR_MATERIAL: Material = preload("res://assets/materials/arne32.tres")
 
 @onready var animations: AnimationPlayer = $"animations"
 @onready var spotlight: SpotLight3D = $"mesh_anchor/activity_light"
@@ -127,11 +128,19 @@ var current_path_index: int = 0
 
 var base_material: Resource = null
 var desaturated_material: Resource = null
+var _rotor_pivots: Array[Node3D] = []
+var _rotor_axes: Array[Vector3] = []
 
 func _ready() -> void:
     self.animations.animation_finished.connect(_on_animation_finished)
     self.healthbar_sprite.texture = $"mesh_anchor/healthbar/SubViewport".get_texture()
     self._setup_abilities()
+
+func _process(delta: float) -> void:
+    for index: int in self._rotor_pivots.size():
+        self._rotor_pivots[index].rotate_object_local(
+            self._rotor_axes[index], UnitResource.ROTOR_SPEED * delta
+        )
 
 func configure(resource: UnitResource) -> void:
     var mesh_instance: MeshInstance3D = $"mesh_anchor/mesh" as MeshInstance3D
@@ -139,6 +148,7 @@ func configure(resource: UnitResource) -> void:
     mesh_instance.transform = resource.mesh_transform
     mesh_instance.cast_shadow = resource.mesh_cast_shadow
     mesh_instance.material_override = resource.mesh_material_override
+    self._configure_rotors(resource, mesh_instance)
     ($"mesh_anchor/dust" as GPUParticles3D).visible = resource.dust_visible
     ($"mesh_anchor/healthbar" as Sprite3D).offset = resource.healthbar_offset
     ($"explosion" as Node3D).transform = resource.explosion_transform
@@ -171,6 +181,33 @@ func configure(resource: UnitResource) -> void:
 
     if self.is_node_ready():
         self._setup_abilities()
+
+func _configure_rotors(resource: UnitResource, parent: Node3D) -> void:
+    for pivot: Node3D in self._rotor_pivots:
+        pivot.free()
+    self._rotor_pivots.clear()
+    self._rotor_axes.clear()
+
+    for rotor: RotorResource in resource.rotors:
+        assert(rotor.mesh != null)
+        assert(not rotor.rotation_axis.is_zero_approx())
+        var pivot := Node3D.new()
+        pivot.transform = rotor.pivot_transform
+        parent.add_child(pivot)
+
+        var rotor_mesh := MeshInstance3D.new()
+        rotor_mesh.mesh = rotor.mesh
+        rotor_mesh.transform = rotor.mesh_transform
+        rotor_mesh.cast_shadow = resource.mesh_cast_shadow
+        rotor_mesh.material_override = self.ROTOR_MATERIAL
+        pivot.add_child(rotor_mesh)
+
+        self._rotor_pivots.append(pivot)
+        self._rotor_axes.append(rotor.rotation_axis.normalized())
+
+    self.set_process(not self._rotor_pivots.is_empty())
+    if self._impostor_priority_enabled:
+        self._sync_impostor_overlay_materials()
 
 func reset() -> void:
     var stats: Dictionary[String, int] = self.get_stats_with_modifiers()
@@ -223,7 +260,7 @@ func set_side_material(material: Resource) -> void:
 
 func _get_impostor_priority_meshes() -> Array[MeshInstance3D]:
     var meshes: Array[MeshInstance3D] = []
-    for child: Node in $"mesh_anchor".get_children():
+    for child: Node in $"mesh_anchor".find_children("*", "MeshInstance3D", true, false):
         var mesh_instance: MeshInstance3D = child as MeshInstance3D
         if mesh_instance != null:
             meshes.append(mesh_instance)

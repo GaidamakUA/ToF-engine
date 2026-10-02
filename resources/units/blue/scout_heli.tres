@@ -8,15 +8,21 @@
 [ext_resource type="AudioStream" path="res://assets/units/audio/helicopter_die.wav" id="6_q46lh"]
 [ext_resource type="AudioStream" path="res://assets/audio/pickup_box.wav" id="7_rg1ki"]
 [ext_resource type="ArrayMesh" path="res://assets/units/blue/scout_heli.obj" id="8_jxlts"]
+[ext_resource type="Script" path="res://resources/units/rotor_resource.gd" id="9_asorb"]
 [ext_resource type="Script" path="res://resources/units/unit_resource.gd" id="9_l6x38"]
+[ext_resource type="ArrayMesh" path="res://assets/units/blue/scout_heli_rotor.obj" id="10_nuwlo"]
+
+[sub_resource type="Resource" id="Resource_q86yn"]
+script = ExtResource("9_asorb")
+mesh = ExtResource("10_nuwlo")
+pivot_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0.6)
 
 [resource]
 script = ExtResource("9_l6x38")
-mesh = ExtResource("8_jxlts")
-mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 healthbar_offset = Vector2(0, 450)
 explosion_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 dust_visible = false
+rotors = Array[ExtResource("9_asorb")]([SubResource("Resource_q86yn")])
 unit_name = "TR_SCOUT_HELI"
 side = "blue"
 material_type = "metallic"
@@ -29,8 +35,6 @@ unit_value = 50
 unit_class = "scout"
 perform_extra_lookup = true
 active_abilities = Array[Resource]([ExtResource("1_pvg3s")])
-main_tile_view_cam_modifier = -10
-side_tile_view_cam_modifier = -25
 audio_streams = Dictionary[String, AudioStream]({
 "attack": ExtResource("3_asorb"),
 "damage": ExtResource("5_q86yn"),
@@ -40,3 +44,7 @@ audio_streams = Dictionary[String, AudioStream]({
 "move": ExtResource("2_m2mir"),
 "spawn": ExtResource("2_m2mir")
 })
+mesh = ExtResource("8_jxlts")
+mesh_transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+main_tile_view_cam_modifier = -10
+side_tile_view_cam_modifier = -25

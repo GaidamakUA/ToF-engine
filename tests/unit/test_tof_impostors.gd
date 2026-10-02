@@ -240,6 +240,17 @@ func test_building_priority_overlay_draws_without_moving_the_building() -> void:
     assert_null(mesh.material_overlay)
 
 
+func test_building_side_material_replaces_resource_material() -> void:
+    var building := MapTemplates.new().get_template("modern_factory") as BaseBuilding
+    add_child_autofree(building)
+    var neutral_material := load("res://assets/materials/arne32_neutral.tres") as Material
+
+    building.set_side_material(neutral_material)
+
+    var mesh := building.get_node("mesh") as MeshInstance3D
+    assert_same(mesh.material_override, neutral_material)
+
+
 func test_runtime_tile_events_apply_current_visual_mode() -> void:
     var map := RuntimeTileMap.new()
     add_child(map.tiles_frames_anchor)

@@ -5,12 +5,10 @@ class_name MovementMarkers
 var map_obj: Map
 
 var marker_template: PackedScene = preload("res://scenes/ui/markers/movement_marker.tscn")
-var colour_materials: Dictionary[String, Material] = {
-    "neutral" : preload("res://assets/materials/arne32_neutral.tres"),
-    "blue" : preload("res://assets/materials/arne32_blue.tres"),
-    "red" : preload("res://assets/materials/arne32_red.tres"),
-    "green" : preload("res://assets/materials/arne32_green.tres"),
-}
+const NEUTRAL_MATERIAL: Material = preload("res://assets/materials/arne32_neutral.tres")
+const BLUE_MATERIAL: Material = preload("res://assets/materials/arne32_blue.tres")
+const RED_MATERIAL: Material = preload("res://assets/materials/arne32_red.tres")
+const GREEN_MATERIAL: Material = preload("res://assets/materials/arne32_green.tres")
 
 var explored_tiles: Dictionary[String, int] = {}
 var created_markers: Dictionary[String, MovementMarker] = {}
@@ -70,24 +68,16 @@ func place_movement_marker(marker_position: Vector2i) -> void:
 func colour_marker(tile: MapTile, unit: BaseUnit, ap_limit: int) -> void:
     var marker: MovementMarker = self.created_markers[self._get_key(tile)]
     var tile_cost: Variant = self.get_tile_cost(tile)
-
+    var material: Material = self.GREEN_MATERIAL
     if tile_cost == unit.move:
-        marker.set_material(self.colour_materials["neutral"])
-        return
-
-    if tile_cost == ap_limit:
-        marker.set_material(self.colour_materials["green"])
-        return
-
-    if tile.neighbours_enemy_unit(unit.side, unit.team) && tile.can_attack_neightbour_enemy_unit(unit) && unit.has_attacks():
-        marker.set_material(self.colour_materials["red"])
-        return
-
-    if unit.can_capture && tile.neighbours_enemy_building(unit.side, unit.team):
-        marker.set_material(self.colour_materials["blue"])
-        return
-
-    marker.set_material(self.colour_materials["green"])
+        material = self.NEUTRAL_MATERIAL
+    elif tile_cost != ap_limit:
+        if tile.neighbours_enemy_unit(unit.side, unit.team) \
+            and tile.can_attack_neightbour_enemy_unit(unit) and unit.has_attacks():
+            material = self.RED_MATERIAL
+        elif unit.can_capture and tile.neighbours_enemy_building(unit.side, unit.team):
+            material = self.BLUE_MATERIAL
+    marker.set_material(material)
 
 func add_path_root(root_tile: MapTile) -> void:
     self.tile_path[self._get_key(root_tile)] = null

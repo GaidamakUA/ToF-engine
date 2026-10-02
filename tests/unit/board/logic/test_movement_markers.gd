@@ -12,22 +12,22 @@ func test_legacy_movement_marker_colours_and_priority() -> void:
 
 	var neutral_tile := MapTile.new(0, 0)
 	_add_enemy_building_neighbour(neutral_tile)
-	assert_same(_colour_marker(markers, neutral_tile, unit, 2, 3), markers.colour_materials["neutral"])
+	assert_same(_colour_marker(markers, neutral_tile, unit, 2, 3), MovementMarkers.NEUTRAL_MATERIAL)
 
 	var ap_limited_tile := MapTile.new(1, 0)
 	_add_enemy_building_neighbour(ap_limited_tile)
-	assert_same(_colour_marker(markers, ap_limited_tile, unit, 1, 1), markers.colour_materials["green"])
+	assert_same(_colour_marker(markers, ap_limited_tile, unit, 1, 1), MovementMarkers.GREEN_MATERIAL)
 
 	var attack_tile := MapTile.new(2, 0)
 	_add_enemy_unit_neighbour(attack_tile)
-	assert_same(_colour_marker(markers, attack_tile, unit, 1, 3), markers.colour_materials["red"])
+	assert_same(_colour_marker(markers, attack_tile, unit, 1, 3), MovementMarkers.RED_MATERIAL)
 
 	var capture_tile := MapTile.new(3, 0)
 	_add_enemy_building_neighbour(capture_tile)
-	assert_same(_colour_marker(markers, capture_tile, unit, 1, 3), markers.colour_materials["blue"])
+	assert_same(_colour_marker(markers, capture_tile, unit, 1, 3), MovementMarkers.BLUE_MATERIAL)
 
 	var default_tile := MapTile.new(4, 0)
-	assert_same(_colour_marker(markers, default_tile, unit, 1, 3), markers.colour_materials["green"])
+	assert_same(_colour_marker(markers, default_tile, unit, 1, 3), MovementMarkers.GREEN_MATERIAL)
 
 
 func _colour_marker(

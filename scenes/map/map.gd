@@ -164,13 +164,9 @@ func _settings_changed(key: String, new_value: Variant) -> void:
         self.directional_light.shadow_enabled = bool(new_value)
 
 func _impostor_mode_changed(enabled: bool) -> void:
-    for anchor: Node3D in [self.tiles_frames_anchor, self.tiles_terrain_anchor]:
+    for anchor: Node3D in [self.tiles_frames_anchor, self.tiles_terrain_anchor, self.tiles_units_anchor, self.tiles_buildings_anchor]:
         for child: Node in anchor.get_children():
-            var tile: GroundTile = child as GroundTile
-            if tile != null:
-                tile.set_impostor_enabled(enabled)
-    for anchor: Node3D in [self.tiles_units_anchor, self.tiles_buildings_anchor]:
-        for child: Node in anchor.get_children():
-            var object: MapObject = child as MapObject
-            if object != null:
-                object.set_impostor_priority(enabled)
+            if child is GroundTile:
+                (child as GroundTile).set_impostor_enabled(enabled)
+            elif child is MapObject:
+                (child as MapObject).set_impostor_priority(enabled)

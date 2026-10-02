@@ -63,6 +63,11 @@ func set_side_materials(_base_material: Resource, _desaturated_material: Resourc
 
 func set_side_material(material: Resource) -> void:
     $"mesh".set_surface_override_material(0, material)
+    if self._impostor_priority_enabled:
+        self._sync_impostor_overlay_materials()
+
+func _get_impostor_priority_meshes() -> Array[MeshInstance3D]:
+    return [$"mesh" as MeshInstance3D]
 
 func register_ability(ability: Ability) -> void:
     self.abilities.append(ability)

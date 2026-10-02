@@ -28,7 +28,6 @@ func configure(resource: TileResource) -> void:
 
     var mesh_instance: MeshInstance3D = $"mesh" as MeshInstance3D
     mesh_instance.mesh = resource.mesh
-    mesh_instance.lod_bias = 0.0
     mesh_instance.transform = resource.mesh_transform
     self._mesh_cast_shadow = resource.mesh_cast_shadow
     mesh_instance.cast_shadow = self._mesh_cast_shadow
@@ -57,23 +56,23 @@ func configure(resource: TileResource) -> void:
         sprite.position = Vector3.ZERO
         sprite.sorting_offset = 0.0
 
-func set_visual_mode(camera_mode: String) -> void:
+func set_impostor_enabled(enabled: bool) -> void:
     var impostor: Sprite3D = $"impostor" as Sprite3D
-    if self._tof_impostor_allowed and camera_mode == GameCamera.MODE_TOF \
+    if self._tof_impostor_allowed and enabled \
         and impostor.texture == null and not self._tof_impostor_path.is_empty():
         impostor.texture = load(self._tof_impostor_path) as Texture2D
         if impostor.texture != null:
             var frame_height: float = float(impostor.texture.get_height()) / float(impostor.vframes)
             impostor.offset.y = self._tof_impostor_origin.y - frame_height
     var shadow: Sprite3D = $"impostor_shadow" as Sprite3D
-    if camera_mode == GameCamera.MODE_TOF \
+    if enabled \
         and shadow.texture == null and not self._tof_shadow_path.is_empty():
         shadow.texture = load(self._tof_shadow_path) as Texture2D
         if shadow.texture != null:
             var frame_height: float = float(shadow.texture.get_height()) / float(shadow.vframes)
             shadow.offset.y = self._tof_impostor_origin.y - frame_height
-    var use_impostor: bool = camera_mode == GameCamera.MODE_TOF and impostor.texture != null
-    var use_shadow: bool = camera_mode == GameCamera.MODE_TOF and shadow.texture != null
+    var use_impostor: bool = enabled and impostor.texture != null
+    var use_shadow: bool = enabled and shadow.texture != null
     impostor.visible = use_impostor
     shadow.visible = use_shadow
     var frame: int = int(float(posmod(self.current_rotation, 360)) / 90.0)

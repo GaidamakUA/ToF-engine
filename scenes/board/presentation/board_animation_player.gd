@@ -302,7 +302,7 @@ func _play_tile_damage(base_event: BoardDomainEvent, _events: Array[BoardDomainE
 	object.position = object_position
 	object.rotation_degrees.y = event.rotation
 	if object is GroundTile:
-		(object as GroundTile).set_visual_mode(self.board.map.camera.camera_mode)
+		(object as GroundTile).set_impostor_enabled(self.board.map.camera.uses_tof_impostors())
 	if event.layer == &"terrain" and object is DamagedTile:
 		(object as DamagedTile).show_explosion()
 
@@ -338,7 +338,9 @@ func _play_tile_change(base_event: BoardDomainEvent, _events: Array[BoardDomainE
 		object.position = object_position
 		object.rotation_degrees.y = event.rotation
 		if object is GroundTile:
-			(object as GroundTile).set_visual_mode(self.board.map.camera.camera_mode)
+			(object as GroundTile).set_impostor_enabled(self.board.map.camera.uses_tof_impostors())
+		else:
+			object.set_impostor_priority(self.board.map.camera.uses_tof_impostors())
 		if event.layer == &"building":
 			self.board.map.builder.set_building_side(event.position, tile.building.tile.side, tile.building.tile.team)
 	if event.effect == &"smoke":

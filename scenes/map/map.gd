@@ -31,7 +31,7 @@ func _ready() -> void:
     self.tile_box_space_size = self.camera.camera_space_size - self.TILE_SIZE
 
     self.settings.changed.connect(_settings_changed)
-    self.camera.mode_changed.connect(_camera_mode_changed)
+    self.camera.impostor_mode_changed.connect(_impostor_mode_changed)
     self.directional_light.shadow_enabled = bool(self.settings.get_option("shadows"))
     for i: String in self.model.tiles.keys():
         self.model.tiles[i].settings = self.settings
@@ -143,6 +143,7 @@ func anchor_unit(unit: BaseUnit, unit_position: Vector2i) -> void:
     world_position.y = self.GROUND_HEIGHT
     self.tiles_units_anchor.add_child(unit)
     unit.set_position(world_position)
+    unit.set_impostor_priority(self.camera.uses_tof_impostors())
 
 
 func detach_unit(unit: BaseUnit) -> void:
@@ -162,9 +163,14 @@ func _settings_changed(key: String, new_value: Variant) -> void:
     elif key == "shadows":
         self.directional_light.shadow_enabled = bool(new_value)
 
-func _camera_mode_changed(camera_mode: String) -> void:
+func _impostor_mode_changed(enabled: bool) -> void:
     for anchor: Node3D in [self.tiles_frames_anchor, self.tiles_terrain_anchor]:
         for child: Node in anchor.get_children():
             var tile: GroundTile = child as GroundTile
             if tile != null:
-                tile.set_visual_mode(camera_mode)
+                tile.set_impostor_enabled(enabled)
+    for anchor: Node3D in [self.tiles_units_anchor, self.tiles_buildings_anchor]:
+        for child: Node in anchor.get_children():
+            var object: MapObject = child as MapObject
+            if object != null:
+                object.set_impostor_priority(enabled)

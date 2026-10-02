@@ -2,6 +2,7 @@ extends Node3D
 class_name GameCamera
 
 signal mode_changed(mode: String)
+signal impostor_mode_changed(enabled: bool)
 
 const DEADZONE: float = 0.2
 const MOVEMENT_AXIS_X: JoyAxis = JOY_AXIS_LEFT_X
@@ -34,6 +35,7 @@ const MODE_AW: String = "AW"
 
 @export var tof_camera_distance_min: float = 25
 @export var tof_camera_distance_max: float = 50
+@export_range(0.0, 1.0, 0.05) var tof_impostor_zoom_threshold: float = 0.5
 
 @export var aw_camera_distance_min: float = 25
 @export var aw_camera_distance_max: float = 50
@@ -89,6 +91,7 @@ var mouse_click_position: Variant = null
 
 var camera_pan := Vector2(0, 0)
 var _last_used_blur_magnitude: float = 0
+var _impostors_enabled: bool = false
 
 @onready var settings: SettingsService = Settings as SettingsService
 
@@ -194,6 +197,7 @@ func _process(delta: float) -> void:
         self.camera_tof.set_position(Vector3(0, 0, _tof_camera_distance))
         self.camera_tof.set_size(0.8 * _tof_camera_distance)
         self._set_near_blur(_tof_camera_distance)
+        self._update_impostor_mode()
 
     if aw_camera_distance != _aw_camera_distance:
         _aw_camera_distance = aw_camera_distance
@@ -344,6 +348,7 @@ func switch_to_camera_style(style: Variant) -> void:
         self.camera_lens.make_current()
         self._set_near_blur(0)
     self.mode_changed.emit(self.camera_mode)
+    self._update_impostor_mode()
 
 func force_stick_reset() -> void:
     self.reset_stick = true
@@ -477,6 +482,17 @@ func _mouse_shift_camera(relative_offset: Vector2) -> void:
 
 func get_zoom_fraction() -> float:
     return (self.camera_distance - self.camera_distance_min) / (self.camera_distance_max - self.camera_distance_min)
+
+func uses_tof_impostors() -> bool:
+    var zoom_fraction: float = (self.tof_camera_distance - self.tof_camera_distance_min) \
+        / (self.tof_camera_distance_max - self.tof_camera_distance_min)
+    return self.camera_mode == self.MODE_TOF and zoom_fraction >= self.tof_impostor_zoom_threshold
+
+func _update_impostor_mode() -> void:
+    var enabled: bool = self.uses_tof_impostors()
+    if enabled != self._impostors_enabled:
+        self._impostors_enabled = enabled
+        self.impostor_mode_changed.emit(enabled)
 
 func get_position_state() -> Array[float]:
     var camera_position: Vector3 = self.get_position()

@@ -8,4 +8,4 @@ script = ExtResource("1")
 mesh = ExtResource("2")
 mesh_cast_shadow = 0
 tof_impostor_path = "res://assets/impostors/tof/frame/river_plants_6_overtile.res"
-tof_impostor_origin = Vector2(356, 257)
+tof_impostor_origin = Vector2(361, 265)

@@ -12,11 +12,18 @@ class RuntimeTileModel:
         return self.tiles.get(position)
 
 
+class RuntimeCamera:
+    extends RefCounted
+
+    func uses_tof_impostors() -> bool:
+        return true
+
+
 class RuntimeTileMap:
     extends RefCounted
     const GROUND_HEIGHT: int = Map.GROUND_HEIGHT
     var model := RuntimeTileModel.new()
-    var camera: Dictionary[String, Variant] = {"camera_mode": GameCamera.MODE_TOF}
+    var camera := RuntimeCamera.new()
     var tiles_frames_anchor := Node3D.new()
     var tiles_terrain_anchor := Node3D.new()
 
@@ -36,7 +43,7 @@ func test_ground_tile_uses_impostor_only_in_tof_mode() -> void:
     tile.configure(resource)
     tile.current_rotation = 270
     assert_null((tile.get_node("impostor") as Sprite3D).texture)
-    tile.set_visual_mode(GameCamera.MODE_TOF)
+    tile.set_impostor_enabled(true)
 
     var impostor: Sprite3D = tile.get_node("impostor") as Sprite3D
     assert_true(impostor.visible)
@@ -46,7 +53,7 @@ func test_ground_tile_uses_impostor_only_in_tof_mode() -> void:
     assert_false((tile.get_node("mesh") as MeshInstance3D).visible)
     assert_false((tile.get_node("reflection") as MeshInstance3D).visible)
 
-    tile.set_visual_mode(GameCamera.MODE_AW)
+    tile.set_impostor_enabled(false)
 
     assert_false(impostor.visible)
     assert_true((tile.get_node("mesh") as MeshInstance3D).visible)
@@ -60,10 +67,43 @@ func test_ground_tile_without_impostor_keeps_mesh_in_tof_mode() -> void:
     add_child_autofree(tile)
     tile.configure(resource)
 
-    tile.set_visual_mode(GameCamera.MODE_TOF)
+    tile.set_impostor_enabled(true)
 
     assert_true((tile.get_node("mesh") as MeshInstance3D).visible)
     assert_false((tile.get_node("impostor") as Sprite3D).visible)
+
+
+func test_non_impostor_grass_uses_normal_mesh_lod() -> void:
+    for path: String in [
+        "res://resources/frame/grass_5_overtile.tres",
+        "res://resources/frame/grass_6_overtile.tres",
+    ]:
+        var tile: GroundTile = GROUND_TILE_SCENE.instantiate() as GroundTile
+        add_child_autofree(tile)
+        tile.configure(load(path) as TileResource)
+        tile.set_impostor_enabled(false)
+
+        var mesh_instance := tile.get_node("mesh") as MeshInstance3D
+        assert_true(mesh_instance.visible, path)
+        assert_eq(mesh_instance.lod_bias, 1.0, path)
+
+
+func test_river_6_impostor_has_four_distinct_orientations() -> void:
+    var texture := load(
+        "res://assets/impostors/tof/frame/river_plants_6_overtile.res"
+    ) as Texture2D
+    var image: Image = texture.get_image()
+    assert_eq(image.decompress(), OK)
+    var image_size: Vector2i = image.get_size()
+    var frame_size := Vector2i(image_size.x >> 1, image_size.y >> 1)
+    var frames: Array[PackedByteArray] = []
+    for index: int in 4:
+        var position := Vector2i(index % 2, index >> 1) * frame_size
+        frames.append(image.get_region(Rect2i(position, frame_size)).get_data())
+
+    for index: int in frames.size():
+        for previous: int in index:
+            assert_false(frames[index] == frames[previous])
 
 
 func test_tof_impostor_uses_front_depth_without_screen_offset() -> void:
@@ -76,7 +116,7 @@ func test_tof_impostor_uses_front_depth_without_screen_offset() -> void:
     tile.position = Vector3(10, 4, 20)
     tile.rotation.y = deg_to_rad(90)
     tile.configure(resource)
-    tile.set_visual_mode(GameCamera.MODE_TOF)
+    tile.set_impostor_enabled(true)
 
     var impostor: Sprite3D = tile.get_node("impostor") as Sprite3D
     var frame_height: float = float(impostor.texture.get_height()) / float(impostor.vframes)
@@ -109,7 +149,7 @@ func test_decoration_and_standable_terrain_use_mesh_with_baked_shadow() -> void:
         var tile: GroundTile = GROUND_TILE_SCENE.instantiate() as GroundTile
         add_child_autofree(tile)
         tile.configure(resource)
-        tile.set_visual_mode(GameCamera.MODE_TOF)
+        tile.set_impostor_enabled(true)
 
         var mesh_instance: MeshInstance3D = tile.get_node("mesh") as MeshInstance3D
         assert_true(mesh_instance.visible, path)
@@ -117,7 +157,7 @@ func test_decoration_and_standable_terrain_use_mesh_with_baked_shadow() -> void:
         assert_false((tile.get_node("impostor") as Sprite3D).visible, path)
         assert_true((tile.get_node("impostor_shadow") as Sprite3D).visible, path)
 
-        tile.set_visual_mode(GameCamera.MODE_AW)
+        tile.set_impostor_enabled(false)
 
         assert_eq(mesh_instance.cast_shadow, resource.mesh_cast_shadow, path)
 
@@ -134,6 +174,70 @@ func test_camera_mode_signal_covers_direct_and_cycled_switches() -> void:
 
     assert_eq(observed_modes, [GameCamera.MODE_AW, GameCamera.MODE_FREE])
     assert_eq(camera.camera_mode, GameCamera.MODE_FREE)
+
+
+func test_tof_impostors_start_at_configured_zoom_threshold() -> void:
+    var camera: GameCamera = load("res://scenes/camera.tscn").instantiate() as GameCamera
+    camera.tof_impostor_zoom_threshold = 0.5
+    add_child_autofree(camera)
+    await wait_process_frames(1)
+    camera.switch_to_camera_style(GameCamera.MODE_TOF)
+    var observed_states: Array[bool] = []
+    camera.impostor_mode_changed.connect(
+        func(enabled: bool) -> void: observed_states.append(enabled)
+    )
+    var threshold_distance: float = camera.tof_camera_distance_min \
+        + (camera.tof_camera_distance_max - camera.tof_camera_distance_min) * 0.5
+
+    camera.tof_camera_distance = threshold_distance - 0.01
+    camera._process(0.0)
+    assert_false(camera.uses_tof_impostors())
+
+    camera.tof_camera_distance = threshold_distance
+    camera._process(0.0)
+    assert_true(camera.uses_tof_impostors())
+    assert_eq(observed_states, [false, true])
+
+
+func test_unit_priority_overlay_draws_without_moving_the_unit() -> void:
+    var unit := MapTemplates.new().get_template("blue_infantry") as BaseUnit
+    add_child_autofree(unit)
+    var original_position := Vector3(8, 4, 16)
+    unit.position = original_position
+    unit.set_side_material(load("res://assets/materials/arne32_blue.tres") as Material)
+
+    unit.set_impostor_priority(true)
+
+    var mesh := unit.get_node("mesh_anchor/mesh") as MeshInstance3D
+    var material := mesh.material_overlay as BaseMaterial3D
+    assert_not_null(material)
+    assert_eq(unit.position, original_position)
+    assert_eq(material.transparency, BaseMaterial3D.TRANSPARENCY_ALPHA)
+    assert_true(material.no_depth_test)
+    assert_eq(material.render_priority, MapObject.IMPOSTOR_RENDER_PRIORITY)
+
+    unit.set_impostor_priority(false)
+    assert_null(mesh.material_overlay)
+
+
+func test_building_priority_overlay_draws_without_moving_the_building() -> void:
+    var building := MapTemplates.new().get_template("modern_factory") as BaseBuilding
+    add_child_autofree(building)
+    var original_position := Vector3(16, 4, 24)
+    building.position = original_position
+    building.set_side_material(load("res://assets/materials/arne32_blue.tres") as Material)
+
+    building.set_impostor_priority(true)
+
+    var mesh := building.get_node("mesh") as MeshInstance3D
+    var material := mesh.material_overlay as BaseMaterial3D
+    assert_not_null(material)
+    assert_eq(building.position, original_position)
+    assert_true(material.no_depth_test)
+    assert_eq(material.render_priority, MapObject.IMPOSTOR_RENDER_PRIORITY)
+
+    building.set_impostor_priority(false)
+    assert_null(mesh.material_overlay)
 
 
 func test_runtime_tile_events_apply_current_visual_mode() -> void:

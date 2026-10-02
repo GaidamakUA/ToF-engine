@@ -214,17 +214,20 @@ func set_side_material(material: Resource) -> void:
     if material == null:
         return
 
-    $"mesh_anchor/mesh".set_surface_override_material(0, material)
+    for child: Node in $"mesh_anchor".get_children():
+        var mesh_instance: MeshInstance3D = child as MeshInstance3D
+        if mesh_instance != null:
+            mesh_instance.set_surface_override_material(0, material)
+    if self._impostor_priority_enabled:
+        self._sync_impostor_overlay_materials()
 
-    var additional_mesh: Variant
-
-    additional_mesh = self.get_node_or_null("mesh_anchor/mesh2")
-    if additional_mesh != null:
-        additional_mesh.set_surface_override_material(0, material)
-
-    additional_mesh = self.get_node_or_null("mesh_anchor/mesh3")
-    if additional_mesh != null:
-        additional_mesh.set_surface_override_material(0, material)
+func _get_impostor_priority_meshes() -> Array[MeshInstance3D]:
+    var meshes: Array[MeshInstance3D] = []
+    for child: Node in $"mesh_anchor".get_children():
+        var mesh_instance: MeshInstance3D = child as MeshInstance3D
+        if mesh_instance != null:
+            meshes.append(mesh_instance)
+    return meshes
 
 
 func get_stats() -> Dictionary[String, int]:

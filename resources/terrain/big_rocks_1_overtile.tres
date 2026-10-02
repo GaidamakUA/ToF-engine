@@ -7,4 +7,4 @@
 script = ExtResource("1")
 mesh = ExtResource("2")
 tof_impostor_path = "res://assets/impostors/tof/terrain/big_rocks_1_overtile.res"
-tof_impostor_origin = Vector2(325, 234)
+tof_impostor_origin = Vector2(347, 311)

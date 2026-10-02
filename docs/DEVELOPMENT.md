@@ -93,9 +93,12 @@ shadow-only billboard. The shift is applied in global space so tile rotation
 cannot move it. The four atlas frames represent the tile's own rotation, not
 different camera angles.
 
-The impostors fully replace their source meshes at every TOF zoom level. AW and
-Free camera modes continue to use the meshes, as does any resource without a
-baked texture. Ground, ground damage, decorations, standable terrain, units,
+The impostors replace their source meshes at and above the TOF camera's
+configurable `tof_impostor_zoom_threshold`. Closer TOF zoom levels, AW, and Free
+camera modes continue to use the meshes, as does any resource without a baked
+texture. Units and buildings use a priority overlay while impostors are active
+so they remain readable without moving the billboard origin into the ground. Ground, ground
+damage, decorations, standable terrain, units,
 capturable buildings, rotating objects, particles, and editor previews remain
 3D. Source meshes are canonical;
 generated compressed texture files live under

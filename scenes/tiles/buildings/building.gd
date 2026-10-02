@@ -1,8 +1,6 @@
 extends MapObject
 class_name BaseBuilding
 
-@onready var animations: AnimationPlayer = $"animations"
-
 @export var side: String = "neutral"
 var model_id: int = 0
 var team: Variant = null

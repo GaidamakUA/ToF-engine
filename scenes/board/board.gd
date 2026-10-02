@@ -50,6 +50,7 @@ var last_hover_tile: MapTile = null
 
 var explosion_template: PackedScene = preload("res://scenes/fx/explosion.tscn")
 var projectile_template: PackedScene = preload("res://scenes/fx/projectile.tscn")
+var voxel_coin_template: PackedScene = preload("res://scenes/ui/board/voxel_coin.tscn")
 
 var ending_turn_in_progress: bool = false
 var ending_turn_multiplier: int = 1
@@ -407,6 +408,7 @@ func start_turn() -> void:
         if self._move_camera_to_hq():
             await self.get_tree().create_timer(1).timeout
 
+    self._show_building_coin_effects()
     self.ui.update_resource_value(self.state.get_current_ap())
     self.ui.flash_start_end_card(self.state.get_current_side(), self.state.turn)
 
@@ -861,6 +863,21 @@ func _spawn_temporary_projectile_instance_on_tile(tile: MapTile) -> ProjectileFx
     new_projectile.set_position(Vector3(tile_position.x, 0, tile_position.z))
 
     return new_projectile
+
+
+func _show_building_coin_effects() -> void:
+    for tile: MapTile in self.map.model.get_player_buildings_tiles(self.state.get_current_side()):
+        if tile.building.tile.ap_gain <= 0:
+            continue
+        var coin := self.voxel_coin_template.instantiate() as Node3D
+        assert(coin != null)
+        self.explosion_anchor.add_child(coin)
+        coin.position = self.map.map_to_local(tile.position)
+        var tween: Tween = coin.create_tween()
+        tween.tween_property(coin, "position", coin.position + Vector3.UP * 8.0, 4.0).set_custom_interpolator(
+            func(value: float) -> float: return ease(value, 0.0717939)
+        )
+        tween.tween_callback(coin.queue_free)
 
 
 func _move_camera_to_hq() -> bool:
